@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import * as Colyseus from 'colyseus.js'
 import { environment } from '../environments/environment';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +10,7 @@ export class DraftService {
   client: Colyseus.Client;
   playerId: number;
 
-  constructor() {
+  constructor(private router: Router) {
     this.client = new Colyseus.Client(environment.gameServer);
     this.playerId = Math.floor(Math.random() * 1000);
     console.log("gameserver: ", this.client);
@@ -23,6 +24,9 @@ export class DraftService {
       });
 
       console.log("joined successfully", room);
+      this.router.navigate(['/draft', room.sessionId], {
+        queryParams: { session: room.sessionId },
+      });
 
     } catch (e) {
       console.error("join error", e);

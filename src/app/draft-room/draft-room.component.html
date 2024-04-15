@@ -1,1 +1,30 @@
-<p>draft-room works!</p>
+<div class="grid place-items-center min-h-full gap-8 p-4">
+  <mat-card class="max-w-fit">
+    <mat-card-header>
+      <div mat-card-avatar class="example-header-image"></div>
+      <mat-card-title>Name: {{player?.name}}</mat-card-title>
+      <mat-card-subtitle>ID: {{player?.playerId}}</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>{{playerData}}</mat-card-content>
+  </mat-card>
+
+  <mat-card class="max-w-fit">
+    <mat-card-header>
+      <mat-card-title>shop</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>shop content</mat-card-content>
+  </mat-card>
+
+  <mat-card class="max-w-fit">
+    <mat-card-header>
+      <mat-card-title>actions</mat-card-title>
+    </mat-card-header>
+    <button (click)="draftService.sendMessage('die','message')" mat-raised-button color="primary">
+      Die!
+    </button>
+    <button (click)="draftService.sendMessage('live','message')" mat-raised-button color="primary">
+      Live!
+    </button>
+  </mat-card>
+
+</div>

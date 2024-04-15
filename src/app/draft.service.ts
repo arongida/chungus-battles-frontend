@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
 export class DraftService {
   client: Colyseus.Client;
   playerId: number;
+  room?: Colyseus.Room;
 
   constructor(private router: Router) {
     this.client = new Colyseus.Client(environment.gameServer);
@@ -18,18 +19,25 @@ export class DraftService {
 
   public async joinOrCreate(name: string) {
     try {
-      const room = await this.client.joinOrCreate("draft_room", {
+      this.playerId = Math.floor(Math.random() * 1000);
+      this.room = await this.client.joinOrCreate("draft_room", {
         name: name,
         playerId: this.playerId
       });
 
-      console.log("joined successfully", room);
-      this.router.navigate(['/draft', room.sessionId], {
-        queryParams: { session: room.sessionId },
+      console.log("joined successfully", this.room);
+      this.router.navigate(['/draft', this.room.sessionId], {
+        queryParams: { session: this.room.sessionId },
       });
 
     } catch (e) {
       console.error("join error", e);
+    }
+  }
+
+  public async sendMessage(type: string, message: string) {
+    if (this.room) {
+      this.room.send(type, message);
     }
   }
 }

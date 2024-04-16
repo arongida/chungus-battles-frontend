@@ -28,6 +28,10 @@ export class DraftService {
         playerId: this.playerId
       });
 
+      this.room.onMessage("*", (type, message) => {
+        console.log("message: ", type, message);
+      });
+
       console.log("joined successfully", this.room);
 
       if (DraftService.isLocalStorageAvailable) {
@@ -46,7 +50,13 @@ export class DraftService {
 
   public async reconnect(reconnectionToken: string) {
     try {
+
+
       this.room = await this.client.reconnect(reconnectionToken);
+
+      this.room.onMessage("*", (type, message) => {
+        console.log("message: ", type, message);
+      });
 
       console.log("reconnected", this.room);
 
@@ -61,10 +71,10 @@ export class DraftService {
       console.error("reconnect error", e);
       this.router.navigate(['/']);
     }
-    
+
   }
 
-  public async sendMessage(type: string, message: string) {
+  public async sendMessage(type: string, message: {}) {
     if (this.room) {
       this.room.send(type, message);
     }

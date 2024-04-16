@@ -21,7 +21,7 @@
           <mat-card-content>
             <p>Cost: {{item.price}}</p>
             <p>Effect: {{item.description}}</p>
-            <button mat-raised-button color="primary">
+            <button mat-raised-button color="primary" (click)="draftService.sendMessage('buy', {itemId: item.itemId})">
               Buy
             </button>
           </mat-card-content>

@@ -12,7 +12,22 @@
     <mat-card-header>
       <mat-card-title>shop</mat-card-title>
     </mat-card-header>
-    <mat-card-content>shop content</mat-card-content>
+    <mat-card-content>
+      <div *ngFor="let item of shop">
+        <mat-card>
+          <mat-card-header>
+            <mat-card-title>{{item.name}}</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <p>Cost: {{item.price}}</p>
+            <p>Effect: {{item.description}}</p>
+            <button mat-raised-button color="primary">
+              Buy
+            </button>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </mat-card-content>
   </mat-card>
 
   <mat-card class="max-w-fit">

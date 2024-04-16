@@ -3,7 +3,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button'
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { DraftService } from '../draft.service';
+import { DraftService } from '../draft/services/draft.service';
 import { MatCardModule } from '@angular/material/card';
 
 

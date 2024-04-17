@@ -9,4 +9,5 @@ export interface Player {
   sessionId: string;
   defense: number;
   attackSpeed: number;
+  maxXp: number;
 }

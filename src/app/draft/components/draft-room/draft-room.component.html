@@ -1,45 +1,11 @@
-<div class="grid place-items-center min-h-full gap-8 p-4">
-  <mat-card class="max-w-fit">
-    <mat-card-header>
-      <div mat-card-avatar class="example-header-image"></div>
-      <mat-card-title>Name: {{player?.name}}</mat-card-title>
-      <mat-card-subtitle>ID: {{player?.playerId}}</mat-card-subtitle>
-    </mat-card-header>
-    <mat-card-content>{{playerData}}</mat-card-content>
-  </mat-card>
+<div class="flex flex-row">
 
-  <mat-card class="max-w-fit">
-    <mat-card-header>
-      <mat-card-title>shop</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      <div *ngFor="let item of shop">
-        <mat-card class="m-2">
-          <mat-card-header>
-            <mat-card-title>{{item.name}}</mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
-            <p>Cost: {{item.price}}</p>
-            <p>Effect: {{item.description}}</p>
-            <button mat-raised-button color="primary" (click)="draftService.sendMessage('buy', {itemId: item.itemId})">
-              Buy
-            </button>
-          </mat-card-content>
-        </mat-card>
-      </div>
-    </mat-card-content>
-  </mat-card>
+  <div id="character" class="flex basis-1/3 m-4 p-4">
+    <app-character-sheet class="min-w-fit max-w-fit" [player]="player!"></app-character-sheet>
+  </div>
 
-  <mat-card class="max-w-fit">
-    <mat-card-header>
-      <mat-card-title>actions</mat-card-title>
-    </mat-card-header>
-    <button (click)="draftService.sendMessage('die','message')" mat-raised-button color="primary" class="p-4 m-4">
-      Die!
-    </button>
-    <button (click)="draftService.sendMessage('live','message')" mat-raised-button color="primary" class="p-4 m-4">
-      Live!
-    </button>
-  </mat-card>
-
+  <div id="shop" class="basis-2/3 justify-center m-4 p-4 ">
+    <h1>SHOP</h1>
+    <app-shop [shop]="shop!"></app-shop>
+  </div>
 </div>

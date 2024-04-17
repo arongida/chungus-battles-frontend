@@ -7,11 +7,13 @@ import { MatButtonModule } from '@angular/material/button'
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { NgFor } from '@angular/common';
 import { Router } from '@angular/router';
+import { CharacterSheetComponent } from '../character-sheet/character-sheet.component';
+import { ShopComponent } from '../shop/shop.component';
 
 @Component({
   selector: 'app-draft-room',
   standalone: true,
-  imports: [MatCardModule, MatButtonModule, ReactiveFormsModule, NgFor],
+  imports: [MatCardModule, MatButtonModule, ReactiveFormsModule, NgFor, CharacterSheetComponent, ShopComponent],
   templateUrl: './draft-room.component.html',
   styleUrl: './draft-room.component.css'
 })
@@ -21,7 +23,8 @@ export class DraftRoomComponent implements OnInit {
   shop?: Item[];
 
   constructor(public draftService: DraftService, private router: Router) {
-
+    this.player = {} as Player;
+    this.shop = [] as Item[];
   }
 
   async ngOnInit(): Promise<void> {

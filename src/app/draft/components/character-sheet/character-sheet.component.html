@@ -1,0 +1,51 @@
+<mat-card class="max-w-fit">
+  <mat-card-header>
+    <div mat-card-avatar class="example-header-image">
+      <img src="/assets/Bigchungusicon.webp" alt="Character Image">
+    </div>
+    <mat-card-title>Name: {{player.name}}</mat-card-title>
+    <mat-card-subtitle>ID: {{player.playerId}}</mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+
+    <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm">
+      <div>Level:</div>
+      <div>{{player.level}}</div>
+    </div>
+
+    <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm">
+      <div>HP:</div>
+      <div>{{player.hp}}</div>
+    </div>
+
+    <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm">
+      <div>Attack:</div>
+      <div>{{player.attack}}</div>
+    </div>
+
+    <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm">
+      <div>Defense:</div>
+      <div>{{player.defense}}</div>
+    </div>
+
+    <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm">
+      <div>Gold:</div>
+      <div>{{player.gold}}</div>
+    </div>
+
+    <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm">
+      <div>Attack Speed:</div>
+      <div>{{player.attackSpeed}}</div>
+    </div>
+    
+    <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm">
+      <label for="xp"  class="">XP:</label>
+      <label for="xp" >({{player.xp}} / {{player.maxXp}})</label>
+    </div >
+    
+    <mat-progress-bar id="xp" mode="determinate" value="{{(player.xp  / player.maxXp) * 100}}"></mat-progress-bar>
+    <button class="m-4" mat-raised-button color="primary" (click)="draftService.sendMessage('buyXp', {})">
+      Buy
+    </button>
+  </mat-card-content>
+</mat-card>

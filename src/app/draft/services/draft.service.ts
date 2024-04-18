@@ -3,6 +3,7 @@ import * as Colyseus from 'colyseus.js'
 import { environment } from '../../../environments/environment';
 import { Router } from '@angular/router';
 import { Player } from '../../models/player';
+import { DraftState } from '../../models/colyseus-schema/DraftState';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +11,7 @@ import { Player } from '../../models/player';
 export class DraftService {
   client: Colyseus.Client;
   playerId?: number;
-  room?: Colyseus.Room;
+  room?: Colyseus.Room<DraftState>;
   static isLocalStorageAvailable = typeof localStorage !== 'undefined';
   player?: Player;
 

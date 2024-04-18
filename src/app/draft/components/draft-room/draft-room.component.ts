@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { DraftService } from '../../services/draft.service';
 import { Player } from '../../../models/player';
+//import { Player } from '../../../models/colyseus-schema/DraftState'
 import { Item } from '../../../models/item';
 import { MatButtonModule } from '@angular/material/button'
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
@@ -19,7 +20,6 @@ import { ShopComponent } from '../shop/shop.component';
 })
 export class DraftRoomComponent implements OnInit {
   player?: Player;
-  playerData?: string;
   shop?: Item[];
 
   constructor(public draftService: DraftService, private router: Router) {
@@ -38,8 +38,6 @@ export class DraftRoomComponent implements OnInit {
       this.shop = state.shop as Item[];
       console.log("player state", this.player);
       console.log("shop state", this.shop);
-
-      this.playerData = JSON.stringify(this.player, null, 2);
     });
   }
 }

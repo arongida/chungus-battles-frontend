@@ -45,7 +45,8 @@
     
     <mat-progress-bar id="xp" mode="determinate" value="{{(player.xp  / player.maxXp) * 100}}"></mat-progress-bar>
     <button class="m-4" mat-raised-button color="primary" (click)="draftService.sendMessage('buyXp', {})">
-      Buy
+      XP
     </button>
+    
   </mat-card-content>
 </mat-card>

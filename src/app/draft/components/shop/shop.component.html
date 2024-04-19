@@ -1,17 +1,19 @@
 
-
-  <div class="flex flex-row">
-    <mat-card *ngFor="let item of shop" class="m-2 ">
-      <mat-card-header>
+  <div id="shop" class="grid-cols-3 grid max-w-fit bg-slate-600 rounded-md p-5">
+    <mat-card *ngFor="let item of shop" class="m-2 w-40 h-56 items-center">
+      <mat-card-header class="mb-5">
         <mat-card-title>{{item.name}}</mat-card-title>
       </mat-card-header>
-      <mat-card-content>
+      <mat-card-content class="">
         <p>Cost: {{item.price}}</p>
         <p>Effect: {{item.description}}</p>
-        <button mat-raised-button color="primary" (click)="draftService.sendMessage('buy', {itemId: item.itemId})">
+        
+      </mat-card-content>
+      <mat-card-actions class="mt-5">
+        <button mat-raised-button color="primary" class="" (click)="draftService.sendMessage('buy', {itemId: item.itemId})">
           Buy
         </button>
-      </mat-card-content>
+      </mat-card-actions>
     </mat-card>
   </div>
 

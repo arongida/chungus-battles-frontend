@@ -1,12 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { MatCardModule } from '@angular/material/card';
 import { DraftService } from '../../services/draft.service';
-import { Player } from '../../../models/player';
-//import { Player } from '../../../models/colyseus-schema/DraftState'
+import { Player } from '../../../models/colyseus-schema/DraftState'
 import { Item } from '../../../models/item';
-import { MatButtonModule } from '@angular/material/button'
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { NgFor } from '@angular/common';
 import { Router } from '@angular/router';
 import { CharacterSheetComponent } from '../character-sheet/character-sheet.component';
 import { ShopComponent } from '../shop/shop.component';
@@ -14,7 +9,7 @@ import { ShopComponent } from '../shop/shop.component';
 @Component({
   selector: 'app-draft-room',
   standalone: true,
-  imports: [MatCardModule, MatButtonModule, ReactiveFormsModule, NgFor, CharacterSheetComponent, ShopComponent],
+  imports: [CharacterSheetComponent, ShopComponent],
   templateUrl: './draft-room.component.html',
   styleUrl: './draft-room.component.css'
 })

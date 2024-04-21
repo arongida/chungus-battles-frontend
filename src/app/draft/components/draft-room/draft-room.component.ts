@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { DraftService } from '../../services/draft.service';
-import { Player } from '../../../models/colyseus-schema/DraftState'
+import { Player } from '../../../models/colyseus-schema/PlayerSchema'
 import { Item } from '../../../models/item';
 import { Router } from '@angular/router';
 import { CharacterSheetComponent } from '../character-sheet/character-sheet.component';

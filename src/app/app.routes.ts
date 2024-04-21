@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 import { JoinFormComponent } from './join-form/join-form.component';
 import { DraftRoomComponent } from './draft/components/draft-room/draft-room.component';
 import { draftGuard } from './draft/guards/draft.guard';
-
+import { FightRoomComponent } from './fight/components/fight-room/fight-room.component';
 export const routes: Routes = [
   {
     path: '',
@@ -12,6 +12,12 @@ export const routes: Routes = [
   {
     path: 'draft/:id',
     component: DraftRoomComponent,
+    pathMatch: 'full',
+    canActivate: [draftGuard],
+  },
+  {
+    path: 'fight/:id',
+    component: FightRoomComponent,
     pathMatch: 'full',
     canActivate: [draftGuard],
   },

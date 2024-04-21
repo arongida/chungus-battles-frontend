@@ -2,17 +2,15 @@ import { Injectable } from '@angular/core';
 import * as Colyseus from 'colyseus.js'
 import { environment } from '../../../environments/environment';
 import { Router } from '@angular/router';
-//import { Player } from '../../models/player';
-import { DraftState, Player } from '../../models/colyseus-schema/DraftState';
+import { FightState } from '../../models/colyseus-schema/FightState';
 
 @Injectable({
   providedIn: 'root'
 })
-export class DraftService {
+export class FightService {
   client: Colyseus.Client;
   playerId: number = 0;
-  room: Colyseus.Room<DraftState> | undefined;
-  player: Player | undefined;
+  room: Colyseus.Room<FightState> | undefined;
   
   static isLocalStorageAvailable = typeof localStorage !== 'undefined';
 
@@ -22,12 +20,10 @@ export class DraftService {
     console.log("gameserver: ", this.client);
   }
 
-  public async joinOrCreate(name: string) {
+  public async joinOrCreate(playerId: number) {
     try {
-      this.playerId = Math.floor(Math.random() * 1000);
-      this.room = await this.client.joinOrCreate("draft_room", {
-        name: name,
-        playerId: this.playerId
+      this.room = await this.client.joinOrCreate("fight_room", {
+        playerId: playerId
       });
 
       this.room.onMessage("*", (type, message) => {
@@ -36,14 +32,14 @@ export class DraftService {
 
       console.log("joined successfully", this.room);
 
-      if (DraftService.isLocalStorageAvailable) {
+      if (FightService.isLocalStorageAvailable) {
         localStorage.setItem('sessionId', this.room.sessionId);
         localStorage.setItem('playerId', this.playerId.toString());
         localStorage.setItem('roomId', this.room.roomId);
         localStorage.setItem('reconnectToken', this.room.reconnectionToken);
       }
 
-      this.router.navigate(['/draft', this.room.sessionId]);
+      this.router.navigate(['/fight', this.room.sessionId]);
 
     } catch (e) {
       console.error("join error", e);
@@ -62,13 +58,13 @@ export class DraftService {
 
       console.log("reconnected", this.room);
 
-      if (DraftService.isLocalStorageAvailable) {
+      if (FightService.isLocalStorageAvailable) {
         localStorage.setItem('sessionId', this.room.sessionId);
         localStorage.setItem('roomId', this.room.roomId);
         localStorage.setItem('reconnectToken', this.room.reconnectionToken);
       }
 
-      this.router.navigate(['/draft', this.room.sessionId]);
+      this.router.navigate(['/fight', this.room.sessionId]);
     } catch (e) {
       console.error("reconnect error", e);
       this.router.navigate(['/']);
@@ -88,7 +84,7 @@ export class DraftService {
       this.room.leave();
       this.room.removeAllListeners();
       this.room = undefined;
-      if (DraftService.isLocalStorageAvailable) {
+      if (FightService.isLocalStorageAvailable) {
         localStorage.removeItem('sessionId');
         localStorage.removeItem('roomId');
         localStorage.removeItem('reconnectToken');

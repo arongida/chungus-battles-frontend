@@ -7,11 +7,13 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { DraftService } from '../../services/draft.service';
 import { NgIf } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
+import { DecimalPipe } from '@angular/common';
+import { MatDividerModule } from '@angular/material/divider';
 
 @Component({
   selector: 'app-character-sheet',
   standalone: true,
-  imports: [MatCardModule, MatButtonModule, MatProgressBarModule, NgIf, MatIconModule],
+  imports: [MatCardModule, MatButtonModule, MatProgressBarModule, NgIf, MatIconModule, DecimalPipe, MatDividerModule],
   templateUrl: './character-sheet.component.html',
   styleUrl: './character-sheet.component.css'
 })

@@ -15,5 +15,6 @@ export const routes: Routes = [
     pathMatch: 'full',
     canActivate: [draftGuard],
   },
-  { path: '**', redirectTo: '' },
+  { path: '**', redirectTo: '', pathMatch: 'full' },
+
 ];

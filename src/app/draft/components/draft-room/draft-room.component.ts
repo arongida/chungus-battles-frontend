@@ -5,11 +5,12 @@ import { Item } from '../../../models/item';
 import { Router } from '@angular/router';
 import { CharacterSheetComponent } from '../character-sheet/character-sheet.component';
 import { ShopComponent } from '../shop/shop.component';
+import { DraftMenuComponent } from '../draft-menu/draft-menu.component';
 
 @Component({
   selector: 'app-draft-room',
   standalone: true,
-  imports: [CharacterSheetComponent, ShopComponent],
+  imports: [CharacterSheetComponent, ShopComponent, DraftMenuComponent],
   templateUrl: './draft-room.component.html',
   styleUrl: './draft-room.component.css'
 })

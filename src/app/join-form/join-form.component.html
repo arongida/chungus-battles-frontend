@@ -5,7 +5,8 @@
     <div class="text-xl mt-8">For the chungus!</div>
   </header>
 
-  <div class="flex flex-col gap-8">
+  <div class="flex flex-col gap-8" (keyup.enter)="draftService.joinOrCreate(nameControl.value!)">
+    
     <mat-form-field class="m-4">
       <mat-label>Name</mat-label>
       <input matInput [formControl]="nameControl">

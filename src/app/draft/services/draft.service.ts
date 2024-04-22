@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import * as Colyseus from 'colyseus.js'
 import { environment } from '../../../environments/environment';
 import { Router } from '@angular/router';
-//import { Player } from '../../models/player';
-import { DraftState, Player } from '../../models/colyseus-schema/DraftState';
+import { DraftState } from '../../models/colyseus-schema/DraftState';
+import { Player } from '../../models/colyseus-schema/PlayerSchema';
 
 @Injectable({
   providedIn: 'root'
@@ -24,7 +24,8 @@ export class DraftService {
 
   public async joinOrCreate(name: string) {
     try {
-      this.playerId = Math.floor(Math.random() * 1000);
+      const { playerId } = await fetch(environment.expressServer + '/playerId').then(res => res.json()).catch(e => console.error(e));
+      this.playerId = playerId;
       this.room = await this.client.joinOrCreate("draft_room", {
         name: name,
         playerId: this.playerId

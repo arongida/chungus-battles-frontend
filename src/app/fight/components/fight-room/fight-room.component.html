@@ -1,1 +1,17 @@
-<p>fight-room works!</p>
+<div class="flex flex-row">
+
+  <div id="character" class="flex basis-1/3 p-6 justify-center items-center">
+
+      <app-character-sheet class="min-w-fit max-w-fit" [player]="player!"></app-character-sheet>
+
+
+  </div>
+
+  <div class="flex grow">combat logs</div>
+
+  <div id="enemy" class="flex basis-1/3 p-6 justify-center items-center ">
+    <app-character-sheet class="min-w-fit max-w-fit" [player]="enemy!"></app-character-sheet>
+  </div>
+
+
+</div>

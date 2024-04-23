@@ -1,17 +1,24 @@
 <div class="flex flex-row">
 
+
+
+  @if (player){
   <div id="character" class="flex basis-1/3 p-6 justify-center items-center">
+    <app-character-sheet [combat]="true" class="min-w-fit max-w-fit" [player]="player"></app-character-sheet>
+  </div>
+  }
 
-      <app-character-sheet class="min-w-fit max-w-fit" [player]="player!"></app-character-sheet>
 
 
+  <div class="flex grow">
+    <app-combat-log></app-combat-log>
   </div>
 
-  <div class="flex grow">combat logs</div>
-
+  @if (enemy) {
   <div id="enemy" class="flex basis-1/3 p-6 justify-center items-center ">
-    <app-character-sheet class="min-w-fit max-w-fit" [player]="enemy!"></app-character-sheet>
+    <app-character-sheet [combat]="true" class="min-w-fit max-w-fit" [player]="enemy!"></app-character-sheet>
   </div>
+  }
 
 
 </div>

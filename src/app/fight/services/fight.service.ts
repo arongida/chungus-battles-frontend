@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import * as Colyseus from 'colyseus.js'
 import { environment } from '../../../environments/environment';
 import { Router } from '@angular/router';
@@ -10,8 +10,9 @@ import { FightState } from '../../models/colyseus-schema/FightState';
 export class FightService {
   client: Colyseus.Client;
   playerId: number = 0;
-  room: Colyseus.Room<FightState> | undefined;
-  
+  //room: Colyseus.Room<FightState> | undefined;
+  room = signal<Colyseus.Room<FightState> | null>(null);
+
   static isLocalStorageAvailable = typeof localStorage !== 'undefined';
 
   constructor(private router: Router) {
@@ -22,24 +23,31 @@ export class FightService {
 
   public async joinOrCreate(playerId: number) {
     try {
-      this.room = await this.client.joinOrCreate("fight_room", {
+      this.room.set(await this.client.joinOrCreate("fight_room", {
         playerId: playerId
-      });
+      }));
 
-      this.room.onMessage("*", (type, message) => {
-        console.log("message: ", type, message);
-      });
+      //this.roomSignal.set(this.room);
 
-      console.log("joined successfully", this.room);
+      // this.room.onMessage("*", (type, message) => {
+      //   console.log("message: ", type, message);
+      // });
 
-      if (FightService.isLocalStorageAvailable) {
-        localStorage.setItem('sessionId', this.room.sessionId);
+      const room = this.room();
+      console.log("joined", room);
+
+      if (FightService.isLocalStorageAvailable && room) {
+
+
+        localStorage.setItem('sessionId', room.sessionId);
         localStorage.setItem('playerId', this.playerId.toString());
-        localStorage.setItem('roomId', this.room.roomId);
-        localStorage.setItem('reconnectToken', this.room.reconnectionToken);
+        localStorage.setItem('roomId', room.roomId);
+        localStorage.setItem('reconnectToken', room.reconnectionToken);
+
+
       }
 
-      this.router.navigate(['/fight', this.room.sessionId]);
+      this.router.navigate(['/fight', room!.sessionId]);
 
     } catch (e) {
       console.error("join error", e);
@@ -50,21 +58,24 @@ export class FightService {
     try {
 
 
-      this.room = await this.client.reconnect(reconnectionToken);
+      this.room.set(await this.client.reconnect(reconnectionToken));
 
-      this.room.onMessage("*", (type, message) => {
-        console.log("message: ", type, message);
-      });
+      
+      const room = this.room();
 
-      console.log("reconnected", this.room);
+      // this.room.onMessage("*", (type, message) => {
+      //   console.log("message: ", type, message);
+      // });
 
-      if (FightService.isLocalStorageAvailable) {
-        localStorage.setItem('sessionId', this.room.sessionId);
-        localStorage.setItem('roomId', this.room.roomId);
-        localStorage.setItem('reconnectToken', this.room.reconnectionToken);
+      console.log("reconnected", room);
+
+      if (FightService.isLocalStorageAvailable && room) {
+        localStorage.setItem('sessionId', room.sessionId);
+        localStorage.setItem('roomId', room.roomId);
+        localStorage.setItem('reconnectToken', room.reconnectionToken);
       }
 
-      this.router.navigate(['/fight', this.room.sessionId]);
+      this.router.navigate(['/fight', room!.sessionId]);
     } catch (e) {
       console.error("reconnect error", e);
       this.router.navigate(['/']);
@@ -73,17 +84,19 @@ export class FightService {
   }
 
   public async sendMessage(type: string, message: {}) {
-    if (this.room) {
-      this.room.send(type, message);
+    const room = this.room();
+    if (room) {
+      room.send(type, message);
     }
   }
 
 
   public async leave(redirectToHome = true) {
-    if (this.room) {
-      this.room.leave();
-      this.room.removeAllListeners();
-      this.room = undefined;
+    const room = this.room();
+    if (room) {
+      room.leave();
+      room.removeAllListeners();
+      this.room.set(null);
       if (FightService.isLocalStorageAvailable) {
         localStorage.removeItem('sessionId');
         localStorage.removeItem('roomId');

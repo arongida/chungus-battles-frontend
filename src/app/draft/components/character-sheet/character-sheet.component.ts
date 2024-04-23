@@ -23,4 +23,5 @@ export class CharacterSheetComponent {
     this.player = {} as Player;
   }
   @Input({ required: true }) player: Player;
+  @Input({ required: false }) combat: boolean = false;
 }

@@ -9,8 +9,6 @@ import { FightState } from '../../models/colyseus-schema/FightState';
 })
 export class FightService {
   client: Colyseus.Client;
-  playerId: number = 0;
-  //room: Colyseus.Room<FightState> | undefined;
   room = signal<Colyseus.Room<FightState> | null>(null);
 
   static isLocalStorageAvailable = typeof localStorage !== 'undefined';
@@ -40,7 +38,6 @@ export class FightService {
 
 
         localStorage.setItem('sessionId', room.sessionId);
-        localStorage.setItem('playerId', this.playerId.toString());
         localStorage.setItem('roomId', room.roomId);
         localStorage.setItem('reconnectToken', room.reconnectionToken);
 

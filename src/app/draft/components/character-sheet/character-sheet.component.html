@@ -47,6 +47,24 @@
     </div>
     <mat-divider></mat-divider>
 
+    <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm">
+      <div>Lives left:</div>
+      <div>{{getLivesString()}}</div>
+    </div>
+    <mat-divider></mat-divider>
+
+    <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm">
+      <div>Wins (so far):</div>
+      <div>{{player.wins}}</div>
+    </div>
+    <mat-divider></mat-divider>
+
+    <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm">
+      <div>Talents:</div>
+      <div>{{getTalentsString()}}</div>
+    </div>
+    <mat-divider></mat-divider>
+
     @if (!combat) {
     <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm">
       <label for="xp" class="">XP:</label>
@@ -54,7 +72,7 @@
     </div>
 
     <mat-progress-bar id="xp" mode="determinate" value="{{(player.xp  / player.maxXp) * 100}}"></mat-progress-bar>
-    <button class="m-4" mat-raised-button color="primary" (click)="draftService.sendMessage('buyXp', {})">
+    <button class="m-4" mat-raised-button color="primary" (click)="draftService.sendMessage('buy_xp', {})">
       XP
     </button>
     }

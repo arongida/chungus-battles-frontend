@@ -13,8 +13,9 @@ export class DraftMenuComponent {
   constructor(private draftService: DraftService, private fightService: FightService) { }
 
   public startFight() {
+    const playerId = localStorage.getItem('playerId');
+    if (!playerId) return;
     this.draftService.leave(false);
-    const playerId = this.draftService.playerId;
-    this.fightService.joinOrCreate(playerId);
+    this.fightService.joinOrCreate(parseInt(playerId));
   }
 }

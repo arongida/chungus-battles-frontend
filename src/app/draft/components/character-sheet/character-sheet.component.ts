@@ -19,9 +19,29 @@ import { MatDividerModule } from '@angular/material/divider';
 })
 export class CharacterSheetComponent {
 
+  talentsString: string;
+
   constructor(public draftService: DraftService) {
     this.player = {} as Player;
+    this.talentsString = "";
+
   }
   @Input({ required: true }) player: Player;
   @Input({ required: false }) combat: boolean = false;
+
+  getLivesString(): string {
+    let lives = "";
+    for (let i = 0; i < this.player.lives; i++) {
+      lives += "♥️ ";
+    }
+    return lives;
+  }
+
+  getTalentsString(): string {
+    let talentsString = "";
+    for (let i = 0; i < this.player.talents.length; i++) {
+      talentsString += this.player.talents[i].name + " ";
+    }
+    return talentsString;
+  }
 }

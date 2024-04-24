@@ -1,4 +1,5 @@
-import { Schema, type } from "@colyseus/schema";
+import { Schema, type, ArraySchema } from "@colyseus/schema";
+import { Talent } from "./TalentSchema";
 
 export class Player extends Schema {
   @type("number") playerId: number = 0;
@@ -13,4 +14,7 @@ export class Player extends Schema {
   @type("number") attackSpeed: number = 0;
   @type("number") maxXp: number = 0;
   @type("number") round: number = 1;
+  @type("number") lives: number = 3;
+  @type("number") wins: number = 0;
+  @type([Talent]) talents: ArraySchema<Talent> = new ArraySchema<Talent>();
 }

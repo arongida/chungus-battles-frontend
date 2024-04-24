@@ -1,5 +1,5 @@
 import { Component, Input} from '@angular/core';
-import { Item } from '../../../models/item';
+import { Item } from '../../../models/colyseus-schema/ItemSchema';
 import { MatCardModule } from '@angular/material/card';
 import { DraftService } from '../../services/draft.service';
 import { NgFor } from '@angular/common';

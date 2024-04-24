@@ -13,7 +13,7 @@ export class DraftService {
   playerId: number = 0;
   room: Colyseus.Room<DraftState> | undefined;
   player: Player | undefined;
-  
+
   static isLocalStorageAvailable = typeof localStorage !== 'undefined';
 
   constructor(private router: Router) {
@@ -22,10 +22,14 @@ export class DraftService {
     console.log("gameserver: ", this.client);
   }
 
-  public async joinOrCreate(name: string) {
+  public async joinOrCreate(name?: string, playerId?: number) {
     try {
-      const { playerId } = await fetch(environment.expressServer + '/playerId').then(res => res.json()).catch(e => console.error(e));
-      this.playerId = playerId;
+
+      if (!this.playerId) {
+        const { playerId } = await fetch(environment.expressServer + '/playerId').then(res => res.json()).catch(e => console.error(e));
+        this.playerId = playerId;
+      }
+
       this.room = await this.client.joinOrCreate("draft_room", {
         name: name,
         playerId: this.playerId

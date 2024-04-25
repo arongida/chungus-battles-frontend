@@ -16,5 +16,5 @@ export class Player extends Schema {
   @type("number") round: number = 1;
   @type("number") lives: number = 3;
   @type("number") wins: number = 0;
-  @type([Talent]) talents: ArraySchema<Talent> = new ArraySchema<Talent>();
+  @type(["number"]) talentIds: ArraySchema<number> = new ArraySchema<number>();
 }

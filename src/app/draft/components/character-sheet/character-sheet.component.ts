@@ -39,8 +39,10 @@ export class CharacterSheetComponent {
 
   getTalentsString(): string {
     let talentsString = "";
-    for (let i = 0; i < this.player.talents.length; i++) {
-      talentsString += this.player.talents[i].name + " ";
+    if (this.player.talents) {
+      for (let i = 0; i < this.player.talents.length; i++) {
+        talentsString += this.player.talents[i].name + " ";
+      }
     }
     return talentsString;
   }

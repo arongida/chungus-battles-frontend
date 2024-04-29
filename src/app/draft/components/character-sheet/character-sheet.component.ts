@@ -9,11 +9,12 @@ import { NgIf } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { DecimalPipe } from '@angular/common';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-character-sheet',
   standalone: true,
-  imports: [MatCardModule, MatButtonModule, MatProgressBarModule, NgIf, MatIconModule, DecimalPipe, MatDividerModule],
+  imports: [MatCardModule, MatButtonModule, MatProgressBarModule, NgIf, MatIconModule, DecimalPipe, MatDividerModule, MatTooltipModule],
   templateUrl: './character-sheet.component.html',
   styleUrl: './character-sheet.component.css'
 })

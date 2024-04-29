@@ -7,4 +7,5 @@ export class Item extends Schema {
   @type("number") price: number = 0;
   @type("string") affectedStat: string = '';
   @type("number") affectedValue: number = 0;
+  @type("number") levelRequirement: number = 0;
 }

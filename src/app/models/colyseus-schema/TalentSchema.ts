@@ -6,4 +6,6 @@ export class Talent extends Schema {
   @type("string") description: string = '';
   @type("number") levelRequirement: number = 0;
   @type("string") class: string = '';
+  @type("number") level: number = 1;
+  @type("number") activationRate: number = 0.5;
 }

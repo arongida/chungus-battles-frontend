@@ -28,7 +28,7 @@
 
     <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm">
       <div>Defense:</div>
-      <div>{{player.defense}}</div>
+      <div>{{player.defense}}%</div>
     </div>
     <mat-divider></mat-divider>
 
@@ -59,11 +59,7 @@
     </div>
     <mat-divider></mat-divider>
 
-    <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm">
-      <div>Talents:</div>
-      <div>{{getTalentsString()}}</div>
-    </div>
-    <mat-divider></mat-divider>
+
 
     @if (!combat) {
     <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm">
@@ -72,12 +68,30 @@
     </div>
 
     <mat-progress-bar id="xp" mode="determinate" value="{{(player.xp  / player.maxXp) * 100}}"></mat-progress-bar>
-    <button #tooltip="matTooltip"
-    matTooltip="4 gold"
-    matTooltipHideDelay="1000" class="m-4" mat-raised-button color="primary" (click)="draftService.sendMessage('buy_xp', {})">
-      XP
-    </button>
+    <div class="flex justify-center">
+      <button #tooltip="matTooltip" matTooltip="4 gold" matTooltipHideDelay="1000" matTooltipPosition="right" class="m-4" mat-raised-button
+        color="primary" (click)="draftService.sendMessage('buy_xp', {})">
+        XP
+      </button>
+    </div>
     }
+
+    <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm">
+      <mat-expansion-panel class="min-w-full" hideToggle>
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            Talents
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <ul>
+          @for (talent of player.talents; track $index) {
+            <li class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm" #tooltip="matTooltip" matTooltip="{{talent.description}}" matTooltipPosition="right" >
+              <div >{{talent.name}}</div>
+            </li>
+          }
+        </ul>
+      </mat-expansion-panel>
+    </div>
 
 
   </mat-card-content>

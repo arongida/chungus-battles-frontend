@@ -1,11 +1,11 @@
-import { Component, Input} from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Item } from '../../../models/colyseus-schema/ItemSchema';
 import { MatCardModule } from '@angular/material/card';
 import { DraftService } from '../../services/draft.service';
 import { NgFor } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button'
 import { SlicePipe } from '@angular/common';
-import { MatTooltipModule} from '@angular/material/tooltip';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-shop',
@@ -23,12 +23,12 @@ export class ShopComponent {
   @Input({ required: true }) shop: Item[];
 
   toggleBuyButton(elId: string) {
-    let el = document.getElementById("buy-"+elId);
-    if (el) {
-      if (el.style.display === "none") {
-        el.style.display = "block";
+    let buyButton = document.getElementById("buy-" + elId);
+    if (buyButton) {
+      if (buyButton.style.display === "none") {
+        buyButton.style.display = "block";
       } else {
-        el.style.display = "none";
+        buyButton.style.display = "none";
       }
     }
   }

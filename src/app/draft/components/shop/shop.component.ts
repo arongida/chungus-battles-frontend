@@ -21,4 +21,15 @@ export class ShopComponent {
   }
 
   @Input({ required: true }) shop: Item[];
+
+  toggleBuyButton(elId: string) {
+    let el = document.getElementById("buy-"+elId);
+    if (el) {
+      if (el.style.display === "none") {
+        el.style.display = "block";
+      } else {
+        el.style.display = "none";
+      }
+    }
+  }
 }

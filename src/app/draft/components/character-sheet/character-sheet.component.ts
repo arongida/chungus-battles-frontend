@@ -20,14 +20,19 @@ import { MatExpansionModule } from '@angular/material/expansion';
   styleUrl: './character-sheet.component.css'
 })
 export class CharacterSheetComponent {
+  startingHP: number = 100;
 
   constructor(public draftService: DraftService) {
     this.player = {} as Player;
-
   }
+
   @Input({ required: true }) player: Player;
   @Input({ required: false }) combat: boolean = false;
 
+
+  ngOnInit() {
+    this.startingHP = this.player.hp;
+  }
 
   getLivesString(): string {
     let lives = "";

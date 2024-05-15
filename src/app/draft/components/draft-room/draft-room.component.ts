@@ -8,11 +8,13 @@ import { ShopComponent } from '../shop/shop.component';
 import { DraftMenuComponent } from '../draft-menu/draft-menu.component';
 import { TalentsComponent } from '../talents/talents.component';
 import { Talent } from '../../../models/colyseus-schema/TalentSchema';
+import { MatTooltip } from '@angular/material/tooltip';
+import { MatButton } from '@angular/material/button';
 
 @Component({
   selector: 'app-draft-room',
   standalone: true,
-  imports: [CharacterSheetComponent, ShopComponent, DraftMenuComponent, TalentsComponent],
+  imports: [CharacterSheetComponent, ShopComponent, DraftMenuComponent, TalentsComponent, MatTooltip, MatButton],
   templateUrl: './draft-room.component.html',
   styleUrl: './draft-room.component.css'
 })

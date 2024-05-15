@@ -10,25 +10,29 @@ import { MatIconModule } from '@angular/material/icon';
 import { DecimalPipe } from '@angular/common';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatExpansionModule } from '@angular/material/expansion';
 
 @Component({
   selector: 'app-character-sheet',
   standalone: true,
-  imports: [MatCardModule, MatButtonModule, MatProgressBarModule, NgIf, MatIconModule, DecimalPipe, MatDividerModule, MatTooltipModule],
+  imports: [MatCardModule, MatButtonModule, MatProgressBarModule, NgIf, MatIconModule, DecimalPipe, MatDividerModule, MatTooltipModule, MatExpansionModule],
   templateUrl: './character-sheet.component.html',
   styleUrl: './character-sheet.component.css'
 })
 export class CharacterSheetComponent {
-
-  talentsString: string;
+  startingHP: number = 100;
 
   constructor(public draftService: DraftService) {
     this.player = {} as Player;
-    this.talentsString = "";
-
   }
+
   @Input({ required: true }) player: Player;
   @Input({ required: false }) combat: boolean = false;
+
+
+  ngOnInit() {
+    this.startingHP = this.player.hp;
+  }
 
   getLivesString(): string {
     let lives = "";
@@ -38,13 +42,4 @@ export class CharacterSheetComponent {
     return lives;
   }
 
-  getTalentsString(): string {
-    let talentsString = "";
-    if (this.player.talents) {
-      for (let i = 0; i < this.player.talents.length; i++) {
-        talentsString += this.player.talents[i].name + " (lv " + this.player.talents[i].level + ") ";
-      }
-    }
-    return talentsString;
-  }
 }

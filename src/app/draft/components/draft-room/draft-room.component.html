@@ -1,22 +1,39 @@
 <div class="flex flex-row">
 
-  <div id="character" class="flex basis-1/3 p-6 justify-center items-center">
+  <div id="character" class="flex basis-1/5 p-6 justify-center items-center">
 
-      <app-character-sheet class="min-w-fit max-w-fit" [player]="player!"></app-character-sheet>
+    <app-character-sheet class="min-w-fit max-w-fit" [player]="player!"></app-character-sheet>
 
 
   </div>
 
-  <div id="shop" class="basis-1/3 items-center p-6">
+  <div id="shop" class="basis-3/5 items-center flex justify-center p-6">
     <app-shop [shop]="shop!"></app-shop>
   </div>
 
-  <div id="talents" class="basis-1/3 justify-center content-center text-center p-6 ">
+  <div id="talents" class="basis-1/5 justify-center content-center text-center p-6 ">
     <app-talents [talents]="availableTalents!"></app-talents>
   </div>
 
 </div>
 
-<h2 class="fixed bottom-0 left-0 m-7 p-7">ROUND: {{player?.round}}</h2>
 
-<app-draft-menu></app-draft-menu>
+
+
+
+
+<div class="flex items-baseline justify-between">
+  
+  
+  <h2 class="m-7 p-7">ROUND: {{player?.round}}</h2>
+  
+  <button #tooltip="matTooltip" matTooltip="2 gold" matTooltipHideDelay="1000"
+    mat-raised-button matTooltipPosition="right" color="primary" class="fixed bottom-0 m-7 p-7"
+    (click)="draftService.sendMessage('refresh_shop',{})">
+    Refresh shop
+  </button>
+
+
+  <app-draft-menu class=""></app-draft-menu>
+
+</div>

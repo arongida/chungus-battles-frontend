@@ -39,9 +39,13 @@ export class ShopComponent {
     Health: ${item.affectedStats.hp} 
     Attack Speed: ${item.affectedStats.attackSpeed} 
     Level: ${item.levelRequirement} 
-    
+
     Description: ${item.description}`;
     return tooltip;
+  }
+
+  getItemImage(item: Item): string {
+    return item.image ? item.image : 'https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_21_Cloak_of_Invisibility.png';
   }
 
 }

@@ -13,12 +13,9 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: 18
-      - name: Install Dependencies
-        run: npm install
-      - name: Build
-        run: npm run build
-      - name: Deploy to gh pages
-        run: npx angular-cli-ghpages --dir=dist/chungus-battles-frontend
+      - name: Prepare and deploy
         env:
-          CI: true
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          npm install
+          npm run ng -- deploy --base-href=/chungus-battles-frontend/ --name="arongida" --email=arkheonos@gmail.com

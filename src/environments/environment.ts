@@ -1,4 +1,4 @@
 export const environment = {
-  gameServer: '',
-  expressServer: ''
+  gameServer: 'wss://chungus-battles-backend.fly.dev',
+  expressServer: 'https://chungus-battles-backend.fly.dev'
 };

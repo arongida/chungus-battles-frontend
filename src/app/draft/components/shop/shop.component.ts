@@ -31,4 +31,17 @@ export class ShopComponent {
       }
     }
   }
+
+  getTooltip(item: Item): string {
+    const tooltip = `Cost: ${item.price} 
+    Attack: ${item.affectedStats.attack} 
+    Defense: ${item.affectedStats.defense} 
+    Health: ${item.affectedStats.hp} 
+    Attack Speed: ${item.affectedStats.attackSpeed} 
+    Level: ${item.levelRequirement} 
+    
+    Description: ${item.description}`;
+    return tooltip;
+  }
+
 }

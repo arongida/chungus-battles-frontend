@@ -15,4 +15,5 @@ export class Item extends Schema {
   @type("string") affectedStat: string = '';
   @type(AffectedStats) affectedStats: AffectedStats = new AffectedStats();
   @type("number") levelRequirement: number = 0;
+  @type("string") image: string = '';
 }

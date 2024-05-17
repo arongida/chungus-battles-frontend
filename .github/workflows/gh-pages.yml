@@ -34,7 +34,7 @@ jobs:
           body: ${{ steps.changelog.outputs.clean_changelog }}
       - name: Deploy to gh pages
         run: |
-          npx angular-cli-ghpages --dir=dist/chungus-battles-frontend
+          npx angular-cli-ghpages --base-href=/chungus-battles-frontend/
         env:
           CI: true
           GH_TOKEN: ${{ secrets.GH_TOKEN }}

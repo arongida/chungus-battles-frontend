@@ -1,7 +1,7 @@
 @if (shop.length > 0) {
 <div id="shop" class="grid-cols-3 grid-rows-2 gap-5 grid max-w-fit bg-slate-600 rounded-md p-4">
   @for (item of shop; track $index) {
-  <mat-card style="background-image: url({{item.image}});" #tooltip="matTooltip" [matTooltip]="getTooltip(item)"
+  <mat-card [style.background-image]="'url(' + getItemImage(item) + ')'" #tooltip="matTooltip" [matTooltip]="getTooltip(item)"
     matTooltipClass="item-tooltip" matTooltipPosition="right" id="item-{{$index}}"
     class="m-2 w-60 h-80 items-center flex flex-col justify-between" (click)="toggleBuyButton($index.toString())">
     <mat-card-header class="mb-5">

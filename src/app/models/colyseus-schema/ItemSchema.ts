@@ -16,4 +16,6 @@ export class Item extends Schema {
   @type(AffectedStats) affectedStats: AffectedStats = new AffectedStats();
   @type("number") levelRequirement: number = 0;
   @type("string") image: string = '';
+  @type("boolean") showDetails?: boolean = false;
+  @type("string") imageCache?: string = '';
 }

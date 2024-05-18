@@ -21,31 +21,15 @@ export class ShopComponent {
 
   @Input({ required: true }) shop: Item[];
 
-  toggleBuyButton(elId: string) {
-    let buyButton = document.getElementById("buy-" + elId);
-    if (buyButton) {
-      if (buyButton.style.display === "none") {
-        buyButton.style.display = "block";
-      } else {
-        buyButton.style.display = "none";
-      }
-    }
+  onMouseEnter(item: Item) {
+    item.showDetails = true;
+    item.imageCache = item.image;
+    item.image = 'https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_0_Empty.png';
   }
 
-  getTooltip(item: Item): string {
-    const tooltip = `Cost: ${item.price} 
-    Attack: ${item.affectedStats.attack} 
-    Defense: ${item.affectedStats.defense} 
-    Health: ${item.affectedStats.hp} 
-    Attack Speed: ${item.affectedStats.attackSpeed} 
-    Level: ${item.levelRequirement} 
-
-    Description: ${item.description}`;
-    return tooltip;
-  }
-
-  getItemImage(item: Item): string {
-    return item.image ? item.image : 'https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_21_Cloak_of_Invisibility.png';
+  onMouseLeave(item: Item) {
+    item.showDetails = false;
+    item.image = item.imageCache!;
   }
 
 }

@@ -21,15 +21,20 @@ export class ShopComponent {
 
   @Input({ required: true }) shop: Item[];
 
-  onMouseEnter(item: Item) {
+  onMouseEnterItem(item: Item) {
     item.showDetails = true;
     item.imageCache = item.image;
-    item.image = 'https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_0_Empty.png';
+    // item.image = 'https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_0_Empty.png';
+    item.image = 'https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_00_Empty_Orange.png';
   }
 
-  onMouseLeave(item: Item) {
+  onMouseLeaveItem(item: Item) {
     item.showDetails = false;
     item.image = item.imageCache!;
+  }
+
+  getItemImage(item: Item) {
+    return item.image ? item.image : 'https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_0_Empty.png';
   }
 
 }

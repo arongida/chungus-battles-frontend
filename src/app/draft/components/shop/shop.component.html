@@ -2,7 +2,7 @@
 <div id="shop" class="grid-cols-3 grid-rows-2 gap-5 grid max-w-fit bg-slate-600 rounded-md p-4">
   @for (item of shop; track $index) {
   <mat-card [style.background-image]="'url('+getItemImage(item)+')'" id="item-{{$index}}"
-    class="m-2 w-60 h-80 items-center flex flex-col justify-between rounded-lg shadow-lg transform transition-transform hover:scale-105"
+    class="m-2 w-60 h-80 items-center rounded-lg shadow-lg transform transition-transform hover:scale-105"
     (mouseenter)="onMouseEnterItem(item)" (mouseleave)="onMouseLeaveItem(item)">
 
     <mat-card-header class="mb-5">
@@ -10,7 +10,7 @@
     </mat-card-header>
 
     @if(item.showDetails) {
-    <mat-card-content class="flex flex-col justify-between text-center text-white p-4 rounded-b-lg">
+    <mat-card-content class="flex flex-col flex-1 text-center text-white p-4 rounded-b-lg content-evenly">
       <div class="mb-2">
         <p class="font-semibold">Price: <span class="text-yellow-300">{{item.price}} 🪙</span></p>
       </div>
@@ -24,19 +24,19 @@
         <p #tooltip="matTooltip" matTooltip="Health modifier" matTooltipPosition="right">Health: <span
             class="text-pink-500">{{item.affectedStats.hp}} ❤️</span></p>
       </div>
-      <div class="ml-2 mr-2 flex-1">
+      <div class="ml-2 mr-2">
         <p class="font-thin text-sm">{{item.description}}</p>
       </div>
     </mat-card-content>
-    <mat-card-footer class="mb-2 rounded-t-lg text-white">
-      <mat-card-actions class="mt-5 text-lg font-bold text-center">
+    <mat-card-footer class="flex justify-center">
+      <div class="mt-auto">
         <button id="buy-{{$index}}" mat-raised-button color="warn"
           (click)="draftService.sendMessage('buy', {itemId: item.itemId})">
           Buy
         </button>
-      </mat-card-actions>
+      </div>
     </mat-card-footer>
-    }
+      }
   </mat-card>
   }
 </div>

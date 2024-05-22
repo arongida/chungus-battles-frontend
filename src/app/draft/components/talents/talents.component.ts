@@ -21,4 +21,19 @@ export class TalentsComponent {
   }
 
   @Input({ required: true }) talents: Talent[];
+
+  getTalentImage(talent: Talent) {
+    return talent.image ? talent.image : 'https://chungus-battles.b-cdn.net/chungus-battles-assets/Talent_ID_0_Empty.png';
+  }
+
+  onMouseEnterTalent(talent: Talent) {
+    talent.showDetails = true;
+    talent.imageCache = talent.image;
+    talent.image = 'https://chungus-battles.b-cdn.net/chungus-battles-assets/Talent_ID_00_Empty_Orange.png';
+  }
+
+  onMouseLeaveTalent(talent: Talent) {
+    talent.showDetails = false;
+    talent.image = talent.imageCache!;
+  }
 }

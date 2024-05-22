@@ -8,4 +8,7 @@ export class Talent extends Schema {
   @type("string") class: string = '';
   @type("number") level: number = 1;
   @type("number") activationRate: number = 0.5;
+  @type("string") image?: string = '';
+  @type("boolean") showDetails?: boolean = false;
+  @type("string") imageCache?: string = '';
 }

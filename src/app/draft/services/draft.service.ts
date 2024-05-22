@@ -25,10 +25,12 @@ export class DraftService {
   public async joinOrCreate(name?: string, playerId?: number) {
     try {
 
+      this.playerId = playerId || this.playerId;
       if (!this.playerId) {
         const { playerId } = await fetch(environment.expressServer + '/playerId').then(res => res.json()).catch(e => console.error(e));
         this.playerId = playerId;
       }
+
 
       this.room = await this.client.joinOrCreate("draft_room", {
         name: name,
@@ -49,6 +51,7 @@ export class DraftService {
       }
 
       this.router.navigate(['/draft', this.room.sessionId]);
+
 
     } catch (e) {
       console.error("join error", e);

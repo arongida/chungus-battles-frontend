@@ -1,7 +1,7 @@
 @if (talents.length > 0) {
 <div id="talents" class="grid-cols-1 grid-rows-2 grid max-w-fit bg-yellow-900 rounded-md p-4"
   [style.background-image]="'url(https://chungus-battles.b-cdn.net/chungus-battles-assets/Talent_ID_0_Empty.png)'"
-  [style.background-size]="'cover'" [style.background-position]="'center'">
+  [style.background-size]="'100% 100%'" [style.background-position]="'center'">
   @for (talent of talents; track $index) {
   <mat-card
     class="m-3 w-80 h-60 items-center rounded-lg shadow-lg transform transition-transform scale-75 hover:scale-90"

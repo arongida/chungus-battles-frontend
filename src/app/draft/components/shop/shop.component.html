@@ -1,6 +1,6 @@
 @if (shop.length > 0) {
 <div id="shop" class="grid-cols-3 grid-rows-2 gap-1 grid max-w-fit bg-cover bg-center p-4"
-  [style.background-image]="'url(https://chungus-battles.b-cdn.net/chungus-battles-assets/Chungus_table_backdrop_01.png)'">
+  [style.background-image]="'url(https://chungus-battles.b-cdn.net/chungus-battles-assets/Chungus_table_01.png)'">
   @for (item of shop; track $index) {
   <mat-card [style.background-image]="'url('+getItemImage(item)+')'" id="item-{{$index}}"
     class="w-60 h-80 items-center rounded-lg shadow-lg transform transition-transform scale-75 hover:scale-90"

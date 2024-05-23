@@ -43,4 +43,18 @@ export class DraftRoomComponent implements OnInit {
       console.log("shop state", this.shop);
     });
   }
+
+  getLivesString(): string {
+    let lives = "";
+    if (this.player) {
+      for (let i = 0; i < this.player.lives; i++) {
+        lives += "❤️ ";
+      }
+    }
+    return lives;
+  }
+
+  getPlayerWins(): number {
+    return this.player?.wins || 0;
+  }
 }

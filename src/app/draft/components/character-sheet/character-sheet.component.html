@@ -1,100 +1,110 @@
-<mat-card class="max-w-fit">
-  <mat-card-header>
-    <div mat-card-avatar class="example-header-image">
-      <img src="https://chungus-battles.b-cdn.net/chungus-battles-assets/Bigchungusicon.webp" alt="Character Image">
-    </div>
-    <mat-card-title>Name: {{player ? player.name : ""}}</mat-card-title>
-    <mat-card-subtitle>ID: {{player.playerId}}</mat-card-subtitle>
-  </mat-card-header>
-  <mat-card-content>
+<div id="player-section" class="grid grid-cols-2 grid-rows-2 gap-5 p-5">
 
-    <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm">
-      <div>Level:</div>
-      <div>{{player.level}}</div>
-    </div>
-    <mat-divider></mat-divider>
+  <!-- Stats Section -->
+  <div id="stats" class="bg-center bg-cover w-48 h-64 flex flex-col items-center justify-evenly bg-gray-800 p-4"
+    style="background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_0_Empty.png');">
+    <h3 class="text-white text-lg mb-4">Stats</h3>
+    <div class="w-full rounded-md">
 
-    <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm">
-      <div>HP:</div>
-      <div>{{player.hp}}</div>
-    </div>
-    @if (combat) { <mat-progress-bar id="hp" mode="determinate" value="{{(player.hp  / startingHP) * 100}}"></mat-progress-bar> }
-    <mat-divider></mat-divider>
+      <div class="text-xs">
 
-    <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm">
-      <div>Attack:</div>
-      <div>{{player.attack}}</div>
-    </div>
-    <mat-divider></mat-divider>
+        <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm">
+          <div>Health:</div>
+          <div class="text-pink-500">{{player.hp}} ❤️</div>
+        </div>
 
-    <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm">
-      <div>Defense:</div>
-      <div>{{player.defense}}%</div>
+        @if (combat) {
+        <mat-progress-bar id="hp" mode="determinate" value="{{(player.hp / startingHP) * 100}}"></mat-progress-bar>
+        }
+        <mat-divider></mat-divider>
+
+        <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm">
+          <div>Attack:</div>
+          <div class="text-red-500">{{player.attack}} ⚔️</div>
+        </div>
+        <mat-divider></mat-divider>
+
+        <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm">
+          <div>Defense:</div>
+          <div class="text-green-500">{{player.defense}}% 🛡️</div>
+        </div>
+        <mat-divider></mat-divider>
+
+        <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm">
+          <div>Attack Speed:</div>
+          <div class="text-blue-500">{{player.attackSpeed | number : '1.2-2'}} ⏩</div>
+        </div>
+
+      </div>
     </div>
-    <mat-divider></mat-divider>
 
     @if (!combat) {
-    <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm">
-      <div>Gold:</div>
-      <div>{{player.gold}}</div>
-    </div>
-    <mat-divider></mat-divider>
-    }
-
-
-    <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm">
-      <div>Attack Speed:</div>
-      <div>{{player.attackSpeed | number : '1.2-2'}}</div>
-    </div>
-    <mat-divider></mat-divider>
-
-    <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm">
-      <div>Lives left:</div>
-      <div>{{getLivesString()}}</div>
-    </div>
-    <mat-divider></mat-divider>
-
-    <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm">
-      <div>Wins (so far):</div>
-      <div>{{player.wins}}</div>
-    </div>
-    <mat-divider></mat-divider>
-
-
-
-    @if (!combat) {
-    <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm">
-      <label for="xp" class="">XP:</label>
-      <label for="xp">({{player.xp}} / {{player.maxXp}})</label>
-    </div>
-
-    <mat-progress-bar id="xp" mode="determinate" value="{{(player.xp  / player.maxXp) * 100}}"></mat-progress-bar>
-    <div class="flex justify-center">
-      <button #tooltip="matTooltip" matTooltip="4 gold" matTooltipHideDelay="1000" matTooltipPosition="right"
-        class="m-4" mat-raised-button color="primary" (click)="draftService.sendMessage('buy_xp', {})">
-        XP
-      </button>
+    <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm font-semibold">
+      <div>Gold: </div>
+      <div class="text-yellow-300 ml-2">{{player.gold}} 🪙</div>
     </div>
     }
 
-    <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm">
-      <mat-expansion-panel class="min-w-full" hideToggle>
-        <mat-expansion-panel-header>
-          <mat-panel-title>
-            Talents
-          </mat-panel-title>
-        </mat-expansion-panel-header>
-        <ul>
-          @for (talent of player.talents; track $index) {
-          <li class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm" #tooltip="matTooltip"
-            matTooltip="{{talent.description}}" matTooltipPosition="right">
-            <div>{{talent.name}}</div>
-          </li>
-          }
-        </ul>
-      </mat-expansion-panel>
+  </div>
+
+
+  <!-- Avatar Section -->
+  <div id="avatar" class="bg-cover bg-center w-48 h-64 flex flex-col-reverse items-center bg-gray-800 p-4 shadow-lg"
+    style="background-image: url('{{getAvatarImage()}}');" (mouseenter)="onAvatarMouseEnter()"
+    (mouseleave)="onAvatarMouseLeave()">
+    <div class="relative w-full rounded-md">
+      <div class="w-full text-center text-white bg-black bg-opacity-40 py-1">
+        {{player ? player.name : "Avatar Name"}} <br>
+        Level: {{player.level}}
+      </div>
     </div>
+    <div class="w-full text-white mt-4">
 
+      @if (!combat && showExperience) {
+      <h4 class="text-center">Level up for gold:</h4>
+      <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm">
+        <label for="xp" class="">XP:</label>
+        <label for="xp">({{player.xp}} / {{player.maxXp}})</label>
+      </div>
+      <mat-progress-bar id="xp" mode="determinate" value="{{(player.xp / player.maxXp) * 100}}"></mat-progress-bar>
+      <div class="flex justify-center mt-2">
+        <button #tooltip="matTooltip" matTooltip="4 gold" matTooltipHideDelay="1000" matTooltipPosition="right"
+          class="m-4" mat-raised-button color="primary" (click)="draftService.sendMessage('buy_xp', {})">
+          XP
+        </button>
+      </div>
+      }
+    </div>
+  </div>
 
-  </mat-card-content>
-</mat-card>
+  <!-- Inventory Section -->
+  <div id="inventory" class="bg-cover bg-center w-48 h-64 flex flex-col items-center bg-gray-800 p-4 shadow-lg "
+    style="background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_0_Empty.png');">
+    <h3 class="text-white text-lg mb-4">Inventory</h3>
+    <div class="w-full rounded-md p-4 overflow-auto">
+      <ul class="text-white">
+        @for (item of player.inventory; track $index) {
+        <li class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm" #tooltip="matTooltip"
+          matTooltip="{{item.description}}" matTooltipPosition="right">
+          <div>{{item.name}}</div>
+        </li>
+        }
+      </ul>
+    </div>
+  </div>
+
+  <!-- Talents Section -->
+  <div id="talents" class="bg-cover w-48 h-64 bg-center flex flex-col items-center bg-gray-800 p-4 shadow-lg "
+    style="background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_0_Empty.png');">
+    <h3 class="text-white text-lg mb-4">Talents</h3>
+    <div class="w-full overflow-auto rounded-md p-4">
+      <ul class="text-white">
+        @for (talent of player.talents; track $index) {
+        <li class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm" #tooltip="matTooltip"
+          matTooltip="{{talent.description}}" matTooltipPosition="right">
+          <div>{{talent.name}}</div>
+        </li>
+        }
+      </ul>
+    </div>
+  </div>

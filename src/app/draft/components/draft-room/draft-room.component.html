@@ -1,26 +1,24 @@
 <div class="flex flex-col flex-1 justify-center items-center h-screen">
-  <div class="flex flex-row justify-center w-full">
-
-    <div id="character" class="flex basis-1/5 p-1 justify-center items-center">
-  
+  <div class="flex flex-row justify-between w-full">
+    <div id="character" class="flex p-5 justify-center items-center">
       <app-character-sheet class="min-w-fit max-w-fit" [player]="player!"></app-character-sheet>
-  
     </div>
-  
-    <div id="shop" class="basis-3/5 items-center flex justify-center p-1">
+
+    <div id="shop" class="items-center flex justify-center p-1">
       <app-shop [shop]="shop!"></app-shop>
     </div>
-  
-    <div id="talents" class="basis-1/5 justify-center content-center text-center p-1 ">
+
+    <div id="talents" class="justify-center content-center text-center p-5 ">
       <app-talents [talents]="availableTalents!"></app-talents>
     </div>
-  
   </div>
 </div>
 
 
 
-<div class="flex items-baseline justify-between">
-  <h2 id="round-title">ROUND: {{player?.round}}</h2>
-  <app-draft-menu class=""></app-draft-menu>
+<div id="round-info" class="flex flex-col flex-1">
+  <h2 #tooltip="matTooltip" matTooltip="Round counter, you will get matched against same (or lower if non existent) players in battle!" matTooltipPosition="right" id="round-title">ROUND: {{player?.round}}</h2>
+  <div #tooltip="matTooltip" matTooltip="If you run out of lives, you will loose. You get -1 life for a lost combat." matTooltipPosition="right">Lives left: {{getLivesString()}}</div>
+  <div #tooltip="matTooltip" matTooltip="If you win 10 times, you are victorious!" matTooltipPosition="right">Wins: {{getPlayerWins()}}</div>
 </div>
+<app-draft-menu></app-draft-menu>

@@ -21,6 +21,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 })
 export class CharacterSheetComponent {
   startingHP: number = 100;
+  showExperience: boolean = false;
 
   constructor(public draftService: DraftService) {
     this.player = {} as Player;
@@ -34,12 +35,17 @@ export class CharacterSheetComponent {
     this.startingHP = this.player.hp;
   }
 
-  getLivesString(): string {
-    let lives = "";
-    for (let i = 0; i < this.player.lives; i++) {
-      lives += "♥️ ";
-    }
-    return lives;
+  onAvatarMouseEnter() {
+    this.showExperience = true;
   }
 
+  onAvatarMouseLeave() {
+    this.showExperience = false;
+  }
+
+  getAvatarImage(): string {
+    const avatar = 'https://chungus-battles.b-cdn.net/chungus-battles-assets/Portrait_ID_0_Placeholder.png';
+    const empty = 'https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_0_Empty.png';
+    return this.showExperience ? empty : avatar;
+  }
 }

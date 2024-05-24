@@ -1,7 +1,6 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, effect } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button'
-//import { Player } from '../../../models/player';
 import { Player } from '../../../models/colyseus-schema/PlayerSchema'
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { DraftService } from '../../services/draft.service';
@@ -49,3 +48,4 @@ export class CharacterSheetComponent {
     return this.showExperience ? empty : avatar;
   }
 }
+

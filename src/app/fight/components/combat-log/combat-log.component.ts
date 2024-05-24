@@ -1,5 +1,4 @@
-import { Component, effect } from '@angular/core';
-import { FightService } from '../../services/fight.service';
+import { Component, Input, effect } from '@angular/core';
 
 @Component({
   selector: 'app-combat-log',
@@ -9,18 +8,5 @@ import { FightService } from '../../services/fight.service';
   styleUrl: './combat-log.component.css'
 })
 export class CombatLogComponent {
-  combatLog: string = "";
-
-  roomSignal = this.fightService.room;
-
-  constructor(private fightService: FightService) {
-    effect(() => {
-      const room = this.roomSignal();
-      if (room) {
-        room.onMessage("combat_log", (message: string) => {
-          this.combatLog += message + "\n";
-        });
-      }
-    });
-   }
+  @Input({ required: true }) combatLog: string = "";
 }

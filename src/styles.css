@@ -6,3 +6,18 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@keyframes floatUp {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-50px);
+  }
+}
+.damage-number {
+  @apply absolute text-red-500 text-lg font-bold transition-opacity;
+  animation: floatUp 2s ease-out forwards;
+}

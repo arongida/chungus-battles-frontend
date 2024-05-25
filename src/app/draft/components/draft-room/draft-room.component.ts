@@ -24,7 +24,7 @@ export class DraftRoomComponent implements OnInit {
   availableTalents?: Talent[];
 
   constructor(public draftService: DraftService, private router: Router) {
-    this.player = {} as Player;
+    this.player = new Player();
     this.shop = [] as Item[];
     this.availableTalents = [] as Talent[];
   }
@@ -35,12 +35,23 @@ export class DraftRoomComponent implements OnInit {
       await this.draftService.reconnect(localStorage.getItem('reconnectToken') as string);
     }
 
+    // Listen to changes in the room state
     this.draftService.room?.onStateChange((state) => {
-      this.player = state.player as Player;
+      // Assuming state.player is a plain object
+      const plainPlayerObject = state.player;
+
+      // Create a new Player instance
+      const player = new Player();
+
+      // Copy properties from the plain object to the new Player instance
+      Object.assign(player, plainPlayerObject);
+
+      // Assign the Player instance to this.player
+      this.player = player;
+      
       this.shop = state.shop as Item[];
       this.availableTalents = state.availableTalents as Talent[];
-      console.log("player state", this.player);
-      console.log("shop state", this.shop);
+
     });
   }
 

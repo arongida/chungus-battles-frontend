@@ -19,5 +19,5 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 }
 .damage-number {
   @apply absolute text-red-500 text-lg font-bold transition-opacity;
-  animation: floatUp 2s ease-out forwards;
+  animation: floatUp 3s ease-out forwards;
 }

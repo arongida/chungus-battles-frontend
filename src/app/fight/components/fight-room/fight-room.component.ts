@@ -25,8 +25,21 @@ export class FightRoomComponent {
       const room = this.fightService.room();
       if (room) {
         room.onStateChange((state) => {
-          this.player = state.player as Player;
-          this.enemy = state.enemy as Player;
+          // Assuming state.player is a plain object
+          const plainPlayerObject = state.player;
+          const plainEnemyObject = state.enemy;
+
+          // Create a new Player instance
+          const player = new Player();
+          const enemy = new Player();
+
+          // Copy properties from the plain object to the new Player instance
+          Object.assign(player, plainPlayerObject);
+          Object.assign(enemy, plainEnemyObject);
+
+          // Assign the Player instance to this.player
+          this.player = player;
+          this.enemy = enemy;
         });
 
         room.onMessage("game_over", (message: string) => {
@@ -104,7 +117,7 @@ export class FightRoomComponent {
 
     setTimeout(() => {
       damageNumber.remove();
-    }, 2000);
+    }, 3000);
   }
 
 }

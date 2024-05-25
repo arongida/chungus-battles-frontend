@@ -8,7 +8,8 @@
 
       <div class="text-xs">
 
-        <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm">
+        <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm" #tooltip="matTooltip"
+          matTooltip="Your Health Points, if it reaches zero, you loose the battle." matTooltipPosition="right">
           <div>Health:</div>
           <div class="text-pink-500">{{player.hp}} ❤️</div>
         </div>
@@ -18,19 +19,22 @@
         }
         <mat-divider></mat-divider>
 
-        <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm">
+        <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm" #tooltip="matTooltip"
+          matTooltip="Increases damage of your attacks by {{player.attack}}." matTooltipPosition="right">
           <div>Attack:</div>
           <div class="text-red-500">{{player.attack}} ⚔️</div>
         </div>
         <mat-divider></mat-divider>
 
-        <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm">
+        <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm" #tooltip="matTooltip"
+          matTooltip="Decreases incoming damage from attacks by {{player.defense}}, maximum 70%!" matTooltipPosition="right">
           <div>Defense:</div>
           <div class="text-green-500">{{player.defense}}% 🛡️</div>
         </div>
         <mat-divider></mat-divider>
 
-        <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm">
+        <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm" #tooltip="matTooltip"
+        matTooltip="You attack {{player.attackSpeed}} times in one second." matTooltipPosition="right"> 
           <div>Attack Speed:</div>
           <div class="text-blue-500">{{player.attackSpeed | number : '1.2-2'}} ⏩</div>
         </div>
@@ -39,7 +43,8 @@
     </div>
 
     @if (!combat) {
-    <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm font-semibold">
+    <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm font-semibold" #tooltip="matTooltip"
+    matTooltip="You can spend in the shop or to buy XP." matTooltipPosition="right">
       <div>Gold: </div>
       <div class="text-yellow-300 ml-2">{{player.gold}} 🪙</div>
     </div>
@@ -49,7 +54,8 @@
 
 
   <!-- Avatar Section -->
-  <div id="avatar-{{player.playerId}}" class="bg-cover bg-center w-48 h-64 flex flex-col-reverse items-center bg-gray-800 p-4 shadow-lg"
+  <div id="avatar-{{player.playerId}}"
+    class="bg-cover bg-center w-48 h-64 flex flex-col-reverse items-center bg-gray-800 p-4 shadow-lg"
     style="background-image: url('{{getAvatarImage()}}');" (mouseenter)="onAvatarMouseEnter()"
     (mouseleave)="onAvatarMouseLeave()">
     <div class="relative w-full rounded-md">

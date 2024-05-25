@@ -5,11 +5,12 @@ import { DraftService } from '../../services/draft.service';
 import { NgFor } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button'
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatChip } from '@angular/material/chips';
 
 @Component({
   selector: 'app-shop',
   standalone: true,
-  imports: [MatCardModule, NgFor, MatButtonModule, MatTooltipModule],
+  imports: [MatCardModule, NgFor, MatButtonModule, MatTooltipModule, MatChip],
   templateUrl: './shop.component.html',
   styleUrl: './shop.component.css'
 })

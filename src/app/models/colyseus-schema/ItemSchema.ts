@@ -18,4 +18,5 @@ export class Item extends Schema {
   @type("string") image: string = '';
   @type("boolean") showDetails?: boolean = false;
   @type("string") imageCache?: string = '';
+  @type(["string"]) tags: string[] = new Array<string>();
 }

@@ -27,6 +27,9 @@
       </div>
       <div class="ml-2 mr-2">
         <p class="font-thin text-sm">{{item.description}}</p>
+        @for (tag of item.tags; track $index) {
+        <mat-chip class="mr-1 py-1">{{tag}}</mat-chip>
+        }
       </div>
     </mat-card-content>
     <mat-card-footer class="flex justify-center">

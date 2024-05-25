@@ -117,7 +117,7 @@ export class FightRoomComponent {
 
     setTimeout(() => {
       damageNumber.remove();
-    }, 2000);
+    }, 3000);
   }
 
 }

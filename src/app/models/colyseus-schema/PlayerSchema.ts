@@ -11,7 +11,7 @@ export class Player extends Schema {
   @type("number") xp: number = 0;
   @type("number") level: number = 0;
   @type("string") sessionId: string = "sessionId";
-  @type("number") defense: number = 0;
+  @type("number") private _defense: number = 0;
   @type("number") attackSpeed: number = 0;
   @type("number") maxXp: number = 0;
   @type("number") round: number = 1;
@@ -19,4 +19,12 @@ export class Player extends Schema {
   @type("number") wins: number = 0;
   @type([Talent]) talents: ArraySchema<Talent> = new ArraySchema<Talent>();
   @type([Item]) inventory: ArraySchema<Item> = new ArraySchema<Item>();
+
+  get defense(): number {
+    return this._defense;
+  }
+
+  set defense(value: number) {
+    this._defense = value;
+  }
 }

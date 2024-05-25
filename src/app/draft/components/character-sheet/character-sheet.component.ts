@@ -28,6 +28,7 @@ export class CharacterSheetComponent {
 
   @Input({ required: true }) player: Player;
   @Input({ required: false }) combat: boolean = false;
+  @Input({ required: false }) enemy: boolean = false;
 
 
   ngOnInit() {
@@ -44,8 +45,9 @@ export class CharacterSheetComponent {
 
   getAvatarImage(): string {
     const avatar = 'https://chungus-battles.b-cdn.net/chungus-battles-assets/Portrait_ID_0_Placeholder.png';
+    const enemyAvatar = 'https://chungus-battles.b-cdn.net/chungus-battles-assets/Portrait_ID_0_Placeholder_enemy.png';
     const empty = 'https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_0_Empty.png';
-    return this.showExperience ? empty : avatar;
+    return this.showExperience ? empty : this.enemy ? enemyAvatar : avatar;
   }
 }
 

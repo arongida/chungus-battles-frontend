@@ -56,14 +56,10 @@ export class FightRoomComponent {
 
         room.onMessage("damage", (message: DamageMessage) => {
           if (this.player && this.enemy) {
-            if (this.player.playerId === message.defender) {
-              this.triggerShowDamageNumber(message.damage, message.defender);
-            } else if (this.enemy.playerId === message.defender) {
-              this.triggerShowDamageNumber(message.damage, message.defender);
-            }
+            this.triggerAttack(message.attacker);
+            this.triggerShowDamageNumber(message.damage, message.defender);
           }
         });
-
       }
     });
 
@@ -104,26 +100,50 @@ export class FightRoomComponent {
     const avatarToHit = document.getElementById(`avatar-${defenderId}`);
     const damageNumber = document.createElement('div');
 
-    avatarToHit?.classList.add('animate-hit');
+    //avatarToHit?.classList.add('animate-hit');
     damageNumber.classList.add('damage-number');
     damageNumber.textContent = `-${damage}`;
     damageNumber.style.left = `${Math.random() * 100}%`; // Random horizontal position
 
     if (damageNumbersContainer) damageNumbersContainer.appendChild(damageNumber);
 
-    setTimeout(() => {
-      avatarToHit?.classList.remove('animate-hit');
-    }, 500);
+    // setTimeout(() => {
+    //   avatarToHit?.classList.remove('animate-hit');
+    // }, 500);
 
     setTimeout(() => {
       damageNumber.remove();
     }, 3000);
   }
 
+  triggerAttack(attackerId: number) {
+    const attackContainer = document.getElementById(`attack-${attackerId}`);
+
+    const attack = document.createElement('img');
+    attack.style.scale = '0.5';
+
+    if (attackerId === this.player?.playerId) {
+      attack.classList.add('animate-attack');
+      attack.src = 'https://chungus-battles.b-cdn.net/chungus-battles-assets/Sword-2.png';
+      const oldAttack = document.querySelector('.animate-attack');
+      oldAttack?.remove();
+    } else if (attackerId === this.enemy?.playerId) {
+      attack.classList.add('animate-attack-enemy');
+      attack.src = 'https://chungus-battles.b-cdn.net/chungus-battles-assets/Sword-2-enemy.png';
+      const oldAttack = document.querySelector('.animate-attack-enemy');
+      oldAttack?.remove();
+    }
+
+    if (attackContainer) attackContainer.appendChild(attack);
+
+    // setTimeout(() => {
+    //   attack.remove();
+    // }, 1500);
+  }
 }
 
 type DamageMessage = {
-  attacker: string;
+  attacker: number;
   defender: number;
   damage: number;
 };

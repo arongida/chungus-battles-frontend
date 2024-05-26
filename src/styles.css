@@ -1,7 +1,13 @@
 /* You can add global styles to this file, and also import other style files */
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
 
 @tailwind base;
 @tailwind components;
@@ -20,4 +26,36 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .damage-number {
   @apply absolute text-red-500 text-lg font-bold transition-opacity;
   animation: floatUp 3s ease-out forwards;
+}
+
+.animate-attack {
+  @apply transition-all;
+  animation: attack 5s cubic-bezier(0, 1.38, 0.83, 0.67) infinite;
+}
+
+.animate-attack-enemy {
+  @apply transition-all;
+  animation: attack-enemy 3s cubic-bezier(0, 1.38, 0.83, 0.67) infinite;
+}
+
+@keyframes attack {
+  from {
+    transform: rotate(0deg);
+    transform-origin: 30% 70%;
+  }
+  to {
+    transform: rotate(360deg);
+    transform-origin: 30% 70%;
+  }
+}
+
+@keyframes attack-enemy {
+  from {
+    transform: rotate(0deg);
+    transform-origin: 70% 70%;
+  }
+  to {
+    transform: rotate(-360deg);
+    transform-origin: 70% 70%;
+  }
 }

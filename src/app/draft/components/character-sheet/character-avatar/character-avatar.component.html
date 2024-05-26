@@ -1,0 +1,34 @@
+<!-- Avatar Section -->
+<div id="avatar-{{player.playerId}}"
+  class="bg-cover bg-center w-48 h-64 flex flex-col-reverse items-center bg-gray-800 p-4 shadow-lg"
+  style="background-image: url('{{getAvatarImage()}}');" (mouseenter)="onAvatarMouseEnter()"
+  (mouseleave)="onAvatarMouseLeave()">
+  <div class="relative w-full rounded-md">
+
+    <!-- Floating Damage Numbers Container -->
+    <div id="damage-numbers-{{player.playerId}}" class="relative pointer-events-none"></div>
+
+    <div class="w-full text-center text-white bg-black bg-opacity-40 py-1">
+      {{player ? player.name : "Avatar Name"}} <br>
+      Level: {{player.level}}
+    </div>
+  </div>
+  <div class="w-full text-white mt-4">
+
+    @if (!combat && showExperience) {
+    <h4 class="text-center">Level up for gold:</h4>
+    <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm">
+      <label for="xp" class="">XP:</label>
+      <label for="xp">({{player.xp}} / {{player.maxXp}})</label>
+    </div>
+    <mat-progress-bar id="xp" mode="determinate" value="{{(player.xp / player.maxXp) * 100}}"></mat-progress-bar>
+    <div class="flex justify-center mt-2">
+      <button #tooltip="matTooltip" matTooltip="4 gold" matTooltipHideDelay="1000" matTooltipPosition="right"
+        class="m-4" mat-raised-button color="primary" (click)="draftService.sendMessage('buy_xp', {})">
+        XP
+      </button>
+    </div>
+    }
+  </div>
+  <div class="absolute" id="attack-{{player.playerId}}"></div>
+</div>

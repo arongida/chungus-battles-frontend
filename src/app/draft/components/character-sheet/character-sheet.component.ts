@@ -3,18 +3,18 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button'
 import { Player } from '../../../models/colyseus-schema/PlayerSchema'
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { DraftService } from '../../services/draft.service';
 import { NgIf } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { DecimalPipe } from '@angular/common';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { CharacterAvatarComponent } from './character-avatar/character-avatar.component';
 
 @Component({
   selector: 'app-character-sheet',
   standalone: true,
-  imports: [MatCardModule, MatButtonModule, MatProgressBarModule, NgIf, MatIconModule, DecimalPipe, MatDividerModule, MatTooltipModule, MatExpansionModule],
+  imports: [MatCardModule, MatButtonModule, NgIf, MatIconModule, DecimalPipe, MatDividerModule, MatTooltipModule, MatExpansionModule, MatProgressBarModule, CharacterAvatarComponent],
   templateUrl: './character-sheet.component.html',
   styleUrl: './character-sheet.component.css'
 })
@@ -22,7 +22,7 @@ export class CharacterSheetComponent {
   startingHP: number = 100;
   showExperience: boolean = false;
 
-  constructor(public draftService: DraftService) {
+  constructor() {
     this.player = {} as Player;
   }
 
@@ -35,19 +35,6 @@ export class CharacterSheetComponent {
     this.startingHP = this.player.hp;
   }
 
-  onAvatarMouseEnter() {
-    this.showExperience = true;
-  }
 
-  onAvatarMouseLeave() {
-    this.showExperience = false;
-  }
-
-  getAvatarImage(): string {
-    const avatar = 'https://chungus-battles.b-cdn.net/chungus-battles-assets/Portrait_ID_0_Placeholder.png';
-    const enemyAvatar = 'https://chungus-battles.b-cdn.net/chungus-battles-assets/Portrait_ID_0_Placeholder_enemy.png';
-    const empty = 'https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_0_Empty.png';
-    return this.showExperience ? empty : this.enemy ? enemyAvatar : avatar;
-  }
 }
 

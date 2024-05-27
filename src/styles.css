@@ -30,7 +30,7 @@ body {
 
 .animate-attack {
   @apply transition-all;
-  animation: attack 5s cubic-bezier(0, 1.38, 0.83, 0.67) infinite;
+  animation: attack 3s cubic-bezier(0, 1.38, 0.83, 0.67) infinite;
 }
 
 .animate-attack-enemy {

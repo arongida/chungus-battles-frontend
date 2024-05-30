@@ -16,7 +16,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 })
 export class TalentsComponent {
 
-
   constructor(public draftService: DraftService) {
     this.talents = [] as Talent[];
   }
@@ -24,13 +23,13 @@ export class TalentsComponent {
   @Input({ required: true }) talents: Talent[];
 
   getTalentImage(talent: Talent) {
-    return talent.image ? talent.image : 'https://chungus-battles.b-cdn.net/chungus-battles-assets/Talent_ID_0_Empty.png';
+    return talent.image ? talent.image : 'https://chungus-battles.b-cdn.net/chungus-battles-assets/talent_tablet_01_horizontal.png';
   }
 
   onMouseEnterTalent(talent: Talent) {
     talent.showDetails = true;
     talent.imageCache = talent.image;
-    talent.image = 'https://chungus-battles.b-cdn.net/chungus-battles-assets/Talent_ID_00_Empty_Orange.png';
+    talent.image = 'https://chungus-battles.b-cdn.net/chungus-battles-assets/talent_tablet_01_horizontal.png';
   }
 
   onMouseLeaveTalent(talent: Talent) {

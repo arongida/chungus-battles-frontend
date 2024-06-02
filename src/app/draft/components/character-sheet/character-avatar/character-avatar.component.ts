@@ -31,9 +31,9 @@ export class CharacterAvatarComponent {
   }
 
   getAvatarImage(): string {
-    const avatar = 'https://chungus-battles.b-cdn.net/chungus-battles-assets/Portrait_ID_0_Placeholder.png';
-    const enemyAvatar = 'https://chungus-battles.b-cdn.net/chungus-battles-assets/Portrait_ID_0_Placeholder_enemy.png';
+    let avatar = this.player?.avatarUrl || 'https://chungus-battles.b-cdn.net/chungus-battles-assets/Portrait_ID_0_Placeholder.png';
+    if (this.enemy) avatar = avatar.replace('.png', '_enemy.png');
     const empty = 'https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_0_Empty.png';
-    return this.showExperience ? empty : this.enemy ? enemyAvatar : avatar;
+    return this.showExperience ? empty : avatar;
   }
 }

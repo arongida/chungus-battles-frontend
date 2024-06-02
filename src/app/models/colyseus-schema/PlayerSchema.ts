@@ -17,6 +17,7 @@ export class Player extends Schema {
   @type("number") round: number = 1;
   @type("number") lives: number = 3;
   @type("number") wins: number = 0;
+  @type("string") avatarUrl: string = "https://chungus-battles.b-cdn.net/chungus-battles-assets/Portrait_ID_0_Placeholder.png";
   @type([Talent]) talents: ArraySchema<Talent> = new ArraySchema<Talent>();
   @type([Item]) inventory: ArraySchema<Item> = new ArraySchema<Item>();
 

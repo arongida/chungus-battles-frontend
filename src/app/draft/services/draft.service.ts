@@ -22,7 +22,7 @@ export class DraftService {
     console.log("gameserver: ", this.client);
   }
 
-  public async joinOrCreate(name?: string, playerId?: number) {
+  public async joinOrCreate(name?: string, playerId?: number, avatarUrl?: string) {
     try {
 
       this.playerId = playerId || this.playerId;
@@ -34,7 +34,8 @@ export class DraftService {
 
       this.room = await this.client.joinOrCreate("draft_room", {
         name: name,
-        playerId: this.playerId
+        playerId: this.playerId,
+        avatarUrl: avatarUrl
       });
 
       this.room.onMessage("*", (type, message) => {

@@ -2,6 +2,9 @@
 
 This is the front-end of the game Chungus Battles, created in Angular, Angular Material UI and tailwind CSS.
 
+## Live Demo
+https://arongida.github.io/chungus-battles-frontend
+
 ## Run Locally
 
 Run `ng serve --hmr` for a dev server. Navigate to `http://localhost:4200/`. Needs the game server running to work at the specified endpoints in the environment.development.ts

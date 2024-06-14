@@ -3,11 +3,13 @@ import { Player } from '../../../../models/colyseus-schema/PlayerSchema';
 import { DraftService } from '../../../services/draft.service';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatButton } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-character-avatar',
   standalone: true,
-  imports: [MatProgressBarModule, MatTooltipModule],
+  imports: [MatProgressBarModule, MatTooltipModule, MatButton, MatIconModule],
   templateUrl: './character-avatar.component.html',
   styleUrl: './character-avatar.component.css'
 })

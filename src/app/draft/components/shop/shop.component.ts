@@ -6,11 +6,12 @@ import { NgFor } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button'
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatChip } from '@angular/material/chips';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-shop',
   standalone: true,
-  imports: [MatCardModule, NgFor, MatButtonModule, MatTooltipModule, MatChip],
+  imports: [MatCardModule, NgFor, MatButtonModule, MatIconModule, MatTooltipModule, MatChip],
   templateUrl: './shop.component.html',
   styleUrl: './shop.component.css'
 })

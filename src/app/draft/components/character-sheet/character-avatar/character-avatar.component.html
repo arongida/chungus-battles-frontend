@@ -23,9 +23,9 @@
     </div>
     <mat-progress-bar id="xp" mode="determinate" value="{{(player.xp / player.maxXp) * 100}}"></mat-progress-bar>
     <div class="flex justify-center mt-2">
-      <button #tooltip="matTooltip" matTooltip="4 gold" matTooltipHideDelay="1000" matTooltipPosition="right"
+      <button #tooltip="matTooltip" matTooltip="4 gold = 4 xp" matTooltipHideDelay="1000" matTooltipPosition="right"
         class="m-4" mat-raised-button color="primary" (click)="draftService.sendMessage('buy_xp', {})">
-        XP
+        XP<mat-icon>keyboard_arrow_up</mat-icon>
       </button>
     </div>
     }

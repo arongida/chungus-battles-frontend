@@ -15,13 +15,13 @@
         <p class="font-semibold">Price: <span class="text-yellow-300">{{item.price}} 🪙</span></p>
       </div>
       <div class="grid grid-cols-2 gap-1 text-xs">
-        <p #tooltip="matTooltip" matTooltip="Attack modifier" matTooltipPosition="right">Attack: <span
+        <p>Attack: <span
             class="text-red-500">{{item.affectedStats.attack}} ⚔️</span></p>
-        <p #tooltip="matTooltip" matTooltip="Attack speed modifier" matTooltipPosition="right">A.speed: <span
+        <p>A.speed: <span
             class="text-blue-500">{{item.affectedStats.attackSpeed}} ⏩</span></p>
-        <p #tooltip="matTooltip" matTooltip="Defense modifier" matTooltipPosition="right">Defense: <span
+        <p>Defense: <span
             class="text-green-500">{{item.affectedStats.defense}} 🛡️</span></p>
-        <p #tooltip="matTooltip" matTooltip="Health modifier" matTooltipPosition="right">Health: <span
+        <p>Health: <span
             class="text-pink-500">{{item.affectedStats.hp}} ❤️</span></p>
       </div>
       <div class="ml-2 mr-2">
@@ -45,7 +45,7 @@
   <div class="min-w-full flex-1 justify-center"><button id="refresh-button" #tooltip="matTooltip" matTooltip="2 gold"
       matTooltipHideDelay="1000" mat-raised-button matTooltipPosition="right" color="primary"
       class="fixed bottom-0 m-7 p-7" (click)="draftService.sendMessage('refresh_shop',{})">
-      Refresh shop
+      Refresh shop<mat-icon>refresh</mat-icon>
     </button>
   </div>
 </div>

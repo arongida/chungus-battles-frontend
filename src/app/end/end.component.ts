@@ -20,9 +20,11 @@ export class EndComponent {
   }
 
 
-  public goToHome() {
-
+  public goToHome() {    
+    localStorage.removeItem('sessionId');
     localStorage.removeItem('playerId');
+    localStorage.removeItem('roomId');
+    localStorage.removeItem('reconnectToken');
     this.router.navigate(['/']);
-  }
+    }
 }

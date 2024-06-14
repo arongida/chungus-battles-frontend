@@ -35,7 +35,6 @@ export class JoinFormComponent {
   }
 
   onFormSubmit() {
-
     this.draftService.joinOrCreate(this.nameControl.value!, undefined, this.avatarSelected);
   }
 }

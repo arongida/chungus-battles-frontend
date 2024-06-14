@@ -10,7 +10,6 @@ import { Player } from '../../models/colyseus-schema/PlayerSchema';
 })
 export class DraftService {
   client: Colyseus.Client;
-  playerId: number = 0;
   room: Colyseus.Room<DraftState> | undefined;
   player: Player | undefined;
 
@@ -22,19 +21,18 @@ export class DraftService {
     console.log("gameserver: ", this.client);
   }
 
-  public async joinOrCreate(name?: string, playerId?: number, avatarUrl?: string) {
+  public async joinOrCreate(name?: string, playerIdInput?: number, avatarUrl?: string) {
     try {
-
-      this.playerId = playerId || this.playerId;
-      if (!this.playerId) {
-        const { playerId } = await fetch(environment.expressServer + '/playerId').then(res => res.json()).catch(e => console.error(e));
-        this.playerId = playerId;
+      
+      let playerId = playerIdInput;
+      if (!playerId) {
+        const result = await fetch(environment.expressServer + '/playerId').then(res => res.json()).catch(e => console.error(e));
+        playerId = result.playerId;
       }
-
 
       this.room = await this.client.joinOrCreate("draft_room", {
         name: name,
-        playerId: this.playerId,
+        playerId: playerId,
         avatarUrl: avatarUrl
       });
 
@@ -46,7 +44,7 @@ export class DraftService {
 
       if (DraftService.isLocalStorageAvailable) {
         localStorage.setItem('sessionId', this.room.sessionId);
-        localStorage.setItem('playerId', this.playerId.toString());
+        localStorage.setItem('playerId', playerId!.toString());
         localStorage.setItem('roomId', this.room.roomId);
         localStorage.setItem('reconnectToken', this.room.reconnectionToken);
       }

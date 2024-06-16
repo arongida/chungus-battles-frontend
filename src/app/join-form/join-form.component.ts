@@ -17,7 +17,9 @@ import { MatIconModule } from '@angular/material/icon';
 })
 export class JoinFormComponent {
   nameControl = new FormControl('');
-  avatarOptions = ['https://chungus-battles.b-cdn.net/chungus-battles-assets/Portrait_ID_0_Placeholder.png', 'https://chungus-battles.b-cdn.net/chungus-battles-assets/warrior_01.png'];
+  avatarOptions = ['https://chungus-battles.b-cdn.net/chungus-battles-assets/Portrait_ID_0_Placeholder.png', 
+    'https://chungus-battles.b-cdn.net/chungus-battles-assets/warrior_01.png',
+    'https://chungus-battles.b-cdn.net/chungus-battles-assets/thief_01.png'];
   avatarSelected = this.avatarOptions[1];
 
   constructor(public draftService: DraftService) { }

@@ -7,7 +7,7 @@ import { JoinFormComponent } from './join-form/join-form.component';
   standalone: true,
   imports: [RouterOutlet, JoinFormComponent],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  styleUrl: './app.component.css',
 })
 export class AppComponent {
   title = 'chungus-battles-frontend';

@@ -1,28 +1,29 @@
 .image-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .player-portrait {
-    width: 100%;
-    height: auto;
-    max-width: 500px; /* Optional: Limit the max width */
-  }
-  
-  .prev-button, .next-button {
-    display: inline;
-    justify-content: space-between;
-    background-color: #db1111; /* Adjust button background color */
-    border: none;
-    padding: 10px;
-    cursor: pointer;
-  }
-  
-  .prev-button {
-    margin-right: 3rem; /* Optional: Space between button and image */
-  }
-  
-  .next-button {
-    margin-left: 6rem; /* Optional: Space between button and image */
-  }
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.player-portrait {
+  width: 100%;
+  height: auto;
+  max-width: 500px; /* Optional: Limit the max width */
+}
+
+.prev-button,
+.next-button {
+  display: inline;
+  justify-content: space-between;
+  background-color: #db1111; /* Adjust button background color */
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.prev-button {
+  margin-right: 3rem; /* Optional: Space between button and image */
+}
+
+.next-button {
+  margin-left: 6rem; /* Optional: Space between button and image */
+}

@@ -1,26 +1,26 @@
 <div class="flex flex-row items-center justify-between">
-
-
-
-  @if (player){
-  <div id="character" class="flex basis-1/3 p-6 justify-center items-center">
-    <app-character-sheet [combat]="true" class="min-w-fit max-w-fit" [player]="player"></app-character-sheet>
-  </div>
-  
+  @if (player) {
+    <div id="character" class="flex basis-1/3 p-6 justify-center items-center">
+      <app-character-sheet
+        [combat]="true"
+        class="min-w-fit max-w-fit"
+        [player]="player"
+      ></app-character-sheet>
+    </div>
   }
-
-
 
   <div class="flex justify-center">
     <app-combat-log [combatLog]="combatLog"></app-combat-log>
   </div>
 
   @if (enemy) {
-  <div id="enemy" class="flex basis-1/3 p-6 justify-center items-center ">
-    <app-character-sheet [combat]="true" class="min-w-fit max-w-fit" [player]="enemy"
-      [enemy]="true"></app-character-sheet>
-  </div>
+    <div id="enemy" class="flex basis-1/3 p-6 justify-center items-center">
+      <app-character-sheet
+        [combat]="true"
+        class="min-w-fit max-w-fit"
+        [player]="enemy"
+        [enemy]="true"
+      ></app-character-sheet>
+    </div>
   }
-
-
 </div>

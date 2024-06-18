@@ -12,15 +12,19 @@ import { Router } from '@angular/router';
   standalone: true,
   imports: [CharacterSheetComponent, CombatLogComponent],
   templateUrl: './fight-room.component.html',
-  styleUrl: './fight-room.component.css'
+  styleUrl: './fight-room.component.css',
 })
 export class FightRoomComponent {
-
   player: Player | null = null;
   enemy: Player | null = null;
-  combatLog: string = "";
+  combatLog: string = '';
 
-  constructor(private fightService: FightService, private draftService: DraftService, private snackBar: MatSnackBar, private router: Router) {
+  constructor(
+    private fightService: FightService,
+    private draftService: DraftService,
+    private snackBar: MatSnackBar,
+    private router: Router,
+  ) {
     effect(() => {
       const room = this.fightService.room();
       if (room) {
@@ -42,19 +46,30 @@ export class FightRoomComponent {
           this.enemy = enemy;
         });
 
-        room.onMessage("game_over", (message: string) => {
-          this.openSnackBar(message, "Exit", room.state.player.playerId, room.state.player.name, true);
-        })
-
-        room.onMessage("end_battle", (message: string) => {
-          this.openSnackBar("The battle has ended", "Exit", room.state.player.playerId, room.state.player.name);
+        room.onMessage('game_over', (message: string) => {
+          this.openSnackBar(
+            message,
+            'Exit',
+            room.state.player.playerId,
+            room.state.player.name,
+            true,
+          );
         });
 
-        room.onMessage("combat_log", (message: string) => {
-          this.combatLog += message + "\n";
+        room.onMessage('end_battle', (message: string) => {
+          this.openSnackBar(
+            'The battle has ended',
+            'Exit',
+            room.state.player.playerId,
+            room.state.player.name,
+          );
         });
 
-        room.onMessage("damage", (message: DamageMessage) => {
+        room.onMessage('combat_log', (message: string) => {
+          this.combatLog += message + '\n';
+        });
+
+        room.onMessage('damage', (message: DamageMessage) => {
           if (this.player && this.enemy) {
             this.triggerAttack(message.attacker);
             this.triggerShowDamageNumber(message.damage, message.defender);
@@ -62,10 +77,15 @@ export class FightRoomComponent {
         });
       }
     });
-
   }
 
-  openSnackBar(message: string, action: string, playerId: number, name: string, gameOver: boolean = false) {
+  openSnackBar(
+    message: string,
+    action: string,
+    playerId: number,
+    name: string,
+    gameOver: boolean = false,
+  ) {
     const matSnackBarRef = this.snackBar.open(message, action);
     matSnackBarRef.onAction().subscribe(() => {
       this.endBattle(playerId, name, gameOver, message);
@@ -74,21 +94,27 @@ export class FightRoomComponent {
   }
 
   async ngOnInit(): Promise<void> {
-
     const room = this.fightService.room();
 
     if (!room) {
-      await this.fightService.reconnect(localStorage.getItem('reconnectToken') as string);
+      await this.fightService.reconnect(
+        localStorage.getItem('reconnectToken') as string,
+      );
     }
   }
 
-  private endBattle(plyerId: number, name: string, gameOver: boolean = false, message: string) {
+  private endBattle(
+    plyerId: number,
+    name: string,
+    gameOver: boolean = false,
+    message: string,
+  ) {
     this.fightService.leave(false);
     if (gameOver) {
-      if (message.includes("won")) {
-        this.router.navigate(['/end', { won: "won" }]);
+      if (message.includes('won')) {
+        this.router.navigate(['/end', { won: 'won' }]);
       } else {
-        this.router.navigate(['/end', { won: "lost" }]);
+        this.router.navigate(['/end', { won: 'lost' }]);
       }
     } else {
       this.draftService.joinOrCreate(name, plyerId);
@@ -96,7 +122,9 @@ export class FightRoomComponent {
   }
 
   triggerShowDamageNumber(damage: number, defenderId: number) {
-    const damageNumbersContainer = document.getElementById(`damage-numbers-${defenderId}`);
+    const damageNumbersContainer = document.getElementById(
+      `damage-numbers-${defenderId}`,
+    );
     const avatarToHit = document.getElementById(`avatar-${defenderId}`);
     const damageNumber = document.createElement('div');
 
@@ -105,7 +133,8 @@ export class FightRoomComponent {
     damageNumber.textContent = `-${damage}`;
     damageNumber.style.left = `${Math.random() * 100}%`; // Random horizontal position
 
-    if (damageNumbersContainer) damageNumbersContainer.appendChild(damageNumber);
+    if (damageNumbersContainer)
+      damageNumbersContainer.appendChild(damageNumber);
 
     // setTimeout(() => {
     //   avatarToHit?.classList.remove('animate-hit');
@@ -124,12 +153,14 @@ export class FightRoomComponent {
 
     if (attackerId === this.player?.playerId) {
       attack.classList.add('animate-attack');
-      attack.src = 'https://chungus-battles.b-cdn.net/chungus-battles-assets/Sword-2.png';
+      attack.src =
+        'https://chungus-battles.b-cdn.net/chungus-battles-assets/Sword-2.png';
       const oldAttack = document.querySelector('.animate-attack');
       oldAttack?.remove();
     } else if (attackerId === this.enemy?.playerId) {
       attack.classList.add('animate-attack-enemy');
-      attack.src = 'https://chungus-battles.b-cdn.net/chungus-battles-assets/Sword-2-enemy.png';
+      attack.src =
+        'https://chungus-battles.b-cdn.net/chungus-battles-assets/Sword-2-enemy.png';
       const oldAttack = document.querySelector('.animate-attack-enemy');
       oldAttack?.remove();
     }

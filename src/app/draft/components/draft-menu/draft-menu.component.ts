@@ -7,10 +7,13 @@ import { FightService } from '../../../fight/services/fight.service';
   standalone: true,
   imports: [MatButton],
   templateUrl: './draft-menu.component.html',
-  styleUrl: './draft-menu.component.css'
+  styleUrl: './draft-menu.component.css',
 })
 export class DraftMenuComponent {
-  constructor(private draftService: DraftService, private fightService: FightService) { }
+  constructor(
+    private draftService: DraftService,
+    private fightService: FightService,
+  ) {}
 
   public startFight() {
     const playerId = localStorage.getItem('playerId');

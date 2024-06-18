@@ -9,6 +9,6 @@ export const fightGuard: CanActivateFn = (route, state) => {
     if (reconnectionToken !== null) return true;
     const router = inject(Router);
     router.navigate(['/']);
-  }   
-  return false; 
+  }
+  return false;
 };

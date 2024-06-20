@@ -24,8 +24,8 @@ export class DraftService {
   public async joinOrCreate(
     name?: string,
     playerIdInput?: number,
-    avatarUrl?: string,
-  ) {
+    avatarUrl?: string
+  ): Promise<string | null> {
     try {
       let playerId = playerIdInput;
       if (!playerId) {
@@ -55,8 +55,11 @@ export class DraftService {
       }
 
       this.router.navigate(['/draft', this.room.sessionId]);
+      return null;
     } catch (e) {
       console.error('join error', e);
+      const message = e instanceof Error ? e.message : 'Unknown error.';
+      return message;
     }
   }
 

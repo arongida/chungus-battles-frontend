@@ -6,6 +6,9 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { DraftService } from '../draft/services/draft.service';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { join } from 'node:path/posix';
 
 @Component({
   selector: 'app-join-form',
@@ -17,6 +20,7 @@ import { MatIconModule } from '@angular/material/icon';
     ReactiveFormsModule,
     MatCardModule,
     MatIconModule,
+    MatProgressSpinnerModule,
   ],
   templateUrl: './join-form.component.html',
   styleUrl: './join-form.component.css',
@@ -29,8 +33,12 @@ export class JoinFormComponent {
     'https://chungus-battles.b-cdn.net/chungus-battles-assets/thief_01.png',
   ];
   avatarSelected = this.avatarOptions[1];
+  loading = false;
 
-  constructor(public draftService: DraftService) {}
+  constructor(
+    public draftService: DraftService,
+    private snackBar: MatSnackBar
+  ) {}
 
   onNextButton() {
     const currentIndex = this.avatarOptions.indexOf(this.avatarSelected);
@@ -46,11 +54,16 @@ export class JoinFormComponent {
     this.avatarSelected = this.avatarOptions[prevIndex];
   }
 
-  onFormSubmit() {
-    this.draftService.joinOrCreate(
+  async onFormSubmit() {
+    this.loading = true;
+    const joinResult = await this.draftService.joinOrCreate(
       this.nameControl.value!,
       undefined,
-      this.avatarSelected,
+      this.avatarSelected
     );
+    if (joinResult) {
+      this.snackBar.open(joinResult, 'Close');
+    }
+    this.loading = false;
   }
 }

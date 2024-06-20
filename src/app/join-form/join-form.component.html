@@ -1,5 +1,4 @@
 <div class="grid place-items-center min-h-full gap-8 p-4" style="grid-template-rows: auto 1fr auto">
-
   <header class="text-center font-mono">
     <div class="text-6xl sm:text-9xl mt-10">Chungus Battles</div>
     <div class="text-xl mt-8">For the chungus!</div>
@@ -7,18 +6,26 @@
 
   <div class="flex flex-col gap-8" (keyup.enter)="onFormSubmit()">
     <div class="flex flex-row">
-      <button (click)="onNextButton()"><mat-icon>arrow_back_ios</mat-icon></button>
-      <img [src]="avatarSelected"
-        alt="player portrait" class="player-portrait" style="width: 100%; height: auto;">
-      <button (click)="onPrevButton()"><mat-icon>arrow_forward_ios</mat-icon></button>
+      <button (click)="onNextButton()">
+        <mat-icon>arrow_back_ios</mat-icon>
+      </button>
+      <img [src]="avatarSelected" alt="player portrait" class="player-portrait" style="width: 100%; height: auto" />
+      <button (click)="onPrevButton()">
+        <mat-icon>arrow_forward_ios</mat-icon>
+      </button>
     </div>
     <mat-form-field class="m-4">
       <mat-label>Name</mat-label>
-      <input matInput [formControl]="nameControl">
+      <input matInput [formControl]="nameControl" />
     </mat-form-field>
+    @if (loading) {
+    <div class="flex self-center">
+      <mat-spinner></mat-spinner>
+    </div>
+    } @else {
     <button (click)="onFormSubmit()" mat-raised-button color="primary">
       Start!
     </button>
+    }
   </div>
-
 </div>

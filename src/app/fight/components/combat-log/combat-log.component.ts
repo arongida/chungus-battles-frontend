@@ -5,8 +5,8 @@ import { Component, Input, effect } from '@angular/core';
   standalone: true,
   imports: [],
   templateUrl: './combat-log.component.html',
-  styleUrl: './combat-log.component.css'
+  styleUrl: './combat-log.component.css',
 })
 export class CombatLogComponent {
-  @Input({ required: true }) combatLog: string = "";
+  @Input({ required: true }) combatLog: string = '';
 }

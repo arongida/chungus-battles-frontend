@@ -1,7 +1,7 @@
 import { Component, Input, effect } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
-import { MatButtonModule } from '@angular/material/button'
-import { Player } from '../../../models/colyseus-schema/PlayerSchema'
+import { MatButtonModule } from '@angular/material/button';
+import { Player } from '../../../models/colyseus-schema/PlayerSchema';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { NgIf } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
@@ -14,9 +14,20 @@ import { CharacterAvatarComponent } from './character-avatar/character-avatar.co
 @Component({
   selector: 'app-character-sheet',
   standalone: true,
-  imports: [MatCardModule, MatButtonModule, NgIf, MatIconModule, DecimalPipe, MatDividerModule, MatTooltipModule, MatExpansionModule, MatProgressBarModule, CharacterAvatarComponent],
+  imports: [
+    MatCardModule,
+    MatButtonModule,
+    NgIf,
+    MatIconModule,
+    DecimalPipe,
+    MatDividerModule,
+    MatTooltipModule,
+    MatExpansionModule,
+    MatProgressBarModule,
+    CharacterAvatarComponent,
+  ],
   templateUrl: './character-sheet.component.html',
-  styleUrl: './character-sheet.component.css'
+  styleUrl: './character-sheet.component.css',
 })
 export class CharacterSheetComponent {
   startingHP: number = 100;
@@ -30,11 +41,7 @@ export class CharacterSheetComponent {
   @Input({ required: false }) combat: boolean = false;
   @Input({ required: false }) enemy: boolean = false;
 
-
   ngOnInit() {
     this.startingHP = this.player.hp;
   }
-
-
 }
-

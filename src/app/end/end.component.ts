@@ -7,24 +7,25 @@ import { ActivatedRoute, Router } from '@angular/router';
   standalone: true,
   imports: [MatButton],
   templateUrl: './end.component.html',
-  styleUrl: './end.component.css'
+  styleUrl: './end.component.css',
 })
 export class EndComponent {
+  message: string = 'Game Over';
 
-  message: string = "Game Over";
-
-  constructor(private router: Router, private route: ActivatedRoute) { }
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
+  ) {}
 
   ngOnInit() {
-    this.message = this.route.snapshot.paramMap.get('won') ?? "Game Over";
+    this.message = this.route.snapshot.paramMap.get('won') ?? 'Game Over';
   }
 
-
-  public goToHome() {    
+  public goToHome() {
     localStorage.removeItem('sessionId');
     localStorage.removeItem('playerId');
     localStorage.removeItem('roomId');
     localStorage.removeItem('reconnectToken');
     this.router.navigate(['/']);
-    }
+  }
 }

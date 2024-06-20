@@ -28,5 +28,4 @@ export const routes: Routes = [
     pathMatch: 'full',
   },
   { path: '**', redirectTo: '', pathMatch: 'full' },
-
 ];

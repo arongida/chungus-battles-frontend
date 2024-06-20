@@ -11,10 +11,9 @@ import { MatIconModule } from '@angular/material/icon';
   standalone: true,
   imports: [MatProgressBarModule, MatTooltipModule, MatButton, MatIconModule],
   templateUrl: './character-avatar.component.html',
-  styleUrl: './character-avatar.component.css'
+  styleUrl: './character-avatar.component.css',
 })
 export class CharacterAvatarComponent {
-
   constructor(public draftService: DraftService) {
     this.player = {} as Player;
   }
@@ -33,9 +32,12 @@ export class CharacterAvatarComponent {
   }
 
   getAvatarImage(): string {
-    let avatar = this.player?.avatarUrl || 'https://chungus-battles.b-cdn.net/chungus-battles-assets/Portrait_ID_0_Placeholder.png';
+    let avatar =
+      this.player?.avatarUrl ||
+      'https://chungus-battles.b-cdn.net/chungus-battles-assets/Portrait_ID_0_Placeholder.png';
     if (this.enemy) avatar = avatar.replace('.png', '_enemy.png');
-    const empty = 'https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_0_Empty.png';
+    const empty =
+      'https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_0_Empty.png';
     return this.showExperience ? empty : avatar;
   }
 }

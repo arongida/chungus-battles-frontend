@@ -8,10 +8,9 @@ describe('JoinFormComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [JoinFormComponent]
-    })
-    .compileComponents();
-    
+      imports: [JoinFormComponent],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(JoinFormComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

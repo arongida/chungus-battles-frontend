@@ -1,4 +1,4 @@
-import { Component, Input} from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Talent } from '../../../models/colyseus-schema/TalentSchema';
 import { MatCardModule } from '@angular/material/card';
 import { DraftService } from '../../services/draft.service';
@@ -10,12 +10,17 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 @Component({
   selector: 'app-talents',
   standalone: true,
-  imports: [MatCardModule, MatButtonModule, SlicePipe, MatTooltipModule, MatChip],
+  imports: [
+    MatCardModule,
+    MatButtonModule,
+    SlicePipe,
+    MatTooltipModule,
+    MatChip,
+  ],
   templateUrl: './talents.component.html',
-  styleUrl: './talents.component.css'
+  styleUrl: './talents.component.css',
 })
 export class TalentsComponent {
-
   constructor(public draftService: DraftService) {
     this.talents = [] as Talent[];
   }
@@ -23,13 +28,16 @@ export class TalentsComponent {
   @Input({ required: true }) talents: Talent[];
 
   getTalentImage(talent: Talent) {
-    return talent.image ? talent.image : 'https://chungus-battles.b-cdn.net/chungus-battles-assets/talent_tablet_01_horizontal.png';
+    return talent.image
+      ? talent.image
+      : 'https://chungus-battles.b-cdn.net/chungus-battles-assets/talent_tablet_01_horizontal.png';
   }
 
   onMouseEnterTalent(talent: Talent) {
     talent.showDetails = true;
     talent.imageCache = talent.image;
-    talent.image = 'https://chungus-battles.b-cdn.net/chungus-battles-assets/talent_tablet_01_horizontal.png';
+    talent.image =
+      'https://chungus-battles.b-cdn.net/chungus-battles-assets/talent_tablet_01_horizontal.png';
   }
 
   onMouseLeaveTalent(talent: Talent) {

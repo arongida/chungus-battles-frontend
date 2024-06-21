@@ -2,7 +2,7 @@ import { Component, Input } from '@angular/core';
 import { Item } from '../../../models/colyseus-schema/ItemSchema';
 import { MatCardModule } from '@angular/material/card';
 import { DraftService } from '../../services/draft.service';
-import { NgFor } from '@angular/common';
+import { TitleCasePipe, NgClass } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatChip } from '@angular/material/chips';
@@ -12,8 +12,9 @@ import { MatIconModule } from '@angular/material/icon';
   selector: 'app-shop',
   standalone: true,
   imports: [
+    NgClass,
     MatCardModule,
-    NgFor,
+    TitleCasePipe,
     MatButtonModule,
     MatIconModule,
     MatTooltipModule,
@@ -23,6 +24,8 @@ import { MatIconModule } from '@angular/material/icon';
   styleUrl: './shop.component.css',
 })
 export class ShopComponent {
+  hoverRefresh = false;
+
   constructor(public draftService: DraftService) {
     this.shop = [] as Item[];
   }
@@ -46,5 +49,13 @@ export class ShopComponent {
     return item.image
       ? item.image
       : 'https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_0_Empty.png';
+  }
+
+  hoverRefreshButton() {
+    this.hoverRefresh = true;
+  }
+
+  leaveRefreshButton() {
+    this.hoverRefresh = false;
   }
 }

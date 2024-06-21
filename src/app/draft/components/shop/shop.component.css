@@ -1,9 +1,3 @@
 ::ng-deep .item-tooltip {
   white-space: pre-line;
 }
-
-#refresh-button {
-  position: fixed;
-  left: 50%;
-  transform: translate(-50%);
-}

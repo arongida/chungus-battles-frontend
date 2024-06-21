@@ -5,15 +5,24 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatButton } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { NgClass } from '@angular/common';
 
 @Component({
   selector: 'app-character-avatar',
   standalone: true,
-  imports: [MatProgressBarModule, MatTooltipModule, MatButton, MatIconModule],
+  imports: [
+    MatProgressBarModule,
+    MatTooltipModule,
+    MatButton,
+    MatIconModule,
+    NgClass,
+  ],
   templateUrl: './character-avatar.component.html',
   styleUrl: './character-avatar.component.css',
 })
 export class CharacterAvatarComponent {
+  hoverExperience = false;
+
   constructor(public draftService: DraftService) {
     this.player = {} as Player;
   }
@@ -39,5 +48,9 @@ export class CharacterAvatarComponent {
     const empty =
       'https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_0_Empty.png';
     return this.showExperience ? empty : avatar;
+  }
+
+  switchHoverExperience() {
+    this.hoverExperience = !this.hoverExperience;
   }
 }

@@ -42,8 +42,10 @@
           mat-raised-button
           color="primary"
           (click)="draftService.sendMessage('buy_xp', {})"
+          (mouseenter)="switchHoverExperience()"
+          (mouseleave)="switchHoverExperience()"
         >
-          XP<mat-icon>keyboard_arrow_up</mat-icon>
+          XP<mat-icon [ngClass]="{'animate-bounce': hoverExperience}">keyboard_arrow_up</mat-icon>
         </button>
       </div>
     }

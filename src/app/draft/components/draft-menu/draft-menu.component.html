@@ -1,5 +1,9 @@
 <div class="fixed-button">
-  <button mat-raised-button color="warn" (click)="startFight()">
+  <button [disabled]="loading" mat-raised-button color="warn" (click)="startFight()">
+    @if (loading) {
+    Loading...
+    } @else {
     Ready to Chungus!
+    }
   </button>
 </div>

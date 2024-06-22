@@ -23,7 +23,7 @@ export class FightRoomComponent {
     private fightService: FightService,
     private draftService: DraftService,
     private snackBar: MatSnackBar,
-    private router: Router,
+    private router: Router
   ) {
     effect(() => {
       const room = this.fightService.room();
@@ -52,7 +52,7 @@ export class FightRoomComponent {
             'Exit',
             room.state.player.playerId,
             room.state.player.name,
-            true,
+            true
           );
         });
 
@@ -61,7 +61,7 @@ export class FightRoomComponent {
             'The battle has ended',
             'Exit',
             room.state.player.playerId,
-            room.state.player.name,
+            room.state.player.name
           );
         });
 
@@ -69,10 +69,23 @@ export class FightRoomComponent {
           this.combatLog += message + '\n';
         });
 
+        room.onMessage('attack', (message: number) => {
+          if (this.player && this.enemy) {
+            this.triggerAttack(message);
+          }
+        });
+
         room.onMessage('damage', (message: DamageMessage) => {
           if (this.player && this.enemy) {
-            this.triggerAttack(message.attacker);
-            this.triggerShowDamageNumber(message.damage, message.defender);
+            console.log('message', message);
+            console.log('damage', message.damage, message.playerId);
+            this.triggerShowDamageNumber(message.damage, message.playerId);
+          }
+        });
+
+        room.onMessage('healing', (message: HealingMessage) => {
+          if (this.player && this.enemy) {
+            this.triggerShowHealingNumber(message.healing, message.playerId);
           }
         });
       }
@@ -84,7 +97,7 @@ export class FightRoomComponent {
     action: string,
     playerId: number,
     name: string,
-    gameOver: boolean = false,
+    gameOver: boolean = false
   ) {
     const matSnackBarRef = this.snackBar.open(message, action);
     matSnackBarRef.onAction().subscribe(() => {
@@ -98,7 +111,7 @@ export class FightRoomComponent {
 
     if (!room) {
       await this.fightService.reconnect(
-        localStorage.getItem('reconnectToken') as string,
+        localStorage.getItem('reconnectToken') as string
       );
     }
   }
@@ -107,7 +120,7 @@ export class FightRoomComponent {
     plyerId: number,
     name: string,
     gameOver: boolean = false,
-    message: string,
+    message: string
   ) {
     this.fightService.leave(false);
     if (gameOver) {
@@ -121,11 +134,29 @@ export class FightRoomComponent {
     }
   }
 
+  triggerShowHealingNumber(healing: number, playerId: number) {
+    const healingNumbersContainer = document.getElementById(
+      `damage-numbers-${playerId}`
+    );
+    const healingNumber = document.createElement('div');
+
+    //avatarToHeal?.classList.add('animate-heal');
+    healingNumber.classList.add('healing-number');
+    healingNumber.textContent = `+${healing}`;
+    healingNumber.style.left = `${Math.random() * 100}%`; // Random horizontal position
+
+    if (healingNumbersContainer)
+      healingNumbersContainer.appendChild(healingNumber);
+
+    setTimeout(() => {
+      healingNumber.remove();
+    }, 3000);
+  }
+
   triggerShowDamageNumber(damage: number, defenderId: number) {
     const damageNumbersContainer = document.getElementById(
-      `damage-numbers-${defenderId}`,
+      `damage-numbers-${defenderId}`
     );
-    const avatarToHit = document.getElementById(`avatar-${defenderId}`);
     const damageNumber = document.createElement('div');
 
     //avatarToHit?.classList.add('animate-hit');
@@ -135,10 +166,6 @@ export class FightRoomComponent {
 
     if (damageNumbersContainer)
       damageNumbersContainer.appendChild(damageNumber);
-
-    // setTimeout(() => {
-    //   avatarToHit?.classList.remove('animate-hit');
-    // }, 500);
 
     setTimeout(() => {
       damageNumber.remove();
@@ -166,15 +193,15 @@ export class FightRoomComponent {
     }
 
     if (attackContainer) attackContainer.appendChild(attack);
-
-    // setTimeout(() => {
-    //   attack.remove();
-    // }, 1500);
   }
 }
 
 type DamageMessage = {
-  attacker: number;
-  defender: number;
+  playerId: number;
   damage: number;
+};
+
+type HealingMessage = {
+  playerId: number;
+  healing: number;
 };

@@ -3,7 +3,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { Player } from '../../../models/colyseus-schema/PlayerSchema';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { NgIf } from '@angular/common';
+import { TitleCasePipe } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { DecimalPipe } from '@angular/common';
 import { MatDividerModule } from '@angular/material/divider';
@@ -17,7 +17,7 @@ import { CharacterAvatarComponent } from './character-avatar/character-avatar.co
   imports: [
     MatCardModule,
     MatButtonModule,
-    NgIf,
+    TitleCasePipe,
     MatIconModule,
     DecimalPipe,
     MatDividerModule,

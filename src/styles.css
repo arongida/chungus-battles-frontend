@@ -24,8 +24,15 @@ body {
   }
 }
 .damage-number {
-  @apply absolute text-red-500 text-lg font-bold transition-opacity;
+  @apply absolute text-red-500 text-lg font-bold transition-all;
   animation: floatUp 3s ease-out forwards;
+  -webkit-text-stroke: 1px red;
+}
+
+.healing-number {
+  @apply absolute text-green-500 text-lg font-bold transition-all;
+  animation: floatUp 3s ease-out forwards;
+  -webkit-text-stroke: 1px green;
 }
 
 .animate-attack {

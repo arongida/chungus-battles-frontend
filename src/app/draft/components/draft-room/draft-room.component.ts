@@ -32,7 +32,6 @@ export class DraftRoomComponent implements OnInit {
 
   constructor(
     public draftService: DraftService,
-    private router: Router,
   ) {
     this.player = new Player();
     this.shop = [] as Item[];

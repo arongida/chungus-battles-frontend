@@ -45,7 +45,7 @@
       </mat-card-content>
       <mat-card-footer class="flex justify-center">
         <div class="mt-auto">
-          <button id="buy-{{ $index }}" mat-raised-button color="warn"
+          <button [disabled]="playerGold < item.price" id="buy-{{ $index }}" mat-raised-button color="warn"
             (click)="draftService.sendMessage('buy', { itemId: item.itemId })">
             Buy
           </button>
@@ -56,11 +56,17 @@
     }
   </div>
   <div class="absolute top-0 right-0 flex-row-reverse">
-    <button id="refresh-button" #tooltip="matTooltip" matTooltip="2 gold" mat-stroked-button
+    <button [disabled]="playerGold < 2" #tooltip="matTooltip" matTooltip="2 gold" mat-stroked-button
       matTooltipPosition="right" color="text-white" class="m-2 p-2 flex-1"
-      (click)="draftService.sendMessage('refresh_shop', {})" (mouseenter)="hoverRefreshButton()"
-      (mouseleave)="leaveRefreshButton()">
-      Refresh shop<mat-icon [ngClass]="{'animate-spin': hoverRefresh}">refresh</mat-icon>
+      (click)="draftService.sendMessage('refresh_shop', {})" (mouseenter)="switchShopRefreshAnimate()"
+      (mouseleave)="switchShopRefreshAnimate()">
+      Refresh shop<mat-icon [ngClass]="{'animate-spin': hoverShopRefresh}">refresh</mat-icon>
+    </button>
+    <button [disabled]="playerGold < playerLevel * 2" #tooltip="matTooltip" matTooltip="{{playerLevel * 2}} gold"
+      mat-stroked-button matTooltipPosition="right" color="text-white" class="m-2 p-2 flex-1"
+      (click)="draftService.sendMessage('refresh_talents', {})" (mouseenter)="switchTalentRefreshAnimate()"
+      (mouseleave)="switchTalentRefreshAnimate()">
+      Refresh talents<mat-icon [ngClass]="{'animate-spin': hoverTelentRefresh}">refresh</mat-icon>
     </button>
   </div>
 </div>

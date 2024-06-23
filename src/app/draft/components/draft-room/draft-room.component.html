@@ -8,7 +8,7 @@
     </div>
 
     <div id="shop" class="items-center flex justify-center p-1">
-      <app-shop [shop]="shop!"></app-shop>
+      <app-shop [shop]="shop ?? []" [playerLevel]="player?.level ?? 1" [playerGold]="player?.gold ?? 0"></app-shop>
     </div>
 
     <div id="talents" class="justify-center content-center text-center p-5">

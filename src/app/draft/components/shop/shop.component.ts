@@ -24,13 +24,18 @@ import { MatIconModule } from '@angular/material/icon';
   styleUrl: './shop.component.css',
 })
 export class ShopComponent {
-  hoverRefresh = false;
+  hoverShopRefresh = false;
+  hoverTelentRefresh = false;
 
   constructor(public draftService: DraftService) {
     this.shop = [] as Item[];
+    this.playerLevel = 0;
+    this.playerGold = 0; 
   }
 
   @Input({ required: true }) shop: Item[];
+  @Input({ required: true }) playerLevel: number;
+  @Input({ required: true }) playerGold: number;
 
   onMouseEnterItem(item: Item) {
     item.showDetails = true;
@@ -51,11 +56,12 @@ export class ShopComponent {
       : 'https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_0_Empty.png';
   }
 
-  hoverRefreshButton() {
-    this.hoverRefresh = true;
+  switchShopRefreshAnimate() {
+    this.hoverShopRefresh = !this.hoverShopRefresh;
   }
 
-  leaveRefreshButton() {
-    this.hoverRefresh = false;
+  switchTalentRefreshAnimate() {
+    this.hoverTelentRefresh = !this.hoverTelentRefresh;
   }
+
 }

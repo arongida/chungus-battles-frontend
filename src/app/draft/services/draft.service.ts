@@ -97,11 +97,11 @@ export class DraftService {
       this.room.leave();
       this.room.removeAllListeners();
       this.room = undefined;
-      if (DraftService.isLocalStorageAvailable) {
-        localStorage.removeItem('sessionId');
-        localStorage.removeItem('roomId');
-        localStorage.removeItem('reconnectToken');
-      }
+      // if (DraftService.isLocalStorageAvailable) {
+      //   localStorage.removeItem('sessionId');
+      //   localStorage.removeItem('roomId');
+      //   localStorage.removeItem('reconnectToken');
+      // }
       if (redirectToHome) this.router.navigate(['/']);
     }
   }

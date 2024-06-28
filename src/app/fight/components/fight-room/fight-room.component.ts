@@ -66,7 +66,14 @@ export class FightRoomComponent {
         });
 
         room.onMessage('combat_log', (message: string) => {
-          this.combatLog += message + '\n';
+          // Regular expression to match and replace decimal numbers
+          const formattedMessage = message.replace(/(\d*\.\d+)/g, (match) => {
+            console.log('match', match);
+            // Use Number.toFixed(2) to format each matched number to 2 decimal places
+            return Math.round(parseFloat(match)).toString();
+          });
+
+          this.combatLog += formattedMessage + '\n';
         });
 
         room.onMessage('attack', (message: number) => {
@@ -77,15 +84,15 @@ export class FightRoomComponent {
 
         room.onMessage('damage', (message: DamageMessage) => {
           if (this.player && this.enemy) {
-            console.log('message', message);
-            console.log('damage', message.damage, message.playerId);
-            this.triggerShowDamageNumber(message.damage, message.playerId);
+            const roundedDamage = Math.round(message.damage);
+            this.triggerShowDamageNumber(roundedDamage, message.playerId);
           }
         });
 
         room.onMessage('healing', (message: HealingMessage) => {
           if (this.player && this.enemy) {
-            this.triggerShowHealingNumber(message.healing, message.playerId);
+            const roundedHealing = Math.round(message.healing);
+            this.triggerShowHealingNumber(roundedHealing, message.playerId);
           }
         });
       }

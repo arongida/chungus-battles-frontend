@@ -86,11 +86,11 @@ export class FightService {
       room.leave();
       room.removeAllListeners();
       this.room.set(null);
-      if (FightService.isLocalStorageAvailable) {
-        localStorage.removeItem('sessionId');
-        localStorage.removeItem('roomId');
-        localStorage.removeItem('reconnectToken');
-      }
+      // if (FightService.isLocalStorageAvailable) {
+      //   localStorage.removeItem('sessionId');
+      //   localStorage.removeItem('roomId');
+      //   localStorage.removeItem('reconnectToken');
+      // }
       if (redirectToHome) this.router.navigate(['/']);
     }
   }

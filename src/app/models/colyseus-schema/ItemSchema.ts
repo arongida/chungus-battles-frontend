@@ -18,4 +18,5 @@ export class Item extends Schema {
   @type('boolean') showDetails?: boolean = false;
   @type('string') imageCache?: string = '';
   @type(['string']) tags: string[] = new Array<string>();
+  @type('boolean') sold: boolean = false; 
 }

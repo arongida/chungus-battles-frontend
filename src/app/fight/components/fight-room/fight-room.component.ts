@@ -2,6 +2,7 @@ import { Component, effect } from '@angular/core';
 import { FightService } from '../../services/fight.service';
 import { CharacterSheetComponent } from '../../../draft/components/character-sheet/character-sheet.component';
 import { Player } from '../../../models/colyseus-schema/PlayerSchema';
+import { HealingMessage, DamageMessage, TriggerTalentMessage } from '../../../models/message-types/MessageTypes';
 import { CombatLogComponent } from '../combat-log/combat-log.component';
 import { DraftService } from '../../../draft/services/draft.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -70,7 +71,7 @@ export class FightRoomComponent {
           const formattedMessage = message.replace(/(\d*\.\d+)/g, (match) => {
             console.log('match', match);
             // Use Number.toFixed(2) to format each matched number to 2 decimal places
-            return Math.round(parseFloat(match)).toString();
+            return parseFloat(match).toFixed(2);
           });
 
           this.combatLog += formattedMessage + '\n';
@@ -93,6 +94,13 @@ export class FightRoomComponent {
           if (this.player && this.enemy) {
             const roundedHealing = Math.round(message.healing);
             this.triggerShowHealingNumber(roundedHealing, message.playerId);
+          }
+        });
+
+        room.onMessage('trigger_talent', (message: TriggerTalentMessage) => {
+          if (this.player && this.enemy) {
+            this.triggerTalentActivation(message.talentId, message.playerId);
+            console.log('trigger_talent', message);
           }
         });
       }
@@ -138,6 +146,19 @@ export class FightRoomComponent {
       }
     } else {
       this.draftService.joinOrCreate(name, plyerId);
+    }
+  }
+
+  triggerTalentActivation(talentId: number, playerId: number) {
+    const talentContainer = document.getElementById(
+      `talent-${talentId}-${playerId}`
+    );
+
+    if (talentContainer) {
+      talentContainer.classList.add('animate-talent');
+      setTimeout(() => {
+        talentContainer.classList.remove('animate-talent');
+      }, 500);
     }
   }
 
@@ -203,12 +224,4 @@ export class FightRoomComponent {
   }
 }
 
-type DamageMessage = {
-  playerId: number;
-  damage: number;
-};
 
-type HealingMessage = {
-  playerId: number;
-  healing: number;
-};

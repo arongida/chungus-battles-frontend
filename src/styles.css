@@ -13,16 +13,7 @@ body {
 @tailwind components;
 @tailwind utilities;
 
-@keyframes floatUp {
-  0% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(-50px);
-  }
-}
+
 .damage-number {
   @apply absolute text-red-500 text-lg font-thin font-sans transition-all;
   animation: floatUp 3s ease-in forwards;
@@ -45,6 +36,11 @@ body {
   animation: attack-enemy 3s cubic-bezier(0, 1.38, 0.83, 0.67) infinite;
 }
 
+.animate-talent {
+  @apply transition-all text-red-700;
+  animation: activate 0.5s ease forwards;
+}
+
 @keyframes attack {
   from {
     transform: rotate(0deg);
@@ -64,5 +60,28 @@ body {
   to {
     transform: rotate(-360deg);
     transform-origin: 70% 70%;
+  }
+}
+
+@keyframes floatUp {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-50px);
+  }
+}
+
+@keyframes activate {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
   }
 }

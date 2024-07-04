@@ -7,11 +7,12 @@ import { CombatLogComponent } from '../combat-log/combat-log.component';
 import { DraftService } from '../../../draft/services/draft.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-fight-room',
   standalone: true,
-  imports: [CharacterSheetComponent, CombatLogComponent],
+  imports: [CharacterSheetComponent, CombatLogComponent, MatTooltipModule],
   templateUrl: './fight-room.component.html',
   styleUrl: './fight-room.component.css',
 })
@@ -221,6 +222,20 @@ export class FightRoomComponent {
     }
 
     if (attackContainer) attackContainer.appendChild(attack);
+  }
+
+  getLivesString(): string {
+    let lives = '';
+    if (this.player) {
+      for (let i = 0; i < this.player.lives; i++) {
+        lives += '❤️ ';
+      }
+    }
+    return lives;
+  }
+
+  getPlayerWins(): number {
+    return this.player?.wins || 0;
   }
 }
 

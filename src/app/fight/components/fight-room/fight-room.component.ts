@@ -8,6 +8,7 @@ import { DraftService } from '../../../draft/services/draft.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import triggerTalentActivation from '../../../common/trigger-talent';
 
 @Component({
   selector: 'app-fight-room',
@@ -100,7 +101,7 @@ export class FightRoomComponent {
 
         room.onMessage('trigger_talent', (message: TriggerTalentMessage) => {
           if (this.player && this.enemy) {
-            this.triggerTalentActivation(message.talentId, message.playerId);
+            triggerTalentActivation(message.talentId, message.playerId);
             console.log('trigger_talent', message);
           }
         });
@@ -150,18 +151,18 @@ export class FightRoomComponent {
     }
   }
 
-  triggerTalentActivation(talentId: number, playerId: number) {
-    const talentContainer = document.getElementById(
-      `talent-${talentId}-${playerId}`
-    );
+  // triggerTalentActivation(talentId: number, playerId: number) {
+  //   const talentContainer = document.getElementById(
+  //     `talent-${talentId}-${playerId}`
+  //   );
 
-    if (talentContainer) {
-      talentContainer.classList.add('animate-talent');
-      setTimeout(() => {
-        talentContainer.classList.remove('animate-talent');
-      }, 500);
-    }
-  }
+  //   if (talentContainer) {
+  //     talentContainer.classList.add('animate-talent');
+  //     setTimeout(() => {
+  //       talentContainer.classList.remove('animate-talent');
+  //     }, 500);
+  //   }
+  // }
 
   triggerShowHealingNumber(healing: number, playerId: number) {
     const healingNumbersContainer = document.getElementById(

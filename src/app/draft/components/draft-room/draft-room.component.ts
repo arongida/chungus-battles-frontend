@@ -10,6 +10,9 @@ import { TalentsComponent } from '../talents/talents.component';
 import { Talent } from '../../../models/colyseus-schema/TalentSchema';
 import { MatTooltip } from '@angular/material/tooltip';
 import { MatButton } from '@angular/material/button';
+import { TriggerTalentMessage } from '../../../models/message-types/MessageTypes';
+import triggerTalentActivation from '../../../common/trigger-talent';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-draft-room',
@@ -30,9 +33,7 @@ export class DraftRoomComponent implements OnInit {
   shop?: Item[];
   availableTalents?: Talent[];
 
-  constructor(
-    public draftService: DraftService,
-  ) {
+  constructor(public draftService: DraftService, private snackBar: MatSnackBar,) {
     this.player = new Player();
     this.shop = [] as Item[];
     this.availableTalents = [] as Talent[];
@@ -41,9 +42,27 @@ export class DraftRoomComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     if (!this.draftService.room) {
       await this.draftService.reconnect(
-        localStorage.getItem('reconnectToken') as string,
+        localStorage.getItem('reconnectToken') as string
       );
     }
+
+    this.draftService.room?.onMessage(
+      'trigger_talent',
+      (message: TriggerTalentMessage) => {
+        triggerTalentActivation(message.talentId, message.playerId);
+        console.log('trigger_talent', message);
+      }
+    );
+
+    this.draftService.room?.onMessage(
+      'draft_log',
+      (message: string) => {
+        console.log('draft_log', message);
+        this.snackBar.open(message, 'Close', {
+          duration: 3000,
+        });
+      }
+    );
 
     // Listen to changes in the room state
     this.draftService.room?.onStateChange((state) => {

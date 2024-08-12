@@ -1,6 +1,7 @@
 import { Schema, type, ArraySchema } from '@colyseus/schema';
 import { Talent } from './TalentSchema';
 import { Item } from './ItemSchema';
+import { ItemCollection } from './ItemCollectionSchema';
 
 export class Player extends Schema {
   @type('number') playerId: number = 0;
@@ -22,6 +23,12 @@ export class Player extends Schema {
     'https://chungus-battles.b-cdn.net/chungus-battles-assets/Portrait_ID_0_Placeholder.png';
   @type([Talent]) talents: ArraySchema<Talent> = new ArraySchema<Talent>();
   @type([Item]) inventory: ArraySchema<Item> = new ArraySchema<Item>();
+	@type([ItemCollection]) activeItemCollections: ArraySchema<ItemCollection> =
+		new ArraySchema<ItemCollection>();
+	@type([ItemCollection])
+	availableItemCollections: ArraySchema<ItemCollection> =
+		new ArraySchema<ItemCollection>();
+	@type('number') dodgeRate: number = 0;
 
   get gold(): number {
     return this._gold;

@@ -2,13 +2,22 @@ import { Component, effect } from '@angular/core';
 import { FightService } from '../../services/fight.service';
 import { CharacterSheetComponent } from '../../../draft/components/character-sheet/character-sheet.component';
 import { Player } from '../../../models/colyseus-schema/PlayerSchema';
-import { HealingMessage, DamageMessage, TriggerTalentMessage } from '../../../models/message-types/MessageTypes';
+import {
+  HealingMessage,
+  DamageMessage,
+  TriggerTalentMessage,
+  TriggerCollectionMessage,
+} from '../../../models/message-types/MessageTypes';
 import { CombatLogComponent } from '../combat-log/combat-log.component';
 import { DraftService } from '../../../draft/services/draft.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import triggerTalentActivation from '../../../common/trigger-talent';
+import {
+  triggerTalentActivation,
+  triggerItemCollectionActivation,
+} from '../../../common/TriggerAnimations';
+import { ItemCollection } from '../../../models/colyseus-schema/ItemCollectionSchema';
 
 @Component({
   selector: 'app-fight-room',
@@ -105,6 +114,16 @@ export class FightRoomComponent {
             console.log('trigger_talent', message);
           }
         });
+
+        room.onMessage(
+          'trigger_collection',
+          (message: TriggerCollectionMessage) => {
+            if (this.player && this.enemy) {
+              triggerItemCollectionActivation(message.collectionId, message.playerId);
+              console.log('trigger_collection', message);
+            }
+          }
+        );
       }
     });
   }
@@ -239,5 +258,3 @@ export class FightRoomComponent {
     return this.player?.wins || 0;
   }
 }
-
-

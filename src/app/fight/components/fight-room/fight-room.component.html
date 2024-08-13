@@ -34,7 +34,8 @@
   </div>
 </div>
 
-<div id="active-collections-player" class="flex flex-row">
+<div aria-label="Player" id="active-collections-player" class="flex flex-row">
+  <div class="mx-2">Player: </div>
   @for (itemCollection of player?.activeItemCollections; track $index) {
   <div id="collection-{{itemCollection.itemCollectionId}}-{{player?.playerId}}" #tooltip="matTooltip"
     matTooltip={{itemCollection.effect}} matTooltipPosition="below">
@@ -43,7 +44,8 @@
   }
 </div>
 
-<div id="active-collections-enemy" class="flex flex-row">
+<div aria-label="Enemy" id="active-collections-enemy" class="flex flex-row">
+  <div class="mx-2">Enemy: </div>
   @for (itemCollection of enemy?.activeItemCollections; track $index) {
   <div id="collection-{{itemCollection.itemCollectionId}}-{{enemy?.playerId}}" #tooltip="matTooltip"
     matTooltip={{itemCollection.effect}} matTooltipPosition="below">

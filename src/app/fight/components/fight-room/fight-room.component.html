@@ -34,9 +34,19 @@
   </div>
 </div>
 
-<div id="active-collections" class="flex flex-row">
+<div id="active-collections-player" class="flex flex-row">
   @for (itemCollection of player?.activeItemCollections; track $index) {
-  <div #tooltip="matTooltip" matTooltip={{itemCollection.effect}} matTooltipPosition="below">
+  <div id="collection-{{itemCollection.itemCollectionId}}-{{player?.playerId}}" #tooltip="matTooltip"
+    matTooltip={{itemCollection.effect}} matTooltipPosition="below">
+    <p class="font-bold text-xs">{{itemCollection.name}}</p>
+  </div>
+  }
+</div>
+
+<div id="active-collections-enemy" class="flex flex-row">
+  @for (itemCollection of enemy?.activeItemCollections; track $index) {
+  <div id="collection-{{itemCollection.itemCollectionId}}-{{enemy?.playerId}}" #tooltip="matTooltip"
+    matTooltip={{itemCollection.effect}} matTooltipPosition="below">
     <p class="font-bold text-xs">{{itemCollection.name}}</p>
   </div>
   }

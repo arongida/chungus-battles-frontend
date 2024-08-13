@@ -5,9 +5,16 @@
   z-index: 1000;
 }
 
-#active-collections {
+#active-collections-player {
   position: fixed;
   top: 1rem;
+  right: 50%;
+  z-index: 1000;
+}
+
+#active-collections-enemy {
+  position: fixed;
+  bottom: 1rem;
   right: 50%;
   z-index: 1000;
 }

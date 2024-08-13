@@ -33,3 +33,11 @@
     Wins: {{ getPlayerWins() }}
   </div>
 </div>
+
+<div id="active-collections" class="flex flex-row">
+  @for (itemCollection of player?.activeItemCollections; track $index) {
+  <div #tooltip="matTooltip" matTooltip={{itemCollection.effect}} matTooltipPosition="below">
+    <p class="font-bold text-xs">{{itemCollection.name}}</p>
+  </div>
+  }
+</div>

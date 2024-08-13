@@ -9,6 +9,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import triggerTalentActivation from '../../../common/trigger-talent';
+import { ItemCollection } from '../../../models/colyseus-schema/ItemCollectionSchema';
 
 @Component({
   selector: 'app-fight-room',

@@ -10,7 +10,7 @@ import { TalentsComponent } from '../talents/talents.component';
 import { Talent } from '../../../models/colyseus-schema/TalentSchema';
 import { MatTooltip } from '@angular/material/tooltip';
 import { MatButton } from '@angular/material/button';
-import { TriggerTalentMessage } from '../../../models/message-types/MessageTypes';
+import { TriggerCollectionMessage, TriggerTalentMessage } from '../../../models/message-types/MessageTypes';
 import { triggerTalentActivation, triggerItemCollectionActivation } from '../../../common/TriggerAnimations';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ItemCollection } from '../../../models/colyseus-schema/ItemCollectionSchema';
@@ -59,6 +59,16 @@ export class DraftRoomComponent implements OnInit {
       (message: TriggerTalentMessage) => {
         triggerTalentActivation(message.talentId, message.playerId);
         console.log('trigger_talent', message);
+      }
+    );
+
+    this.draftService.room?.onMessage(
+      'trigger_collection',
+      (message: TriggerCollectionMessage) => {
+        if (this.player) {
+          triggerItemCollectionActivation(message.collectionId, message.playerId);
+          console.log('trigger_collection', message);
+        }
       }
     );
 

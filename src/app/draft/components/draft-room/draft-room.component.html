@@ -41,7 +41,7 @@
 <div id="active-collections" class="flex flex-row">
   <div class="mx-2">Active: </div>
   @for (itemCollection of activeCollections; track $index) {
-  <div #tooltip="matTooltip" matTooltip={{itemCollection.effect}} matTooltipPosition="below">
+  <div id="collection-{{itemCollection.itemCollectionId}}-{{player?.playerId}}" #tooltip="matTooltip" matTooltip={{itemCollection.effect}} matTooltipPosition="below">
     <p class="font-bold text-xs">{{itemCollection.name}}</p>
   </div>
   }

@@ -31,11 +31,13 @@ export class ShopComponent {
     this.shop = [] as Item[];
     this.playerLevel = 0;
     this.playerGold = 0; 
+    this.refreshShopCost = 0;
   }
 
   @Input({ required: true }) shop: Item[];
   @Input({ required: true }) playerLevel: number;
   @Input({ required: true }) playerGold: number;
+  @Input({ required: true }) refreshShopCost: number;
 
   onMouseEnterItem(item: Item) {
     item.showDetails = true;

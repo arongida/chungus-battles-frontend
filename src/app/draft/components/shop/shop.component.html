@@ -76,7 +76,7 @@
     }
   </div>
   <div class="absolute top-0 right-0 flex-row-reverse">
-    <button [disabled]="playerGold < 2" #tooltip="matTooltip" matTooltip="2 gold" mat-stroked-button
+    <button [disabled]="playerGold < refreshShopCost" #tooltip="matTooltip" matTooltip="{{refreshShopCost}} gold" mat-stroked-button
       matTooltipPosition="right" color="text-white" class="m-2 p-2 flex-1"
       (click)="draftService.sendMessage('refresh_shop', {})" (mouseenter)="switchShopRefreshAnimate()"
       (mouseleave)="switchShopRefreshAnimate()">

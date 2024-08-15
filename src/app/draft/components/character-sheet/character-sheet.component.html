@@ -77,17 +77,16 @@
       </div>
     </div>
 
-    @if (!combat) {
-      <div
-        class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm font-semibold"
-        #tooltip="matTooltip"
-        matTooltip="You can spend in the shop or to buy XP."
-        matTooltipPosition="right"
-      >
-        <div>Gold:</div>
-        <div class="text-yellow-300 ml-2">{{ player.gold }} 🪙</div>
-      </div>
-    }
+    <div
+      class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm font-semibold"
+      #tooltip="matTooltip"
+      matTooltip="{{player.income + player.round * 4}} gold per round."
+      matTooltipPosition="right"
+    >
+      <div>Gold:</div>
+      <div class="text-yellow-300 ml-2">{{ player.gold }} 🪙</div>
+    </div>
+    
   </div>
 
   @if (!enemy) {

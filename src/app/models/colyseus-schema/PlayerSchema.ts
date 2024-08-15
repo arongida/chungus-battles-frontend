@@ -29,6 +29,7 @@ export class Player extends Schema {
 	availableItemCollections: ArraySchema<ItemCollection> =
 		new ArraySchema<ItemCollection>();
 	@type('number') dodgeRate: number = 0;
+  @type('number') income: number = 0;
 
   get gold(): number {
     return this._gold;

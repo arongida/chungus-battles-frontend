@@ -5,6 +5,8 @@ export class AffectedStats extends Schema {
   @type('number') attack: number = 0;
   @type('number') defense: number = 0;
   @type('number') attackSpeed: number = 0;
+  @type('number') income: number = 0;
+
 }
 export class Item extends Schema {
   @type('number') itemId: number = 0;

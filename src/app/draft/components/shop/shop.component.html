@@ -30,7 +30,7 @@
           @if(item.affectedStats.attackSpeed !== 0) {
           <p>
             A.speed:
-            <span class="text-blue-500">{{ item.affectedStats.attackSpeed }} ⏩</span>
+            <span class="text-blue-500">{{ item.affectedStats.attackSpeed * 100 - 100 | number: '1.0-0'}}% ⏩</span>
           </p>
           }
 

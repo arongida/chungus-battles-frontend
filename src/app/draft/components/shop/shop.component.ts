@@ -7,6 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatChip } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
+import { DecimalPipe } from '@angular/common';
 
 @Component({
   selector: 'app-shop',
@@ -19,6 +20,7 @@ import { MatIconModule } from '@angular/material/icon';
     MatIconModule,
     MatTooltipModule,
     MatChip,
+    DecimalPipe
   ],
   templateUrl: './shop.component.html',
   styleUrl: './shop.component.css',

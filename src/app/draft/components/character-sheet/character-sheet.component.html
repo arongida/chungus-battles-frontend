@@ -69,11 +69,12 @@
     <h3 class="text-white text-lg mb-4">Inventory</h3>
     <div class="w-full rounded-md p-4 overflow-auto">
       <ul class="text-white">
-        <li *ngFor="let item of getAggregatedInventory()"
-          class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm">
+        @for (item of getAggregatedInventory(); track $index) {
+        <li class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm">
           <div>{{ item.name | titlecase }} x{{ item.quantity }}</div>
           <img [src]="getItemImage(item)" alt="{{ item.name }}" class="inventory-item-image">
         </li>
+        }
       </ul>
     </div>
   </div>

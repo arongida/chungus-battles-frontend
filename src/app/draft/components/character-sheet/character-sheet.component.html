@@ -47,10 +47,10 @@
         </div>
 
         <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm" #tooltip="matTooltip"
-          matTooltip="You gain extra {{player.income}}🪙 at the end of fights." matTooltipPosition="right">
+          matTooltip="You gain extra {{player.income}}🟡 at the end of fights." matTooltipPosition="right">
           <div>Income:</div>
           <div class="text-yellow-500">
-            +{{ player.income }} 🪙
+            +{{ player.income }} 💰
           </div>
         </div>
 
@@ -60,7 +60,7 @@
     <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm font-semibold" #tooltip="matTooltip"
       matTooltip="{{player.income + player.round * 4}} gold per round." matTooltipPosition="right">
       <div>Gold:</div>
-      <div class="text-yellow-300 ml-2">{{ player.gold }} 🪙</div>
+      <div class="text-yellow-300 ml-2">{{ player.gold }} 🟡</div>
     </div>
 
   </div>

@@ -7,7 +7,7 @@ import { ActivatedRoute, Router } from '@angular/router';
   standalone: true,
   imports: [MatButton],
   templateUrl: './end.component.html',
-  styleUrl: './end.component.css',
+  styleUrl: './end.component.scss',
 })
 export class EndComponent {
   message: string = 'Game Over';

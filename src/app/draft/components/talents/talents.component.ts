@@ -18,7 +18,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatChip,
   ],
   templateUrl: './talents.component.html',
-  styleUrl: './talents.component.css',
+  styleUrl: './talents.component.scss',
 })
 export class TalentsComponent {
   constructor(public draftService: DraftService) {

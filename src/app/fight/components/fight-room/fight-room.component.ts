@@ -24,7 +24,7 @@ import { ItemCollection } from '../../../models/colyseus-schema/ItemCollectionSc
   standalone: true,
   imports: [CharacterSheetComponent, CombatLogComponent, MatTooltipModule],
   templateUrl: './fight-room.component.html',
-  styleUrl: './fight-room.component.css',
+  styleUrl: './fight-room.component.scss',
 })
 export class FightRoomComponent {
   player: Player | null = null;

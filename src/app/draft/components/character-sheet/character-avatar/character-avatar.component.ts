@@ -18,7 +18,7 @@ import { NgClass } from '@angular/common';
     NgClass,
   ],
   templateUrl: './character-avatar.component.html',
-  styleUrl: './character-avatar.component.css',
+  styleUrl: './character-avatar.component.scss',
 })
 export class CharacterAvatarComponent {
   hoverExperience = false;

@@ -23,7 +23,7 @@ import { DecimalPipe } from '@angular/common';
     DecimalPipe
   ],
   templateUrl: './shop.component.html',
-  styleUrl: './shop.component.css',
+  styleUrl: './shop.component.scss',
 })
 export class ShopComponent {
   hoverShopRefresh = false;

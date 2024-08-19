@@ -22,7 +22,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
     MatProgressSpinnerModule,
   ],
   templateUrl: './join-form.component.html',
-  styleUrl: './join-form.component.css',
+  styleUrl: './join-form.component.scss',
 })
 export class JoinFormComponent {
   nameControl = new FormControl('');

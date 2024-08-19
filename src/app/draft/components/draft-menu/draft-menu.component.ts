@@ -8,7 +8,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
   standalone: true,
   imports: [MatButton, MatProgressSpinnerModule],
   templateUrl: './draft-menu.component.html',
-  styleUrl: './draft-menu.component.css',
+  styleUrl: './draft-menu.component.scss',
 })
 export class DraftMenuComponent {
   loading = false;

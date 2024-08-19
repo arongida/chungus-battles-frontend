@@ -1,61 +1,18 @@
-:root,
-:host {
-  --sys-background: #18120c;
-  --sys-on-background: #eee0d5;
-  --sys-surface: #18120c;
-  --sys-surface-dim: #18120c;
-  --sys-surface-bright: #403830;
-  --sys-surface-container-lowest: #130d07;
-  --sys-surface-container-low: #211a14;
-  --sys-surface-container: #251e17;
-  --sys-surface-container-high: #302921;
-  --sys-surface-container-highest: #3b332c;
-  --sys-on-surface: #eee0d5;
-  --sys-surface-variant: #52443b;
-  --sys-on-surface-variant: #d6c3b7;
-  --sys-inverse-surface: #eee0d5;
-  --sys-inverse-on-surface: #372f27;
-  --sys-outline: #9f8d83;
-  --sys-outline-variant: #52443b;
-  --sys-shadow: #000000;
-  --sys-scrim: #000000;
-  --sys-surface-tint: #e6c26c;
-  --sys-primary: #e6c26c;
-  --sys-on-primary: #3e2e00;
-  --sys-primary-container: #5a4400;
-  --sys-on-primary-container: #ffdf97;
-  --sys-inverse-primary: #765b0b;
-  --sys-secondary: #ffb77a;
-  --sys-on-secondary: #4c2700;
-  --sys-secondary-container: #6b3b05;
-  --sys-on-secondary-container: #ffdcc2;
-  --sys-tertiary: #ffb68c;
-  --sys-on-tertiary: #532200;
-  --sys-tertiary-container: #6f3812;
-  --sys-on-tertiary-container: #ffdbc9;
-  --sys-error: #ffb4ab;
-  --sys-on-error: #561e19;
-  --sys-error-container: #73342d;
-  --sys-on-error-container: #ffdad5;
-  --sys-neutral: #80756c;
-  --sys-neutral-variant: #84746a;
-  --sys-primary-fixed: #ffdf97;
-  --sys-primary-fixed-dim: #e6c26c;
-  --sys-on-primary-fixed: #251a00;
-  --sys-on-primary-fixed-variant: #5a4400;
-  --sys-secondary-fixed: #ffdcc2;
-  --sys-secondary-fixed-dim: #ffb77a;
-  --sys-on-secondary-fixed: #2e1500;
-  --sys-on-secondary-fixed-variant: #6b3b05;
-  --sys-tertiary-fixed: #ffdbc9;
-  --sys-tertiary-fixed-dim: #ffb68c;
-  --sys-on-tertiary-fixed: #321200;
-  --sys-on-tertiary-fixed-variant: #6f3812;
-  --sys-inverse-secondary: #88511c;
-  --sys-inverse-tertiary: #8c4f28;
-  --sys-inverse-error: #904a43;
-  --sys-error-fixed: #ffdad5;
-  --sys-error-fixed-dim: #ffb4ab;
-  --sys-on-error-fixed: #3b0907;
-  --sys-on-error-fixed-variant: #73342d;
+@use '@angular/material' as mat;
+
+@include mat.core();
+
+$chungus: mat.define-theme((
+ color: (
+    theme-type: dark,
+    primary: mat.$orange-palette,
+    tertiary: mat.$blue-palette,
+  ),
+  density: (
+      scale: 0,
+    ),
+));
+
+:root {
+  @include mat.all-component-themes($chungus);
 }

@@ -1,0 +1,18 @@
+@use '@angular/material' as mat;
+
+@include mat.core();
+
+$chungus: mat.define-theme((
+ color: (
+    theme-type: dark,
+    primary: mat.$orange-palette,
+    tertiary: mat.$blue-palette,
+  ),
+  density: (
+      scale: 0,
+    ),
+));
+
+:root {
+  @include mat.all-component-themes($chungus);
+}

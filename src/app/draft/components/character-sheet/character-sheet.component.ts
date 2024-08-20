@@ -30,7 +30,7 @@ import { CommonModule } from '@angular/common';
     CommonModule
   ],
   templateUrl: './character-sheet.component.html',
-  styleUrl: './character-sheet.component.css',
+  styleUrl: './character-sheet.component.scss',
 })
 export class CharacterSheetComponent {
   startingHP: number = 100;

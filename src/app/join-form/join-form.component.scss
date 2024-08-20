@@ -27,3 +27,24 @@
 .next-button {
   margin-left: 6rem; /* Optional: Space between button and image */
 }
+
+.animate-fall {
+  @apply transition-all;
+  animation: fall 5s linear forwards;
+}
+
+@keyframes fall {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+
+  80% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateY(100vh) rotate(360deg);
+    opacity: 0;
+  }
+}

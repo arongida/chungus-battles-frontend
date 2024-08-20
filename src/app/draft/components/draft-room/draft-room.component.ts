@@ -27,7 +27,7 @@ import { ItemCollection } from '../../../models/colyseus-schema/ItemCollectionSc
     MatButton,
   ],
   templateUrl: './draft-room.component.html',
-  styleUrl: './draft-room.component.css',
+  styleUrl: './draft-room.component.scss',
 })
 export class DraftRoomComponent implements OnInit {
   player?: Player;

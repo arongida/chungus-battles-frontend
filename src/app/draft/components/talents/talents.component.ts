@@ -4,8 +4,9 @@ import { MatCardModule } from '@angular/material/card';
 import { DraftService } from '../../services/draft.service';
 import { MatButtonModule } from '@angular/material/button';
 import { MatChip } from '@angular/material/chips';
-import { SlicePipe } from '@angular/common';
+import { NgClass, SlicePipe } from '@angular/common';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-talents',
@@ -16,16 +17,22 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     SlicePipe,
     MatTooltipModule,
     MatChip,
+    MatIconModule,
+    NgClass
   ],
   templateUrl: './talents.component.html',
-  styleUrl: './talents.component.css',
+  styleUrl: './talents.component.scss',
 })
 export class TalentsComponent {
+  hoverTelentRefresh = false;
+
   constructor(public draftService: DraftService) {
     this.talents = [] as Talent[];
+    this.playerLevel = 0;
   }
 
   @Input({ required: true }) talents: Talent[];
+  @Input({ required: true }) playerLevel: number;
 
   getTalentImage(talent: Talent) {
     return talent.image
@@ -43,5 +50,9 @@ export class TalentsComponent {
   onMouseLeaveTalent(talent: Talent) {
     talent.showDetails = false;
     talent.image = talent.imageCache!;
+  }
+
+  switchTalentRefreshAnimate() {
+    this.hoverTelentRefresh = !this.hoverTelentRefresh;
   }
 }

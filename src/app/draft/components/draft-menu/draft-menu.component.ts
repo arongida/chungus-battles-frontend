@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
-import { MatButton } from '@angular/material/button';
+import { MatButtonModule } from '@angular/material/button';
 import { DraftService } from '../../services/draft.service';
 import { FightService } from '../../../fight/services/fight.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 @Component({
   selector: 'app-draft-menu',
   standalone: true,
-  imports: [MatButton, MatProgressSpinnerModule],
+  imports: [MatButtonModule, MatProgressSpinnerModule],
   templateUrl: './draft-menu.component.html',
   styleUrl: './draft-menu.component.scss',
 })

@@ -44,8 +44,6 @@ export class ShopComponent {
   onMouseEnterItem(item: Item) {
     item.showDetails = true;
     item.imageCache = item.image;
-    console.log(item);
-    // item.image = 'https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_0_Empty.png';
     item.image =
       'https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_00_Empty_Orange.png';
   }
@@ -65,8 +63,6 @@ export class ShopComponent {
     this.hoverShopRefresh = !this.hoverShopRefresh;
   }
 
-  switchTalentRefreshAnimate() {
-    this.hoverTelentRefresh = !this.hoverTelentRefresh;
-  }
+
 
 }

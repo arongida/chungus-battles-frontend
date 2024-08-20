@@ -13,6 +13,10 @@ body {
 @tailwind components;
 @tailwind utilities;
 
+.mdc-notched-outline__notch
+{
+  border-right: none;
+}
 
 .damage-number {
   @apply absolute text-red-500 text-lg font-thin font-sans transition-all;

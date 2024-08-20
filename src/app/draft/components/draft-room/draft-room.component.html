@@ -9,7 +9,7 @@
     </div>
 
     <div id="talents" class="justify-center content-center text-center p-5">
-      <app-talents [talents]="availableTalents!"></app-talents>
+      <app-talents [talents]="availableTalents!" [playerLevel]="player?.level ?? 0"></app-talents>
     </div>
   </div>
 </div>

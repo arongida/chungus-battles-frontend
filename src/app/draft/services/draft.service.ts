@@ -17,8 +17,6 @@ export class DraftService {
 
   constructor(private router: Router) {
     this.client = new Colyseus.Client(environment.gameServer);
-    //this.playerId = Math.floor(Math.random() * 1000);
-    console.log('gameserver: ', this.client);
   }
 
   public async joinOrCreate(

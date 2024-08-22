@@ -43,6 +43,7 @@ export class JoinFormComponent implements AfterViewInit, OnDestroy {
   avatarOptions = [
     'https://chungus-battles.b-cdn.net/chungus-battles-assets/warrior_01.png',
     'https://chungus-battles.b-cdn.net/chungus-battles-assets/thief_01.png',
+    'https://chungus-battles.b-cdn.net/chungus-battles-assets/merchant_01.png'
   ];
   fallingItems = itemPictures;
   avatarSelected = this.avatarOptions[1];

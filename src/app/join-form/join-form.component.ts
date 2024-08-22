@@ -6,12 +6,12 @@ import {
   Renderer2,
   AfterViewInit,
   PLATFORM_ID,
-  Inject
+  Inject,
 } from '@angular/core';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DraftService } from '../draft/services/draft.service';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -35,11 +35,15 @@ import { itemPictures } from './item-image-links';
   templateUrl: './join-form.component.html',
   styleUrl: './join-form.component.scss',
 })
-export class JoinFormComponent implements AfterViewInit , OnDestroy {
-  nameControl = new FormControl('');
+export class JoinFormComponent implements AfterViewInit, OnDestroy {
+  nameControl = new FormControl(
+    '',
+    Validators.compose([Validators.maxLength(20), Validators.required])
+  );
   avatarOptions = [
     'https://chungus-battles.b-cdn.net/chungus-battles-assets/warrior_01.png',
     'https://chungus-battles.b-cdn.net/chungus-battles-assets/thief_01.png',
+    'https://chungus-battles.b-cdn.net/chungus-battles-assets/merchant_01.png'
   ];
   fallingItems = itemPictures;
   avatarSelected = this.avatarOptions[1];
@@ -55,13 +59,14 @@ export class JoinFormComponent implements AfterViewInit , OnDestroy {
     @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
-
   ngAfterViewInit(): void {
     if (isPlatformBrowser(this.platformId)) {
       // Only run the animation interval in the browser
       this.intervalId = setInterval(() => {
         this.triggerShowFallingItem(
-          this.fallingItems[Math.floor(Math.random() * this.fallingItems.length)]
+          this.fallingItems[
+            Math.floor(Math.random() * this.fallingItems.length)
+          ]
         );
       }, 1000);
     }
@@ -88,7 +93,22 @@ export class JoinFormComponent implements AfterViewInit , OnDestroy {
     this.avatarSelected = this.avatarOptions[prevIndex];
   }
 
+  getInputErrorMessage() {
+    if (this.nameControl.hasError('required')) {
+      return 'Name is required!';
+    }
+    return this.nameControl.hasError('maxlength') ? 'Name is too long!' : '';
+  }
+
   async onFormSubmit() {
+    if (this.nameControl.invalid) {
+      const errorMessage = this.getInputErrorMessage();
+      this.snackBar.open(errorMessage, 'Close', {
+        duration: 3000,
+      });
+      return;
+    }
+
     this.loading = true;
     const joinResult = await this.draftService.joinOrCreate(
       this.nameControl.value!,
@@ -113,12 +133,18 @@ export class JoinFormComponent implements AfterViewInit , OnDestroy {
       this.renderer.setStyle(itemImg, 'z-index', '-1');
 
       // Append the img element to the container
-      this.renderer.appendChild(this.fallingItemsContainer.nativeElement, itemImg);
+      this.renderer.appendChild(
+        this.fallingItemsContainer.nativeElement,
+        itemImg
+      );
 
       // Remove the img element after 5 seconds
       setTimeout(() => {
-        this.renderer.removeChild(this.fallingItemsContainer.nativeElement, itemImg);
-      }, 5000);
+        this.renderer.removeChild(
+          this.fallingItemsContainer.nativeElement,
+          itemImg
+        );
+      }, 6000);
     }
   }
 }

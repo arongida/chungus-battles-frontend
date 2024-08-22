@@ -30,21 +30,15 @@
 
 .animate-fall {
   @apply transition-all;
-  animation: fall 5s linear forwards;
+  animation: fall 6s linear forwards;
 }
 
 @keyframes fall {
   0% {
-    transform: translateY(0) rotate(0deg);
-    opacity: 1;
-  }
-
-  80% {
-    opacity: 1;
+    transform: translateY(-100vh) rotate(0deg) scale(0.5);
   }
 
   100% {
-    transform: translateY(100vh) rotate(360deg);
-    opacity: 0;
+    transform: translateY(100vmax) rotate(360deg) scale(1.5);
   }
 }

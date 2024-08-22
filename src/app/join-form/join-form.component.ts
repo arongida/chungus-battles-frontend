@@ -118,7 +118,7 @@ export class JoinFormComponent implements AfterViewInit , OnDestroy {
       // Remove the img element after 5 seconds
       setTimeout(() => {
         this.renderer.removeChild(this.fallingItemsContainer.nativeElement, itemImg);
-      }, 5000);
+      }, 6000);
     }
   }
 }

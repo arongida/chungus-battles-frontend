@@ -4,14 +4,18 @@
       <app-character-sheet class="" [player]="player!"></app-character-sheet>
     </div>
 
+    <button mat-fab (click)="openDialog()">Pick talent</button>
+
     <div id="shop" class="items-center flex justify-center p-1">
       <app-shop [shop]="shop ?? []" [refreshShopCost]="player?.refreshShopCost ?? 2" [playerLevel]="player?.level ?? 1" [playerGold]="player?.gold ?? 0"></app-shop>
     </div>
 
-    <div id="talents" class="justify-center content-center text-center p-5">
+    <!-- <div id="talents" class="justify-center content-center text-center p-5">
       <app-talents [talents]="availableTalents!" [playerLevel]="player?.level ?? 0"></app-talents>
-    </div>
+    </div> -->
+
   </div>
+
 </div>
 
 <div id="round-info" class="flex flex-col flex-1">

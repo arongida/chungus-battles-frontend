@@ -1,17 +1,22 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { DraftService } from '../../services/draft.service';
 import { Player } from '../../../models/colyseus-schema/PlayerSchema';
 import { Item } from '../../../models/colyseus-schema/ItemSchema';
-import { Router } from '@angular/router';
 import { CharacterSheetComponent } from '../character-sheet/character-sheet.component';
 import { ShopComponent } from '../shop/shop.component';
 import { DraftMenuComponent } from '../draft-menu/draft-menu.component';
 import { TalentsComponent } from '../talents/talents.component';
 import { Talent } from '../../../models/colyseus-schema/TalentSchema';
 import { MatTooltip } from '@angular/material/tooltip';
-import { MatButton } from '@angular/material/button';
-import { TriggerCollectionMessage, TriggerTalentMessage } from '../../../models/message-types/MessageTypes';
-import { triggerTalentActivation, triggerItemCollectionActivation } from '../../../common/TriggerAnimations';
+import { MatButtonModule } from '@angular/material/button';
+import {
+  TriggerCollectionMessage,
+  TriggerTalentMessage,
+} from '../../../models/message-types/MessageTypes';
+import {
+  triggerTalentActivation,
+  triggerItemCollectionActivation,
+} from '../../../common/TriggerAnimations';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ItemCollection } from '../../../models/colyseus-schema/ItemCollectionSchema';
 
@@ -24,7 +29,7 @@ import { ItemCollection } from '../../../models/colyseus-schema/ItemCollectionSc
     DraftMenuComponent,
     TalentsComponent,
     MatTooltip,
-    MatButton,
+    MatButtonModule
   ],
   templateUrl: './draft-room.component.html',
   styleUrl: './draft-room.component.scss',
@@ -32,7 +37,7 @@ import { ItemCollection } from '../../../models/colyseus-schema/ItemCollectionSc
 export class DraftRoomComponent implements OnInit {
   player?: Player;
   shop?: Item[];
-  availableTalents?: Talent[];
+  availableTalents: Talent[];
   availableCollections?: ItemCollection[];
   activeCollections?: ItemCollection[];
 
@@ -66,7 +71,10 @@ export class DraftRoomComponent implements OnInit {
       'trigger_collection',
       (message: TriggerCollectionMessage) => {
         if (this.player) {
-          triggerItemCollectionActivation(message.collectionId, message.playerId);
+          triggerItemCollectionActivation(
+            message.collectionId,
+            message.playerId
+          );
           console.log('trigger_collection', message);
         }
       }

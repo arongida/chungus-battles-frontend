@@ -19,11 +19,6 @@ import {
 } from '../../../common/TriggerAnimations';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ItemCollection } from '../../../models/colyseus-schema/ItemCollectionSchema';
-import {
-  MatDialogModule,
-  MAT_DIALOG_DATA,
-  MatDialog,
-} from '@angular/material/dialog';
 
 @Component({
   selector: 'app-draft-room',
@@ -34,8 +29,7 @@ import {
     DraftMenuComponent,
     TalentsComponent,
     MatTooltip,
-    MatButtonModule,
-    MatDialogModule,
+    MatButtonModule
   ],
   templateUrl: './draft-room.component.html',
   styleUrl: './draft-room.component.scss',
@@ -43,10 +37,9 @@ import {
 export class DraftRoomComponent implements OnInit {
   player?: Player;
   shop?: Item[];
-  availableTalents?: Talent[];
+  availableTalents: Talent[];
   availableCollections?: ItemCollection[];
   activeCollections?: ItemCollection[];
-  talentDialog = inject(MatDialog);
 
   constructor(
     public draftService: DraftService,
@@ -57,19 +50,6 @@ export class DraftRoomComponent implements OnInit {
     this.availableTalents = [] as Talent[];
     this.availableCollections = [] as ItemCollection[];
     this.activeCollections = [] as ItemCollection[];
-  }
-
-  openDialog(): void {
-    const dialogRef = this.talentDialog.open(TalentsComponent, {
-      data: { name: '', animal: '' },
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result !== undefined) {
-        console.log('The dialog was closed');
-        console.log(result);
-      }
-    });
   }
 
   async ngOnInit(): Promise<void> {

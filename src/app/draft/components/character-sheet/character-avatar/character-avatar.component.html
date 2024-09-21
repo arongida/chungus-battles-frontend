@@ -1,6 +1,6 @@
 <!-- Avatar Section -->
 <div id="avatar-{{ player.playerId }}"
-  class="bg-cover bg-center w-48 h-64 flex flex-col-reverse items-center bg-gray-800 p-4 shadow-lg"
+  class="bg-cover bg-center w-48 h-64 flex flex-col-reverse items-center bg-gray-800 p-4 shadow-lg relative"
   style="background-image: url('{{ getAvatarImage() }}');" (mouseenter)="onAvatarMouseEnter()"
   (mouseleave)="onAvatarMouseLeave()">
   <div class="relative w-full rounded-md">
@@ -32,4 +32,11 @@
     }
   </div>
   <div class="absolute" id="attack-{{ player.playerId }}"></div>
+  @if (this.availableTalents.length > 0) {
+    <div class="absolute top-0 right-0">
+      <button mat-fab (click)="openDialog()">
+        <mat-icon class="animate-bounce">keyboard_arrow_up</mat-icon>
+      </button>
+    </div>
+  }
 </div>

@@ -1,9 +1,5 @@
 @if (talents.length > 0) {
-<button #tooltip="matTooltip" matTooltip="{{playerLevel * 2}} gold" mat-fab matTooltipPosition="right"
-  color="text-white" class="m-2 p-2 flex-1" (click)="draftService.sendMessage('refresh_talents', {})"
-  (mouseenter)="switchTalentRefreshAnimate()" (mouseleave)="switchTalentRefreshAnimate()">
-  <mat-icon [ngClass]="{'animate-spin': hoverTelentRefresh}">refresh</mat-icon>
-</button>
+
 <div id="talents" class="grid-cols-1 grid-rows-2 grid max-w-fit px-6 py-12" [style.background-image]="
       'url(https://chungus-battles.b-cdn.net/chungus-battles-assets/talent_scroll_01.png)'
     " [style.background-size]="'100% 100%'" [style.background-position]="'center'">
@@ -14,9 +10,9 @@
     [style.background-position]="'center'" #tooltip="matTooltip" matTooltip="{{ talent.description }}"
     matTooltipPosition="right" (mouseenter)="onMouseEnterTalent(talent)" (mouseleave)="onMouseLeaveTalent(talent)">
     <h2 class="mb-5 mt-2">
-      <div>{{ talent.name }}</div>
+      {{ talent.name }}
     </h2>
-    <div class="m-2">
+    <div class="m-3">
       <p>{{ talent.description }}</p>
       @for (tag of talent.tags; track $index) {
       <mat-chip class="mr-1 py-1">{{ tag }}</mat-chip>
@@ -25,11 +21,7 @@
     <div>
       @if (talent.showDetails) {
       <div class="mt-5">
-        <button mat-raised-button color="warn" class="" (click)="
-                  draftService.sendMessage('select_talent', {
-                    talentId: talent.talentId,
-                  })
-                ">
+        <button mat-raised-button color="warn" class="" (click)="selectTalent(talent.talentId)">
           Select
         </button>
       </div>
@@ -37,6 +29,12 @@
     </div>
   </div>
   }
+  <button #tooltip="matTooltip" matTooltip="{{playerLevel * 2}} gold" mat-fab matTooltipPosition="right"
+    color="text-white" class="fixed m-auto inset-x-0 inset-y-0"
+    (click)="draftService.sendMessage('refresh_talents', {})" (mouseenter)="switchTalentRefreshAnimate()"
+    (mouseleave)="switchTalentRefreshAnimate()">
+    <mat-icon [ngClass]="{'animate-spin': hoverTelentRefresh}">refresh</mat-icon>
+  </button>
 </div>
 } @else {
 <img class="transition-transform"

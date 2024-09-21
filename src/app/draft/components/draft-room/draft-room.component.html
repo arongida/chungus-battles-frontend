@@ -1,16 +1,12 @@
 <div class="flex flex-col flex-1 justify-center items-center w-screen h-screen scale-50 lg:scale-100">
-  <div class="flex flex-row justify-between w-full">
+  <div class="flex flex-row justify-evenly w-full">
     <div id="character" class="flex lg:p-5 justify-center items-center">
-      <app-character-sheet class="" [player]="player!"></app-character-sheet>
+      <app-character-sheet class="" [player]="player!" [availableTalents]="availableTalents"></app-character-sheet>
     </div>
 
     <div id="shop" class="items-center flex justify-center p-1">
       <app-shop [shop]="shop ?? []" [refreshShopCost]="player?.refreshShopCost ?? 2" [playerLevel]="player?.level ?? 1"
         [playerGold]="player?.gold ?? 0"></app-shop>
-    </div>
-
-    <div id="talents" class="justify-center content-center text-center p-5">
-      <app-talents [talents]="availableTalents!" [playerLevel]="player?.level ?? 0"></app-talents>
     </div>
   </div>
 </div>

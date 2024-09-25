@@ -19,6 +19,7 @@ import {
 } from '../../../common/TriggerAnimations';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ItemCollection } from '../../../models/colyseus-schema/ItemCollectionSchema';
+import { RoundInfoComponent } from '../round-info/round-info.component';
 
 @Component({
   selector: 'app-draft-room',
@@ -29,7 +30,8 @@ import { ItemCollection } from '../../../models/colyseus-schema/ItemCollectionSc
     DraftMenuComponent,
     TalentsComponent,
     MatTooltip,
-    MatButtonModule
+    MatButtonModule,
+    RoundInfoComponent
   ],
   templateUrl: './draft-room.component.html',
   styleUrl: './draft-room.component.scss',
@@ -108,19 +110,5 @@ export class DraftRoomComponent implements OnInit {
       this.activeCollections = state.player
         .activeItemCollections as ItemCollection[];
     });
-  }
-
-  getLivesString(): string {
-    let lives = '';
-    if (this.player) {
-      for (let i = 0; i < this.player.lives; i++) {
-        lives += '❤️ ';
-      }
-    }
-    return lives;
-  }
-
-  getPlayerWins(): number {
-    return this.player?.wins || 0;
   }
 }

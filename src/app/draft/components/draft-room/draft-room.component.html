@@ -11,20 +11,7 @@
   </div>
 </div>
 
-<div id="round-info" class="flex flex-col flex-1">
-  <h2 #tooltip="matTooltip"
-    matTooltip="Round counter, you will get matched against same (or lower if non existent) players in battle!"
-    matTooltipPosition="right" id="round-title">
-    ROUND: {{ player?.round }}
-  </h2>
-  <div #tooltip="matTooltip" matTooltip="If you run out of lives, you will loose. You get -1 life for a lost combat."
-    matTooltipPosition="right">
-    Lives left: {{ getLivesString() }}
-  </div>
-  <div #tooltip="matTooltip" matTooltip="If you win 10 times, you are victorious!" matTooltipPosition="right">
-    Wins: {{ getPlayerWins() }}
-  </div>
-</div>
+<app-round-info [player]="player!"></app-round-info>
 
 <div id="available-collections" class="flex flex-row">
   <div class="mx-2">Available: </div>

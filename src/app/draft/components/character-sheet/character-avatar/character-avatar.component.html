@@ -1,8 +1,7 @@
 <!-- Avatar Section -->
 <div id="avatar-{{ player.playerId }}"
   class="bg-cover bg-center w-48 h-64 flex flex-col-reverse items-center bg-gray-800 p-4 shadow-lg relative"
-  style="background-image: url('{{ getAvatarImage() }}');" (mouseenter)="onAvatarMouseEnter()"
-  (mouseleave)="onAvatarMouseLeave()">
+  style="background-image: url('{{ getAvatarImage() }}');" >
   <div class="relative w-full rounded-md">
     <!-- Floating Damage Numbers Container -->
     <div id="damage-numbers-{{ player.playerId }}" class="relative pointer-events-none"></div>
@@ -12,31 +11,7 @@
       Level: {{ player.level }}
     </div>
   </div>
-  <div class="w-full text-white mt-4">
-    @if (!combat && showExperience) {
-    <h4 class="text-center">Level up for gold:</h4>
-    <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm">
-      <label for="xp" class="">XP:</label>
-      <label for="xp">({{ player.xp }} / {{ player.maxXp }})</label>
-    </div>
-    <mat-progress-bar id="xp" mode="determinate" value="{{ (player.xp / player.maxXp) * 100 }}"></mat-progress-bar>
-    <div class="flex justify-center mt-2">
-      @if (player.level < 6) { <button #tooltip="matTooltip" matTooltip="4 gold = 4 xp" matTooltipHideDelay="1000"
-        matTooltipPosition="right" class="m-4" mat-raised-button color="primary"
-        (click)="draftService.sendMessage('buy_xp', {})" (mouseenter)="switchHoverExperience()"
-        (mouseleave)="switchHoverExperience()">
-        XP<mat-icon [ngClass]="{'animate-bounce': hoverExperience}">keyboard_arrow_up</mat-icon>
-        </button>
-        }
-    </div>
-    }
-  </div>
+
   <div class="absolute" id="attack-{{ player.playerId }}"></div>
-  @if (this.availableTalents.length > 0) {
-    <div class="absolute top-0 right-0">
-      <button mat-fab (click)="openDialog()">
-        <mat-icon class="animate-bounce">keyboard_arrow_up</mat-icon>
-      </button>
-    </div>
-  }
+  
 </div>

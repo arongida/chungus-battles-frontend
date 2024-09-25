@@ -76,12 +76,24 @@
     }
   </div>
 
+
   <div class="absolute top-0 right-0 flex-row-reverse">
+
+    <button [disabled]="playerGold < refreshShopCost" #tooltip="matTooltip" matTooltip="4 gold = 4 xp"
+      matTooltipPosition="left" mat-fab color="text-white"
+      class="m-2 p-2 flex-1" (click)="draftService.sendMessage('buy_xp', {})" (mouseenter)="switchBuyXpAnimate()"
+      (mouseleave)="switchBuyXpAnimate()">
+      <mat-icon [ngClass]="{'animate-bounce': hoverBuyXp}">keyboard_arrow_up</mat-icon>
+    </button>
+
     <button [disabled]="playerGold < refreshShopCost" #tooltip="matTooltip" matTooltip="{{refreshShopCost}} gold"
       mat-fab matTooltipPosition="right" color="text-white" class="m-2 p-2 flex-1"
       (click)="draftService.sendMessage('refresh_shop', {})" (mouseenter)="switchShopRefreshAnimate()"
       (mouseleave)="switchShopRefreshAnimate()">
       <mat-icon [ngClass]="{'animate-spin': hoverShopRefresh}">refresh</mat-icon>
     </button>
+
+
+
   </div>
 </div>

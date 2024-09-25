@@ -20,6 +20,8 @@ import {
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ItemCollection } from '../../../models/colyseus-schema/ItemCollectionSchema';
 import { RoundInfoComponent } from '../round-info/round-info.component';
+import { DraftToolbarComponent } from "../draft-toolbar/draft-toolbar.component";
+import { TalentIconsComponent } from "../talent-icons/talent-icons.component";
 
 @Component({
   selector: 'app-draft-room',
@@ -32,7 +34,9 @@ import { RoundInfoComponent } from '../round-info/round-info.component';
     MatTooltip,
     MatButtonModule,
     RoundInfoComponent,
-    ReadyButtonComponent
+    ReadyButtonComponent,
+    DraftToolbarComponent,
+    TalentIconsComponent
 ],
   templateUrl: './draft-room.component.html',
   styleUrl: './draft-room.component.scss',

@@ -1,0 +1,16 @@
+  <!-- Inventory Section -->
+  <div id="inventory" class="bg-cover bg-center w-48 h-64 flex flex-col items-center bg-gray-800 p-4 shadow-lg" style="
+      background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_0_Empty.png');
+    ">
+    <h3 class="text-white text-lg mb-4">Inventory</h3>
+    <div class="w-full rounded-md p-4 overflow-auto">
+      <ul class="text-white">
+        @for (item of getAggregatedInventory(); track $index) {
+        <li class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm">
+          <div>{{ item.name | titlecase }} x{{ item.quantity }}</div>
+          <img [src]="getItemImage(item)" alt="{{ item.name }}" class="inventory-item-image">
+        </li>
+        }
+      </ul>
+    </div>
+  </div>

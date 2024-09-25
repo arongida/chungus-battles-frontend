@@ -20,19 +20,19 @@ import { DecimalPipe } from '@angular/common';
     MatIconModule,
     MatTooltipModule,
     MatChip,
-    DecimalPipe
+    DecimalPipe,
   ],
   templateUrl: './shop.component.html',
   styleUrl: './shop.component.scss',
 })
 export class ShopComponent {
   hoverShopRefresh = false;
-  hoverTelentRefresh = false;
+  hoverBuyXp = false;
 
   constructor(public draftService: DraftService) {
     this.shop = [] as Item[];
     this.playerLevel = 0;
-    this.playerGold = 0; 
+    this.playerGold = 0;
     this.refreshShopCost = 0;
   }
 
@@ -63,6 +63,7 @@ export class ShopComponent {
     this.hoverShopRefresh = !this.hoverShopRefresh;
   }
 
-
-
+  switchBuyXpAnimate() {
+    this.hoverBuyXp = !this.hoverBuyXp;
+  }
 }

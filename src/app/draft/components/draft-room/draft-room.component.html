@@ -1,9 +1,9 @@
-<div class="flex flex-col flex-1 justify-center items-center w-screen h-screen scale-50 lg:scale-100">
-  <div class="flex flex-row justify-evenly w-full">
-    <div id="character" class="flex lg:p-5 justify-center items-center">
-      <app-character-sheet class="" [player]="player!" [availableTalents]="availableTalents"></app-character-sheet>
-    </div>
+<app-draft-toolbar [player]="player!" [availableTalents]="availableTalents!"></app-draft-toolbar>
 
+<app-talent-icons [player]="player!"></app-talent-icons>
+
+<div class="flex flex-col justify-center items-center w-screen h-screen scale-50 lg:scale-100">
+  <div class="flex flex-row justify-evenly w-full">
     <div id="shop" class="items-center flex justify-center p-1">
       <app-shop [shop]="shop ?? []" [refreshShopCost]="player?.refreshShopCost ?? 2" [playerLevel]="player?.level ?? 1"
         [playerGold]="player?.gold ?? 0"></app-shop>

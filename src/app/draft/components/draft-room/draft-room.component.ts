@@ -4,7 +4,7 @@ import { Player } from '../../../models/colyseus-schema/PlayerSchema';
 import { Item } from '../../../models/colyseus-schema/ItemSchema';
 import { CharacterSheetComponent } from '../character-sheet/character-sheet.component';
 import { ShopComponent } from '../shop/shop.component';
-import { DraftMenuComponent } from '../draft-menu/draft-menu.component';
+import { ReadyButtonComponent } from '../ready-button/ready-button.component';
 import { TalentsComponent } from '../talents/talents.component';
 import { Talent } from '../../../models/colyseus-schema/TalentSchema';
 import { MatTooltip } from '@angular/material/tooltip';
@@ -27,12 +27,13 @@ import { RoundInfoComponent } from '../round-info/round-info.component';
   imports: [
     CharacterSheetComponent,
     ShopComponent,
-    DraftMenuComponent,
+    ReadyButtonComponent,
     TalentsComponent,
     MatTooltip,
     MatButtonModule,
-    RoundInfoComponent
-  ],
+    RoundInfoComponent,
+    ReadyButtonComponent
+],
   templateUrl: './draft-room.component.html',
   styleUrl: './draft-room.component.scss',
 })

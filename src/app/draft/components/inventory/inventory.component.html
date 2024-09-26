@@ -1,5 +1,5 @@
 <!-- Inventory Section -->
-<div id= "inventory" >
+<div id= "inventory-grid" class="grid grid-cols-4">
   @for (item of player.inventory; track $index) {
   <mat-card [style.background-image]="'url(' + getItemImage(item) + ')'"
     id="item-{{ $index }}"

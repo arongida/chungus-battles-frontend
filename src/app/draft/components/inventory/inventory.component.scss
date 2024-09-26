@@ -1,3 +1,16 @@
+.inventory-grid {
+  display: grid;
+  width: '100vw';
+  height: '100vh';
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Responsive columns */
+  grid-gap: 16px; /* Spacing between cards */
+  padding: 16px; /* Padding around the grid */
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  overflow-y: auto; /* Allow scrolling if the content is too large */
+}
+
 .inventory-item-image {
   height: 20px; /* Set height as needed */
   width: auto;  /* Maintain aspect ratio */

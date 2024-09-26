@@ -1,8 +1,5 @@
 <div id="shop" class="relative">
-  <div class="grid-cols-3 grid-rows-2 gap-1 grid max-w-fit bg-cover bg-center p-4 border-4 border-black"
-    [style.background-image]="
-    'url(https://chungus-battles.b-cdn.net/chungus-battles-assets/Chungus_table_01.png)'
-  ">
+  <div class="grid-cols-3 grid-rows-2 gap-1 grid max-w-fit p-4">
     @for (item of shop; track $index) {
     <mat-card [ngClass]="{'opacity-0':item.sold}" [style.background-image]="'url(' + getItemImage(item) + ')'"
       id="item-{{ $index }}"

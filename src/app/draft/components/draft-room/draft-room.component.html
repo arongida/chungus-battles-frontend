@@ -1,8 +1,10 @@
-<app-draft-toolbar [player]="player!" [availableTalents]="availableTalents!"></app-draft-toolbar>
+<app-draft-toolbar class="fixed w-screen top-0 z-10" [player]="player!" [availableTalents]="availableTalents!"></app-draft-toolbar>
 
-<app-talent-icons [player]="player!"></app-talent-icons>
+<app-talent-icons class="z-10" [player]="player!"></app-talent-icons>
 
-<div class="flex flex-col justify-center items-center w-screen h-screen scale-50 lg:scale-100">
+<div class="flex flex-col justify-center items-center scale-50 lg:scale-100 z-0 bg-cover w-screen h-screen" [style.background-image]="
+'url(https://chungus-battles.b-cdn.net/chungus-battles-assets/BG_01.png)'
+">
   <div class="flex flex-row justify-evenly w-full">
     <div id="shop" class="items-center flex justify-center p-1">
       <app-shop [shop]="shop ?? []" [refreshShopCost]="player?.refreshShopCost ?? 2" [playerLevel]="player?.level ?? 1"
@@ -32,4 +34,4 @@
   }
 </div>
 
-<app-ready-button/>
+<app-ready-button />

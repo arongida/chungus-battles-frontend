@@ -45,7 +45,7 @@ export class ShopComponent {
     item.showDetails = true;
     item.imageCache = item.image;
     item.image =
-      'https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_00_Empty_Orange.png';
+      `https://chungus-battles.b-cdn.net/chungus-battles-assets/level_${item.tier}_glow.png`;
   }
 
   onMouseLeaveItem(item: Item) {

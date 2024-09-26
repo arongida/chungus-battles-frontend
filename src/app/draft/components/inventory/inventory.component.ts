@@ -2,12 +2,20 @@ import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Player } from '../../../models/colyseus-schema/PlayerSchema';
 import { Item } from '../../../models/colyseus-schema/ItemSchema';
-import { TitleCasePipe } from '@angular/common';
+import { DecimalPipe, NgClass, TitleCasePipe } from '@angular/common';
+import { MatCardModule } from '@angular/material/card';
+import { MatChip } from '@angular/material/chips';
 
 @Component({
   selector: 'app-inventory',
   standalone: true,
-  imports: [TitleCasePipe],
+  imports: [
+    NgClass,
+    TitleCasePipe,
+    MatCardModule,
+    MatChip,
+    DecimalPipe
+  ],
   templateUrl: './inventory.component.html',
   styleUrl: './inventory.component.scss',
 })
@@ -20,8 +28,26 @@ export class InventoryComponent {
   ) {
     this.player = data.player;
   }
+  onMouseEnterItem(item: Item) {
+    item.showDetails = true;
+    item.imageCache = item.image;
+    item.image =
+      'https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_00_Empty_Orange.png';
+  }
 
-  getAggregatedInventory(): {
+  onMouseLeaveItem(item: Item) {
+    item.showDetails = false;
+    item.image = item.imageCache!;
+  }
+
+  getItemImage(item: Item) {
+    return item.image
+      ? item.image
+      : 'https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_0_Empty.png';
+  }
+
+
+  /*getAggregatedInventory(): {
     name: string;
     quantity: number;
     image: string;
@@ -67,5 +93,5 @@ export class InventoryComponent {
       item.image ||
       'https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_0_Empty.png'
     );
-  }
+  }*/
 }

@@ -5,6 +5,7 @@ import { Item } from '../../../models/colyseus-schema/ItemSchema';
 import { DecimalPipe, NgClass, TitleCasePipe } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatChip } from '@angular/material/chips';
+import { ArraySchema } from '@colyseus/schema';
 
 @Component({
   selector: 'app-inventory',
@@ -21,12 +22,16 @@ import { MatChip } from '@angular/material/chips';
 })
 export class InventoryComponent {
   player: Player;
+  displayedInventory: Item[];
+  isSorted: boolean;
 
   constructor(
     @Inject(MAT_DIALOG_DATA)
     public data: { player: Player }
   ) {
     this.player = data.player;
+    this.displayedInventory = this.player.inventory;
+    this.isSorted = false;
   }
   onMouseEnterItem(item: Item) {
     item.showDetails = true;
@@ -46,6 +51,15 @@ export class InventoryComponent {
       : 'https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_0_Empty.png';
   }
 
+  sortByName(items : Item[] ){
+    let itemsArray = [...items];
+    
+    const sortedByAlphabetically =  itemsArray.sort((a, b) => a.name.localeCompare(b.name));
+    
+    this.displayedInventory.map(item => console.log(item.name));
+    
+    this.displayedInventory = sortedByAlphabetically;
+  }
 
   /*getAggregatedInventory(): {
     name: string;

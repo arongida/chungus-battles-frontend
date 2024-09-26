@@ -1,6 +1,10 @@
 <!-- Inventory Section -->
 <div id= "inventory-grid" class="grid grid-cols-4">
-  @for (item of player.inventory; track $index) {
+  <div id= "inventory-search-bar" class="rounded-lg w-screen">
+    <button (click)="sortByName(displayedInventory)">sort by name</button>
+  </div>
+
+  @for (item of displayedInventory; track $index) {
   <mat-card [style.background-image]="'url(' + getItemImage(item) + ')'"
     id="item-{{ $index }}"
     class="w-60 h-80 items-center rounded-lg shadow-lg transform transition-transform scale-75 hover:scale-90"

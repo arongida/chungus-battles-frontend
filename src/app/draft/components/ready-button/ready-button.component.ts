@@ -4,13 +4,13 @@ import { DraftService } from '../../services/draft.service';
 import { FightService } from '../../../fight/services/fight.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 @Component({
-  selector: 'app-draft-menu',
+  selector: 'app-ready-button',
   standalone: true,
   imports: [MatButtonModule, MatProgressSpinnerModule],
-  templateUrl: './draft-menu.component.html',
-  styleUrl: './draft-menu.component.scss',
+  templateUrl: './ready-button.component.html',
+  styleUrl: './ready-button.component.scss',
 })
-export class DraftMenuComponent {
+export class ReadyButtonComponent {
   loading = false;
   constructor(
     private draftService: DraftService,

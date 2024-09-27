@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DraftMenuComponent } from './draft-menu.component';
+import { ReadyButtonComponent } from './ready-button.component';
 
 describe('DraftMenuComponent', () => {
-  let component: DraftMenuComponent;
-  let fixture: ComponentFixture<DraftMenuComponent>;
+  let component: ReadyButtonComponent;
+  let fixture: ComponentFixture<ReadyButtonComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DraftMenuComponent],
+      imports: [ReadyButtonComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(DraftMenuComponent);
+    fixture = TestBed.createComponent(ReadyButtonComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

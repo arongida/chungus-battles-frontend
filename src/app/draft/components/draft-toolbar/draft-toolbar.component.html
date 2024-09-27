@@ -1,0 +1,26 @@
+<mat-toolbar>
+  <div class="flex justify-between gap-4 items-center">
+    <img class="w-12 h-12 rounded-full object-cover hover:border-white hover:border" src="{{player.avatarUrl.replace('01','transparent')}}" alt="player"
+      (click)="openCharacterDetails()">
+    <span class="text-center ">{{player.name}}</span>
+    @if (this.availableTalents.length > 0) {
+    <div class="">
+      <button mat-mini-fab (click)="openTalentPickerDialog()">
+        <mat-icon class="animate-bounce">keyboard_arrow_up</mat-icon>
+      </button>
+    </div>
+    }
+  </div>
+  <span class="flex-auto">
+    <div class="flex flex-col gap-1 w-1/3 mx-auto">
+      <div class="flex justify-between">
+        <label class="text-xs text-center" for="xp">XP: {{ player.xp }} / {{ player.maxXp }}</label>
+        <label class="text-xs text-center" for="xp">Level: {{ player.level }}</label>
+      </div>
+      <mat-progress-bar id="xp" mode="determinate" value="{{ (player.xp / player.maxXp) * 100 }}"></mat-progress-bar>
+    </div>
+  </span>
+  <button mat-icon-button (click)="openInventory()">
+    <mat-icon>markunread_mailbox</mat-icon>
+  </button>
+</mat-toolbar>

@@ -26,6 +26,7 @@ import { MatButtonModule } from '@angular/material/button';
 export class InventoryComponent {
   player: Player;
   displayedInventory: Item[];
+  isDescending: boolean;
 
   constructor(
     @Inject(MAT_DIALOG_DATA)
@@ -33,6 +34,7 @@ export class InventoryComponent {
   ) {
     this.player = data.player;
     this.displayedInventory = this.player.inventory;
+    this.isDescending = false;
   }
   onMouseEnterItem(item: Item) {
     item.showDetails = true;
@@ -59,25 +61,32 @@ export class InventoryComponent {
   sortByName() {
 
     let itemsArray = Array.from(this.player.inventory);
-    const sortedByAlphabetically = itemsArray.sort((a, b) => a.name.localeCompare(b.name));
+    if(this.isDescending){
+      const sortedByNameDesc = itemsArray.sort((a, b) => a.name.localeCompare(b.name));
+      this.displayedInventory = sortedByNameDesc;
+      this.isDescending = !this.isDescending;
+    }else {
+      const sortedByNameAsc = itemsArray.sort((a, b) => b.name.localeCompare(a.name));
+      this.displayedInventory = sortedByNameAsc;
+      this.isDescending = !this.isDescending;
+    }
+    
 
-    this.displayedInventory = sortedByAlphabetically;
+    
   }
 
   sortByLevel() {
     let itemsArray = [...this.player.inventory];
-    console.log( "displayArray",this.displayedInventory);
-    console.log("itemsArray:", itemsArray);
+    if(this.isDescending){
+      const sortedByLevel = itemsArray.sort((a, b) => b.tier - a.tier);
+      this.displayedInventory = sortedByLevel;
+      this.isDescending = !this.isDescending;
+    }else{
+      const sortedByLevel = itemsArray.sort((a, b) => a.tier - b.tier);
+      this.displayedInventory = sortedByLevel;
+      this.isDescending = !this.isDescending;
+    }
     
-    console.log("Before sorting:");
-    itemsArray.forEach(item => console.log(item.tier)); 
-
-    const sortedByLevel = itemsArray.sort((a, b) => b.tier - a.tier);
-    
-    console.log("After sorting:");
-    sortedByLevel.forEach(item => console.log(item.tier));
-    
-    this.displayedInventory = sortedByLevel;
   }
 
   /*getAggregatedInventory(): {

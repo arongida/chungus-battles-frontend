@@ -1,6 +1,6 @@
 <mat-toolbar>
   <div class="flex justify-between gap-4 items-center">
-    <img class="w-12 h-12 rounded-full object-cover animate-spin hover:animate-none" src="{{player.avatarUrl}}" alt="player"
+    <img class="w-12 h-12 rounded-full object-cover hover:border-white hover:border" src="{{player.avatarUrl.replace('01','transparent')}}" alt="player"
       (click)="openCharacterDetails()">
     <span class="text-center ">{{player.name}}</span>
     @if (this.availableTalents.length > 0) {

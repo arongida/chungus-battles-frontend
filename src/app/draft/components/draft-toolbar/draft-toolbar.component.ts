@@ -49,7 +49,7 @@ export class DraftToolbarComponent {
       maxWidth: '100vw',
       maxHeight: '100vh',
       height: '100%',
-      width: '100%'
+      width: '80%'
     });
     
   }

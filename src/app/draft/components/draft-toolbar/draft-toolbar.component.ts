@@ -18,14 +18,14 @@ import { InventoryComponent } from '../inventory/inventory.component';
   styleUrl: './draft-toolbar.component.scss',
 })
 export class DraftToolbarComponent {
-  talentDialog = inject(MatDialog);
+  dialog = inject(MatDialog);
  
   @Input({ required: true }) player: Player = new Player();
   @Input({ required: true }) availableTalents: Talent[] = [];
 
   
   openTalentPickerDialog(): void {
-    const talentDialogRef = this.talentDialog.open(TalentsComponent, {
+    const talentDialogRef = this.dialog.open(TalentsComponent, {
       data: {
         talents: this.availableTalents,
         playerLevel: this.player?.level ?? 1,
@@ -34,7 +34,7 @@ export class DraftToolbarComponent {
   }
 
   openCharacterDetails(): void {
-    const charDetailsDialog = this.talentDialog.open(CharacterDetailsComponent, {
+    const charDetailsDialog = this.dialog.open(CharacterDetailsComponent, {
       data: {
         player: this.player
       },
@@ -42,10 +42,15 @@ export class DraftToolbarComponent {
   }
 
   openInventory(): void {
-    const inventoryDialog = this.talentDialog.open(InventoryComponent, {
+    const inventoryDialog = this.dialog.open(InventoryComponent, {
       data: {
         player: this.player
       },
+      maxWidth: '100vw',
+      maxHeight: '100vh',
+      height: '100%',
+      width: '100%'
     });
+    
   }
 }

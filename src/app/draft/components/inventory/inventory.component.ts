@@ -16,8 +16,8 @@ import { MatButtonModule } from '@angular/material/button';
     TitleCasePipe,
     MatCardModule,
     MatChip,
-    DecimalPipe, 
-    MatButtonModule, 
+    DecimalPipe,
+    MatButtonModule,
     MatMenuModule
   ],
   templateUrl: './inventory.component.html',
@@ -52,20 +52,33 @@ export class InventoryComponent {
       : 'https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_0_Empty.png';
   }
 
-  backToDefault(){
-      this.displayedInventory = this.player.inventory
+  backToDefault() {
+    this.displayedInventory = Array.from(this.player.inventory);
   }
 
   sortByName() {
 
-    let itemsArray = [...this.displayedInventory];
-
+    let itemsArray = Array.from(this.player.inventory);
     const sortedByAlphabetically = itemsArray.sort((a, b) => a.name.localeCompare(b.name));
 
     this.displayedInventory = sortedByAlphabetically;
   }
 
-  
+  sortByLevel() {
+    let itemsArray = [...this.player.inventory];
+    console.log( "displayArray",this.displayedInventory);
+    console.log("itemsArray:", itemsArray);
+    
+    console.log("Before sorting:");
+    itemsArray.forEach(item => console.log(item.tier)); 
+
+    const sortedByLevel = itemsArray.sort((a, b) => b.tier - a.tier);
+    
+    console.log("After sorting:");
+    sortedByLevel.forEach(item => console.log(item.tier));
+    
+    this.displayedInventory = sortedByLevel;
+  }
 
   /*getAggregatedInventory(): {
     name: string;

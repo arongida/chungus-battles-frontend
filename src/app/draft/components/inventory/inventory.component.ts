@@ -5,7 +5,8 @@ import { Item } from '../../../models/colyseus-schema/ItemSchema';
 import { DecimalPipe, NgClass, TitleCasePipe } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatChip } from '@angular/material/chips';
-import { ArraySchema } from '@colyseus/schema';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-inventory',
@@ -15,7 +16,9 @@ import { ArraySchema } from '@colyseus/schema';
     TitleCasePipe,
     MatCardModule,
     MatChip,
-    DecimalPipe
+    DecimalPipe, 
+    MatButtonModule, 
+    MatMenuModule
   ],
   templateUrl: './inventory.component.html',
   styleUrl: './inventory.component.scss',
@@ -23,7 +26,6 @@ import { ArraySchema } from '@colyseus/schema';
 export class InventoryComponent {
   player: Player;
   displayedInventory: Item[];
-  isSorted: boolean;
 
   constructor(
     @Inject(MAT_DIALOG_DATA)
@@ -31,7 +33,6 @@ export class InventoryComponent {
   ) {
     this.player = data.player;
     this.displayedInventory = this.player.inventory;
-    this.isSorted = false;
   }
   onMouseEnterItem(item: Item) {
     item.showDetails = true;
@@ -51,15 +52,20 @@ export class InventoryComponent {
       : 'https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_0_Empty.png';
   }
 
-  sortByName(items : Item[] ){
-    let itemsArray = [...items];
-    
-    const sortedByAlphabetically =  itemsArray.sort((a, b) => a.name.localeCompare(b.name));
-    
-    this.displayedInventory.map(item => console.log(item.name));
-    
+  backToDefault(){
+      this.displayedInventory = this.player.inventory
+  }
+
+  sortByName() {
+
+    let itemsArray = [...this.displayedInventory];
+
+    const sortedByAlphabetically = itemsArray.sort((a, b) => a.name.localeCompare(b.name));
+
     this.displayedInventory = sortedByAlphabetically;
   }
+
+  
 
   /*getAggregatedInventory(): {
     name: string;

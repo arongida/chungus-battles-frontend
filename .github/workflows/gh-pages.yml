@@ -13,6 +13,10 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: 22
+
+      - name: Set up repository
+        run: git remote add origin https://github.com/arongida/chungus-battles-frontend.git
+        
       - name: Prepare and deploy
         env:
           CI: true

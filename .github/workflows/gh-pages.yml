@@ -15,8 +15,9 @@ jobs:
           node-version: 22
 
       - name: Set up repository
-        run: git remote remove origin
-             git remote add origin https://github.com/arongida/chungus-battles-frontend.git
+        run: |
+          git remote remove origin
+          git remote add origin https://github.com/arongida/chungus-battles-frontend.git
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         

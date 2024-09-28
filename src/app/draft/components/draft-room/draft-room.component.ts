@@ -4,7 +4,7 @@ import { Player } from '../../../models/colyseus-schema/PlayerSchema';
 import { Item } from '../../../models/colyseus-schema/ItemSchema';
 import { CharacterSheetComponent } from '../character-sheet/character-sheet.component';
 import { ShopComponent } from '../shop/shop.component';
-import { ReadyButtonComponent } from '../ready-button/ready-button.component';
+import { DraftMenuComponent } from '../draft-menu/draft-menu.component';
 import { TalentsComponent } from '../talents/talents.component';
 import { Talent } from '../../../models/colyseus-schema/TalentSchema';
 import { MatTooltip } from '@angular/material/tooltip';
@@ -19,9 +19,11 @@ import {
 } from '../../../common/TriggerAnimations';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ItemCollection } from '../../../models/colyseus-schema/ItemCollectionSchema';
-import { RoundInfoComponent } from '../round-info/round-info.component';
-import { DraftToolbarComponent } from "../draft-toolbar/draft-toolbar.component";
-import { TalentIconsComponent } from "../talent-icons/talent-icons.component";
+import {
+  MatDialogModule,
+  MAT_DIALOG_DATA,
+  MatDialog,
+} from '@angular/material/dialog';
 
 @Component({
   selector: 'app-draft-room',
@@ -29,24 +31,22 @@ import { TalentIconsComponent } from "../talent-icons/talent-icons.component";
   imports: [
     CharacterSheetComponent,
     ShopComponent,
-    ReadyButtonComponent,
+    DraftMenuComponent,
     TalentsComponent,
     MatTooltip,
     MatButtonModule,
-    RoundInfoComponent,
-    ReadyButtonComponent,
-    DraftToolbarComponent,
-    TalentIconsComponent
-],
+    MatDialogModule,
+  ],
   templateUrl: './draft-room.component.html',
   styleUrl: './draft-room.component.scss',
 })
 export class DraftRoomComponent implements OnInit {
   player?: Player;
   shop?: Item[];
-  availableTalents: Talent[];
+  availableTalents?: Talent[];
   availableCollections?: ItemCollection[];
   activeCollections?: ItemCollection[];
+  talentDialog = inject(MatDialog);
 
   constructor(
     public draftService: DraftService,
@@ -57,6 +57,19 @@ export class DraftRoomComponent implements OnInit {
     this.availableTalents = [] as Talent[];
     this.availableCollections = [] as ItemCollection[];
     this.activeCollections = [] as ItemCollection[];
+  }
+
+  openDialog(): void {
+    const dialogRef = this.talentDialog.open(TalentsComponent, {
+      data: { name: '', animal: '' },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result !== undefined) {
+        console.log('The dialog was closed');
+        console.log(result);
+      }
+    });
   }
 
   async ngOnInit(): Promise<void> {
@@ -115,5 +128,19 @@ export class DraftRoomComponent implements OnInit {
       this.activeCollections = state.player
         .activeItemCollections as ItemCollection[];
     });
+  }
+
+  getLivesString(): string {
+    let lives = '';
+    if (this.player) {
+      for (let i = 0; i < this.player.lives; i++) {
+        lives += '❤️ ';
+      }
+    }
+    return lives;
+  }
+
+  getPlayerWins(): number {
+    return this.player?.wins || 0;
   }
 }

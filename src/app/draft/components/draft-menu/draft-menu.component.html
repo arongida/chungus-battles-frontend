@@ -1,0 +1,9 @@
+<div class="fixed-button">
+  <button [disabled]="loading" mat-fab extended color="primary" (click)="startFight()">
+    @if (loading) {
+    <mat-spinner diameter="24"></mat-spinner>
+    } @else {
+    Ready to Chungus!
+    }
+  </button>
+</div>

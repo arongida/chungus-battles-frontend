@@ -1,14 +1,11 @@
-import { Component, Input, inject } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Player } from '../../../../models/colyseus-schema/PlayerSchema';
 import { DraftService } from '../../../services/draft.service';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatButtonModule } from '@angular/material/button';
+import { MatButton } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { NgClass } from '@angular/common';
-import { Talent } from '../../../../models/colyseus-schema/TalentSchema';
-import { MatDialog } from '@angular/material/dialog';
-import { TalentsComponent } from '../../talents/talents.component';
 
 @Component({
   selector: 'app-character-avatar',
@@ -16,7 +13,7 @@ import { TalentsComponent } from '../../talents/talents.component';
   imports: [
     MatProgressBarModule,
     MatTooltipModule,
-    MatButtonModule,
+    MatButton,
     MatIconModule,
     NgClass,
   ],
@@ -25,7 +22,6 @@ import { TalentsComponent } from '../../talents/talents.component';
 })
 export class CharacterAvatarComponent {
   hoverExperience = false;
-  talentDialog = inject(MatDialog);
 
   constructor(public draftService: DraftService) {
     this.player = {} as Player;
@@ -35,12 +31,9 @@ export class CharacterAvatarComponent {
   @Input({ required: false }) combat: boolean = false;
   @Input({ required: false }) enemy: boolean = false;
   @Input({ required: true }) showExperience: boolean = false;
-  @Input({ required: false }) availableTalents: Talent[] = [];
-
 
   onAvatarMouseEnter() {
     this.showExperience = !this.combat ? true : false;
-    console.log('talents', this.availableTalents);
   }
 
   onAvatarMouseLeave() {
@@ -52,7 +45,9 @@ export class CharacterAvatarComponent {
       this.player?.avatarUrl ||
       'https://chungus-battles.b-cdn.net/chungus-battles-assets/Portrait_ID_0_Placeholder.png';
     if (this.enemy) avatar = avatar.replace('.png', '_enemy.png');
-    return avatar;
+    const empty =
+      'https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_0_Empty.png';
+    return this.showExperience ? empty : avatar;
   }
 
   switchHoverExperience() {

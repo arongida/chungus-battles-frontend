@@ -30,9 +30,6 @@ export class FightRoomComponent {
   player: Player | null = null;
   enemy: Player | null = null;
   combatLog: string = '';
-  gameOver: boolean = false;
-  battleOver: boolean = false;
-  leaveLoading: boolean = false;
 
   constructor(
     private fightService: FightService,
@@ -69,8 +66,6 @@ export class FightRoomComponent {
             room.state.player.name,
             true
           );
-          this.gameOver = true;
-          this.battleOver = true;
         });
 
         room.onMessage('end_battle', (message: string) => {
@@ -80,7 +75,6 @@ export class FightRoomComponent {
             room.state.player.playerId,
             room.state.player.name
           );
-          this.battleOver = true;
         });
 
         room.onMessage('combat_log', (message: string) => {
@@ -125,10 +119,7 @@ export class FightRoomComponent {
           'trigger_collection',
           (message: TriggerCollectionMessage) => {
             if (this.player && this.enemy) {
-              triggerItemCollectionActivation(
-                message.collectionId,
-                message.playerId
-              );
+              triggerItemCollectionActivation(message.collectionId, message.playerId);
               console.log('trigger_collection', message);
             }
           }
@@ -147,6 +138,7 @@ export class FightRoomComponent {
     const matSnackBarRef = this.snackBar.open(message, action);
     matSnackBarRef.onAction().subscribe(() => {
       this.endBattle(playerId, name, gameOver, message);
+      matSnackBarRef.dismiss();
     });
   }
 
@@ -160,7 +152,7 @@ export class FightRoomComponent {
     }
   }
 
-  private async endBattle(
+  private endBattle(
     plyerId: number,
     name: string,
     gameOver: boolean = false,
@@ -174,25 +166,7 @@ export class FightRoomComponent {
         this.router.navigate(['/end', { won: 'lost' }]);
       }
     } else {
-      const errorMessage = await this.draftService.joinOrCreate(name, plyerId);
-      if (errorMessage) {
-        if (this.gameOver) {
-          this.openSnackBar(
-            message,
-            'Exit',
-            this.player?.playerId ?? 0,
-            this.player?.name ?? '',
-            true
-          );
-        } else {
-          this.openSnackBar(
-            'The battle has ended',
-            'Exit',
-            this.player?.playerId ?? 0,
-            this.player?.name ?? ''
-          );
-        }
-      }
+      this.draftService.joinOrCreate(name, plyerId);
     }
   }
 

@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Inject, Input } from '@angular/core';
 import { Talent } from '../../../models/colyseus-schema/TalentSchema';
 import { MatCardModule } from '@angular/material/card';
 import { DraftService } from '../../services/draft.service';
@@ -7,6 +7,7 @@ import { MatChip } from '@angular/material/chips';
 import { NgClass, SlicePipe } from '@angular/common';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatIconModule } from '@angular/material/icon';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-talents',
@@ -18,21 +19,25 @@ import { MatIconModule } from '@angular/material/icon';
     MatTooltipModule,
     MatChip,
     MatIconModule,
-    NgClass
+    NgClass,
   ],
   templateUrl: './talents.component.html',
   styleUrl: './talents.component.scss',
 })
 export class TalentsComponent {
   hoverTelentRefresh = false;
+  talents: Talent[];
+  playerLevel: number;
 
-  constructor(public draftService: DraftService) {
-    this.talents = [] as Talent[];
-    this.playerLevel = 0;
+  constructor(
+    public draftService: DraftService,
+    @Inject(MAT_DIALOG_DATA)
+    public data: { talents: Talent[]; playerLevel: number },
+    public dialogRef: MatDialogRef<TalentsComponent>
+  ) {
+    this.talents = data.talents;
+    this.playerLevel = data.playerLevel;
   }
-
-  @Input({ required: true }) talents: Talent[];
-  @Input({ required: true }) playerLevel: number;
 
   getTalentImage(talent: Talent) {
     return talent.image
@@ -54,5 +59,12 @@ export class TalentsComponent {
 
   switchTalentRefreshAnimate() {
     this.hoverTelentRefresh = !this.hoverTelentRefresh;
+  }
+
+  selectTalent(talentId: number) {
+    this.draftService.sendMessage('select_talent', {
+      talentId: talentId,
+    });
+    this.dialogRef.close();
   }
 }

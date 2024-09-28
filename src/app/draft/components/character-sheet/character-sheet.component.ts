@@ -12,6 +12,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { CharacterAvatarComponent } from './character-avatar/character-avatar.component';
 import { CommonModule } from '@angular/common';
+import { Talent } from '../../../models/colyseus-schema/TalentSchema';
 
 @Component({
   selector: 'app-character-sheet',
@@ -43,6 +44,7 @@ export class CharacterSheetComponent {
   @Input({ required: true }) player: Player;
   @Input({ required: false }) combat: boolean = false;
   @Input({ required: false }) enemy: boolean = false;
+  @Input({ required: false }) availableTalents: Talent[] = [];
 
   ngOnInit() {
     this.startingHP = this.player.hp;

@@ -1,19 +1,27 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { DraftService } from '../../services/draft.service';
 import { Player } from '../../../models/colyseus-schema/PlayerSchema';
 import { Item } from '../../../models/colyseus-schema/ItemSchema';
-import { Router } from '@angular/router';
 import { CharacterSheetComponent } from '../character-sheet/character-sheet.component';
 import { ShopComponent } from '../shop/shop.component';
-import { DraftMenuComponent } from '../draft-menu/draft-menu.component';
+import { ReadyButtonComponent } from '../ready-button/ready-button.component';
 import { TalentsComponent } from '../talents/talents.component';
 import { Talent } from '../../../models/colyseus-schema/TalentSchema';
 import { MatTooltip } from '@angular/material/tooltip';
-import { MatButton } from '@angular/material/button';
-import { TriggerCollectionMessage, TriggerTalentMessage } from '../../../models/message-types/MessageTypes';
-import { triggerTalentActivation, triggerItemCollectionActivation } from '../../../common/TriggerAnimations';
+import { MatButtonModule } from '@angular/material/button';
+import {
+  TriggerCollectionMessage,
+  TriggerTalentMessage,
+} from '../../../models/message-types/MessageTypes';
+import {
+  triggerTalentActivation,
+  triggerItemCollectionActivation,
+} from '../../../common/TriggerAnimations';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ItemCollection } from '../../../models/colyseus-schema/ItemCollectionSchema';
+import { RoundInfoComponent } from '../round-info/round-info.component';
+import { DraftToolbarComponent } from "../draft-toolbar/draft-toolbar.component";
+import { TalentIconsComponent } from "../talent-icons/talent-icons.component";
 
 @Component({
   selector: 'app-draft-room',
@@ -21,18 +29,22 @@ import { ItemCollection } from '../../../models/colyseus-schema/ItemCollectionSc
   imports: [
     CharacterSheetComponent,
     ShopComponent,
-    DraftMenuComponent,
+    ReadyButtonComponent,
     TalentsComponent,
     MatTooltip,
-    MatButton,
-  ],
+    MatButtonModule,
+    RoundInfoComponent,
+    ReadyButtonComponent,
+    DraftToolbarComponent,
+    TalentIconsComponent
+],
   templateUrl: './draft-room.component.html',
   styleUrl: './draft-room.component.scss',
 })
 export class DraftRoomComponent implements OnInit {
   player?: Player;
   shop?: Item[];
-  availableTalents?: Talent[];
+  availableTalents: Talent[];
   availableCollections?: ItemCollection[];
   activeCollections?: ItemCollection[];
 
@@ -66,7 +78,10 @@ export class DraftRoomComponent implements OnInit {
       'trigger_collection',
       (message: TriggerCollectionMessage) => {
         if (this.player) {
-          triggerItemCollectionActivation(message.collectionId, message.playerId);
+          triggerItemCollectionActivation(
+            message.collectionId,
+            message.playerId
+          );
           console.log('trigger_collection', message);
         }
       }
@@ -100,19 +115,5 @@ export class DraftRoomComponent implements OnInit {
       this.activeCollections = state.player
         .activeItemCollections as ItemCollection[];
     });
-  }
-
-  getLivesString(): string {
-    let lives = '';
-    if (this.player) {
-      for (let i = 0; i < this.player.lives; i++) {
-        lives += '❤️ ';
-      }
-    }
-    return lives;
-  }
-
-  getPlayerWins(): number {
-    return this.player?.wins || 0;
   }
 }

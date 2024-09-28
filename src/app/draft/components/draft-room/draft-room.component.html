@@ -1,33 +1,19 @@
-<div class="flex flex-col flex-1 justify-center items-center w-screen h-screen scale-50 lg:scale-100">
-  <div class="flex flex-row justify-between w-full">
-    <div id="character" class="flex lg:p-5 justify-center items-center">
-      <app-character-sheet class="" [player]="player!"></app-character-sheet>
-    </div>
+<app-draft-toolbar class="fixed w-screen top-0 z-10" [player]="player!" [availableTalents]="availableTalents!"></app-draft-toolbar>
 
+<app-talent-icons class="z-10" [player]="player!"></app-talent-icons>
+
+<div class="flex flex-col justify-center items-center scale-50 lg:scale-100 z-0 bg-cover w-screen h-screen" [style.background-image]="
+'url(https://chungus-battles.b-cdn.net/chungus-battles-assets/BG_01.png)'
+">
+  <div class="flex flex-row justify-evenly w-full">
     <div id="shop" class="items-center flex justify-center p-1">
-      <app-shop [shop]="shop ?? []" [refreshShopCost]="player?.refreshShopCost ?? 2" [playerLevel]="player?.level ?? 1" [playerGold]="player?.gold ?? 0"></app-shop>
-    </div>
-
-    <div id="talents" class="justify-center content-center text-center p-5">
-      <app-talents [talents]="availableTalents!" [playerLevel]="player?.level ?? 0"></app-talents>
+      <app-shop [shop]="shop ?? []" [refreshShopCost]="player?.refreshShopCost ?? 2" [playerLevel]="player?.level ?? 1"
+        [playerGold]="player?.gold ?? 0"></app-shop>
     </div>
   </div>
 </div>
 
-<div id="round-info" class="flex flex-col flex-1">
-  <h2 #tooltip="matTooltip"
-    matTooltip="Round counter, you will get matched against same (or lower if non existent) players in battle!"
-    matTooltipPosition="right" id="round-title">
-    ROUND: {{ player?.round }}
-  </h2>
-  <div #tooltip="matTooltip" matTooltip="If you run out of lives, you will loose. You get -1 life for a lost combat."
-    matTooltipPosition="right">
-    Lives left: {{ getLivesString() }}
-  </div>
-  <div #tooltip="matTooltip" matTooltip="If you win 10 times, you are victorious!" matTooltipPosition="right">
-    Wins: {{ getPlayerWins() }}
-  </div>
-</div>
+<app-round-info [player]="player!"></app-round-info>
 
 <div id="available-collections" class="flex flex-row">
   <div class="mx-2">Available: </div>
@@ -41,10 +27,11 @@
 <div id="active-collections" class="flex flex-row">
   <div class="mx-2">Active: </div>
   @for (itemCollection of activeCollections; track $index) {
-  <div class="m-0.5" id="collection-{{itemCollection.itemCollectionId}}-{{player?.playerId}}" #tooltip="matTooltip" matTooltip={{itemCollection.effect}} matTooltipPosition="below">
+  <div class="m-0.5" id="collection-{{itemCollection.itemCollectionId}}-{{player?.playerId}}" #tooltip="matTooltip"
+    matTooltip={{itemCollection.effect}} matTooltipPosition="below">
     <p class="font-bold text-xs">{{itemCollection.name}}</p>
   </div>
   }
 </div>
 
-<app-draft-menu></app-draft-menu>
+<app-ready-button />

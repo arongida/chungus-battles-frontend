@@ -15,7 +15,7 @@ export class Item extends Schema {
   @type('number') price: number = 0;
   @type('string') affectedStat: string = '';
   @type(AffectedStats) affectedStats: AffectedStats = new AffectedStats();
-  @type('number') levelRequirement: number = 0;
+  @type('number') tier: number = 0;
   @type('string') image: string = '';
   @type('boolean') showDetails?: boolean = false;
   @type('string') imageCache?: string = '';

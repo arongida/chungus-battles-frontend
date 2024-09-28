@@ -20,19 +20,19 @@ import { DecimalPipe } from '@angular/common';
     MatIconModule,
     MatTooltipModule,
     MatChip,
-    DecimalPipe
+    DecimalPipe,
   ],
   templateUrl: './shop.component.html',
   styleUrl: './shop.component.scss',
 })
 export class ShopComponent {
   hoverShopRefresh = false;
-  hoverTelentRefresh = false;
+  hoverBuyXp = false;
 
   constructor(public draftService: DraftService) {
     this.shop = [] as Item[];
     this.playerLevel = 0;
-    this.playerGold = 0; 
+    this.playerGold = 0;
     this.refreshShopCost = 0;
   }
 
@@ -45,7 +45,7 @@ export class ShopComponent {
     item.showDetails = true;
     item.imageCache = item.image;
     item.image =
-      'https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_00_Empty_Orange.png';
+      `https://chungus-battles.b-cdn.net/chungus-battles-assets/level_${item.tier}_glow.png`;
   }
 
   onMouseLeaveItem(item: Item) {
@@ -63,6 +63,7 @@ export class ShopComponent {
     this.hoverShopRefresh = !this.hoverShopRefresh;
   }
 
-
-
+  switchBuyXpAnimate() {
+    this.hoverBuyXp = !this.hoverBuyXp;
+  }
 }

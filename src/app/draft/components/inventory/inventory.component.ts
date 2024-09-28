@@ -33,7 +33,7 @@ export class InventoryComponent {
     public data: { player: Player }
   ) {
     this.player = data.player;
-    this.displayedInventory = this.player.inventory;
+    this.displayedInventory = Array.from(this.player.inventory);
     this.isDescending = false;
   }
   onMouseEnterItem(item: Item) {
@@ -55,12 +55,12 @@ export class InventoryComponent {
   }
 
   backToDefault() {
-    this.displayedInventory = Array.from(this.player.inventory);
+    this.displayedInventory = [...this.player.inventory];
   }
 
   sortByName() {
 
-    let itemsArray = Array.from(this.player.inventory);
+    let itemsArray = [...this.player.inventory];
     if(this.isDescending){
       const sortedByNameDesc = itemsArray.sort((a, b) => a.name.localeCompare(b.name));
       this.displayedInventory = sortedByNameDesc;
@@ -89,6 +89,12 @@ export class InventoryComponent {
     
   }
 
+  listOfSets(itemCollectionIds: number[]){
+    let itemsArray = [...this.player.inventory];
+    const filterByItemCollections = itemsArray.filter(item => item.itemCollections.some(num => itemCollectionIds.includes(num)));
+    this.displayedInventory = filterByItemCollections;
+
+  }
   /*getAggregatedInventory(): {
     name: string;
     quantity: number;

@@ -12,10 +12,18 @@ jobs:
       - name: Adding Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: 22        
+          node-version: 22
+
+      - name: Set up repository
+        run: git remote remove origin
+             git remote add origin https://github.com/arongida/chungus-battles-frontend.git
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        
       - name: Prepare and deploy
         env:
           CI: true
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           npm install
           npm run ng deploy --repo=https://github.com/arongida/chungus-battles-frontend.git --base-href=https://arongida.github.io/chungus-battles-frontend/ --name="arongida"

@@ -1,8 +1,9 @@
-<mat-toolbar>
+<mat-toolbar class="">
   <div class="flex justify-between gap-4 items-center">
-    <img class="w-12 h-12 rounded-full object-cover hover:border-white hover:border" src="{{player.avatarUrl.replace('01','transparent')}}" alt="player"
-      (click)="openCharacterDetails()">
-    <span class="text-center ">{{player.name}}</span>
+    <img class="w-12 h-12 rounded-full object-cover hover:border-white hover:border"
+      src="{{player.avatarUrl.replace('01','transparent')}}" alt="player" (click)="openCharacterDetails()">
+    <span class="text-center">{{player.name}}</span>
+    <span class="text-sm text-center">Gold: {{ player.gold }} 🟡</span>
     @if (this.availableTalents.length > 0) {
     <div class="">
       <button mat-mini-fab (click)="openTalentPickerDialog()">
@@ -20,7 +21,43 @@
       <mat-progress-bar id="xp" mode="determinate" value="{{ (player.xp / player.maxXp) * 100 }}"></mat-progress-bar>
     </div>
   </span>
+
+  <button mat-button [matMenuTriggerFor]="menu">Item Sets</button>
+  <mat-menu #menu="matMenu">
+    <div class="flex flex-col p-3 m-3 min-w-fit text-center justify-items-center" (click)="$event.stopPropagation();">
+      @for (collection of player.availableItemCollections; track $index) {
+
+        <mat-chip-option class="m-1 text-xs" #tooltip="matTooltip" matTooltipPosition="left" matTooltip={{collection.requirements}}>
+          {{collection.name}}
+        </mat-chip-option>
+
+      }
+    </div>
+  </mat-menu>
+
+
+
+
+
   <button mat-icon-button (click)="openInventory()">
     <mat-icon>markunread_mailbox</mat-icon>
   </button>
+
+  <div class="absolute -bottom-20 right-2 flex-row-reverse">
+
+    <button [disabled]="player.gold < 4 || player.level > 4 " #tooltip="matTooltip" matTooltip="4 gold = 4 xp"
+      matTooltipPosition="left" mat-fab color="text-white" class="m-2 p-2 flex-1"
+      (click)="draftService.sendMessage('buy_xp', {})" (mouseenter)="switchBuyXpAnimate()"
+      (mouseleave)="switchBuyXpAnimate()">
+      <mat-icon [ngClass]="{'animate-bounce': hoverBuyXp}">keyboard_arrow_up</mat-icon>
+    </button>
+
+    <button [disabled]="player.gold < player.refreshShopCost" #tooltip="matTooltip"
+      matTooltip="{{player.refreshShopCost}} gold" mat-fab matTooltipPosition="below" color="text-white"
+      class="m-2 p-2 flex-1" (click)="draftService.sendMessage('refresh_shop', {})"
+      (mouseenter)="switchShopRefreshAnimate()" (mouseleave)="switchShopRefreshAnimate()">
+      <mat-icon [ngClass]="{'animate-spin': hoverShopRefresh}">refresh</mat-icon>
+    </button>
+  </div>
+
 </mat-toolbar>

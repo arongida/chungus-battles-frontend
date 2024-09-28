@@ -1,0 +1,18 @@
+<div class="pl-4 absolute top-20 left-2">
+  <div class="text-white flex flex-row">
+    @for (talent of player.talents; track $index) {
+    <div class="p-1 rounded-sm" #tooltip="matTooltip" matTooltip="{{ talent.description }}" matTooltipPosition="below"
+      id="talent-{{talent.talentId}}-{{player.playerId}}">
+      <div class="text-5xl border border-black">{{ talent.name[0] }}</div>
+    </div>
+    }
+  </div>
+  <div class="flex flex-row">
+    @for (itemCollection of player.activeItemCollections; track $index) {
+      <div class="p-1 rounded-sm" #tooltip="matTooltip" matTooltip="{{ itemCollection.effect }}" matTooltipPosition="below"
+      id="collection-{{itemCollection.itemCollectionId}}-{{player.playerId}}">
+      <div class="text-xl border border-black">{{ itemCollection.name[0] }}</div>
+    </div>
+    }
+  </div>
+</div>

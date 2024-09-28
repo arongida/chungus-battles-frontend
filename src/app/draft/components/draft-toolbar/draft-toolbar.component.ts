@@ -9,21 +9,38 @@ import { TalentsComponent } from '../talents/talents.component';
 import { Talent } from '../../../models/colyseus-schema/TalentSchema';
 import { CharacterDetailsComponent } from '../character-details/character-details.component';
 import { InventoryComponent } from '../inventory/inventory.component';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { DraftService } from '../../services/draft.service';
+import { NgClass } from '@angular/common';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatChipsModule } from '@angular/material/chips';
 
 @Component({
   selector: 'app-draft-toolbar',
   standalone: true,
-  imports: [MatToolbarModule, MatButtonModule, MatIconModule, MatProgressBarModule],
+  imports: [
+    MatToolbarModule,
+    MatButtonModule,
+    MatIconModule,
+    MatProgressBarModule,
+    MatTooltipModule,
+    NgClass,
+    MatMenuModule,
+    MatChipsModule
+  ],
   templateUrl: './draft-toolbar.component.html',
   styleUrl: './draft-toolbar.component.scss',
 })
 export class DraftToolbarComponent {
   dialog = inject(MatDialog);
- 
+  hoverShopRefresh = false;
+  hoverBuyXp = false;
+
+  constructor(public draftService: DraftService) {}
+
   @Input({ required: true }) player: Player = new Player();
   @Input({ required: true }) availableTalents: Talent[] = [];
 
-  
   openTalentPickerDialog(): void {
     const talentDialogRef = this.dialog.open(TalentsComponent, {
       data: {
@@ -36,7 +53,7 @@ export class DraftToolbarComponent {
   openCharacterDetails(): void {
     const charDetailsDialog = this.dialog.open(CharacterDetailsComponent, {
       data: {
-        player: this.player
+        player: this.player,
       },
     });
   }
@@ -44,13 +61,20 @@ export class DraftToolbarComponent {
   openInventory(): void {
     const inventoryDialog = this.dialog.open(InventoryComponent, {
       data: {
-        player: this.player
+        player: this.player,
       },
       maxWidth: '100vw',
       maxHeight: '100vh',
       height: '100%',
-      width: '80%'
+      width: '80%',
     });
-    
+  }
+
+  switchShopRefreshAnimate() {
+    this.hoverShopRefresh = !this.hoverShopRefresh;
+  }
+
+  switchBuyXpAnimate() {
+    this.hoverBuyXp = !this.hoverBuyXp;
   }
 }

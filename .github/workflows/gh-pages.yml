@@ -16,6 +16,8 @@ jobs:
 
       - name: Set up repository
         run: |
+          git config --global user.email "arkheonos@gmail.com"
+          git config --global user.name "arongida"
           git remote add undefined https://github.com/arongida/chungus-battles-frontend.git
           git push -u undefined main
         env:

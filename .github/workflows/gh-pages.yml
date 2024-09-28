@@ -15,7 +15,7 @@ jobs:
           node-version: 22        
       - name: Prepare and deploy
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           npm install
-          npm run ng deploy --base-href=/chungus-battles-frontend/ --name="arongida" --email="arkheonos@gmail.com" --remote=origin
+          npm run ng -- deploy --base-href=/chungus-battles-frontend/ --name="arongida" --email="arkheonos@gmail.com" --remote=github

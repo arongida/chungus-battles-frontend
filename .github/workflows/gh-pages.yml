@@ -16,7 +16,6 @@ jobs:
 
       - name: Set up repository
         run: |
-          git remote remove undefined 
           git remote add undefined https://github.com/arongida/chungus-battles-frontend.git
           git push -u undefined main
         env:

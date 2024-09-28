@@ -4,10 +4,11 @@ import { MatCardModule } from '@angular/material/card';
 import { DraftService } from '../../services/draft.service';
 import { TitleCasePipe, NgClass } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatChip } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
 import { DecimalPipe } from '@angular/common';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { ItemCollection } from '../../../models/colyseus-schema/ItemCollectionSchema';
 
 @Component({
   selector: 'app-shop',
@@ -18,9 +19,9 @@ import { DecimalPipe } from '@angular/common';
     TitleCasePipe,
     MatButtonModule,
     MatIconModule,
-    MatTooltipModule,
     MatChip,
     DecimalPipe,
+    MatTooltipModule
   ],
   templateUrl: './shop.component.html',
   styleUrl: './shop.component.scss',
@@ -34,12 +35,14 @@ export class ShopComponent {
     this.playerLevel = 0;
     this.playerGold = 0;
     this.refreshShopCost = 0;
+    this.availableCollections = [] as ItemCollection[];
   }
 
   @Input({ required: true }) shop: Item[];
   @Input({ required: true }) playerLevel: number;
   @Input({ required: true }) playerGold: number;
   @Input({ required: true }) refreshShopCost: number;
+  @Input({ required: true }) availableCollections: ItemCollection[];
 
   onMouseEnterItem(item: Item) {
     item.showDetails = true;
@@ -59,11 +62,10 @@ export class ShopComponent {
       : 'https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_0_Empty.png';
   }
 
-  switchShopRefreshAnimate() {
-    this.hoverShopRefresh = !this.hoverShopRefresh;
+  getItemsCollectionTooltipForItem(item: Item) : string{
+    const collections = this.availableCollections.filter((collection) => item.itemCollections.includes(collection.itemCollectionId));
+    return collections.map((collection) => collection.name).join("\r\n");
+    
   }
 
-  switchBuyXpAnimate() {
-    this.hoverBuyXp = !this.hoverBuyXp;
-  }
 }

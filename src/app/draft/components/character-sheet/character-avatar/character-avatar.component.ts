@@ -38,6 +38,16 @@ export class CharacterAvatarComponent {
   @Input({ required: false }) availableTalents: Talent[] = [];
 
 
+  openDialog(): void {
+    const talentDialogRef = this.talentDialog.open(TalentsComponent, {
+      data: {
+        talents: this.availableTalents,
+        playerLevel: this.player?.level ?? 1,
+      }
+    });
+  }
+
+
   onAvatarMouseEnter() {
     this.showExperience = !this.combat ? true : false;
     console.log('talents', this.availableTalents);
@@ -52,7 +62,9 @@ export class CharacterAvatarComponent {
       this.player?.avatarUrl ||
       'https://chungus-battles.b-cdn.net/chungus-battles-assets/Portrait_ID_0_Placeholder.png';
     if (this.enemy) avatar = avatar.replace('.png', '_enemy.png');
-    return avatar;
+    const empty =
+      'https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_0_Empty.png';
+    return this.showExperience ? empty : avatar;
   }
 
   switchHoverExperience() {

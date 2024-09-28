@@ -1,3 +1,10 @@
+#round-info {
+  position: fixed;
+  bottom: 1rem;
+  left: 1rem;
+  z-index: 1000;
+}
+
 #available-collections {
   position: fixed;
   bottom: 1rem;
@@ -7,7 +14,7 @@
 
 #active-collections {
   position: fixed;
-  top: 5rem;
+  top: 1rem;
   right: 50%;
   z-index: 1000;
 }

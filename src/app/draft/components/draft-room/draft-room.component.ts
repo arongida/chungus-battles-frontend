@@ -4,7 +4,7 @@ import { Player } from '../../../models/colyseus-schema/PlayerSchema';
 import { Item } from '../../../models/colyseus-schema/ItemSchema';
 import { CharacterSheetComponent } from '../character-sheet/character-sheet.component';
 import { ShopComponent } from '../shop/shop.component';
-import { ReadyButtonComponent } from '../ready-button/ready-button.component';
+import { DraftMenuComponent } from '../draft-menu/draft-menu.component';
 import { TalentsComponent } from '../talents/talents.component';
 import { Talent } from '../../../models/colyseus-schema/TalentSchema';
 import { MatTooltip } from '@angular/material/tooltip';
@@ -19,9 +19,6 @@ import {
 } from '../../../common/TriggerAnimations';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ItemCollection } from '../../../models/colyseus-schema/ItemCollectionSchema';
-import { RoundInfoComponent } from '../round-info/round-info.component';
-import { DraftToolbarComponent } from "../draft-toolbar/draft-toolbar.component";
-import { TalentIconsComponent } from "../talent-icons/talent-icons.component";
 
 @Component({
   selector: 'app-draft-room',
@@ -29,15 +26,11 @@ import { TalentIconsComponent } from "../talent-icons/talent-icons.component";
   imports: [
     CharacterSheetComponent,
     ShopComponent,
-    ReadyButtonComponent,
+    DraftMenuComponent,
     TalentsComponent,
     MatTooltip,
-    MatButtonModule,
-    RoundInfoComponent,
-    ReadyButtonComponent,
-    DraftToolbarComponent,
-    TalentIconsComponent
-],
+    MatButtonModule
+  ],
   templateUrl: './draft-room.component.html',
   styleUrl: './draft-room.component.scss',
 })
@@ -115,5 +108,19 @@ export class DraftRoomComponent implements OnInit {
       this.activeCollections = state.player
         .activeItemCollections as ItemCollection[];
     });
+  }
+
+  getLivesString(): string {
+    let lives = '';
+    if (this.player) {
+      for (let i = 0; i < this.player.lives; i++) {
+        lives += '❤️ ';
+      }
+    }
+    return lives;
+  }
+
+  getPlayerWins(): number {
+    return this.player?.wins || 0;
   }
 }

@@ -16,9 +16,9 @@ jobs:
 
       - name: Set up repository
         run: |
-          git remote remove origin
-          git remote add origin https://github.com/arongida/chungus-battles-frontend.git
-          git push -u origin main
+          git remote remove undefined 
+          git remote add undefined https://github.com/arongida/chungus-battles-frontend.git
+          git push -u undefined main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         

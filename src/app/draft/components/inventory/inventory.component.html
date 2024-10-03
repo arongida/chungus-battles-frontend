@@ -5,10 +5,11 @@
   <button mat-button (click)="sortByLevel()" class="px-4 py-2 bg-[#654321] text-white rounded-md">Level</button>
   <button mat-button [matMenuTriggerFor]="menu" class="px-4 py-2 bg-[#654321] text-white rounded-md">Sets</button>
   <mat-menu #menu="matMenu">
-    <button (click)="listOfSets([6,9,13,15,18])" mat-menu-item>Warrior</button>
-    <button (click)="listOfSets([8,10,12,16,19])" mat-menu-item>Rogue</button>
-    <button (click)="listOfSets([7,11,14,17,20])" mat-menu-item>Merchant</button>
-    <button (click)="listOfSets([1,2,3,4,5])" mat-menu-item>Shields</button>
+    @for (collection of player.activeItemCollections; track $index){
+    <button (click)="listOfSets(collection.name)">
+      {{ collection.name }}
+    </button>
+    }
   </mat-menu>
 </div>
 

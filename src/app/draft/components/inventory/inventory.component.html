@@ -23,8 +23,11 @@
 }
 
 <div id="inventory-grid" 
-[ngClass]="{ 'grid-cols-4': !isDisplayingSets, 'grid-cols-3': isDisplayingSets }"
-class="grid grid-cols-4 justify-center items-center">
+  [ngClass]="{ 
+    'grid-cols-4': !isDisplayingSets, 
+    'grid-cols-3': isDisplayingSets 
+  }"
+  class="grid gap-4 place-items-center">
 
   @for (item of displayedInventory; track $index) {
   <mat-card [style.background-image]="'url(' + getItemImage(item) + ')'" id="item-{{ $index }}"

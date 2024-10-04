@@ -1,96 +1,84 @@
-<div id="shop" class="relative">
-  <div class="grid-cols-3 grid-rows-2 gap-1 grid max-w-fit p-4">
+<div cdkDropListGroup class="flex flex-col items-center h-full justify-evenly">
+  <div #gridRef cdkDropList [cdkDropListSortingDisabled]="true" [cdkDropListEnterPredicate]="preventDropBack" class="grid-cols-3 grid-rows-2 gap-1 grid p-4 h-full scale-50 lg:scale-75
+  xl:scale-100">
+
     @for (item of shop; track $index) {
-    <mat-card [ngClass]="{'opacity-0':item.sold}" [style.background-image]="'url(' + getItemImage(item) + ')'"
-      id="item-{{ $index }}"
-      class="w-60 h-80 items-center rounded-lg shadow-lg transform transition-transform scale-75 hover:scale-90"
-      (mouseenter)="onMouseEnterItem(item)" (mouseleave)="onMouseLeaveItem(item)">
-      <mat-card-header class="mb-2 text-center mt-3">
-        <mat-card-title>{{ item.name | titlecase }}</mat-card-title>
-      </mat-card-header>
+    <div #cardRef cdkDrag (cdkDragStarted)="cardDragStarted(item)" (cdkDragReleased)="resetDrag(item)"
+      [cdkDragFreeDragPosition]="dragPosition" (cdkDragExited)="onDragExited($event, cardRef, gridRef)">
 
-      @if (item.showDetails) {
-      <mat-card-content class="flex flex-col flex-1 text-center text-white p-1 rounded-b-lg content-evenly">
-        <div class="mb-2">
-          <p class="font-semibold">
-            Price: <span class="text-yellow-300">{{ item.price }} 🟡</span>
-          </p>
-        </div>
-        <div class="flex flex-1 place-content-center text-xs">
-          @if(item.affectedStats.attack !== 0) {
-          <p>
-            Attack:
-            <span class="text-red-500">{{ item.affectedStats.attack }} ⚔️</span>
-          </p>
-          }
+      <mat-card [ngClass]="{'opacity-0':item.sold}" [matTooltipDisabled]="item.sold"
+        [style.background-image]="'url(' + getItemImage(item) + ')'" id="item-{{ $index }}"
+        class="w-60 h-80 items-center bg-cover scale-75" (mouseenter)="onMouseEnterItem(item)"
+        (mouseleave)="onMouseLeaveItem(item)" #tooltip="matTooltip" matTooltipPosition="after"
+        matTooltip={{getItemsCollectionTooltipForItem(item)}}>
 
-          @if(item.affectedStats.attackSpeed !== 0) {
-          <p>
-            A.speed:
-            <span class="text-blue-500">{{ item.affectedStats.attackSpeed * 100 - 100 | number: '1.0-0'}}% ⏩</span>
-          </p>
-          }
+        <mat-card-header class="mb-2 text-center mt-3">
+          <mat-card-title>{{ item.name | titlecase }}</mat-card-title>
+        </mat-card-header>
 
-          @if(item.affectedStats.defense !== 0) {
-          <p>
-            Defense:
-            <span class="text-green-500">{{ item.affectedStats.defense }} 🛡️</span>
-          </p>
-          }
+        @if (item.showDetails) {
+        <mat-card-content class="flex flex-col text-center text-white p-1 content-evenly">
+          <div class="mb-2">
+            <p class="font-semibold">
+              Price: <span class="text-yellow-300">{{ item.price }} 🟡</span>
+            </p>
+          </div>
+          <div class="flex flex-1 place-content-center text-xs">
+            @if(item.affectedStats.attack !== 0) {
+            <p>
+              Attack:
+              <span class="text-red-500">{{ item.affectedStats.attack }} ⚔️</span>
+            </p>
+            }
 
-          @if(item.affectedStats.hp !== 0) {
-          <p>
-            Health:
-            <span class="text-pink-500">{{ item.affectedStats.hp }} ❤️</span>
-          </p>
-          }
+            @if(item.affectedStats.attackSpeed !== 0) {
+            <p>
+              A.speed:
+              <span class="text-blue-500">{{ item.affectedStats.attackSpeed * 100 - 100 | number: '1.0-0'}}% ⏩</span>
+            </p>
+            }
 
-          @if(item.affectedStats.income !== 0) {
-          <p>
-            Income:
-            <span class="text-yellow-300">{{ item.affectedStats.income }} 💰</span>
-          </p>
-          }
+            @if(item.affectedStats.defense !== 0) {
+            <p>
+              Defense:
+              <span class="text-green-500">{{ item.affectedStats.defense }} 🛡️</span>
+            </p>
+            }
 
-        </div>
-        <div class="ml-2 mr-2">
-          <p class="font-thin text-sm">{{ item.description }}</p>
-          @for (tag of item.tags; track $index) {
-          <mat-chip class="mr-1 py-1">{{ tag }}</mat-chip>
-          }
-        </div>
-      </mat-card-content>
-      <mat-card-footer class="flex justify-center">
-        <div class="mt-auto">
-          <button [disabled]="playerGold < item.price || item.sold" id="buy-{{ $index }}" mat-raised-button color="warn"
-            (click)="draftService.sendMessage('buy', { itemId: item.itemId })">
-            {{ item.sold ? 'Sold' : 'Buy' }}
-          </button>
-        </div>
-      </mat-card-footer>
-      }
-    </mat-card>
+            @if(item.affectedStats.hp !== 0) {
+            <p>
+              Health:
+              <span class="text-pink-500">{{ item.affectedStats.hp }} ❤️</span>
+            </p>
+            }
+
+            @if(item.affectedStats.income !== 0) {
+            <p>
+              Income:
+              <span class="text-yellow-300">{{ item.affectedStats.income }} 💰</span>
+            </p>
+            }
+
+          </div>
+          <div class="ml-2 mr-2">
+            <p class="font-thin text-sm">{{ item.description }}</p>
+            @for (tag of item.tags; track $index) {
+            <mat-chip class="mr-1 py-1">{{ tag }}</mat-chip>
+            }
+          </div>
+        </mat-card-content>
+        }
+      </mat-card>
+    </div>
     }
   </div>
 
-
-  <div class="absolute top-0 right-0 flex-row-reverse">
-
-    <button [disabled]="playerGold < refreshShopCost" #tooltip="matTooltip" matTooltip="4 gold = 4 xp"
-      matTooltipPosition="left" mat-fab color="text-white"
-      class="m-2 p-2 flex-1" (click)="draftService.sendMessage('buy_xp', {})" (mouseenter)="switchBuyXpAnimate()"
-      (mouseleave)="switchBuyXpAnimate()">
-      <mat-icon [ngClass]="{'animate-bounce': hoverBuyXp}">keyboard_arrow_up</mat-icon>
-    </button>
-
-    <button [disabled]="playerGold < refreshShopCost" #tooltip="matTooltip" matTooltip="{{refreshShopCost}} gold"
-      mat-fab matTooltipPosition="right" color="text-white" class="m-2 p-2 flex-1"
-      (click)="draftService.sendMessage('refresh_shop', {})" (mouseenter)="switchShopRefreshAnimate()"
-      (mouseleave)="switchShopRefreshAnimate()">
-      <mat-icon [ngClass]="{'animate-spin': hoverShopRefresh}">refresh</mat-icon>
-    </button>
-
-
-
+  <div class="fixed -bottom-20 md:-bottom-30 lg:-bottom-40 flex items-center justify-center w-screen opacity-0"
+    [ngClass]="{'opacity-100':draggingCard}">
+    <div id="drop-zone" [cdkDropListSortingDisabled]="true" (cdkDropListExited)="onDragExitFromBuyZone()"
+      class="rounded-full shadow-yellow-200 transition-colors bg-yellow-300 w-3/4 h-40 md:h-48 lg:h-64 flex justify-center items-center z-10"
+      cdkDropList [ngClass]="{'shadow-2xl': tempCard}" (cdkDropListDropped)="onDrop($event)">
+    </div>
   </div>
+
 </div>

@@ -4,10 +4,18 @@ import { MatCardModule } from '@angular/material/card';
 import { DraftService } from '../../services/draft.service';
 import { TitleCasePipe, NgClass } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatChip } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
 import { DecimalPipe } from '@angular/common';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { ItemCollection } from '../../../models/colyseus-schema/ItemCollectionSchema';
+import {
+  CdkDrag,
+  CdkDragDrop,
+  CdkDragExit,
+  CdkDropList,
+  DragDropModule,
+} from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'app-shop',
@@ -18,9 +26,12 @@ import { DecimalPipe } from '@angular/common';
     TitleCasePipe,
     MatButtonModule,
     MatIconModule,
-    MatTooltipModule,
     MatChip,
     DecimalPipe,
+    MatTooltipModule,
+    CdkDrag,
+    CdkDropList,
+    DragDropModule,
   ],
   templateUrl: './shop.component.html',
   styleUrl: './shop.component.scss',
@@ -28,29 +39,37 @@ import { DecimalPipe } from '@angular/common';
 export class ShopComponent {
   hoverShopRefresh = false;
   hoverBuyXp = false;
+  dragPosition = { x: 0, y: 0 };
+  draggingCard = false;
+  dragIndex = 0;
+  previewBuyItem = false;
+  tempCard: HTMLElement | null = null;
 
   constructor(public draftService: DraftService) {
     this.shop = [] as Item[];
     this.playerLevel = 0;
     this.playerGold = 0;
     this.refreshShopCost = 0;
+    this.availableCollections = [] as ItemCollection[];
   }
 
   @Input({ required: true }) shop: Item[];
   @Input({ required: true }) playerLevel: number;
   @Input({ required: true }) playerGold: number;
   @Input({ required: true }) refreshShopCost: number;
+  @Input({ required: true }) availableCollections: ItemCollection[];
 
   onMouseEnterItem(item: Item) {
+    if (this.draggingCard) return;
     item.showDetails = true;
     item.imageCache = item.image;
-    item.image =
-      `https://chungus-battles.b-cdn.net/chungus-battles-assets/level_${item.tier}_glow.png`;
+    item.image = `https://chungus-battles.b-cdn.net/chungus-battles-assets/level_${item.tier}_glow.png`;
   }
 
   onMouseLeaveItem(item: Item) {
+    if (this.draggingCard) return;
     item.showDetails = false;
-    item.image = item.imageCache!;
+    item.image = item.imageCache ? item.imageCache : item.image;
   }
 
   getItemImage(item: Item) {
@@ -59,11 +78,67 @@ export class ShopComponent {
       : 'https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_0_Empty.png';
   }
 
-  switchShopRefreshAnimate() {
-    this.hoverShopRefresh = !this.hoverShopRefresh;
+  getItemsCollectionTooltipForItem(item: Item): string {
+    const collections = this.availableCollections.filter((collection) =>
+      item.itemCollections.includes(collection.itemCollectionId)
+    );
+    return collections.map((collection) => collection.name).join('\r\n');
   }
 
-  switchBuyXpAnimate() {
-    this.hoverBuyXp = !this.hoverBuyXp;
+  cardDragStarted(item: Item) {
+    this.draggingCard = true;
+    this.dragIndex = this.shop.indexOf(item);
+  }
+
+  onDrop(event: CdkDragDrop<any[]>) {
+    this.draggingCard = false;
+    // Get the dragged item from the event
+    const item = this.shop[event.previousIndex];
+    // Check if the player has enough gold and the item is not sold
+    if (this.playerGold >= item.price && !item.sold) {
+      this.buyItem(item);
+    }
+  }
+
+  buyItem(item: Item) {
+    this.draftService.sendMessage('buy', { itemId: item.itemId });
+    this.previewBuyItem = false;
+    this.tempCard?.remove();
+    this.tempCard = null;
+  }
+
+  resetDrag(item: Item) {
+    this.draggingCard = false;
+    this.dragPosition = { x: 0, y: 0 };
+    this.onMouseLeaveItem(item);
+    this.tempCard?.remove();
+    this.tempCard = null;
+  }
+
+  onDragExited(
+    event: CdkDragExit,
+    cardElementRef: HTMLElement,
+    gridRef: HTMLElement
+  ) {
+    if (this.tempCard) return;
+    console.log('onDragExited', event, cardElementRef);
+    //copy the card element to the original position
+    const cardElement = cardElementRef.childNodes[0].cloneNode(true);
+    //insert copy of the card element to the original position
+    console.log('inserting at index ', this.dragIndex);
+    console.log('gridRef.childNodes', gridRef.childNodes);  
+    gridRef.insertBefore(cardElement, gridRef.childNodes[this.dragIndex * 2]);
+    // gridRef.appendChild(cardElement);
+    this.tempCard = cardElement as HTMLElement;
+  }
+
+  onDragExitFromBuyZone() {
+    this.previewBuyItem = false;
+    this.tempCard?.remove();
+    this.tempCard = null;
+  }
+
+  preventDropBack(): boolean {
+    return false;
   }
 }

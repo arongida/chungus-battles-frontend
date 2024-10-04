@@ -1,42 +1,38 @@
-@if (talents.length > 0) {
+<div class="flex flex-col w-full h-full items-center justify-center">
 
-<div id="talents" class="grid-cols-1 grid-rows-2 grid max-w-fit px-6 py-12" [style.background-image]="
+  <div id="talents" class="px-3 py-6 lg:px-6 lg:py-12 max-w-fit overflow-hidden relative" [style.background-image]="
       'url(https://chungus-battles.b-cdn.net/chungus-battles-assets/talent_scroll_01.png)'
     " [style.background-size]="'100% 100%'" [style.background-position]="'center'">
-  @for (talent of talents; track $index) {
-  <div
-    class="mx-3 px-3 flex flex-col align-middle justify-center w-80 h-60 items-center transform transition-transform scale-75 hover:scale-90"
-    [style.background-image]="'url(' + getTalentImage(talent) + ')'" [style.background-size]="'100% 100%'"
-    [style.background-position]="'center'" #tooltip="matTooltip" matTooltip="{{ talent.description }}"
-    matTooltipPosition="right" (mouseenter)="onMouseEnterTalent(talent)" (mouseleave)="onMouseLeaveTalent(talent)">
-    <h2 class="mb-5 mt-2">
-      {{ talent.name }}
-    </h2>
-    <div class="m-3">
-      <p>{{ talent.description }}</p>
-      @for (tag of talent.tags; track $index) {
-      <mat-chip class="mr-1 py-1">{{ tag }}</mat-chip>
-      }
-    </div>
-    <div>
-      @if (talent.showDetails) {
-      <div class="mt-5">
-        <button mat-raised-button color="warn" class="" (click)="selectTalent(talent.talentId)">
-          Select
-        </button>
+    <button class="absolute top-10 right-10 z-10" (click)="closeDialog()"><mat-icon>close</mat-icon></button>
+    <div class="grid grid-cols-2 lg:grid-cols-1 scale-75 lg:scale-100">
+      @for (talent of talents; track $index) {
+      <div
+        class="mx-3 px-3 py-3 flex flex-col align-middle justify-center w-80 h-60 items-center transform transition-transform scale-75 hover:scale-90"
+        [style.background-image]="'url(' + getTalentImage(talent) + ')'" [style.background-size]="'100% 100%'"
+        [style.background-position]="'center'" (mouseenter)="onMouseEnterTalent(talent)"
+        (mouseleave)="onMouseLeaveTalent(talent)" (click)="selectTalent(talent.talentId)">
+        <h2 class="mb-5 mt-2 text-xl">
+          {{ talent.name }}
+        </h2>
+        <div class="mx-3 text-center">
+          <p class="my-3">{{ talent.description }}</p>
+          @for (tag of talent.tags; track $index) {
+          <mat-chip class="mr-1 py-3">{{ tag }}</mat-chip>
+          }
+        </div>
       </div>
       }
+
+      <div class="flex min-w-full justify-center items-center col-span-2 lg:col-span-1">
+        <button class="sm:scale-75 scale-100 ml-5" #tooltip="matTooltip" matTooltip="{{playerLevel * 2}} gold" mat-fab
+          matTooltipPosition="right" color="text-white" (click)="draftService.sendMessage('refresh_talents', {})"
+          (mouseenter)="switchTalentRefreshAnimate()" (mouseleave)="switchTalentRefreshAnimate()">
+          <mat-icon [ngClass]="{'animate-spin': hoverTelentRefresh}">refresh</mat-icon>
+        </button>
+      </div>
     </div>
+
   </div>
-  }
-  <button #tooltip="matTooltip" matTooltip="{{playerLevel * 2}} gold" mat-fab matTooltipPosition="right"
-    color="text-white" class="fixed m-auto inset-x-0 inset-y-0"
-    (click)="draftService.sendMessage('refresh_talents', {})" (mouseenter)="switchTalentRefreshAnimate()"
-    (mouseleave)="switchTalentRefreshAnimate()">
-    <mat-icon [ngClass]="{'animate-spin': hoverTelentRefresh}">refresh</mat-icon>
-  </button>
+
 </div>
-} @else {
-<img class="transition-transform"
-  src="https://chungus-battles.b-cdn.net/chungus-battles-assets/talent_scroll_02_empty.png" alt="" />
-}
+

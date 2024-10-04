@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TalentIconsComponent } from './talent-icons.component';
+import { SkillIconsComponent } from './skill-icons.component';
 
-describe('TalentIconsComponent', () => {
-  let component: TalentIconsComponent;
-  let fixture: ComponentFixture<TalentIconsComponent>;
+describe('SkillIconsComponent', () => {
+  let component: SkillIconsComponent;
+  let fixture: ComponentFixture<SkillIconsComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TalentIconsComponent]
+      imports: [SkillIconsComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(TalentIconsComponent);
+    fixture = TestBed.createComponent(SkillIconsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

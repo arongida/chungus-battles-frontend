@@ -7,6 +7,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatChip } from '@angular/material/chips';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
+import { ItemCollection } from '../../../models/colyseus-schema/ItemCollectionSchema';
 
 @Component({
   selector: 'app-inventory',
@@ -28,6 +29,8 @@ export class InventoryComponent {
   displayedInventory: Item[];
   isDescending: boolean;
   isCollectionsVisible: boolean;
+  isDisplayingSets: boolean;
+  selectedItemCollection : ItemCollection | null = null;
 
   constructor(
     @Inject(MAT_DIALOG_DATA)
@@ -37,6 +40,8 @@ export class InventoryComponent {
     this.displayedInventory = Array.from(this.player.inventory);
     this.isDescending = false;
     this.isCollectionsVisible = false;
+    this.isDisplayingSets = false;
+    this.selectedItemCollection = null;
   }
   onMouseEnterItem(item: Item) {
     item.showDetails = true;
@@ -57,11 +62,12 @@ export class InventoryComponent {
   }
 
   backToDefault() {
+    this.isDisplayingSets = false;
     this.displayedInventory = [...this.player.inventory];
   }
 
   sortByName() {
-
+    this.isDisplayingSets = false;
     let itemsArray = [...this.player.inventory];
     if (this.isDescending) {
       const sortedByNameDesc = itemsArray.sort((a, b) => a.name.localeCompare(b.name));
@@ -78,6 +84,7 @@ export class InventoryComponent {
   }
 
   sortByLevel() {
+    this.isDisplayingSets = false;
     let itemsArray = [...this.player.inventory];
     if (this.isDescending) {
       const sortedByLevel = itemsArray.sort((a, b) => b.tier - a.tier);
@@ -92,6 +99,7 @@ export class InventoryComponent {
   }
 
   listOfSets(collectionName: string) {
+    this.isDisplayingSets = true;
     const selectedCollection = this.player.activeItemCollections.find(
       (collection)=> collection.name === collectionName
     );
@@ -103,6 +111,10 @@ export class InventoryComponent {
       
     }
 
+  }
+
+  setSelectedCollection(collection: ItemCollection){
+    this.selectedItemCollection = collection;
   }
 
 

@@ -67,4 +67,8 @@ export class TalentsComponent {
     });
     this.dialogRef.close();
   }
+
+  closeDialog() {
+    this.dialogRef.close();
+  }
 }

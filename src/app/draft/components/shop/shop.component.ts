@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, viewChild } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Item } from '../../../models/colyseus-schema/ItemSchema';
 import { MatCardModule } from '@angular/material/card';
 import { DraftService } from '../../services/draft.service';
@@ -12,7 +12,7 @@ import { ItemCollection } from '../../../models/colyseus-schema/ItemCollectionSc
 import {
   CdkDrag,
   CdkDragDrop,
-  CdkDragStart,
+  CdkDragExit,
   CdkDropList,
   DragDropModule,
 } from '@angular/cdk/drag-drop';
@@ -40,6 +40,10 @@ export class ShopComponent {
   hoverShopRefresh = false;
   hoverBuyXp = false;
   dragPosition = { x: 0, y: 0 };
+  draggingCard = false;
+  dragIndex = 0;
+  previewBuyItem = false;
+  tempCard: HTMLElement | null = null;
 
   constructor(public draftService: DraftService) {
     this.shop = [] as Item[];
@@ -56,12 +60,14 @@ export class ShopComponent {
   @Input({ required: true }) availableCollections: ItemCollection[];
 
   onMouseEnterItem(item: Item) {
+    if (this.draggingCard) return;
     item.showDetails = true;
     item.imageCache = item.image;
     item.image = `https://chungus-battles.b-cdn.net/chungus-battles-assets/level_${item.tier}_glow.png`;
   }
 
   onMouseLeaveItem(item: Item) {
+    if (this.draggingCard) return;
     item.showDetails = false;
     item.image = item.imageCache ? item.imageCache : item.image;
   }
@@ -80,12 +86,14 @@ export class ShopComponent {
   }
 
   cardDragStarted(item: Item) {
+    this.draggingCard = true;
+    this.dragIndex = this.shop.indexOf(item);
   }
 
   onDrop(event: CdkDragDrop<any[]>) {
+    this.draggingCard = false;
     // Get the dragged item from the event
     const item = this.shop[event.previousIndex];
-
     // Check if the player has enough gold and the item is not sold
     if (this.playerGold >= item.price && !item.sold) {
       this.buyItem(item);
@@ -94,14 +102,43 @@ export class ShopComponent {
 
   buyItem(item: Item) {
     this.draftService.sendMessage('buy', { itemId: item.itemId });
+    this.previewBuyItem = false;
+    this.tempCard?.remove();
+    this.tempCard = null;
   }
 
   resetDrag(item: Item) {
+    this.draggingCard = false;
     this.dragPosition = { x: 0, y: 0 };
     this.onMouseLeaveItem(item);
+    this.tempCard?.remove();
+    this.tempCard = null;
   }
 
-  onDragEnter(event: any) {
-    console.log('drag enter:', event);
+  onDragExited(
+    event: CdkDragExit,
+    cardElementRef: HTMLElement,
+    gridRef: HTMLElement
+  ) {
+    if (this.tempCard) return;
+    console.log('onDragExited', event, cardElementRef);
+    //copy the card element to the original position
+    const cardElement = cardElementRef.childNodes[0].cloneNode(true);
+    //insert copy of the card element to the original position
+    console.log('inserting at index ', this.dragIndex);
+    console.log('gridRef.childNodes', gridRef.childNodes);  
+    gridRef.insertBefore(cardElement, gridRef.childNodes[this.dragIndex * 2]);
+    // gridRef.appendChild(cardElement);
+    this.tempCard = cardElement as HTMLElement;
+  }
+
+  onDragExitFromBuyZone() {
+    this.previewBuyItem = false;
+    this.tempCard?.remove();
+    this.tempCard = null;
+  }
+
+  preventDropBack(): boolean {
+    return false;
   }
 }

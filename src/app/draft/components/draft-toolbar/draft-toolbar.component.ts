@@ -83,8 +83,8 @@ export class DraftToolbarComponent implements AfterViewChecked {
       },
       maxWidth: '100vw',
       maxHeight: '100vh',
-      height: '75%',
-      width: '85%',
+      height: '80%',
+      width: '100%',
     });
   }
 

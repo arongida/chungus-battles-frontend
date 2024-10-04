@@ -30,7 +30,7 @@
       @for (collection of player.availableItemCollections; track $index) {
 
       <mat-chip-option class="m-1 text-xs" #tooltip="matTooltip" matTooltipPosition="left"
-        matTooltip={{collection.requirements}}>
+        matTooltip={{collection.effect}}>
         {{collection.name}}
       </mat-chip-option>
 

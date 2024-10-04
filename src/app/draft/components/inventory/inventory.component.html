@@ -3,16 +3,18 @@
   <button mat-button (click)="backToDefault()" class="px-4 py-2 bg-[#654321] text-white rounded-md">Obtained</button>
   <button mat-button (click)="sortByName()" class="px-4 py-2 bg-[#654321] text-white rounded-md">A-Z</button>
   <button mat-button (click)="sortByLevel()" class="px-4 py-2 bg-[#654321] text-white rounded-md">Level</button>
-  <button mat-button [matMenuTriggerFor]="menu" class="px-4 py-2 bg-[#654321] text-white rounded-md">Type</button>
+  <button mat-button [matMenuTriggerFor]="menu" class="px-4 py-2 bg-[#654321] text-white rounded-md">Sets</button>
   <mat-menu #menu="matMenu">
-    <button mat-menu-item>Warrior</button>
-    <button mat-menu-item>Thief</button>
-    <button mat-menu-item>Merchant</button>
+    @for (collection of player.activeItemCollections; track $index){
+    <button (click)="listOfSets(collection.name)" mat-menu-item>
+      {{ collection.name }}
+    </button>
+    }
   </mat-menu>
 </div>
 
 <div id="inventory-grid" class="grid grid-cols-4">
-  
+
   @for (item of displayedInventory; track $index) {
   <mat-card [style.background-image]="'url(' + getItemImage(item) + ')'" id="item-{{ $index }}"
     class="w-60 h-80 items-center rounded-lg shadow-lg transform transition-transform scale-75 hover:scale-90"

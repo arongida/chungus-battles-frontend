@@ -27,14 +27,16 @@ export class InventoryComponent {
   player: Player;
   displayedInventory: Item[];
   isDescending: boolean;
+  isCollectionsVisible: boolean;
 
   constructor(
     @Inject(MAT_DIALOG_DATA)
     public data: { player: Player }
   ) {
     this.player = data.player;
-    this.displayedInventory = this.player.inventory;
+    this.displayedInventory = Array.from(this.player.inventory);
     this.isDescending = false;
+    this.isCollectionsVisible = false;
   }
   onMouseEnterItem(item: Item) {
     item.showDetails = true;
@@ -55,39 +57,54 @@ export class InventoryComponent {
   }
 
   backToDefault() {
-    this.displayedInventory = Array.from(this.player.inventory);
+    this.displayedInventory = [...this.player.inventory];
   }
 
   sortByName() {
 
-    let itemsArray = Array.from(this.player.inventory);
-    if(this.isDescending){
+    let itemsArray = [...this.player.inventory];
+    if (this.isDescending) {
       const sortedByNameDesc = itemsArray.sort((a, b) => a.name.localeCompare(b.name));
       this.displayedInventory = sortedByNameDesc;
       this.isDescending = !this.isDescending;
-    }else {
+    } else {
       const sortedByNameAsc = itemsArray.sort((a, b) => b.name.localeCompare(a.name));
       this.displayedInventory = sortedByNameAsc;
       this.isDescending = !this.isDescending;
     }
-    
 
-    
+
+
   }
 
   sortByLevel() {
     let itemsArray = [...this.player.inventory];
-    if(this.isDescending){
+    if (this.isDescending) {
       const sortedByLevel = itemsArray.sort((a, b) => b.tier - a.tier);
       this.displayedInventory = sortedByLevel;
       this.isDescending = !this.isDescending;
-    }else{
+    } else {
       const sortedByLevel = itemsArray.sort((a, b) => a.tier - b.tier);
       this.displayedInventory = sortedByLevel;
       this.isDescending = !this.isDescending;
     }
-    
+
   }
+
+  listOfSets(collectionName: string) {
+    const selectedCollection = this.player.activeItemCollections.find(
+      (collection)=> collection.name === collectionName
+    );
+
+    if(selectedCollection){
+      this.displayedInventory = this.player.inventory.filter(item => item.itemCollections.includes(selectedCollection.itemCollectionId));
+    }else{
+      console.log(`No item collection found with the name ${collectionName}`);
+      
+    }
+
+  }
+
 
   /*getAggregatedInventory(): {
     name: string;

@@ -6,14 +6,28 @@
   <button mat-button [matMenuTriggerFor]="menu" class="px-4 py-2 bg-[#654321] text-white rounded-md">Sets</button>
   <mat-menu #menu="matMenu">
     @for (collection of player.activeItemCollections; track $index){
-    <button (click)="listOfSets(collection.name)" mat-menu-item>
+    <button (click)="listOfSets(collection.name); setSelectedCollection(collection)" mat-menu-item>
       {{ collection.name }}
     </button>
     }
   </mat-menu>
 </div>
 
-<div id="inventory-grid" class="grid grid-cols-4">
+@if(isDisplayingSets){
+  <div class="flex flex-col justify-center items-center">
+    <label for="reqs">requirements:</label>
+    <p id="reqs">{{selectedItemCollection?.requirements}}</p>
+    <label for="effect">effect:</label>
+    <p id="effect">{{selectedItemCollection?.effect}}</p>
+  </div>
+}
+
+<div id="inventory-grid" 
+  [ngClass]="{ 
+    'grid-cols-4': !isDisplayingSets, 
+    'grid-cols-3': isDisplayingSets 
+  }"
+  class="grid gap-4 place-items-center">
 
   @for (item of displayedInventory; track $index) {
   <mat-card [style.background-image]="'url(' + getItemImage(item) + ')'" id="item-{{ $index }}"

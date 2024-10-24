@@ -17,13 +17,13 @@
         </mat-card-header>
 
         @if (item.showDetails) {
-        <mat-card-content class="flex flex-col text-center text-white p-1 content-evenly">
-          <div class="mb-2">
+        <div class="flex flex-col flex-1 text-center text-white p-1 justify-items-center">
+          <div class="p-1">
             <p class="font-semibold">
               Price: <span class="text-yellow-300">{{ item.price }} 🟡</span>
             </p>
           </div>
-          <div class="flex flex-1 place-content-center text-xs">
+          <div class="flex place-content-center text-xs p-1">
             @if(item.affectedStats.attack !== 0) {
             <p>
               Attack:
@@ -60,13 +60,17 @@
             }
 
           </div>
-          <div class="ml-2 mr-2">
-            <p class="font-thin text-sm">{{ item.description }}</p>
+          <div class="p-1 m-1">
+            <p class="font-thin text-sm py-1">{{ item.description }}</p>
             @for (tag of item.tags; track $index) {
-            <mat-chip class="mr-1 py-1">{{ tag }}</mat-chip>
+            <mat-chip class="mr-1 py-2">{{ tag }}</mat-chip>
             }
+            <br>
+            <span class="p-2 mt-1">Already owned: {{getNumberOfOwnedItems(item)}}</span>
           </div>
-        </mat-card-content>
+        </div>
+
+
         }
       </mat-card>
     </div>

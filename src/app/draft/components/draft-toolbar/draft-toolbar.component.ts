@@ -46,6 +46,7 @@ export class DraftToolbarComponent implements AfterViewChecked {
   dialog = inject(MatDialog);
   hoverShopRefresh = false;
   hoverBuyXp = false;
+  selectedCollectionIds: number[] = [];
 
   private previousValue: number = 0;
   private talentDialogRef: MatDialogRef<TalentsComponent, any> | null = null;
@@ -114,5 +115,20 @@ export class DraftToolbarComponent implements AfterViewChecked {
 
   switchBuyXpAnimate() {
     this.hoverBuyXp = !this.hoverBuyXp;
+  }
+
+  toggleCollection(collectionId: number) {
+    if (this.selectedCollectionIds.includes(collectionId)) {
+      this.selectedCollectionIds = this.selectedCollectionIds.filter(
+        (id) => id !== collectionId
+      );
+    } else {
+      this.selectedCollectionIds.push(collectionId);
+    }
+
+    this.draftService.trackedCollectionIds = this.selectedCollectionIds;
+
+    console.log('selectedCollectionIds', this.selectedCollectionIds);
+    
   }
 }

@@ -12,6 +12,7 @@ export class DraftService {
   client: Colyseus.Client;
   room: Colyseus.Room<DraftState> | undefined;
   player: Player | undefined;
+  trackedCollectionIds: number[] = [];
 
   static isLocalStorageAvailable = typeof localStorage !== 'undefined';
 

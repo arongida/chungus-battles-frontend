@@ -139,4 +139,12 @@ export class ShopComponent {
   getNumberOfOwnedItems(item: Item): number {
     return this.player.inventory.filter((i) => i.itemId === item.itemId).length;
   }
+
+  isCardTracked(item: Item): boolean {
+    const isTracked = item.itemCollections.some((collectionId) =>
+      this.draftService.trackedCollectionIds.includes(collectionId)
+    );
+    console.log('isCardTracked', isTracked);
+    return isTracked;
+  }
 }

@@ -6,8 +6,7 @@
 <div
   class="flex flex-col justify-center items-center z-0 bg-cover bg-[url('https://chungus-battles.b-cdn.net/chungus-battles-assets/BG_01.png')] w-screen h-screen">
 
-  <app-shop class="max-h-screen max-w-screen" [shop]="shop ?? []" [refreshShopCost]="player?.refreshShopCost ?? 2" [playerLevel]="player?.level ?? 1"
-    [playerGold]="player?.gold ?? 0" [availableCollections]="availableCollections ?? []"></app-shop>
+  <app-shop class="max-h-screen max-w-screen" [shop]="shop ?? []" [player]="player!"></app-shop>
 
 
 </div>

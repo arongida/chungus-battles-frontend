@@ -8,7 +8,6 @@ import { MatChip } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
 import { DecimalPipe } from '@angular/common';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { ItemCollection } from '../../../models/colyseus-schema/ItemCollectionSchema';
 import {
   CdkDrag,
   CdkDragDrop,
@@ -16,6 +15,7 @@ import {
   CdkDropList,
   DragDropModule,
 } from '@angular/cdk/drag-drop';
+import { Player } from '../../../models/colyseus-schema/PlayerSchema';
 
 @Component({
   selector: 'app-shop',
@@ -47,17 +47,11 @@ export class ShopComponent {
 
   constructor(public draftService: DraftService) {
     this.shop = [] as Item[];
-    this.playerLevel = 0;
-    this.playerGold = 0;
-    this.refreshShopCost = 0;
-    this.availableCollections = [] as ItemCollection[];
+    this.player = new Player();
   }
 
   @Input({ required: true }) shop: Item[];
-  @Input({ required: true }) playerLevel: number;
-  @Input({ required: true }) playerGold: number;
-  @Input({ required: true }) refreshShopCost: number;
-  @Input({ required: true }) availableCollections: ItemCollection[];
+  @Input({ required: true }) player: Player;
 
   onMouseEnterItem(item: Item) {
     if (this.draggingCard) return;
@@ -79,7 +73,7 @@ export class ShopComponent {
   }
 
   getItemsCollectionTooltipForItem(item: Item): string {
-    const collections = this.availableCollections.filter((collection) =>
+    const collections = this.player.availableItemCollections.filter((collection) =>
       item.itemCollections.includes(collection.itemCollectionId)
     );
     return collections.map((collection) => collection.name).join('\r\n');
@@ -95,7 +89,7 @@ export class ShopComponent {
     // Get the dragged item from the event
     const item = this.shop[event.previousIndex];
     // Check if the player has enough gold and the item is not sold
-    if (this.playerGold >= item.price && !item.sold) {
+    if (this.player.gold >= item.price && !item.sold) {
       this.buyItem(item);
     }
   }
@@ -140,5 +134,17 @@ export class ShopComponent {
 
   preventDropBack(): boolean {
     return false;
+  }
+
+  getNumberOfOwnedItems(item: Item): number {
+    return this.player.inventory.filter((i) => i.itemId === item.itemId).length;
+  }
+
+  isCardTracked(item: Item): boolean {
+    const isTracked = item.itemCollections.some((collectionId) =>
+      this.draftService.trackedCollectionIds.includes(collectionId)
+    );
+    console.log('isCardTracked', isTracked);
+    return isTracked;
   }
 }

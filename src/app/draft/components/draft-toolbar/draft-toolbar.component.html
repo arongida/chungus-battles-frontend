@@ -3,11 +3,14 @@
     <img class="w-12 h-12 rounded-full object-cover hover:border-white hover:border"
       src="{{player.avatarUrl.replace('01','transparent')}}" alt="player" (click)="openCharacterDetails()">
     <span class="text-center">{{player.name}}</span>
-    <span class="text-sm text-center" #goldTooltip="matTooltip" matTooltip="{{player.income + player.round * 4}} gold per round." matTooltipPosition="below">Gold: {{ player.gold }} 🟡</span>
+    <span class="text-sm text-center" #goldTooltip="matTooltip"
+      matTooltip="{{player.income + player.round * 4}} gold per round." matTooltipPosition="below">Gold: {{ player.gold
+      }} 🟡</span>
 
     @if (this.availableTalents.length > 0) {
 
-    <button mat-mini-fab (click)="openTalentPickerDialog()" #talentPickerTooltip="matTooltip" matTooltip="Choose new talent!" matTooltipPosition="below" matTooltipHideDelay="1000">
+    <button mat-mini-fab (click)="openTalentPickerDialog()" #talentPickerTooltip="matTooltip"
+      matTooltip="Choose new talent!" matTooltipPosition="below" matTooltipHideDelay="1000">
       <mat-icon class="animate-bounce">keyboard_arrow_up</mat-icon>
     </button>
 
@@ -30,6 +33,8 @@
       @for (collection of player.availableItemCollections; track $index) {
 
       <mat-chip-option class="m-1 text-xs" #tooltip="matTooltip" matTooltipPosition="left"
+        [selected]="selectedCollectionIds.includes(collection.itemCollectionId)" 
+        (selectionChange)="toggleCollection(collection.itemCollectionId)"
         matTooltip={{collection.effect}}>
         {{collection.name}}
       </mat-chip-option>

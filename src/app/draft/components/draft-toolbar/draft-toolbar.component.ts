@@ -1,5 +1,6 @@
 import {
   AfterViewChecked,
+  ChangeDetectorRef,
   Component,
   ElementRef,
   Input,
@@ -46,12 +47,11 @@ export class DraftToolbarComponent implements AfterViewChecked {
   dialog = inject(MatDialog);
   hoverShopRefresh = false;
   hoverBuyXp = false;
-  selectedCollectionIds: number[] = [];
 
   private previousValue: number = 0;
   private talentDialogRef: MatDialogRef<TalentsComponent, any> | null = null;
 
-  constructor(public draftService: DraftService) {}
+  constructor(public draftService: DraftService, private cd: ChangeDetectorRef) {}
 
   @Input({ required: true }) player: Player = new Player();
   @Input({ required: true }) availableTalents: Talent[] = [];
@@ -74,6 +74,8 @@ export class DraftToolbarComponent implements AfterViewChecked {
       this.talentPickerTooltip.show();
     }
     this.previousValue = currentValue;
+
+    // this.cd.detectChanges();
   }
 
   openTalentPickerDialog(): void {
@@ -118,17 +120,17 @@ export class DraftToolbarComponent implements AfterViewChecked {
   }
 
   toggleCollection(collectionId: number) {
-    if (this.selectedCollectionIds.includes(collectionId)) {
-      this.selectedCollectionIds = this.selectedCollectionIds.filter(
+    if (this.draftService.trackedCollectionIds.includes(collectionId)) {
+      this.draftService.trackedCollectionIds = this.draftService.trackedCollectionIds.filter(
         (id) => id !== collectionId
       );
     } else {
-      this.selectedCollectionIds.push(collectionId);
-    }
+      this.draftService.trackedCollectionIds.push(collectionId);
+    }    
+  }
 
-    this.draftService.trackedCollectionIds = this.selectedCollectionIds;
-
-    console.log('selectedCollectionIds', this.selectedCollectionIds);
-    
+  isCollectionTracked(collectionId: number) {
+    const isCollectionTracked = this.draftService.trackedCollectionIds.includes(collectionId);
+    return this.draftService.trackedCollectionIds.includes(collectionId);
   }
 }

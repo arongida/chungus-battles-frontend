@@ -143,7 +143,7 @@ export class ShopComponent {
   isCardHighlighted(item: Item): boolean {
     const isOwned = this.getNumberOfOwnedItems(item) > 0;
     const isTracked = item.itemCollections.some((collectionId) =>
-      this.draftService.trackedCollectionIds.includes(collectionId)
+      this.draftService.trackedCollectionIds().includes(collectionId)
     );
     console.log('isCardTracked', isTracked);
     return isTracked && !isOwned;

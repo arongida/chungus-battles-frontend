@@ -110,6 +110,7 @@ export class JoinFormComponent implements AfterViewInit, OnDestroy {
     }
 
     this.loading = true;
+    this.draftService.resetTrackedCollections();
     const joinResult = await this.draftService.joinOrCreate(
       this.nameControl.value!,
       undefined,

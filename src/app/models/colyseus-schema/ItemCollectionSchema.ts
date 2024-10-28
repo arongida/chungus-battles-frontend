@@ -7,6 +7,7 @@ export class ItemCollection extends Schema {
   @type('string') effect: string = 'effect';
   @type('string') image: string = 'image';
   @type(['string']) tags: ArraySchema<string> = new ArraySchema<string>();
+  @type('number') tier: number = 0;
   base?: number = 0;
 	scaling?: number = 0;
   activationRate?: number = 0;

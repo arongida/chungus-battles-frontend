@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, computed } from '@angular/core';
 import { Item } from '../../../models/colyseus-schema/ItemSchema';
 import { MatCardModule } from '@angular/material/card';
 import { DraftService } from '../../services/draft.service';
@@ -8,13 +8,7 @@ import { MatChip } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
 import { DecimalPipe } from '@angular/common';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import {
-  CdkDrag,
-  CdkDragDrop,
-  CdkDragExit,
-  CdkDropList,
-  DragDropModule,
-} from '@angular/cdk/drag-drop';
+import { CdkDrag, CdkDragDrop, CdkDragExit, CdkDropList, DragDropModule } from '@angular/cdk/drag-drop';
 import { Player } from '../../../models/colyseus-schema/PlayerSchema';
 
 @Component({
@@ -44,6 +38,7 @@ export class ShopComponent {
   dragIndex = 0;
   previewBuyItem = false;
   tempCard: HTMLElement | null = null;
+  trackedCollectionIds = computed(() => this.draftService.trackedCollectionIds());
 
   constructor(public draftService: DraftService) {
     this.shop = [] as Item[];
@@ -67,9 +62,7 @@ export class ShopComponent {
   }
 
   getItemImage(item: Item) {
-    return item.image
-      ? item.image
-      : 'https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_0_Empty.png';
+    return item.image ? item.image : 'https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_0_Empty.png';
   }
 
   getItemsCollectionTooltipForItem(item: Item): string {
@@ -95,7 +88,9 @@ export class ShopComponent {
   }
 
   buyItem(item: Item) {
-    this.draftService.sendMessage('buy', { itemId: item.itemId });
+    this.draftService.sendMessage('buy', {
+      itemId: item.itemId,
+    });
     this.previewBuyItem = false;
     this.tempCard?.remove();
     this.tempCard = null;
@@ -109,20 +104,15 @@ export class ShopComponent {
     this.tempCard = null;
   }
 
-  onDragExited(
-    event: CdkDragExit,
-    cardElementRef: HTMLElement,
-    gridRef: HTMLElement
-  ) {
+  onDragExited(event: CdkDragExit, cardElementRef: HTMLElement, gridRef: HTMLElement) {
     if (this.tempCard) return;
     console.log('onDragExited', event, cardElementRef);
     //copy the card element to the original position
     const cardElement = cardElementRef.childNodes[0].cloneNode(true);
     //insert copy of the card element to the original position
     console.log('inserting at index ', this.dragIndex);
-    console.log('gridRef.childNodes', gridRef.childNodes);  
+    console.log('gridRef.childNodes', gridRef.childNodes);
     gridRef.insertBefore(cardElement, gridRef.childNodes[this.dragIndex * 2]);
-    // gridRef.appendChild(cardElement);
     this.tempCard = cardElement as HTMLElement;
   }
 
@@ -140,11 +130,9 @@ export class ShopComponent {
     return this.player.inventory.filter((i) => i.itemId === item.itemId).length;
   }
 
-  isCardTracked(item: Item): boolean {
-    const isTracked = item.itemCollections.some((collectionId) =>
-      this.draftService.trackedCollectionIds.includes(collectionId)
-    );
-    console.log('isCardTracked', isTracked);
-    return isTracked;
+  isCardHighlighted(item: Item): boolean {
+    const isOwned = this.getNumberOfOwnedItems(item) > 0;
+    const isTracked = item.itemCollections.some((collectionId) => this.trackedCollectionIds().includes(collectionId));
+    return isTracked && !isOwned;
   }
 }

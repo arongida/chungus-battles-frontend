@@ -1,9 +1,12 @@
 import {
   AfterViewChecked,
+  ChangeDetectorRef,
   Component,
-  ElementRef,
   Input,
+  OnDestroy,
+  OnInit,
   ViewChild,
+  computed,
   inject,
 } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
@@ -11,11 +14,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { Player } from '../../../models/colyseus-schema/PlayerSchema';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import {
-  MatDialog,
-  MatDialogRef,
-  MatDialogState,
-} from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { TalentsComponent } from '../talents/talents.component';
 import { Talent } from '../../../models/colyseus-schema/TalentSchema';
 import { CharacterDetailsComponent } from '../character-details/character-details.component';
@@ -24,7 +23,7 @@ import { MatTooltip, MatTooltipModule } from '@angular/material/tooltip';
 import { DraftService } from '../../services/draft.service';
 import { NgClass } from '@angular/common';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatChipsModule } from '@angular/material/chips';
+import { MatChipSelectionChange, MatChipsModule } from '@angular/material/chips';
 
 @Component({
   selector: 'app-draft-toolbar',
@@ -46,24 +45,24 @@ export class DraftToolbarComponent implements AfterViewChecked {
   dialog = inject(MatDialog);
   hoverShopRefresh = false;
   hoverBuyXp = false;
-  selectedCollectionIds: number[] = [];
 
   private previousValue: number = 0;
   private talentDialogRef: MatDialogRef<TalentsComponent, any> | null = null;
+  selectedCollections = computed(() => this.draftService.trackedCollectionIds());
 
   constructor(public draftService: DraftService) {}
 
   @Input({ required: true }) player: Player = new Player();
-  @Input({ required: true }) availableTalents: Talent[] = [];
+  @Input({ required: true })
+  availableTalents: Talent[] = [];
 
-  @ViewChild('talentPickerTooltip') talentPickerTooltip!: MatTooltip;
+  @ViewChild('talentPickerTooltip')
+  talentPickerTooltip!: MatTooltip;
 
   ngAfterViewChecked() {
     const currentValue = this.availableTalents.length;
 
-    const talentDialogisOpen = this.talentDialogRef
-      ? this.talentDialogRef.getState()
-      : null;
+    const talentDialogisOpen = this.talentDialogRef ? this.talentDialogRef.getState() : null;
 
     if (
       this.previousValue === 0 &&
@@ -117,18 +116,42 @@ export class DraftToolbarComponent implements AfterViewChecked {
     this.hoverBuyXp = !this.hoverBuyXp;
   }
 
-  toggleCollection(collectionId: number) {
-    if (this.selectedCollectionIds.includes(collectionId)) {
-      this.selectedCollectionIds = this.selectedCollectionIds.filter(
-        (id) => id !== collectionId
-      );
-    } else {
-      this.selectedCollectionIds.push(collectionId);
+  onSelectionChange(event: any, collectionId: number) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.draftService.toggleCollectionTracking(collectionId);
+  }
+
+  handleSelectionChange(event: MatChipSelectionChange, collectionId: number) {
+    if (event.isUserInput) {
+      this.draftService.toggleCollectionTracking(collectionId);
     }
+  }
 
-    this.draftService.trackedCollectionIds = this.selectedCollectionIds;
+  getItemcollectionItemCount(collectionId: number) {
+    return this.player?.inventory.filter((item) => item.itemCollections.includes(collectionId)).length;
+  }
 
-    console.log('selectedCollectionIds', this.selectedCollectionIds);
-    
+  getProgress(collection: any) {
+    return (
+      (this.getItemcollectionItemCount(collection.itemCollectionId) / this.getItemCollectionMaxCount(collection.name)) *
+      100
+    );
+  }
+
+  getItemCollectionMaxCount(collectionName: string) {
+    let maxCount = 3;
+    if (collectionName.includes('Shields vol I.')) {
+      maxCount = 1;
+    } else if (collectionName.includes('Shields vol II.')) {
+      maxCount = 2;
+    } else if (collectionName.includes('Shields vol III.')) {
+      maxCount = 3;
+    } else if (collectionName.includes('Shields vol IV.')) {
+      maxCount = 4;
+    } else if (collectionName.includes('Shields vol V.')) {
+      maxCount = 5;
+    }
+    return maxCount;
   }
 }

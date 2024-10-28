@@ -33,13 +33,14 @@
     <div class="flex flex-col p-3 m-3 min-w-fit text-center justify-items-center" (click)="$event.stopPropagation();">
       @for (collection of player.availableItemCollections; track collection.itemCollectionId) {
 
-      <mat-chip-option class="m-1 text-xs" #tooltip="matTooltip" matTooltipPosition="left" [selected]="draftService
-        .trackedCollectionIds()
-        .includes(collection.itemCollectionId)" (selectionChange)="toggleCollection(collection.itemCollectionId)"
-        matTooltip={{collection.requirements}}>
+      <mat-chip-option class="m-1 text-xs" #tooltip="matTooltip" matTooltipPosition="left"
+        [selected]="selectedCollections().includes(collection.itemCollectionId)"
+        
+        (selectionChange)="handleSelectionChange($event, collection.itemCollectionId)"
+        [matTooltip]="collection.requirements">
         {{collection.name}}
-        <mat-progress-bar id="collection-progress-${{collection.itemCollectionId}}" mode="determinate"
-          value="{{ (getItemcollectionItemCount(collection.itemCollectionId) / getItemCollectionMaxCount(collection.name)) * 100 }}"></mat-progress-bar>
+        <mat-progress-bar [id]="'collection-progress-' + collection.itemCollectionId" mode="determinate"
+          [value]="getProgress(collection)"></mat-progress-bar>
       </mat-chip-option>
 
       }

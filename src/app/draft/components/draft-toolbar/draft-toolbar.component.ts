@@ -3,7 +3,10 @@ import {
   ChangeDetectorRef,
   Component,
   Input,
+  OnDestroy,
+  OnInit,
   ViewChild,
+  computed,
   inject,
 } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
@@ -11,22 +14,16 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { Player } from '../../../models/colyseus-schema/PlayerSchema';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import {
-  MatDialog,
-  MatDialogRef,
-} from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { TalentsComponent } from '../talents/talents.component';
 import { Talent } from '../../../models/colyseus-schema/TalentSchema';
 import { CharacterDetailsComponent } from '../character-details/character-details.component';
 import { InventoryComponent } from '../inventory/inventory.component';
-import {
-  MatTooltip,
-  MatTooltipModule,
-} from '@angular/material/tooltip';
+import { MatTooltip, MatTooltipModule } from '@angular/material/tooltip';
 import { DraftService } from '../../services/draft.service';
 import { NgClass } from '@angular/common';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatChipsModule } from '@angular/material/chips';
+import { MatChipSelectionChange, MatChipsModule } from '@angular/material/chips';
 
 @Component({
   selector: 'app-draft-toolbar',
@@ -44,26 +41,18 @@ import { MatChipsModule } from '@angular/material/chips';
   templateUrl: './draft-toolbar.component.html',
   styleUrl: './draft-toolbar.component.scss',
 })
-export class DraftToolbarComponent
-  implements AfterViewChecked
-{
+export class DraftToolbarComponent implements AfterViewChecked {
   dialog = inject(MatDialog);
   hoverShopRefresh = false;
   hoverBuyXp = false;
 
   private previousValue: number = 0;
-  private talentDialogRef: MatDialogRef<
-    TalentsComponent,
-    any
-  > | null = null;
+  private talentDialogRef: MatDialogRef<TalentsComponent, any> | null = null;
+  selectedCollections = computed(() => this.draftService.trackedCollectionIds());
 
-  constructor(
-    public draftService: DraftService,
-    private cd: ChangeDetectorRef
-  ) {}
+  constructor(public draftService: DraftService) {}
 
-  @Input({ required: true }) player: Player =
-    new Player();
+  @Input({ required: true }) player: Player = new Player();
   @Input({ required: true })
   availableTalents: Talent[] = [];
 
@@ -71,13 +60,9 @@ export class DraftToolbarComponent
   talentPickerTooltip!: MatTooltip;
 
   ngAfterViewChecked() {
-    const currentValue =
-      this.availableTalents.length;
+    const currentValue = this.availableTalents.length;
 
-    const talentDialogisOpen = this
-      .talentDialogRef
-      ? this.talentDialogRef.getState()
-      : null;
+    const talentDialogisOpen = this.talentDialogRef ? this.talentDialogRef.getState() : null;
 
     if (
       this.previousValue === 0 &&
@@ -88,112 +73,83 @@ export class DraftToolbarComponent
       this.talentPickerTooltip.show();
     }
     this.previousValue = currentValue;
-
-    this.cd.detectChanges();
   }
 
   openTalentPickerDialog(): void {
-    this.talentDialogRef = this.dialog.open(
-      TalentsComponent,
-      {
-        data: {
-          talents: this.availableTalents,
-          playerLevel: this.player?.level ?? 1,
-        },
-        maxWidth: '100vw',
-        maxHeight: '100vh',
-        height: '80%',
-        width: '100%',
-      }
-    );
+    this.talentDialogRef = this.dialog.open(TalentsComponent, {
+      data: {
+        talents: this.availableTalents,
+        playerLevel: this.player?.level ?? 1,
+      },
+      maxWidth: '100vw',
+      maxHeight: '100vh',
+      height: '80%',
+      width: '100%',
+    });
   }
 
   openCharacterDetails(): void {
-    const charDetailsDialog = this.dialog.open(
-      CharacterDetailsComponent,
-      {
-        data: {
-          player: this.player,
-        },
-      }
-    );
+    const charDetailsDialog = this.dialog.open(CharacterDetailsComponent, {
+      data: {
+        player: this.player,
+      },
+    });
   }
 
   openInventory(): void {
-    const inventoryDialog = this.dialog.open(
-      InventoryComponent,
-      {
-        data: {
-          player: this.player,
-        },
-        maxWidth: '100vw',
-        maxHeight: '100vh',
-        height: '100%',
-        width: '80%',
-      }
-    );
+    const inventoryDialog = this.dialog.open(InventoryComponent, {
+      data: {
+        player: this.player,
+      },
+      maxWidth: '100vw',
+      maxHeight: '100vh',
+      height: '100%',
+      width: '80%',
+    });
   }
 
   switchShopRefreshAnimate() {
-    this.hoverShopRefresh =
-      !this.hoverShopRefresh;
+    this.hoverShopRefresh = !this.hoverShopRefresh;
   }
 
   switchBuyXpAnimate() {
     this.hoverBuyXp = !this.hoverBuyXp;
   }
 
-  toggleCollection(collectionId: number) {
-    if (
-      this.draftService
-        .trackedCollectionIds()
-        .includes(collectionId)
-    ) {
-      this.draftService.trackedCollectionIds.set(
-        this.draftService
-          .trackedCollectionIds()
-          .filter((id) => id !== collectionId)
-      );
-    } else {
-      this.draftService
-        .trackedCollectionIds()
-        .push(collectionId);
+  onSelectionChange(event: any, collectionId: number) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.draftService.toggleCollectionTracking(collectionId);
+  }
+
+  handleSelectionChange(event: MatChipSelectionChange, collectionId: number) {
+    if (event.isUserInput) {
+      this.draftService.toggleCollectionTracking(collectionId);
     }
-
-    this.draftService.saveTrackedCollectionIds();
   }
 
-  getItemcollectionItemCount(
-    collectionId: number
-  ) {
-    return this.player?.inventory.filter((item) =>
-      item.itemCollections.includes(collectionId)
-    ).length;
+  getItemcollectionItemCount(collectionId: number) {
+    return this.player?.inventory.filter((item) => item.itemCollections.includes(collectionId)).length;
   }
 
-  getItemCollectionMaxCount(
-    collectionName: string
-  ) {
+  getProgress(collection: any) {
+    return (
+      (this.getItemcollectionItemCount(collection.itemCollectionId) / this.getItemCollectionMaxCount(collection.name)) *
+      100
+    );
+  }
+
+  getItemCollectionMaxCount(collectionName: string) {
     let maxCount = 3;
-    if (
-      collectionName.includes('Shields vol I.')
-    ) {
+    if (collectionName.includes('Shields vol I.')) {
       maxCount = 1;
-    } else if (
-      collectionName.includes('Shields vol II.')
-    ) {
+    } else if (collectionName.includes('Shields vol II.')) {
       maxCount = 2;
-    } else if (
-      collectionName.includes('Shields vol III.')
-    ) {
+    } else if (collectionName.includes('Shields vol III.')) {
       maxCount = 3;
-    } else if (
-      collectionName.includes('Shields vol IV.')
-    ) {
+    } else if (collectionName.includes('Shields vol IV.')) {
       maxCount = 4;
-    } else if (
-      collectionName.includes('Shields vol V.')
-    ) {
+    } else if (collectionName.includes('Shields vol V.')) {
       maxCount = 5;
     }
     return maxCount;

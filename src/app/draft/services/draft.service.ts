@@ -20,7 +20,7 @@ export class DraftService {
   constructor(private router: Router) {
     this.client = new Colyseus.Client(environment.gameServer);
     // Initialize from localStorage if available
-    this.loadFromLocalStorage();
+    this.loadTrackedCollectionsFromLocalStorage();
   }
 
   // Getter for the signal
@@ -33,7 +33,7 @@ export class DraftService {
     // Use untracked when reading from localStorage to prevent cycles
     this.trackedCollectionIdsSignal.set(newCollectionIds);
 
-    this.saveToLocalStorage();
+    this.saveTrackedCollectionsToLocalStorage();
   }
 
   // Optional: Add method for single collection toggle
@@ -46,14 +46,13 @@ export class DraftService {
     }
   }
 
-  // Optional: Methods for persistence if needed
-  saveToLocalStorage() {
+  saveTrackedCollectionsToLocalStorage() {
     if (!DraftService.isLocalStorageAvailable || !this.isInitialized) return;
     console.log('save triggered');
     localStorage.setItem('trackedCollections', JSON.stringify(this.trackedCollectionIdsSignal()));
   }
 
-  loadFromLocalStorage() {
+  loadTrackedCollectionsFromLocalStorage() {
     if (!DraftService.isLocalStorageAvailable) return;
     const saved = localStorage.getItem('trackedCollections');
     if (saved) {
@@ -67,6 +66,11 @@ export class DraftService {
         this.trackedCollectionIdsSignal.set([]);
       }
     }
+  }
+
+  resetTrackedCollections() {
+    this.trackedCollectionIdsSignal.set([]);
+    this.saveTrackedCollectionsToLocalStorage();
   }
 
   public async joinOrCreate(name?: string, playerIdInput?: number, avatarUrl?: string): Promise<string | null> {

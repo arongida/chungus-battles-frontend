@@ -139,19 +139,15 @@ export class DraftToolbarComponent implements AfterViewChecked {
     );
   }
 
-  getItemCollectionMaxCount(collectionName: string) {
-    let maxCount = 3;
-    if (collectionName.includes('Shields vol I.')) {
-      maxCount = 1;
-    } else if (collectionName.includes('Shields vol II.')) {
-      maxCount = 2;
-    } else if (collectionName.includes('Shields vol III.')) {
-      maxCount = 3;
-    } else if (collectionName.includes('Shields vol IV.')) {
-      maxCount = 4;
-    } else if (collectionName.includes('Shields vol V.')) {
-      maxCount = 5;
-    }
-    return maxCount;
+  getItemCollectionMaxCount(collectionName: string): number {
+    const shieldVolumes: Record<string, number> = {
+      'Shields vol I.': 1,
+      'Shields vol II.': 2,
+      'Shields vol III.': 3,
+      'Shields vol IV.': 4,
+      'Shields vol V.': 5,
+    };
+
+    return Object.entries(shieldVolumes).find(([key]) => collectionName.includes(key))?.[1] ?? 3;
   }
 }

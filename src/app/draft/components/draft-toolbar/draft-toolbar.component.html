@@ -37,7 +37,7 @@
         [selected]="selectedCollections().includes(collection.itemCollectionId)"
         
         (selectionChange)="handleSelectionChange($event, collection.itemCollectionId)"
-        [matTooltip]="collection.requirements">
+        [matTooltip]="collection.effect">
         {{collection.name}}
         <mat-progress-bar [id]="'collection-progress-' + collection.itemCollectionId" mode="determinate"
           [value]="getProgress(collection)"></mat-progress-bar>

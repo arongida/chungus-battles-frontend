@@ -1,6 +1,5 @@
 import { Component, effect } from '@angular/core';
 import { FightService } from '../../services/fight.service';
-import { CharacterSheetComponent } from '../../../draft/components/character-sheet/character-sheet.component';
 import { Player } from '../../../models/colyseus-schema/PlayerSchema';
 import {
   HealingMessage,
@@ -13,16 +12,23 @@ import { DraftService } from '../../../draft/services/draft.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import {
-  triggerTalentActivation,
-  triggerItemCollectionActivation,
-} from '../../../common/TriggerAnimations';
-import { ItemCollection } from '../../../models/colyseus-schema/ItemCollectionSchema';
+import { triggerTalentActivation, triggerItemCollectionActivation } from '../../../common/TriggerAnimations';
+import { RoundInfoComponent } from '../../../common/components/round-info/round-info.component';
+import { CharacterDetailsComponent } from '../../../common/components/character-details/character-details.component';
+import { SkillIconsComponent } from '../../../common/components/skill-icons/skill-icons.component';
+import { DraftToolbarComponent } from '../../../common/components/draft-toolbar/draft-toolbar.component';
 
 @Component({
   selector: 'app-fight-room',
   standalone: true,
-  imports: [CharacterSheetComponent, CombatLogComponent, MatTooltipModule],
+  imports: [
+    DraftToolbarComponent,
+    CombatLogComponent,
+    MatTooltipModule,
+    RoundInfoComponent,
+    CharacterDetailsComponent,
+    SkillIconsComponent,
+  ],
   templateUrl: './fight-room.component.html',
   styleUrl: './fight-room.component.scss',
 })
@@ -62,24 +68,13 @@ export class FightRoomComponent {
         });
 
         room.onMessage('game_over', (message: string) => {
-          this.openSnackBar(
-            message,
-            'Exit',
-            room.state.player.playerId,
-            room.state.player.name,
-            true
-          );
+          this.openSnackBar(message, 'Exit', room.state.player.playerId, room.state.player.name, true);
           this.gameOver = true;
           this.battleOver = true;
         });
 
         room.onMessage('end_battle', (message: string) => {
-          this.openSnackBar(
-            'The battle has ended',
-            'Exit',
-            room.state.player.playerId,
-            room.state.player.name
-          );
+          this.openSnackBar('The battle has ended', 'Exit', room.state.player.playerId, room.state.player.name);
           this.battleOver = true;
         });
 
@@ -121,29 +116,17 @@ export class FightRoomComponent {
           }
         });
 
-        room.onMessage(
-          'trigger_collection',
-          (message: TriggerCollectionMessage) => {
-            if (this.player && this.enemy) {
-              triggerItemCollectionActivation(
-                message.collectionId,
-                message.playerId
-              );
-              console.log('trigger_collection', message);
-            }
+        room.onMessage('trigger_collection', (message: TriggerCollectionMessage) => {
+          if (this.player && this.enemy) {
+            triggerItemCollectionActivation(message.collectionId, message.playerId);
+            console.log('trigger_collection', message);
           }
-        );
+        });
       }
     });
   }
 
-  openSnackBar(
-    message: string,
-    action: string,
-    playerId: number,
-    name: string,
-    gameOver: boolean = false
-  ) {
+  openSnackBar(message: string, action: string, playerId: number, name: string, gameOver: boolean = false) {
     const matSnackBarRef = this.snackBar.open(message, action);
     matSnackBarRef.onAction().subscribe(() => {
       this.endBattle(playerId, name, gameOver, message);
@@ -154,18 +137,11 @@ export class FightRoomComponent {
     const room = this.fightService.room();
 
     if (!room) {
-      await this.fightService.reconnect(
-        localStorage.getItem('reconnectToken') as string
-      );
+      await this.fightService.reconnect(localStorage.getItem('reconnectToken') as string);
     }
   }
 
-  private async endBattle(
-    plyerId: number,
-    name: string,
-    gameOver: boolean = false,
-    message: string
-  ) {
+  private async endBattle(plyerId: number, name: string, gameOver: boolean = false, message: string) {
     this.fightService.leave(false);
     if (gameOver) {
       if (message.includes('won')) {
@@ -177,20 +153,9 @@ export class FightRoomComponent {
       const errorMessage = await this.draftService.joinOrCreate(name, plyerId);
       if (errorMessage) {
         if (this.gameOver) {
-          this.openSnackBar(
-            message,
-            'Exit',
-            this.player?.playerId ?? 0,
-            this.player?.name ?? '',
-            true
-          );
+          this.openSnackBar(message, 'Exit', this.player?.playerId ?? 0, this.player?.name ?? '', true);
         } else {
-          this.openSnackBar(
-            'The battle has ended',
-            'Exit',
-            this.player?.playerId ?? 0,
-            this.player?.name ?? ''
-          );
+          this.openSnackBar('The battle has ended', 'Exit', this.player?.playerId ?? 0, this.player?.name ?? '');
         }
       }
     }
@@ -210,9 +175,7 @@ export class FightRoomComponent {
   // }
 
   triggerShowHealingNumber(healing: number, playerId: number) {
-    const healingNumbersContainer = document.getElementById(
-      `damage-numbers-${playerId}`
-    );
+    const healingNumbersContainer = document.getElementById(`damage-numbers-${playerId}`);
     const healingNumber = document.createElement('div');
 
     //avatarToHeal?.classList.add('animate-heal');
@@ -220,8 +183,7 @@ export class FightRoomComponent {
     healingNumber.textContent = `+${healing}`;
     healingNumber.style.left = `${Math.random() * 100}%`; // Random horizontal position
 
-    if (healingNumbersContainer)
-      healingNumbersContainer.appendChild(healingNumber);
+    if (healingNumbersContainer) healingNumbersContainer.appendChild(healingNumber);
 
     setTimeout(() => {
       healingNumber.remove();
@@ -229,9 +191,7 @@ export class FightRoomComponent {
   }
 
   triggerShowDamageNumber(damage: number, defenderId: number) {
-    const damageNumbersContainer = document.getElementById(
-      `damage-numbers-${defenderId}`
-    );
+    const damageNumbersContainer = document.getElementById(`damage-numbers-${defenderId}`);
     const damageNumber = document.createElement('div');
 
     //avatarToHit?.classList.add('animate-hit');
@@ -239,8 +199,7 @@ export class FightRoomComponent {
     damageNumber.textContent = `-${damage}`;
     damageNumber.style.left = `${Math.random() * 100}%`; // Random horizontal position
 
-    if (damageNumbersContainer)
-      damageNumbersContainer.appendChild(damageNumber);
+    if (damageNumbersContainer) damageNumbersContainer.appendChild(damageNumber);
 
     setTimeout(() => {
       damageNumber.remove();
@@ -255,32 +214,16 @@ export class FightRoomComponent {
 
     if (attackerId === this.player?.playerId) {
       attack.classList.add('animate-attack');
-      attack.src =
-        'https://chungus-battles.b-cdn.net/chungus-battles-assets/Sword-2.png';
+      attack.src = 'https://chungus-battles.b-cdn.net/chungus-battles-assets/Sword-2.png';
       const oldAttack = document.querySelector('.animate-attack');
       oldAttack?.remove();
     } else if (attackerId === this.enemy?.playerId) {
       attack.classList.add('animate-attack-enemy');
-      attack.src =
-        'https://chungus-battles.b-cdn.net/chungus-battles-assets/Sword-2-enemy.png';
+      attack.src = 'https://chungus-battles.b-cdn.net/chungus-battles-assets/Sword-2-enemy.png';
       const oldAttack = document.querySelector('.animate-attack-enemy');
       oldAttack?.remove();
     }
 
     if (attackContainer) attackContainer.appendChild(attack);
-  }
-
-  getLivesString(): string {
-    let lives = '';
-    if (this.player) {
-      for (let i = 0; i < this.player.lives; i++) {
-        lives += '❤️ ';
-      }
-    }
-    return lives;
-  }
-
-  getPlayerWins(): number {
-    return this.player?.wins || 0;
   }
 }

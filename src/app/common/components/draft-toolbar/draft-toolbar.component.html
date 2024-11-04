@@ -7,7 +7,7 @@
       matTooltip="{{player.income + player.round * 4}} gold per round." matTooltipPosition="below">Gold: {{ player.gold
       }} 🟡</span>
 
-    @if (this.availableTalents.length > 0) {
+    @if (this.availableTalents && this.availableTalents.length > 0) {
 
     <button mat-mini-fab (click)="openTalentPickerDialog()" #talentPickerTooltip="matTooltip"
       matTooltip="Choose new talent!" matTooltipPosition="below" matTooltipHideDelay="1000">
@@ -35,9 +35,7 @@
 
       <mat-chip-option class="m-1 text-xs" #tooltip="matTooltip" matTooltipPosition="left"
         [selected]="selectedCollections().includes(collection.itemCollectionId)"
-        
-        (selectionChange)="handleSelectionChange($event, collection.itemCollectionId)"
-        [matTooltip]="collection.effect">
+        (selectionChange)="handleSelectionChange($event, collection.itemCollectionId)" [matTooltip]="collection.effect">
         {{collection.name}}
         <mat-progress-bar [id]="'collection-progress-' + collection.itemCollectionId" mode="determinate"
           [value]="getProgress(collection)"></mat-progress-bar>
@@ -55,6 +53,7 @@
     <mat-icon>markunread_mailbox</mat-icon>
   </button>
 
+  @if(!isFighting()) {
   <div class="absolute -bottom-20 right-2 flex-row-reverse">
 
     <button [disabled]="player.gold < 4 || player.level > 4 " #tooltip="matTooltip" matTooltip="4 gold = 4 xp"
@@ -71,5 +70,6 @@
       <mat-icon [ngClass]="{'animate-spin': hoverShopRefresh}">refresh</mat-icon>
     </button>
   </div>
+  }
 
 </mat-toolbar>

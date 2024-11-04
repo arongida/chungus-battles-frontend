@@ -1,29 +1,20 @@
-import {
-  AfterViewChecked,
-  ChangeDetectorRef,
-  Component,
-  Input,
-  OnDestroy,
-  OnInit,
-  ViewChild,
-  computed,
-  inject,
-} from '@angular/core';
+import { AfterViewChecked, Component, Input, ViewChild, computed, inject } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { Player } from '../../../models/colyseus-schema/PlayerSchema';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { TalentsComponent } from '../talents/talents.component';
+import { TalentsComponent } from '../../../draft/components/talents/talents.component';
 import { Talent } from '../../../models/colyseus-schema/TalentSchema';
-import { CharacterDetailsComponent } from '../character-details/character-details.component';
-import { InventoryComponent } from '../inventory/inventory.component';
+import { CharacterDetailsDialogComponent } from '../character-details-dialog/character-details-dialog.component';
+import { InventoryComponent } from '../../../draft/components/inventory/inventory.component';
 import { MatTooltip, MatTooltipModule } from '@angular/material/tooltip';
-import { DraftService } from '../../services/draft.service';
 import { NgClass } from '@angular/common';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatChipSelectionChange, MatChipsModule } from '@angular/material/chips';
+import { ItemTrackingService } from '../../services/item-tracking.service';
+import { DraftService } from '../../../draft/services/draft.service';
 
 @Component({
   selector: 'app-draft-toolbar',
@@ -48,19 +39,19 @@ export class DraftToolbarComponent implements AfterViewChecked {
 
   private previousValue: number = 0;
   private talentDialogRef: MatDialogRef<TalentsComponent, any> | null = null;
-  selectedCollections = computed(() => this.draftService.trackedCollectionIds());
+  selectedCollections = computed(() => this.itemTrackingService.trackedCollectionIds());
 
-  constructor(public draftService: DraftService) {}
+  constructor(public itemTrackingService: ItemTrackingService, public draftService: DraftService) {}
 
   @Input({ required: true }) player: Player = new Player();
-  @Input({ required: true })
-  availableTalents: Talent[] = [];
+  @Input({ required: false })
+  availableTalents?: Talent[] = [];
 
   @ViewChild('talentPickerTooltip')
   talentPickerTooltip!: MatTooltip;
 
   ngAfterViewChecked() {
-    const currentValue = this.availableTalents.length;
+    const currentValue = this.availableTalents?.length;
 
     const talentDialogisOpen = this.talentDialogRef ? this.talentDialogRef.getState() : null;
 
@@ -72,7 +63,7 @@ export class DraftToolbarComponent implements AfterViewChecked {
     ) {
       this.talentPickerTooltip.show();
     }
-    this.previousValue = currentValue;
+    this.previousValue = currentValue ?? 0;
   }
 
   openTalentPickerDialog(): void {
@@ -89,7 +80,7 @@ export class DraftToolbarComponent implements AfterViewChecked {
   }
 
   openCharacterDetails(): void {
-    const charDetailsDialog = this.dialog.open(CharacterDetailsComponent, {
+    const charDetailsDialog = this.dialog.open(CharacterDetailsDialogComponent, {
       data: {
         player: this.player,
       },
@@ -119,12 +110,12 @@ export class DraftToolbarComponent implements AfterViewChecked {
   onSelectionChange(event: any, collectionId: number) {
     event.preventDefault();
     event.stopPropagation();
-    this.draftService.toggleCollectionTracking(collectionId);
+    this.itemTrackingService.toggleCollectionTracking(collectionId);
   }
 
   handleSelectionChange(event: MatChipSelectionChange, collectionId: number) {
     if (event.isUserInput) {
-      this.draftService.toggleCollectionTracking(collectionId);
+      this.itemTrackingService.toggleCollectionTracking(collectionId);
     }
   }
 
@@ -149,5 +140,9 @@ export class DraftToolbarComponent implements AfterViewChecked {
     };
 
     return Object.entries(shieldVolumes).find(([key]) => collectionName.includes(key))?.[1] ?? 3;
+  }
+
+  isFighting(): boolean {
+    return !this.draftService.room;
   }
 }

@@ -10,6 +10,7 @@ import { DecimalPipe } from '@angular/common';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { CdkDrag, CdkDragDrop, CdkDragExit, CdkDropList, DragDropModule } from '@angular/cdk/drag-drop';
 import { Player } from '../../../models/colyseus-schema/PlayerSchema';
+import { ItemTrackingService } from '../../../common/services/item-tracking.service';
 
 @Component({
   selector: 'app-shop',
@@ -38,9 +39,9 @@ export class ShopComponent {
   dragIndex = 0;
   previewBuyItem = false;
   tempCard: HTMLElement | null = null;
-  trackedCollectionIds = computed(() => this.draftService.trackedCollectionIds());
+  trackedCollectionIds = computed(() => this.itemTrackingService.trackedCollectionIds());
 
-  constructor(public draftService: DraftService) {
+  constructor(public draftService: DraftService, private itemTrackingService: ItemTrackingService) {
     this.shop = [] as Item[];
     this.player = new Player();
   }

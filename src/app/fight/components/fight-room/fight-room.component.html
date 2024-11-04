@@ -1,7 +1,16 @@
-<div class="flex flex-row items-center justify-between scale-50 lg:scale-100">
+@if (player) {
+<app-draft-toolbar class="fixed w-screen top-0 z-10" [player]="player"></app-draft-toolbar>
+}
+
+
+
+<div class="flex flex-row justify-center items-center w-screen h-screen scale-50 lg:scale-100">
   @if (player) {
   <div id="character" class="flex basis-1/3 p-6 justify-center items-center">
-    <app-character-sheet [combat]="true" class="min-w-fit max-w-fit" [player]="player"></app-character-sheet>
+    <div class="flex flex-col">
+      <app-skill-icons class="pb-10 z-10" [player]="player"></app-skill-icons>
+      <app-character-details [combat]="true" [player]="player" class="min-w-fit max-w-fit"></app-character-details>
+    </div>
   </div>
   }
 
@@ -11,45 +20,15 @@
 
   @if (enemy) {
   <div id="enemy" class="flex basis-1/3 p-6 justify-center items-center">
-    <app-character-sheet [combat]="true" class="min-w-fit max-w-fit" [player]="enemy"
-      [enemy]="true"></app-character-sheet>
-  </div>
-  }
-
-
-</div>
-
-<div id="round-info" class="flex flex-col flex-1">
-  <h2 #tooltip="matTooltip"
-    matTooltip="Round counter, you will get matched against same (or lower if non existent) players in battle!"
-    matTooltipPosition="right" id="round-title">
-    ROUND: {{ player?.round }}
-  </h2>
-  <div #tooltip="matTooltip" matTooltip="If you run out of lives, you will loose. You get -1 life for a lost combat."
-    matTooltipPosition="right">
-    Lives left: {{ getLivesString() }}
-  </div>
-  <div #tooltip="matTooltip" matTooltip="If you win 10 times, you are victorious!" matTooltipPosition="right">
-    Wins: {{ getPlayerWins() }}
-  </div>
-</div>
-
-<div aria-label="Player" id="active-collections-player" class="flex flex-row">
-  <div class="mx-2">Player: </div>
-  @for (itemCollection of player?.activeItemCollections; track $index) {
-  <div class="m-0.5" id="collection-{{itemCollection.itemCollectionId}}-{{player?.playerId}}" #tooltip="matTooltip"
-    matTooltip={{itemCollection.effect}} matTooltipPosition="below">
-    <p class="font-bold text-xs">{{itemCollection.name}}</p>
+    <div class="flex flex-col">
+      <app-skill-icons class="pb-10 z-10" [player]="enemy"></app-skill-icons>
+      <app-character-details [combat]="true" [player]="enemy" [enemy]="true" class="min-w-fit max-w-fit"></app-character-details>
+    </div>
   </div>
   }
 </div>
 
-<div aria-label="Enemy" id="active-collections-enemy" class="flex flex-row">
-  <div class="mx-2">Enemy: </div>
-  @for (itemCollection of enemy?.activeItemCollections; track $index) {
-  <div class="m-0.5" id="collection-{{itemCollection.itemCollectionId}}-{{enemy?.playerId}}" #tooltip="matTooltip"
-    matTooltip={{itemCollection.effect}} matTooltipPosition="below">
-    <p class="font-bold text-xs">{{itemCollection.name}}</p>
-  </div>
-  }
-</div>
+
+@if (player) {
+<app-round-info [player]="player"></app-round-info>
+}

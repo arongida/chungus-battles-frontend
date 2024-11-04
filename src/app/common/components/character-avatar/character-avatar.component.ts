@@ -1,14 +1,14 @@
 import { Component, Input, inject } from '@angular/core';
-import { Player } from '../../../../models/colyseus-schema/PlayerSchema';
-import { DraftService } from '../../../services/draft.service';
+import { Player } from '../../../models/colyseus-schema/PlayerSchema';
+import { DraftService } from '../../../draft/services/draft.service';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { NgClass } from '@angular/common';
-import { Talent } from '../../../../models/colyseus-schema/TalentSchema';
+import { Talent } from '../../../models/colyseus-schema/TalentSchema';
 import { MatDialog } from '@angular/material/dialog';
-import { TalentsComponent } from '../../talents/talents.component';
+import { TalentsComponent } from '../../../draft/components/talents/talents.component';
 
 @Component({
   selector: 'app-character-avatar',

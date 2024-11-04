@@ -19,6 +19,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { isPlatformBrowser } from '@angular/common';
 import { itemPictures } from './item-image-links';
+import { ItemTrackingService } from '../common/services/item-tracking.service';
 
 @Component({
   selector: 'app-join-form',
@@ -56,6 +57,7 @@ export class JoinFormComponent implements AfterViewInit, OnDestroy {
     public draftService: DraftService,
     private snackBar: MatSnackBar,
     private renderer: Renderer2,
+    private itemTrackingService: ItemTrackingService,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
@@ -110,7 +112,7 @@ export class JoinFormComponent implements AfterViewInit, OnDestroy {
     }
 
     this.loading = true;
-    this.draftService.resetTrackedCollections();
+    this.itemTrackingService.resetTrackedCollections();
     const joinResult = await this.draftService.joinOrCreate(
       this.nameControl.value!,
       undefined,

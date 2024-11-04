@@ -30,7 +30,9 @@ export class Player extends Schema {
 		new ArraySchema<ItemCollection>();
 	@type('number') dodgeRate: number = 0;
   @type('number') income: number = 0;
+  @type('number') hpRegen: number = 0;
   @type('number') refreshShopCost: number = 2;
+  @type('number') maxHp: number = 0;
 
   get gold(): number {
     return this._gold;

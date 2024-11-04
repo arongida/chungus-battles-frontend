@@ -13,7 +13,7 @@ background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/
         </div>
 
         @if (combat) {
-        <mat-progress-bar color="red" id="hp" mode="determinate"
+        <mat-progress-bar class="red-progress-bar" id="hp" mode="determinate"
           value="{{ (player.hp / player.maxHp) * 100 }}"></mat-progress-bar>
         }
 

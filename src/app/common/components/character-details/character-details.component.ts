@@ -29,6 +29,6 @@ export class CharacterDetailsComponent {
   }
 
   getPlayerHp(): number {
-    return this.player.hp < 0 && this.player.hp < 1 ? 1 : this.player.hp;
+    return this.player.hp > 0 && this.player.hp < 1 ? 1 : this.player.hp;
   }
 }

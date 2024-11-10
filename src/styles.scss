@@ -41,7 +41,7 @@ body {
 }
 
 .animate-talent {
-  @apply transition-all text-red-700;
+  @apply transition-all fill-red-700;
   animation: activate 0.5s ease forwards;
 }
 

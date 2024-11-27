@@ -11,6 +11,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { CdkDrag, CdkDragDrop, CdkDragExit, CdkDropList, DragDropModule } from '@angular/cdk/drag-drop';
 import { Player } from '../../../models/colyseus-schema/PlayerSchema';
 import { ItemTrackingService } from '../../../common/services/item-tracking.service';
+import { ItemCollection } from '../../../models/colyseus-schema/ItemCollectionSchema';
 
 @Component({
   selector: 'app-shop',
@@ -70,7 +71,7 @@ export class ShopComponent {
     const collections = this.player.availableItemCollections.filter((collection) =>
       item.itemCollections.includes(collection.itemCollectionId)
     );
-    return collections.map((collection) => collection.name).join('\r\n');
+    return collections.map((collection: ItemCollection) => collection.name).join('\r\n');
   }
 
   cardDragStarted(item: Item) {

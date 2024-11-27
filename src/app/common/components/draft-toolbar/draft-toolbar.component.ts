@@ -15,6 +15,8 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatChipSelectionChange, MatChipsModule } from '@angular/material/chips';
 import { ItemTrackingService } from '../../services/item-tracking.service';
 import { DraftService } from '../../../draft/services/draft.service';
+import { CharacterDetailsComponent } from '../character-details/character-details.component';
+import { MatCardModule } from '@angular/material/card';
 
 @Component({
   selector: 'app-draft-toolbar',
@@ -28,6 +30,8 @@ import { DraftService } from '../../../draft/services/draft.service';
     NgClass,
     MatMenuModule,
     MatChipsModule,
+    MatCardModule,
+    CharacterDetailsComponent
   ],
   templateUrl: './draft-toolbar.component.html',
   styleUrl: './draft-toolbar.component.scss',
@@ -46,6 +50,7 @@ export class DraftToolbarComponent implements AfterViewChecked {
   @Input({ required: true }) player: Player = new Player();
   @Input({ required: false })
   availableTalents?: Talent[] = [];
+  showCharacterDetails = false;
 
   @ViewChild('talentPickerTooltip')
   talentPickerTooltip!: MatTooltip;
@@ -79,12 +84,9 @@ export class DraftToolbarComponent implements AfterViewChecked {
     });
   }
 
-  openCharacterDetails(): void {
-    const charDetailsDialog = this.dialog.open(CharacterDetailsDialogComponent, {
-      data: {
-        player: this.player,
-      },
-    });
+  switchCharacterDetails(): void {
+    this.showCharacterDetails = !this.showCharacterDetails;
+    console.log("switch: " + this.showCharacterDetails);
   }
 
   openInventory(): void {

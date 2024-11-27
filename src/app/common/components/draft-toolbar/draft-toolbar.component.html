@@ -1,7 +1,7 @@
-<mat-toolbar class="">
+<mat-toolbar class="w-screen fixed top-0 z-10">
   <div class="flex justify-between gap-4 items-center">
     <img class="w-12 h-12 rounded-full object-cover hover:border-white hover:border"
-      src="{{player.avatarUrl.replace('01','transparent')}}" alt="player" (click)="openCharacterDetails()">
+      src="{{player.avatarUrl.replace('01','transparent')}}" alt="player" (click)="switchCharacterDetails()">
     <span class="text-center">{{player.name}}</span>
     <span class="text-sm text-center" #goldTooltip="matTooltip"
       matTooltip="{{player.income + player.round * 4}} gold per round." matTooltipPosition="below">Gold: {{ player.gold
@@ -54,7 +54,7 @@
   </button>
 
   @if(!isFighting()) {
-  <div class="absolute -bottom-20 right-2 flex-row-reverse">
+  <div class="fixed top-20 right-2 flex-row-reverse">
 
     <button [disabled]="player.gold < 4 || player.level > 4 " #tooltip="matTooltip" matTooltip="4 gold = 4 xp"
       matTooltipPosition="left" mat-fab color="text-white" class="m-2 p-2 flex-1"
@@ -73,3 +73,7 @@
   }
 
 </mat-toolbar>
+@if (showCharacterDetails) {
+  <app-character-details [player]="player" class="relative max-w-content top-16 z-10">
+  </app-character-details>
+  }

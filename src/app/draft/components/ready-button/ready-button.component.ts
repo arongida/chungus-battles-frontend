@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { DraftService } from '../../services/draft.service';
 import { FightService } from '../../../fight/services/fight.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { Talent } from '../../../models/colyseus-schema/TalentSchema';
 @Component({
   selector: 'app-ready-button',
   standalone: true,
@@ -12,11 +13,15 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 })
 export class ReadyButtonComponent {
   loading = false;
+  
   constructor(
     private draftService: DraftService,
     private fightService: FightService
   ) {}
 
+  @Input({ required: false })
+  availableTalents: Talent[] = [];
+  
   async startFight() {
     if (this.loading) return;
     this.loading = true;

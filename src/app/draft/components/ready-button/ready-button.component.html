@@ -1,8 +1,11 @@
 <div class="fixed-button">
-  <button [disabled]="loading" mat-fab extended color="primary" (click)="startFight()">
+  <button [disabled]="loading || availableTalents.length > 0" mat-fab extended color="primary" (click)="startFight()">
     @if (loading) {
     <mat-spinner diameter="24"></mat-spinner>
-    } @else {
+    } @else if (availableTalents.length > 0) {
+      Please select a talent!
+    }
+    @else {
     Ready to Chungus!
     }
   </button>

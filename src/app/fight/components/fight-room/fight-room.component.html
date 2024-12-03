@@ -4,31 +4,46 @@
 
 
 
-<div class="flex flex-row justify-center items-center w-screen h-screen scale-50 lg:scale-100 bg-amber-950 bg-cover bg-[url('https://chungus-battles.b-cdn.net/chungus-battles-assets/Es8RMHyXUAAawkB.png')]">
-  @if (player) {
-  <div id="character" class="flex basis-1/3 p-6 justify-center items-center">
-    <div class="flex flex-col">
-      <app-skill-icons class="pb-10 z-10" [player]="player"></app-skill-icons>
-      <app-character-details [combat]="true" [player]="player" class="min-w-fit max-w-fit"></app-character-details>
-    </div>
-  </div>
-  }
+<div class="flex flex-col justify-center items-center w-screen h-screen scale-50 lg:scale-100 bg-amber-950 bg-cover 
+  bg-[url('https://chungus-battles.b-cdn.net/chungus-battles-assets/BG_01.png')]">
 
-  <div class="flex justify-center">
-    <app-combat-log [combatLog]="combatLog"></app-combat-log>
+  <div class="grid grid-cols-1 grid-rows-3 w-3/4">
+
+
+
+    @if (enemy) {
+    <div id="enemy" class="flex justify-center items-center bg-amber-900 bg-opacity-20">
+      <div class="grid grid-rows-1 grid-cols-2">
+        <app-skill-icons class="px-2 z-10" [player]="enemy"></app-skill-icons>
+        <app-character-details [combat]="true" [player]="enemy" [enemy]="true"
+          class="min-w-fit max-w-fit"></app-character-details>
+      </div>
+    </div>
+    }
+
+    <div></div>
+
+    @if (player) {
+    <div id="character" class="flex justify-center items-center bg-amber-900 bg-opacity-20">
+      <div class="grid grid-rows-1 grid-cols-2">
+        <app-character-details [combat]="true" [player]="player" class="min-w-fit max-w-fit"></app-character-details>
+        <app-skill-icons class="px-2 z-10" [player]="player"></app-skill-icons>
+      </div>
+    </div>
+    }
+
+
+
   </div>
 
-  @if (enemy) {
-  <div id="enemy" class="flex basis-1/3 p-6 justify-center items-center">
-    <div class="flex flex-col">
-      <app-skill-icons class="pb-10 z-10" [player]="enemy"></app-skill-icons>
-      <app-character-details [combat]="true" [player]="enemy" [enemy]="true" class="min-w-fit max-w-fit"></app-character-details>
-    </div>
-  </div>
-  }
 </div>
+
 
 
 @if (player) {
 <app-round-info [player]="player"></app-round-info>
 }
+
+<div class="flex justify-center fixed bottom-1 right-1">
+  <app-combat-log [combatLog]="combatLog.length > 0 ? combatLog : 'hello'"></app-combat-log>
+</div>

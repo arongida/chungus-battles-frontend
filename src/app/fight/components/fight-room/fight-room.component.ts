@@ -161,19 +161,6 @@ export class FightRoomComponent {
     }
   }
 
-  // triggerTalentActivation(talentId: number, playerId: number) {
-  //   const talentContainer = document.getElementById(
-  //     `talent-${talentId}-${playerId}`
-  //   );
-
-  //   if (talentContainer) {
-  //     talentContainer.classList.add('animate-talent');
-  //     setTimeout(() => {
-  //       talentContainer.classList.remove('animate-talent');
-  //     }, 500);
-  //   }
-  // }
-
   triggerShowHealingNumber(healing: number, playerId: number) {
     const healingNumbersContainer = document.getElementById(`damage-numbers-${playerId}`);
     const healingNumber = document.createElement('div');
@@ -205,6 +192,7 @@ export class FightRoomComponent {
       damageNumber.remove();
     }, 3000);
   }
+
 
   triggerAttack(attackerId: number) {
     const attackContainer = document.getElementById(`attack-${attackerId}`);

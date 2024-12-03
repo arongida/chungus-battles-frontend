@@ -35,9 +35,19 @@ body {
   animation: attack 3s cubic-bezier(0, 1.38, 0.83, 0.67) infinite;
 }
 
+.animate-avatar-attack {
+  @apply transition-all;
+  animation: avatar-attack 3s cubic-bezier(0, 1.38, 0.83, 0.67) infinite;
+}
+
 .animate-attack-enemy {
   @apply transition-all;
   animation: attack-enemy 3s cubic-bezier(0, 1.38, 0.83, 0.67) infinite;
+}
+
+.animate-avatar-attack-enemy {
+  @apply transition-all;
+  animation: avatar-attack-enemy 3s cubic-bezier(0, 1.38, 0.83, 0.67) infinite;
 }
 
 .animate-talent {
@@ -56,6 +66,15 @@ body {
   }
 }
 
+@keyframes avatar-attack {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(30deg);
+  }
+}
+
 @keyframes attack-enemy {
   from {
     transform: rotate(0deg);
@@ -64,6 +83,15 @@ body {
   to {
     transform: rotate(-360deg);
     transform-origin: 70% 70%;
+  }
+}
+
+@keyframes avatar-attack-enemy {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-30deg);
   }
 }
 

@@ -8,9 +8,8 @@
 
   <app-shop class="max-h-screen max-w-screen" [shop]="shop ?? []" [player]="player!"></app-shop>
 
-
 </div>
 
 <app-round-info [player]="player!"></app-round-info>
 
-<app-ready-button />
+<app-ready-button [availableTalents]="availableTalents" />

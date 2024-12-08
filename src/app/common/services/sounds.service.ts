@@ -4,12 +4,17 @@ import { Injectable } from '@angular/core';
   providedIn: 'root',
 })
 export class SoundsService {
-  music: HTMLAudioElement = new Audio();
+  music?: HTMLAudioElement;
   volume: number = 0.5;
 
-  constructor() {}
+  constructor() {
+    if (typeof Audio !== 'undefined') {
+      this.music = new Audio();
+    }
+  }
 
   playMusic(music: MusicOptions) {
+    if (!this.music) return;
     this.music.volume = this.volume;
     this.music.src = music;
     this.music.loop = true;
@@ -19,14 +24,17 @@ export class SoundsService {
 
   setVolume(volume: number) {
     this.volume = volume;
+    if (!this.music) return;
     this.music.volume = this.volume;
   }
 
   stopMusic() {
+    if (!this.music) return;
     this.music.pause();
   }
 
   playSound(sound: SoundOptions) {
+    if (!this.music) return;
     const audio = new Audio(sound);
     audio.volume = this.volume === 0 ? 0 : this.volume + 0.3;
     audio.load();

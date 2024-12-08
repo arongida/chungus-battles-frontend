@@ -1,5 +1,4 @@
 import { Injectable, signal } from '@angular/core';
-import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
@@ -10,7 +9,7 @@ export class ItemTrackingService {
 
   static isLocalStorageAvailable = typeof localStorage !== 'undefined';
 
-  constructor(private router: Router) {
+  constructor() {
     // Initialize from localStorage if available
     this.loadTrackedCollectionsFromLocalStorage();
   }

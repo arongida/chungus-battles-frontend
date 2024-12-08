@@ -13,6 +13,7 @@ import { ItemCollection } from '../../../models/colyseus-schema/ItemCollectionSc
 import { RoundInfoComponent } from '../../../common/components/round-info/round-info.component';
 import { DraftToolbarComponent } from '../../../common/components/draft-toolbar/draft-toolbar.component';
 import { SkillIconsComponent } from '../../../common/components/skill-icons/skill-icons.component';
+import { MusicOptions, SoundsService } from '../../../common/services/sounds.service';
 
 @Component({
   selector: 'app-draft-room',
@@ -35,7 +36,7 @@ export class DraftRoomComponent implements OnInit {
   availableTalents: Talent[];
   availableCollections?: ItemCollection[];
 
-  constructor(public draftService: DraftService, private snackBar: MatSnackBar) {
+  constructor(public draftService: DraftService, private snackBar: MatSnackBar, private soundsService: SoundsService) {
     this.player = new Player();
     this.shop = [] as Item[];
     this.availableTalents = [] as Talent[];
@@ -43,6 +44,9 @@ export class DraftRoomComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
+
+    this.soundsService.playMusic(MusicOptions.DRAFT);
+
     if (!this.draftService.room) {
       await this.draftService.reconnect(untracked(() => localStorage.getItem('reconnectToken')) as string);
     }

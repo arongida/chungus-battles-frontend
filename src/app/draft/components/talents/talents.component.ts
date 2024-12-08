@@ -8,6 +8,7 @@ import { NgClass, SlicePipe } from '@angular/common';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatIconModule } from '@angular/material/icon';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { SoundOptions, SoundsService } from '../../../common/services/sounds.service';
 
 @Component({
   selector: 'app-talents',
@@ -33,7 +34,8 @@ export class TalentsComponent {
     public draftService: DraftService,
     @Inject(MAT_DIALOG_DATA)
     public data: { talents: Talent[]; playerLevel: number },
-    public dialogRef: MatDialogRef<TalentsComponent>
+    public dialogRef: MatDialogRef<TalentsComponent>,
+    private soundsService: SoundsService
   ) {
     this.talents = data.talents;
     this.playerLevel = data.playerLevel;
@@ -70,5 +72,10 @@ export class TalentsComponent {
 
   closeDialog() {
     this.dialogRef.close();
+  }
+
+  refreshTalents() {
+    this.soundsService.playSound(SoundOptions.CLICK);
+    this.draftService.sendMessage('refresh_talents', {})
   }
 }

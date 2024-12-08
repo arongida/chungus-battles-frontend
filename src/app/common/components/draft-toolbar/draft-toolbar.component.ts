@@ -1,4 +1,4 @@
-import { AfterViewChecked, Component, Input, ViewChild, computed, inject } from '@angular/core';
+import { AfterViewChecked, Component, Input, OnInit, ViewChild, computed, inject } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -17,6 +17,8 @@ import { ItemTrackingService } from '../../services/item-tracking.service';
 import { DraftService } from '../../../draft/services/draft.service';
 import { CharacterDetailsComponent } from '../character-details/character-details.component';
 import { MatCardModule } from '@angular/material/card';
+import { MatBadgeModule } from '@angular/material/badge';
+import { SoundOptions, SoundsService } from '../../services/sounds.service';
 
 @Component({
   selector: 'app-draft-toolbar',
@@ -31,21 +33,27 @@ import { MatCardModule } from '@angular/material/card';
     MatMenuModule,
     MatChipsModule,
     MatCardModule,
-    CharacterDetailsComponent
+    CharacterDetailsComponent,
+    MatBadgeModule,
   ],
   templateUrl: './draft-toolbar.component.html',
   styleUrl: './draft-toolbar.component.scss',
 })
-export class DraftToolbarComponent implements AfterViewChecked {
+export class DraftToolbarComponent implements AfterViewChecked, OnInit {
   dialog = inject(MatDialog);
   hoverShopRefresh = false;
   hoverBuyXp = false;
+  muted = false;
 
   private previousValue: number = 0;
   private talentDialogRef: MatDialogRef<TalentsComponent, any> | null = null;
   selectedCollections = computed(() => this.itemTrackingService.trackedCollectionIds());
 
-  constructor(public itemTrackingService: ItemTrackingService, public draftService: DraftService) {}
+  constructor(
+    public itemTrackingService: ItemTrackingService,
+    public draftService: DraftService,
+    private soundsService: SoundsService
+  ) {}
 
   @Input({ required: true }) player: Player = new Player();
   @Input({ required: false })
@@ -54,6 +62,10 @@ export class DraftToolbarComponent implements AfterViewChecked {
 
   @ViewChild('talentPickerTooltip')
   talentPickerTooltip!: MatTooltip;
+
+  ngOnInit(): void {
+    this.muted = this.soundsService.volume === 0;
+  }
 
   ngAfterViewChecked() {
     const currentValue = this.availableTalents?.length;
@@ -72,6 +84,7 @@ export class DraftToolbarComponent implements AfterViewChecked {
   }
 
   openTalentPickerDialog(): void {
+    this.soundsService.playSound(SoundOptions.CLICK);
     this.talentDialogRef = this.dialog.open(TalentsComponent, {
       data: {
         talents: this.availableTalents,
@@ -86,7 +99,7 @@ export class DraftToolbarComponent implements AfterViewChecked {
 
   switchCharacterDetails(): void {
     this.showCharacterDetails = !this.showCharacterDetails;
-    console.log("switch: " + this.showCharacterDetails);
+    console.log('switch: ' + this.showCharacterDetails);
   }
 
   openInventory(): void {
@@ -146,5 +159,20 @@ export class DraftToolbarComponent implements AfterViewChecked {
 
   isFighting(): boolean {
     return !this.draftService.room;
+  }
+
+  switchMute() {
+    this.soundsService.setVolume(this.muted ? 0.5 : 0);
+    this.muted = !this.muted;
+  }
+
+  buyXp() {
+    this.soundsService.playSound(SoundOptions.CLICK);
+    this.draftService.sendMessage('buy_xp', {});
+  }
+
+  refreshShop() {
+    this.soundsService.playSound(SoundOptions.CLICK);
+    this.draftService.sendMessage('refresh_shop', {});
   }
 }

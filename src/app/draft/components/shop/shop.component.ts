@@ -12,6 +12,7 @@ import { CdkDrag, CdkDragDrop, CdkDragExit, CdkDropList, DragDropModule } from '
 import { Player } from '../../../models/colyseus-schema/PlayerSchema';
 import { ItemTrackingService } from '../../../common/services/item-tracking.service';
 import { ItemCollection } from '../../../models/colyseus-schema/ItemCollectionSchema';
+import { SoundOptions, SoundsService } from '../../../common/services/sounds.service';
 
 @Component({
   selector: 'app-shop',
@@ -42,7 +43,7 @@ export class ShopComponent {
   tempCard: HTMLElement | null = null;
   trackedCollectionIds = computed(() => this.itemTrackingService.trackedCollectionIds());
 
-  constructor(public draftService: DraftService, private itemTrackingService: ItemTrackingService) {
+  constructor(public draftService: DraftService, private itemTrackingService: ItemTrackingService, private soundsService: SoundsService) {
     this.shop = [] as Item[];
     this.player = new Player();
   }
@@ -93,6 +94,7 @@ export class ShopComponent {
     this.draftService.sendMessage('buy', {
       itemId: item.itemId,
     });
+    this.soundsService.playSound(SoundOptions.BUY);
     this.previewBuyItem = false;
     this.tempCard?.remove();
     this.tempCard = null;

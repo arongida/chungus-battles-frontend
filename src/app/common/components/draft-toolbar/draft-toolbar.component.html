@@ -49,8 +49,13 @@
 
 
 
-  <button mat-icon-button (click)="openInventory()">
+  <button mat-icon-button matBadge="{{player.inventory.length}}" (click)="openInventory()">
     <mat-icon>markunread_mailbox</mat-icon>
+  </button>
+
+  <button mat-icon-button (click)="switchMute()">
+    @if(muted) {<mat-icon>volume_off</mat-icon>}
+    @else {<mat-icon>volume_up</mat-icon>}
   </button>
 
   @if(!isFighting()) {
@@ -58,14 +63,14 @@
 
     <button [disabled]="player.gold < 4 || player.level > 4 " #tooltip="matTooltip" matTooltip="4 gold = 4 xp"
       matTooltipPosition="left" mat-fab color="text-white" class="m-2 p-2 flex-1"
-      (click)="draftService.sendMessage('buy_xp', {})" (mouseenter)="switchBuyXpAnimate()"
+      (click)="buyXp()" (mouseenter)="switchBuyXpAnimate()"
       (mouseleave)="switchBuyXpAnimate()">
       <mat-icon [ngClass]="{'animate-bounce': hoverBuyXp}">keyboard_arrow_up</mat-icon>
     </button>
 
     <button [disabled]="player.gold < player.refreshShopCost" #tooltip="matTooltip"
       matTooltip="{{player.refreshShopCost}} gold" mat-fab matTooltipPosition="below" color="text-white"
-      class="m-2 p-2 flex-1" (click)="draftService.sendMessage('refresh_shop', {})"
+      class="m-2 p-2 flex-1" (click)="refreshShop()"
       (mouseenter)="switchShopRefreshAnimate()" (mouseleave)="switchShopRefreshAnimate()">
       <mat-icon [ngClass]="{'animate-spin': hoverShopRefresh}">refresh</mat-icon>
     </button>
@@ -74,6 +79,6 @@
 
 </mat-toolbar>
 @if (showCharacterDetails) {
-  <app-character-details [player]="player" class="relative max-w-content top-16 z-10">
-  </app-character-details>
-  }
+<app-character-details [player]="player" class="relative max-w-content top-16 z-10">
+</app-character-details>
+}

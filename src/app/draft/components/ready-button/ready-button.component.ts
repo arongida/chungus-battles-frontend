@@ -4,6 +4,7 @@ import { DraftService } from '../../services/draft.service';
 import { FightService } from '../../../fight/services/fight.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Talent } from '../../../models/colyseus-schema/TalentSchema';
+import { SoundOptions, SoundsService } from '../../../common/services/sounds.service';
 @Component({
   selector: 'app-ready-button',
   standalone: true,
@@ -16,13 +17,15 @@ export class ReadyButtonComponent {
   
   constructor(
     private draftService: DraftService,
-    private fightService: FightService
+    private fightService: FightService,
+    private soundsService: SoundsService
   ) {}
 
   @Input({ required: false })
   availableTalents: Talent[] = [];
   
   async startFight() {
+    this.soundsService.playSound(SoundOptions.CLICK);
     if (this.loading) return;
     this.loading = true;
     const playerId = localStorage.getItem('playerId');

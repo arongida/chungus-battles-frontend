@@ -34,9 +34,9 @@ export class SoundsService {
   }
 
   playSound(sound: SoundOptions) {
-    if (!this.music) return;
+    if (!this.music || this.volume === 0) return;
     const audio = new Audio(sound);
-    audio.volume = this.volume === 0 ? 0 : this.volume + 0.3;
+    audio.volume = this.volume + 0.3;
     audio.load();
     audio.play();
   }

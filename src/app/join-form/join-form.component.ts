@@ -7,6 +7,7 @@ import {
   AfterViewInit,
   PLATFORM_ID,
   Inject,
+  OnInit,
 } from '@angular/core';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -37,7 +38,7 @@ import { MusicOptions, SoundOptions, SoundsService } from '../common/services/so
   templateUrl: './join-form.component.html',
   styleUrl: './join-form.component.scss',
 })
-export class JoinFormComponent implements AfterViewInit, OnDestroy {
+export class JoinFormComponent implements AfterViewInit, OnDestroy, OnInit {
   nameControl = new FormControl('', Validators.compose([Validators.maxLength(20), Validators.required]));
   avatarOptions = [
     'https://chungus-battles.b-cdn.net/chungus-battles-assets/warrior_01.png',
@@ -57,12 +58,16 @@ export class JoinFormComponent implements AfterViewInit, OnDestroy {
     private snackBar: MatSnackBar,
     private renderer: Renderer2,
     private itemTrackingService: ItemTrackingService,
+    private soundsService: SoundsService,
     @Inject(PLATFORM_ID) private platformId: Object,
-    private soundsService: SoundsService
   ) {}
 
-  ngAfterViewInit(): void {
+  ngOnInit() {
     this.soundsService.playMusic(MusicOptions.DRAFT);
+  }
+
+  ngAfterViewInit(): void {
+    
     if (isPlatformBrowser(this.platformId)) {
       // Only run the animation interval in the browser
       this.intervalId = setInterval(() => {
@@ -98,8 +103,7 @@ export class JoinFormComponent implements AfterViewInit, OnDestroy {
   }
 
   async onFormSubmit() {
-    this.soundsService.playSound(SoundOptions.CLICK);
-
+    
     if (this.nameControl.invalid) {
       const errorMessage = this.getInputErrorMessage();
       this.snackBar.open(errorMessage, 'Close', {
@@ -107,7 +111,8 @@ export class JoinFormComponent implements AfterViewInit, OnDestroy {
       });
       return;
     }
-
+    
+    this.soundsService.playSound(SoundOptions.CLICK);
     this.loading = true;
     this.itemTrackingService.resetTrackedCollections();
     const joinResult = await this.draftService.joinOrCreate(this.nameControl.value!, undefined, this.avatarSelected);

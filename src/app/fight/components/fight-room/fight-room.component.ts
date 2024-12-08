@@ -17,6 +17,7 @@ import { RoundInfoComponent } from '../../../common/components/round-info/round-
 import { CharacterDetailsComponent } from '../../../common/components/character-details/character-details.component';
 import { SkillIconsComponent } from '../../../common/components/skill-icons/skill-icons.component';
 import { DraftToolbarComponent } from '../../../common/components/draft-toolbar/draft-toolbar.component';
+import { MusicOptions, SoundOptions, SoundsService } from '../../../common/services/sounds.service';
 
 @Component({
   selector: 'app-fight-room',
@@ -44,7 +45,8 @@ export class FightRoomComponent {
     private fightService: FightService,
     private draftService: DraftService,
     private snackBar: MatSnackBar,
-    private router: Router
+    private router: Router,
+    private soundsService: SoundsService
   ) {
     effect(() => {
       const room = this.fightService.room();
@@ -134,6 +136,9 @@ export class FightRoomComponent {
   }
 
   async ngOnInit(): Promise<void> {
+
+    this.soundsService.playMusic(MusicOptions.BATTLE);
+
     const room = this.fightService.room();
 
     if (!room) {
@@ -142,7 +147,9 @@ export class FightRoomComponent {
   }
 
   private async endBattle(plyerId: number, name: string, gameOver: boolean = false, message: string) {
+
     this.fightService.leave(false);
+    this.soundsService.stopMusic();
     if (gameOver) {
       if (message.includes('won')) {
         this.router.navigate(['/end', { won: 'won' }]);
@@ -195,6 +202,9 @@ export class FightRoomComponent {
 
 
   triggerAttack(attackerId: number) {
+
+    this.soundsService.playSound(SoundOptions.ATTACK);
+
     const attackContainer = document.getElementById(`attack-${attackerId}`);
 
     const attack = document.createElement('img');

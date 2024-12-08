@@ -32,5 +32,13 @@
 </div>
 
 <div class="fixed bottom-5 right-5">
-  <span class="font-light">Art by <a class="font-semibold" href="https://cara.app/pkart" target="_blank" rel="noopener noreferrer">pkart</a></span>
+  <span class="font-light">Art by <a class="font-semibold" href="https://cara.app/pkart" target="_blank"
+      rel="noopener noreferrer">pkart</a></span>
+</div>
+
+<div class="fixed top-5 right-5">
+  <button mat-icon-button (click)="switchMute()">
+    @if(muted) {<mat-icon>volume_off</mat-icon>}
+    @else {<mat-icon>volume_up</mat-icon>}
+  </button>
 </div>

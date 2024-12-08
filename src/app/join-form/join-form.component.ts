@@ -20,6 +20,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { isPlatformBrowser } from '@angular/common';
 import { itemPictures } from './item-image-links';
 import { ItemTrackingService } from '../common/services/item-tracking.service';
+import { MusicOptions, SoundOptions, SoundsService } from '../common/services/sounds.service';
 
 @Component({
   selector: 'app-join-form',
@@ -37,14 +38,11 @@ import { ItemTrackingService } from '../common/services/item-tracking.service';
   styleUrl: './join-form.component.scss',
 })
 export class JoinFormComponent implements AfterViewInit, OnDestroy {
-  nameControl = new FormControl(
-    '',
-    Validators.compose([Validators.maxLength(20), Validators.required])
-  );
+  nameControl = new FormControl('', Validators.compose([Validators.maxLength(20), Validators.required]));
   avatarOptions = [
     'https://chungus-battles.b-cdn.net/chungus-battles-assets/warrior_01.png',
     'https://chungus-battles.b-cdn.net/chungus-battles-assets/thief_01.png',
-    'https://chungus-battles.b-cdn.net/chungus-battles-assets/merchant_01.png'
+    'https://chungus-battles.b-cdn.net/chungus-battles-assets/merchant_01.png',
   ];
   fallingItems = itemPictures;
   avatarSelected = this.avatarOptions[1];
@@ -52,24 +50,23 @@ export class JoinFormComponent implements AfterViewInit, OnDestroy {
   intervalId: any;
   @ViewChild('fallingItemsContainer', { static: false })
   fallingItemsContainer!: ElementRef<HTMLDivElement>;
+  muted = false;
 
   constructor(
     public draftService: DraftService,
     private snackBar: MatSnackBar,
     private renderer: Renderer2,
     private itemTrackingService: ItemTrackingService,
-    @Inject(PLATFORM_ID) private platformId: Object
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private soundsService: SoundsService
   ) {}
 
   ngAfterViewInit(): void {
+    this.soundsService.playMusic(MusicOptions.DRAFT);
     if (isPlatformBrowser(this.platformId)) {
       // Only run the animation interval in the browser
       this.intervalId = setInterval(() => {
-        this.triggerShowFallingItem(
-          this.fallingItems[
-            Math.floor(Math.random() * this.fallingItems.length)
-          ]
-        );
+        this.triggerShowFallingItem(this.fallingItems[Math.floor(Math.random() * this.fallingItems.length)]);
       }, 1000);
     }
   }
@@ -89,9 +86,7 @@ export class JoinFormComponent implements AfterViewInit, OnDestroy {
 
   onPrevButton() {
     const currentIndex = this.avatarOptions.indexOf(this.avatarSelected);
-    const prevIndex =
-      (currentIndex - 1 + this.avatarOptions.length) %
-      this.avatarOptions.length;
+    const prevIndex = (currentIndex - 1 + this.avatarOptions.length) % this.avatarOptions.length;
     this.avatarSelected = this.avatarOptions[prevIndex];
   }
 
@@ -103,6 +98,8 @@ export class JoinFormComponent implements AfterViewInit, OnDestroy {
   }
 
   async onFormSubmit() {
+    this.soundsService.playSound(SoundOptions.CLICK);
+
     if (this.nameControl.invalid) {
       const errorMessage = this.getInputErrorMessage();
       this.snackBar.open(errorMessage, 'Close', {
@@ -113,11 +110,7 @@ export class JoinFormComponent implements AfterViewInit, OnDestroy {
 
     this.loading = true;
     this.itemTrackingService.resetTrackedCollections();
-    const joinResult = await this.draftService.joinOrCreate(
-      this.nameControl.value!,
-      undefined,
-      this.avatarSelected
-    );
+    const joinResult = await this.draftService.joinOrCreate(this.nameControl.value!, undefined, this.avatarSelected);
     if (joinResult) {
       this.snackBar.open(joinResult, 'Close');
     }
@@ -136,18 +129,17 @@ export class JoinFormComponent implements AfterViewInit, OnDestroy {
       this.renderer.setStyle(itemImg, 'z-index', '-1');
 
       // Append the img element to the container
-      this.renderer.appendChild(
-        this.fallingItemsContainer.nativeElement,
-        itemImg
-      );
+      this.renderer.appendChild(this.fallingItemsContainer.nativeElement, itemImg);
 
       // Remove the img element after 5 seconds
       setTimeout(() => {
-        this.renderer.removeChild(
-          this.fallingItemsContainer.nativeElement,
-          itemImg
-        );
+        this.renderer.removeChild(this.fallingItemsContainer.nativeElement, itemImg);
       }, 6000);
     }
+  }
+
+  switchMute() {
+    this.soundsService.setVolume(this.muted ? 0.5 : 0);
+    this.muted = !this.muted;
   }
 }

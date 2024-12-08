@@ -25,7 +25,7 @@
 
       <div class="flex min-w-full justify-center items-center col-span-2 lg:col-span-1">
         <button class="sm:scale-75 scale-100 ml-5" #tooltip="matTooltip" matTooltip="{{playerLevel * 2}} gold" mat-fab
-          matTooltipPosition="right" color="text-white" (click)="draftService.sendMessage('refresh_talents', {})"
+          matTooltipPosition="right" color="text-white" (click)="refreshTalents()"
           (mouseenter)="switchTalentRefreshAnimate()" (mouseleave)="switchTalentRefreshAnimate()">
           <mat-icon [ngClass]="{'animate-spin': hoverTelentRefresh}">refresh</mat-icon>
         </button>

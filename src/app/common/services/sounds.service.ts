@@ -14,7 +14,7 @@ export class SoundsService {
   }
 
   playMusic(music: MusicOptions) {
-    if (!this.music || this.music.src === music) return;
+    if (!this.music || (this.music.src === music && this.music.played)) return;
     this.music.volume = this.volume;
     this.music.src = music;
     this.music.loop = true;

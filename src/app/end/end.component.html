@@ -1,5 +1,14 @@
 <div class="flex flex-col fixed bottom-1/2 right-1/2">
-  <h1 class="text-center text-white">{{ message }}</h1>
+
+  <h1 class="text-center text-white py-2">{{ message }}!</h1>
+
+  <h2 class="text-center text-white py-2">Top Players: </h2>
+
+
+  @for (Player of topPlayers; track $index) {
+    <div class="text-center text-white">{{ $index + 1 }}. {{ Player.name }} - {{ Player.wins }}</div>
+  }
+
   <button class="m-4" mat-raised-button color="primary" (click)="goToHome()">
     RESTART
   </button>

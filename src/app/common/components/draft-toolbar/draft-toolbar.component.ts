@@ -162,7 +162,7 @@ export class DraftToolbarComponent implements AfterViewChecked, OnInit {
   }
 
   switchMute() {
-    this.soundsService.setVolume(this.muted ? 0.5 : 0);
+    this.soundsService.setVolume(this.muted ? 0.1 : 0);
     this.muted = !this.muted;
   }
 

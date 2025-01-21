@@ -136,7 +136,6 @@ export class FightRoomComponent {
   }
 
   async ngOnInit(): Promise<void> {
-
     this.soundsService.playMusic(MusicOptions.BATTLE);
 
     const room = this.fightService.room();
@@ -147,15 +146,10 @@ export class FightRoomComponent {
   }
 
   private async endBattle(plyerId: number, name: string, gameOver: boolean = false, message: string) {
-
     this.fightService.leave(false);
     this.soundsService.stopMusic();
     if (gameOver) {
-      if (message.includes('won')) {
-        this.router.navigate(['/end', { won: 'won' }]);
-      } else {
-        this.router.navigate(['/end', { won: 'lost' }]);
-      }
+      this.router.navigate(['/end']);
     } else {
       const errorMessage = await this.draftService.joinOrCreate(name, plyerId);
       if (errorMessage) {
@@ -200,9 +194,7 @@ export class FightRoomComponent {
     }, 3000);
   }
 
-
   triggerAttack(attackerId: number) {
-
     this.soundsService.playSound(SoundOptions.ATTACK);
 
     const attackContainer = document.getElementById(`attack-${attackerId}`);

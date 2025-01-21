@@ -5,7 +5,7 @@ import { Injectable } from '@angular/core';
 })
 export class SoundsService {
   music?: HTMLAudioElement;
-  volume: number = 0.5;
+  volume: number = 0.1;
 
   constructor() {
     if (typeof Audio !== 'undefined') {
@@ -36,7 +36,7 @@ export class SoundsService {
   playSound(sound: SoundOptions) {
     if (!this.music || this.volume === 0) return;
     const audio = new Audio(sound);
-    audio.volume = this.volume + 0.3;
+    audio.volume = this.volume + 0.05;
     audio.load();
     audio.play();
   }

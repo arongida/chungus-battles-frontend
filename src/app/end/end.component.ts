@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
-import { MatButton } from '@angular/material/button';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Player } from '../models/colyseus-schema/PlayerSchema';
 import { environment } from '../../environments/environment';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-end',
   standalone: true,
-  imports: [MatButton],
+  imports: [MatButtonModule],
   templateUrl: './end.component.html',
   styleUrl: './end.component.scss',
 })

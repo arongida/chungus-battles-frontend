@@ -149,8 +149,11 @@ export class FightRoomComponent {
     this.fightService.leave(false);
     this.soundsService.stopMusic();
     if (gameOver) {
-      this.router.navigate(['/end']);
-    } else {
+      if (message.includes('#1')) {
+        this.router.navigate(['/end', { won: 'won' }]);
+      } else {
+        this.router.navigate(['/end', { won: 'lost' }]);
+      }
       const errorMessage = await this.draftService.joinOrCreate(name, plyerId);
       if (errorMessage) {
         if (this.gameOver) {

@@ -154,6 +154,7 @@ export class FightRoomComponent {
       } else {
         this.router.navigate(['/end', { won: 'lost' }]);
       }
+    } else {
       const errorMessage = await this.draftService.joinOrCreate(name, plyerId);
       if (errorMessage) {
         if (this.gameOver) {

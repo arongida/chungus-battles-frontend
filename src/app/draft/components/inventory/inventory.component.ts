@@ -8,6 +8,7 @@ import { MatChip } from '@angular/material/chips';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
 import { ItemCollection } from '../../../models/colyseus-schema/ItemCollectionSchema';
+import { DraftService } from '../../services/draft.service';
 
 @Component({
   selector: 'app-inventory',
@@ -34,7 +35,8 @@ export class InventoryComponent {
 
   constructor(
     @Inject(MAT_DIALOG_DATA)
-    public data: { player: Player }
+    public data: { player: Player },
+    public draftService: DraftService
   ) {
     this.player = data.player;
     this.displayedInventory = Array.from(this.player.inventory);
@@ -117,6 +119,12 @@ export class InventoryComponent {
     this.selectedItemCollection = collection;
   }
 
+  sellSelectedItem(item : Item){
+    this.draftService.sendMessage('sell', {
+      itemId: item.itemId
+    });
+    this.displayedInventory = this.player.inventory.filter(soldItem => soldItem.itemId !== item.itemId);
+  }
 
   /*getAggregatedInventory(): {
     name: string;

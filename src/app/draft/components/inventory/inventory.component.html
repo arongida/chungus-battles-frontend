@@ -14,20 +14,18 @@
 </div>
 
 @if(isDisplayingSets){
-  <div class="flex flex-col justify-center items-center">
-    <label for="reqs">requirements:</label>
-    <p id="reqs">{{selectedItemCollection?.requirements}}</p>
-    <label for="effect">effect:</label>
-    <p id="effect">{{selectedItemCollection?.effect}}</p>
-  </div>
+<div class="flex flex-col justify-center items-center">
+  <label for="reqs">requirements:</label>
+  <p id="reqs">{{selectedItemCollection?.requirements}}</p>
+  <label for="effect">effect:</label>
+  <p id="effect">{{selectedItemCollection?.effect}}</p>
+</div>
 }
 
-<div id="inventory-grid" 
-  [ngClass]="{ 
+<div id="inventory-grid" [ngClass]="{ 
     'grid-cols-4': !isDisplayingSets, 
     'grid-cols-3': isDisplayingSets 
-  }"
-  class="grid gap-4 place-items-center">
+  }" class="grid gap-4 place-items-center">
 
   @for (item of displayedInventory; track $index) {
   <mat-card [style.background-image]="'url(' + getItemImage(item) + ')'" id="item-{{ $index }}"
@@ -87,7 +85,7 @@
         <mat-chip class="mr-1 py-1">{{ tag }}</mat-chip>
         }
       </div>
-      <button mat-fab class="p-2" (click)="sellSelectedItem(item)">Sell $</button>
+      <button mat-fab class="p-2" (click)="sellSelectedItem(item)">Sell +{{getSellPrice(item)}}</button>
     </mat-card-content>
     }
   </mat-card>

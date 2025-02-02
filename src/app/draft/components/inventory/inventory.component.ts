@@ -13,15 +13,7 @@ import { DraftService } from '../../services/draft.service';
 @Component({
   selector: 'app-inventory',
   standalone: true,
-  imports: [
-    NgClass,
-    TitleCasePipe,
-    MatCardModule,
-    MatChip,
-    DecimalPipe,
-    MatButtonModule,
-    MatMenuModule
-  ],
+  imports: [NgClass, TitleCasePipe, MatCardModule, MatChip, DecimalPipe, MatButtonModule, MatMenuModule],
   templateUrl: './inventory.component.html',
   styleUrl: './inventory.component.scss',
 })
@@ -31,7 +23,7 @@ export class InventoryComponent {
   isDescending: boolean;
   isCollectionsVisible: boolean;
   isDisplayingSets: boolean;
-  selectedItemCollection : ItemCollection | null = null;
+  selectedItemCollection: ItemCollection | null = null;
 
   constructor(
     @Inject(MAT_DIALOG_DATA)
@@ -48,8 +40,7 @@ export class InventoryComponent {
   onMouseEnterItem(item: Item) {
     item.showDetails = true;
     item.imageCache = item.image;
-    item.image =
-      'https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_00_Empty_Orange.png';
+    item.image = `https://chungus-battles.b-cdn.net/chungus-battles-assets/level_${item.tier}_glow.png`;
   }
 
   onMouseLeaveItem(item: Item) {
@@ -57,10 +48,12 @@ export class InventoryComponent {
     item.image = item.imageCache!;
   }
 
+  getSellPrice(item: Item) {
+    return Math.floor(item.price * 0.7);
+  }
+
   getItemImage(item: Item) {
-    return item.image
-      ? item.image
-      : 'https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_0_Empty.png';
+    return item.image ? item.image : 'https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_0_Empty.png';
   }
 
   backToDefault() {
@@ -80,9 +73,6 @@ export class InventoryComponent {
       this.displayedInventory = sortedByNameAsc;
       this.isDescending = !this.isDescending;
     }
-
-
-
   }
 
   sortByLevel() {
@@ -97,33 +87,32 @@ export class InventoryComponent {
       this.displayedInventory = sortedByLevel;
       this.isDescending = !this.isDescending;
     }
-
   }
 
   listOfSets(collectionName: string) {
     this.isDisplayingSets = true;
     const selectedCollection = this.player.activeItemCollections.find(
-      (collection)=> collection.name === collectionName
+      (collection) => collection.name === collectionName
     );
 
-    if(selectedCollection){
-      this.displayedInventory = this.player.inventory.filter(item => item.itemCollections.includes(selectedCollection.itemCollectionId));
-    }else{
+    if (selectedCollection) {
+      this.displayedInventory = this.player.inventory.filter((item) =>
+        item.itemCollections.includes(selectedCollection.itemCollectionId)
+      );
+    } else {
       console.log(`No item collection found with the name ${collectionName}`);
-      
     }
-
   }
 
-  setSelectedCollection(collection: ItemCollection){
+  setSelectedCollection(collection: ItemCollection) {
     this.selectedItemCollection = collection;
   }
 
-  sellSelectedItem(item : Item){
+  sellSelectedItem(item: Item) {
     this.draftService.sendMessage('sell', {
-      itemId: item.itemId
+      itemId: item.itemId,
     });
-    this.displayedInventory = this.player.inventory.filter(soldItem => soldItem.itemId !== item.itemId);
+    this.displayedInventory = this.player.inventory.filter((soldItem) => soldItem.itemId !== item.itemId);
   }
 
   /*getAggregatedInventory(): {

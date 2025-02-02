@@ -5,8 +5,18 @@
   <h2 class="text-2xl font-semibold text-white mb-4">Top Players:</h2>
 
   <div class="w-full max-w-md bg-gray-800 bg-opacity-50 rounded-lg shadow-lg p-6">
-    @for (Player of topPlayers; track $index) {
-      <div class="text-lg text-white mb-2">{{ $index + 1 }}. {{ Player.name }} - {{ Player.wins }} win</div>
+    @for (Player of topPlayers; track Player.playerId) {
+    @if (Player.playerId === playerId) {
+    <div class="text-lg text-yellow-600 mb-2">{{ $index + 1 }}. {{ Player.name }} - {{ Player.wins }} win</div>
+    } @else {
+    <div class="text-lg text-white mb-2">{{ $index + 1 }}. {{ Player.name }} - {{ Player.wins }} win</div>
+    }
+    }
+    @if (playerRank > 10) {
+    <span>
+      ...
+    </span>
+    <div class="text-lg text-yellow-600 mb-2">{{ playerRank }}. {{ playerName }} - {{ playerWins }} win</div>
     }
   </div>
 

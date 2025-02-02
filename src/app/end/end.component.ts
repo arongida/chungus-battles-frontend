@@ -14,21 +14,32 @@ import { MatButtonModule } from '@angular/material/button';
 export class EndComponent {
   message: string = 'Game Over';
   topPlayers: Player[] = [];
+  playerId: number = 0;
+  playerRank: number = 0;
+  playerName: string = '';
+  playerWins: number = 0;
 
-  constructor(
-    private router: Router,
-    private route: ActivatedRoute,
-  ) {}
+  constructor(private router: Router, private route: ActivatedRoute) {}
 
   async ngOnInit() {
-    const url = `${environment.expressServer}/topPlayers?numberOfPlayers=10`;
-    const result = await fetch(url)
-    .then((res) => res.json())
-    .catch((e) => console.error(e));
-  
-    console.log('result: ', result);
+    //get top players
+    const topPlayersUrl = `${environment.expressServer}/topPlayers?numberOfPlayers=10`;
+    const topPlayerResults = await fetch(topPlayersUrl)
+      .then((res) => res.json())
+      .catch((e) => console.error(e));
+    console.log('result: ', topPlayerResults);
+    this.topPlayers = topPlayerResults;
 
-    this.topPlayers = result;
+    //get your rank
+    this.playerId = Number(localStorage.getItem('playerId')) ?? 0;
+    const playerRankUrl = `${environment.expressServer}/rank?playerId=${this.playerId}`;
+    const playerRankResult = await fetch(playerRankUrl)
+      .then((res) => res.json())
+      .catch((e) => console.error(e));
+    console.log('result: ', playerRankResult);
+    this.playerRank = playerRankResult.rank;
+    this.playerName = playerRankResult.name;
+    this.playerWins = playerRankResult.wins;
   }
 
   public goToHome() {

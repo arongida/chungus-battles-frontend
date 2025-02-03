@@ -8,10 +8,9 @@
       (cdkDragExited)="onDragExited($event, cardRef, gridRef)">
 
       <div [ngClass]="{'opacity-0':item.sold,'pointer-events-none':item.sold, 'shadow-lg':isCardHighlighted(item)}"
-        [matTooltipDisabled]="item.sold" [style.background-image]="'url(' + getItemImage(item) + ')'"
+        [style.background-image]="'url(' + getItemImage(item) + ')'"
         id="item-{{ $index }}" class="w-60 h-80 items-center bg-cover scale-75 shadow-amber-700"
-        (mouseenter)="onMouseEnterItem(item)" (mouseleave)="onMouseLeaveItem(item)" #tooltip="matTooltip"
-        matTooltipPosition="after" matTooltip={{getItemsCollectionTooltipForItem(item)}}>
+        (mouseenter)="onMouseEnterItem(item)" (mouseleave)="onMouseLeaveItem(item)">
 
         <div class="mb-2 mt-2 pt-5 text-center text-xl">
           <mat-card-title>{{ item.name | titlecase }}</mat-card-title>
@@ -69,10 +68,7 @@
 
           </div>
           <div class="p-1 m-1">
-            <p class="font-thin text-sm py-1">{{ item.description }}</p>
-            @for (tag of item.tags; track $index) {
-            <mat-chip class="mr-1 py-2">{{ tag }}</mat-chip>
-            }
+            <span>Set: {{getItemsCollectionTooltipForItem(item)}}</span>
             <br>
             <span class="p-2 mt-1">Already owned: {{getNumberOfOwnedItems(item)}}</span>
           </div>

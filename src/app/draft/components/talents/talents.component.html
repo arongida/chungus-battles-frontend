@@ -11,14 +11,11 @@
         [style.background-image]="'url(' + getTalentImage(talent) + ')'" [style.background-size]="'100% 100%'"
         [style.background-position]="'center'" (mouseenter)="onMouseEnterTalent(talent)"
         (mouseleave)="onMouseLeaveTalent(talent)" (click)="selectTalent(talent.talentId)">
-        <h2 class="mb-5 mt-2 text-xl">
+        <h1 class="mb-5 mt-2 text-2xl text-center">
           {{ talent.name }}
-        </h2>
+        </h1>
         <div class="mx-3 text-center">
           <p class="my-3">{{ talent.description }}</p>
-          @for (tag of talent.tags; track $index) {
-          <mat-chip class="mr-1 py-3">{{ tag }}</mat-chip>
-          }
         </div>
       </div>
       }

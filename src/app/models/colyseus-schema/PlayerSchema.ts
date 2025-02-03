@@ -23,6 +23,7 @@ export class Player extends Schema {
     'https://chungus-battles.b-cdn.net/chungus-battles-assets/Portrait_ID_0_Placeholder.png';
   @type([Talent]) talents: ArraySchema<Talent> = new ArraySchema<Talent>();
   @type([Item]) inventory: ArraySchema<Item> = new ArraySchema<Item>();
+  @type([Item]) equippedItems: ArraySchema<Item> = new ArraySchema<Item>();
 	@type([ItemCollection]) activeItemCollections: ArraySchema<ItemCollection> =
 		new ArraySchema<ItemCollection>();
 	@type([ItemCollection])

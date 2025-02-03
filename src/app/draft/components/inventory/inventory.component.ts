@@ -110,11 +110,16 @@ export class InventoryComponent {
 
   sellSelectedItem(item: Item) {
     this.draftService.sendMessage('sell', {
-      itemId: item.itemId,
+      itemId: item.itemId
     });
     this.displayedInventory = this.player.inventory.filter((soldItem) => soldItem.itemId !== item.itemId);
   }
 
+  equip(item: Item){
+    this.draftService.sendMessage('equip', {
+      itemId: item.itemId
+    });
+  }
   /*getAggregatedInventory(): {
     name: string;
     quantity: number;

@@ -87,8 +87,8 @@ background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/
     class="bg-center bg-cover w-48 h-64 flex flex-col items-center justify-evenly bg-gray-800 p-4" style="
   background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_0_Empty.png');
   ">
-    <h3>Equiped items</h3>
-    @for (item of player.inventory; track $index) {
+    <h3>Equipped items</h3>
+    @for (item of player.equippedItems; track $index) {
     @if(item.equipped){
     <div id="{{ item.itemId }}">
       <div class="p-2 " (mouseenter)="onMouseEnterItem(item)" (mouseleave)="onMouseLeaveItem(item)">

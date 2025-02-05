@@ -84,19 +84,20 @@ background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/
     <div class="absolute" id="attack-{{ player.playerId }}"></div>
   </div>
 
-  
-  <div id="equiped-items-{{player.playerId}}"
+
+  <div id="equipped-items-{{player.playerId}}"
     class="bg-center bg-cover w-48 h-64 flex flex-col items-center justify-evenly bg-gray-800 p-4" style="
   background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_0_Empty.png');
   ">
-    <h3>Equipped items</h3>
+
     @for (item of player.equippedItems; track $index) {
-    @if(item.equipped){
-    <div id="{{ item.itemId }}">
-      <div class="p-2 " (mouseenter)="onMouseEnterItem(item)" (mouseleave)="onMouseLeaveItem(item)">
-        {{ item.name }}
-      </div>
+
+
+    <div class="border-white border h-1/4 w-full m-1.5 flex">
+      <div class="w-1/3">H</div>
+      <div class="w-2/3" (mouseenter)="onMouseEnterItem(item)" (mouseleave)="onMouseLeaveItem(item)">{{item.name}}</div>
     </div>
+
     @if (item.showDetails) {
     <mat-card-content class="absolute top-0 left-full ml-4 w-48 h-64 flex flex-col items-center justify-evenly 
     bg-gray-800 p-4 shadow-lg border border-gray-600 rounded-lg"
@@ -105,7 +106,14 @@ background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/
     </mat-card-content>
     }
     }
+
+    @for (item of getMissingEquipmentSlots(); track $index) {
+    <div class="border-white border h-1/4 w-full m-1.5 flex">
+      <div class="w-1/3">H</div>
+      <div class="w-2/3">Missing {{item}}</div>
+    </div>
     }
+
 
   </div>
 </div>

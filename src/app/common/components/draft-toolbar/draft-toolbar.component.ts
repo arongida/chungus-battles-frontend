@@ -19,6 +19,8 @@ import { CharacterDetailsComponent } from '../character-details/character-detail
 import { MatCardModule } from '@angular/material/card';
 import { MatBadgeModule } from '@angular/material/badge';
 import { SoundOptions, SoundsService } from '../../services/sounds.service';
+import { Item } from '../../../models/colyseus-schema/ItemSchema';
+import { ItemCollection } from '../../../models/colyseus-schema/ItemCollectionSchema';
 
 @Component({
   selector: 'app-draft-toolbar',
@@ -134,27 +136,12 @@ export class DraftToolbarComponent implements AfterViewChecked, OnInit {
     }
   }
 
-  getItemcollectionItemCount(collectionId: number) {
-    return this.player?.inventory.filter((item) => item.itemCollections.includes(collectionId)).length;
-  }
-
-  getProgress(collection: any) {
+  getProgress(collection: ItemCollection) {
     return (
-      (this.getItemcollectionItemCount(collection.itemCollectionId) / this.getItemCollectionMaxCount(collection.name)) *
+      (this.player?.getItemcollectionItemCountFromInventory(collection.itemCollectionId) /
+        (collection.name.includes('Shield') ? 1 : 3)) *
       100
     );
-  }
-
-  getItemCollectionMaxCount(collectionName: string): number {
-    const shieldVolumes: Record<string, number> = {
-      'Shields vol I.': 1,
-      'Shields vol II.': 2,
-      'Shields vol III.': 3,
-      'Shields vol IV.': 4,
-      'Shields vol V.': 5,
-    };
-
-    return Object.entries(shieldVolumes).find(([key]) => collectionName.includes(key))?.[1] ?? 3;
   }
 
   isFighting(): boolean {

@@ -9,11 +9,12 @@ import { Item } from '../../../models/colyseus-schema/ItemSchema';
 import { observeNotification } from 'rxjs/internal/Notification';
 import { MatChip } from '@angular/material/chips';
 import { MatCard, MatCardContent } from '@angular/material/card';
+import { ItemCardComponent } from "../../item-card/item-card.component";
 
 @Component({
   selector: 'app-character-details',
   standalone: true,
-  imports: [MatProgressBarModule, MatTooltipModule, DecimalPipe, MatDividerModule, NgClass, MatChip, MatCardContent],
+  imports: [MatProgressBarModule, MatTooltipModule, DecimalPipe, MatDividerModule, NgClass, MatChip, MatCardContent, ItemCardComponent],
   templateUrl: './character-details.component.html',
   styleUrl: './character-details.component.scss',
 })

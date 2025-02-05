@@ -96,4 +96,12 @@ export class Player extends Schema {
   set defense(value: number) {
     this._defense = value < 0 ? 0 : value;
   }
+
+  getItemcollectionItemCountFromEquip(collectionId: number) {
+    return this.equippedItems.filter((item) => item.itemCollections.includes(collectionId)).length;
+  }
+
+  getItemcollectionItemCountFromInventory(collectionId: number) {
+    return this.inventory.filter((item) => item.itemCollections.includes(collectionId)).length;
+  }
 }

@@ -6,10 +6,10 @@ import { MatDividerModule } from '@angular/material/divider';
 import { NgClass } from '@angular/common';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { Item } from '../../../models/colyseus-schema/ItemSchema';
-import { observeNotification } from 'rxjs/internal/Notification';
-import { MatChip } from '@angular/material/chips';
-import { MatCard, MatCardContent } from '@angular/material/card';
+import { MatCardContent } from '@angular/material/card';
 import { ItemCardComponent } from '../../item-card/item-card.component';
+import { DraftService } from '../../../draft/services/draft.service';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-character-details',
@@ -20,7 +20,7 @@ import { ItemCardComponent } from '../../item-card/item-card.component';
     DecimalPipe,
     MatDividerModule,
     NgClass,
-    MatChip,
+    MatButtonModule,
     MatCardContent,
     ItemCardComponent,
   ],
@@ -31,8 +31,11 @@ export class CharacterDetailsComponent {
   @Input({ required: true }) player: Player = new Player();
   @Input() enemy: boolean = false;
   @Input() combat: boolean = false;
+  selectedCategory : string = "";
 
-  constructor() {}
+  constructor(public draftService: DraftService) {
+    
+  }
 
   getAvatarImage(): string {
     let avatar =
@@ -73,5 +76,32 @@ export class CharacterDetailsComponent {
     });
     console.log(missingSlots);  
     return missingSlots;
+  }
+
+  selectCategory(category: string){
+    this.selectedCategory = category;
+    console.log(this.selectedCategory);
+  }
+
+  getEquipmentTypeFromInventory(itemType : string): Item[] {
+    return this.player.inventory.filter(item => item.type === itemType);
+  }
+
+  sellSelectedItem(item: Item) {
+    this.draftService.sendMessage('sell', {
+      itemId: item.itemId
+    });
+  }
+
+  equip(item: Item){
+    this.draftService.sendMessage('equip', {
+      itemId: item.itemId
+    });
+  }
+
+  unequip(item: Item){
+    this.draftService.sendMessage('unequip', {
+      itemId: item.itemId
+    });
   }
 }

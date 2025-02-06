@@ -30,7 +30,7 @@ export class DraftService {
         playerId = result.playerId;
       }
 
-      this.room = await this.client.joinOrCreate('draft_room', {
+      this.room = await this.client.create('draft_room', {
         name: name,
         playerId: playerId,
         avatarUrl: avatarUrl,

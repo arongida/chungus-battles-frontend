@@ -128,7 +128,7 @@ background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/
       <div class="flex">
         <span class="w-2/5">{{item.name}}</span>
         <button class="w-1/5" (click)="equip(item)">equip item</button>
-        <button class="w-1/5">unequip item</button>
+        <button class="w-1/5" (click)="unequip(item)">unequip item</button>
         <button class="w-1/5" (click)="sellSelectedItem(item)">sell item</button>
       </div>
       }

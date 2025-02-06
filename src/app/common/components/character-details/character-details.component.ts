@@ -99,4 +99,10 @@ export class CharacterDetailsComponent {
       itemId: item.itemId
     });
   }
+
+  unequip(item: Item){
+    this.draftService.sendMessage('unequip', {
+      itemId: item.itemId
+    });
+  }
 }

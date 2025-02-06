@@ -94,7 +94,7 @@ background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/
 
 
     <div class="border-white border h-1/4 w-full m-1.5 flex">
-      <div class="w-1/3">H</div>
+      <div class="w-1/3">{{item.type[0].toLocaleUpperCase()}}</div>
       <div class="w-2/3" (mouseenter)="onMouseEnterItem(item)" (mouseleave)="onMouseLeaveItem(item)">{{item.name}}</div>
     </div>
 
@@ -109,7 +109,7 @@ background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/
 
     @for (item of getMissingEquipmentSlots(); track $index) {
     <div class="border-white border h-1/4 w-full m-1.5 flex">
-      <div class="w-1/3">H</div>
+      <div class="w-1/3">{{item[0].toLocaleUpperCase()}}</div>
       <div class="w-2/3">Missing {{item}}</div>
     </div>
     }

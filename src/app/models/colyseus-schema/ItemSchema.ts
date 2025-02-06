@@ -21,5 +21,7 @@ export class Item extends Schema {
   @type('string') imageCache?: string = this.image;
   @type(['string']) tags: string[] = new Array<string>();
   @type('boolean') sold: boolean = false; 
+  @type('boolean') equipped: boolean = false;
   @type(['number']) itemCollections: number[] = [];
+  @type('string') type: string = '';
 }

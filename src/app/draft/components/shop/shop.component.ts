@@ -2,17 +2,15 @@ import { Component, Input, computed } from '@angular/core';
 import { Item } from '../../../models/colyseus-schema/ItemSchema';
 import { MatCardModule } from '@angular/material/card';
 import { DraftService } from '../../services/draft.service';
-import { TitleCasePipe, NgClass } from '@angular/common';
+import { TitleCasePipe, NgClass, DecimalPipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
-import { MatChip } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
-import { DecimalPipe } from '@angular/common';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { CdkDrag, CdkDragDrop, CdkDragExit, CdkDropList, DragDropModule } from '@angular/cdk/drag-drop';
 import { Player } from '../../../models/colyseus-schema/PlayerSchema';
 import { ItemTrackingService } from '../../../common/services/item-tracking.service';
-import { ItemCollection } from '../../../models/colyseus-schema/ItemCollectionSchema';
 import { SoundOptions, SoundsService } from '../../../common/services/sounds.service';
+import { ItemCardComponent } from '../../../common/item-card/item-card.component';
 
 @Component({
   selector: 'app-shop',
@@ -20,15 +18,13 @@ import { SoundOptions, SoundsService } from '../../../common/services/sounds.ser
   imports: [
     NgClass,
     MatCardModule,
-    TitleCasePipe,
     MatButtonModule,
     MatIconModule,
-    MatChip,
-    DecimalPipe,
     MatTooltipModule,
     CdkDrag,
     CdkDropList,
     DragDropModule,
+    ItemCardComponent
   ],
   templateUrl: './shop.component.html',
   styleUrl: './shop.component.scss',
@@ -68,12 +64,6 @@ export class ShopComponent {
     return item.image ? item.image : 'https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_0_Empty.png';
   }
 
-  getItemsCollectionTooltipForItem(item: Item): string {
-    const collections = this.player.availableItemCollections.filter((collection) =>
-      item.itemCollections.includes(collection.itemCollectionId)
-    );
-    return collections.map((collection: ItemCollection) => collection.name).join('\r\n');
-  }
 
   cardDragStarted(item: Item) {
     this.draggingCard = true;

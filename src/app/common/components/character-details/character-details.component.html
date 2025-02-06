@@ -116,4 +116,22 @@ background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/
 
 
   </div>
+  <div class="absolute top-[256px] left-0 right-0 h-[calc(100vh-256px)] bg-stone-800 p-4">
+    <div class="mb-4">
+      <button class="w-1/4" (click)="selectCategory('helmet')">Helmets</button>
+      <button class="w-1/4" (click)="selectCategory('weapon')">Weapons</button>
+      <button class="w-1/4" (click)="selectCategory('armor')">Armors</button>
+      <button class="w-1/4" (click)="selectCategory('shield')">Shields</button>
+    </div>
+    <div>
+      @for(item of getEquipmentTypeFromInventory(selectedCategory); track $index){
+      <div class="flex">
+        <span class="w-2/5">{{item.name}}</span>
+        <button class="w-1/5" (click)="equip(item)">equip item</button>
+        <button class="w-1/5">unequip item</button>
+        <button class="w-1/5" (click)="sellSelectedItem(item)">sell item</button>
+      </div>
+      }
+    </div>
+  </div>
 </div>

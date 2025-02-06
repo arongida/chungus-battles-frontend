@@ -22,7 +22,7 @@ export class FightService {
   public async joinOrCreate(playerId: number) {
     try {
       this.room.set(
-        await this.client.joinOrCreate('fight_room', {
+        await this.client.create('fight_room', {
           playerId: playerId,
         }),
       );

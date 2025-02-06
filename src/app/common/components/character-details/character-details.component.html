@@ -124,10 +124,11 @@ background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/
 @if (!combat) {
 <div class="bg-stone-800 p-4 min-h-screen">
   <div class="mb-4">
-    <button mat-button class="w-1/4" (click)="selectCategory('helmet')">Helmets</button>
-    <button mat-button class="w-1/4" (click)="selectCategory('weapon')">Weapons</button>
-    <button mat-button class="w-1/4" (click)="selectCategory('armor')">Armors</button>
-    <button mat-button class="w-1/4" (click)="selectCategory('shield')">Shields</button>
+    <button mat-button class="w-1/5" (click)="selectCategory('all')">All</button>
+    <button mat-button class="w-1/5" (click)="selectCategory('helmet')">Helmets</button>
+    <button mat-button class="w-1/5" (click)="selectCategory('weapon')">Weapons</button>
+    <button mat-button class="w-1/5" (click)="selectCategory('armor')">Armors</button>
+    <button mat-button class="w-1/5" (click)="selectCategory('shield')">Shields</button>
   </div>
   <div>
     @for(item of getEquipmentTypeFromInventory(selectedCategory); track $index){

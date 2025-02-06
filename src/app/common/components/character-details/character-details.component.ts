@@ -31,7 +31,7 @@ export class CharacterDetailsComponent {
   @Input({ required: true }) player: Player = new Player();
   @Input() enemy: boolean = false;
   @Input() combat: boolean = false;
-  selectedCategory : string = "";
+  selectedCategory : string = "all";
 
   constructor(public draftService: DraftService) {
     
@@ -84,7 +84,11 @@ export class CharacterDetailsComponent {
   }
 
   getEquipmentTypeFromInventory(itemType : string): Item[] {
-    return this.player.inventory.filter(item => item.type === itemType);
+    if(itemType === "all"){
+      return this.player.inventory.map(item => item);
+    }else{
+      return this.player.inventory.filter(item => item.type === itemType);
+    }
   }
 
   sellSelectedItem(item: Item) {

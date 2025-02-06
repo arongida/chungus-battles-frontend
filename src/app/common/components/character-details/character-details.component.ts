@@ -6,11 +6,10 @@ import { MatDividerModule } from '@angular/material/divider';
 import { NgClass } from '@angular/common';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { Item } from '../../../models/colyseus-schema/ItemSchema';
-import { observeNotification } from 'rxjs/internal/Notification';
-import { MatChip } from '@angular/material/chips';
-import { MatCard, MatCardContent } from '@angular/material/card';
+import { MatCardContent } from '@angular/material/card';
 import { ItemCardComponent } from '../../item-card/item-card.component';
 import { DraftService } from '../../../draft/services/draft.service';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-character-details',
@@ -21,7 +20,7 @@ import { DraftService } from '../../../draft/services/draft.service';
     DecimalPipe,
     MatDividerModule,
     NgClass,
-    MatChip,
+    MatButtonModule,
     MatCardContent,
     ItemCardComponent,
   ],

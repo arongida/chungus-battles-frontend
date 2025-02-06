@@ -1,4 +1,5 @@
 <div class="flex flex-row gap-1 max-w-content" [ngClass]="{'flex-row-reverse': enemy}">
+
   <!-- Stats Section -->
   <div id="stats" class="bg-center bg-cover w-48 h-64 flex flex-col items-center justify-evenly bg-gray-800 p-4" style="
 background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_0_Empty.png');
@@ -65,7 +66,6 @@ background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/
 
       </div>
     </div>
-
   </div>
 
   <!-- Avatar Section -->
@@ -93,13 +93,15 @@ background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/
     @for (item of player.equippedItems; track $index) {
 
 
-    <div class="border-white border h-1/4 w-full m-1.5 flex">
-      <div class="w-1/3">{{item.type[0].toLocaleUpperCase()}}</div>
-      <div class="w-2/3" (mouseenter)="onMouseEnterItem(item)" (mouseleave)="onMouseLeaveItem(item)">{{item.name}}</div>
+    <div class="border-white text-center hover:bg-amber-800 border h-1/4 w-full m-1.5 flex items-center justify-center"
+      (mouseenter)="onMouseEnterItem(item)" (mouseleave)="onMouseLeaveItem(item)">
+      <div class="w-1/3 flex items-center justify-center">{{item.type[0].toLocaleUpperCase()}}</div>
+      <div class="w-2/3 flex items-center justify-center">{{item.name}}</div>
     </div>
 
+
     @if (item.showDetails) {
-    <mat-card-content class="absolute top-0 left-full ml-4 w-48 h-64 flex flex-col items-center justify-evenly 
+    <mat-card-content class="absolute text-center top-0 left-full ml-4 w-48 h-64 flex flex-col items-center justify-evenly 
     bg-gray-800 p-4 shadow-lg border border-gray-600 rounded-lg"
       style="background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_0_Empty.png'); background-size: cover;">
       <app-item-card [item]="item" [player]="player"></app-item-card>
@@ -108,30 +110,34 @@ background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/
     }
 
     @for (item of getMissingEquipmentSlots(); track $index) {
-    <div class="border-white border h-1/4 w-full m-1.5 flex">
-      <div class="w-1/3">{{item[0].toLocaleUpperCase()}}</div>
-      <div class="w-2/3">Missing {{item}}</div>
+    <div class="border-white border h-1/4 w-full m-1.5 flex items-center justify-center">
+      <div class="w-1/3 flex items-center justify-center">{{item[0].toLocaleUpperCase()}}</div>
+      <div class="w-2/3 flex items-center justify-center">Missing {{item}}</div>
     </div>
     }
 
 
   </div>
-  <div class="absolute top-[256px] left-0 right-0 h-[calc(100vh-256px)] bg-stone-800 p-4">
-    <div class="mb-4">
-      <button class="w-1/4" (click)="selectCategory('helmet')">Helmets</button>
-      <button class="w-1/4" (click)="selectCategory('weapon')">Weapons</button>
-      <button class="w-1/4" (click)="selectCategory('armor')">Armors</button>
-      <button class="w-1/4" (click)="selectCategory('shield')">Shields</button>
+
+</div>
+
+@if (!combat) {
+<div class="bg-stone-800 p-4 min-h-screen">
+  <div class="mb-4">
+    <button mat-button class="w-1/4" (click)="selectCategory('helmet')">Helmets</button>
+    <button mat-button class="w-1/4" (click)="selectCategory('weapon')">Weapons</button>
+    <button mat-button class="w-1/4" (click)="selectCategory('armor')">Armors</button>
+    <button mat-button class="w-1/4" (click)="selectCategory('shield')">Shields</button>
+  </div>
+  <div>
+    @for(item of getEquipmentTypeFromInventory(selectedCategory); track $index){
+    <div class="flex">
+      <span class="w-2/5">{{item.name}}</span>
+      <button mat-button class="w-1/5" (click)="equip(item)">equip item</button>
+      <button mat-button class="w-1/5" (click)="unequip(item)">unequip item</button>
+      <button mat-button class="w-1/5" (click)="sellSelectedItem(item)">sell item</button>
     </div>
-    <div>
-      @for(item of getEquipmentTypeFromInventory(selectedCategory); track $index){
-      <div class="flex">
-        <span class="w-2/5">{{item.name}}</span>
-        <button class="w-1/5" (click)="equip(item)">equip item</button>
-        <button class="w-1/5" (click)="unequip(item)">unequip item</button>
-        <button class="w-1/5" (click)="sellSelectedItem(item)">sell item</button>
-      </div>
-      }
-    </div>
+    }
   </div>
 </div>
+}

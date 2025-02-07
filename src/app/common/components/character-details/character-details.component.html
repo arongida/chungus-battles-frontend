@@ -1,3 +1,4 @@
+<div class="flex flex-col overflow-y-auto">
 <div class="flex flex-row gap-1 max-w-content" [ngClass]="{'flex-row-reverse': enemy}">
 
   <!-- Stats Section -->
@@ -122,14 +123,15 @@ background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/
 </div>
 
 @if (!combat) {
-<div class="bg-stone-800 p-4 min-h-screen">
+<div class="bg-stone-800 p-4">
   <div class="mb-4">
-    <button mat-button class="w-1/4" (click)="selectCategory('helmet')">Helmets</button>
-    <button mat-button class="w-1/4" (click)="selectCategory('weapon')">Weapons</button>
-    <button mat-button class="w-1/4" (click)="selectCategory('armor')">Armors</button>
-    <button mat-button class="w-1/4" (click)="selectCategory('shield')">Shields</button>
+    <button mat-button class="w-1/5" (click)="selectCategory('all')">All</button>
+    <button mat-button class="w-1/5" (click)="selectCategory('helmet')">Helmets</button>
+    <button mat-button class="w-1/5" (click)="selectCategory('weapon')">Weapons</button>
+    <button mat-button class="w-1/5" (click)="selectCategory('armor')">Armors</button>
+    <button mat-button class="w-1/5" (click)="selectCategory('shield')">Shields</button>
   </div>
-  <div>
+  <div class="h-48 overflow-y-auto">
     @for(item of getEquipmentTypeFromInventory(selectedCategory); track $index){
     <div class="flex">
       <span class="w-2/5">{{item.name}}</span>
@@ -141,3 +143,4 @@ background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/
   </div>
 </div>
 }
+</div>

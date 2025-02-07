@@ -85,7 +85,7 @@ export class CharacterDetailsComponent {
 
   getEquipmentTypeFromInventory(itemType : string): Item[] {
     if(itemType === "all"){
-      return this.player.inventory.map(item => item);
+      return this.player.inventory as unknown as Item[];
     }else{
       return this.player.inventory.filter(item => item.type === itemType);
     }

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Player } from '../models/colyseus-schema/PlayerSchema';
 import { environment } from '../../environments/environment';
@@ -11,7 +11,7 @@ import { MatButtonModule } from '@angular/material/button';
   templateUrl: './end.component.html',
   styleUrl: './end.component.scss',
 })
-export class EndComponent {
+export class EndComponent implements OnDestroy {
   message: string = 'Game Over';
   topPlayers: Player[] = [];
   playerId: number = 0;
@@ -19,34 +19,54 @@ export class EndComponent {
   playerName: string = '';
   playerWins: number = 0;
 
+  private intervalId: any;
+
   constructor(private router: Router, private route: ActivatedRoute) {}
 
-  async ngOnInit() {
-    //get top players
-    const topPlayersUrl = `${environment.expressServer}/topPlayers?numberOfPlayers=10`;
-    const topPlayerResults = await fetch(topPlayersUrl)
-      .then((res) => res.json())
-      .catch((e) => console.error(e));
-    console.log('result: ', topPlayerResults);
-    this.topPlayers = topPlayerResults;
-
-    //get your rank
+  ngOnInit() {
     this.playerId = Number(localStorage.getItem('playerId')) ?? 0;
-    const playerRankUrl = `${environment.expressServer}/rank?playerId=${this.playerId}`;
-    const playerRankResult = await fetch(playerRankUrl)
-      .then((res) => res.json())
-      .catch((e) => console.error(e));
-    console.log('result: ', playerRankResult);
-    this.playerRank = playerRankResult.rank;
-    this.playerName = playerRankResult.name;
-    this.playerWins = playerRankResult.wins;
+
+    this.fetchPlayerData();
+
+    this.intervalId = setInterval(() => {
+      this.fetchPlayerData();
+    }, 5000);
   }
 
-  public goToHome() {
+  async fetchPlayerData() {
+    try {
+      // Get top players
+      const topPlayersUrl = `${environment.expressServer}/topPlayers?numberOfPlayers=10`;
+      const topPlayerResults = await fetch(topPlayersUrl).then(res => res.json());
+      console.log('Top players:', topPlayerResults);
+      this.topPlayers = topPlayerResults;
+
+      // Get player rank
+      const playerRankUrl = `${environment.expressServer}/rank?playerId=${this.playerId}`;
+      const playerRankResult = await fetch(playerRankUrl).then(res => res.json());
+      this.playerRank = playerRankResult.rank;
+      this.playerName = playerRankResult.name;
+      this.playerWins = playerRankResult.wins;
+    } catch (error) {
+      console.error('Error fetching player data:', error);
+    }
+  }
+
+  goToHome() {
     localStorage.removeItem('sessionId');
     localStorage.removeItem('playerId');
     localStorage.removeItem('roomId');
     localStorage.removeItem('reconnectToken');
     this.router.navigate(['/']);
+  }
+
+  topListContainsPlayer() {
+    return this.topPlayers.some(player => player.playerId === this.playerId);
+  }
+
+  ngOnDestroy() {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+    }
   }
 }

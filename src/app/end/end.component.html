@@ -12,7 +12,7 @@
     <div class="text-lg text-white mb-2">{{ $index + 1 }}. {{ Player.name }} - {{ Player.wins }} win</div>
     }
     }
-    @if (playerRank > 10) {
+    @if (!topListContainsPlayer()) {
     <span>
       ...
     </span>

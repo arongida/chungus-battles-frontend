@@ -108,4 +108,8 @@ export class CharacterDetailsComponent {
       itemId: item.itemId
     });
   }
+
+  getItemBackground(item: Item){
+    return `https://chungus-battles.b-cdn.net/chungus-battles-assets/level_${item.tier}_glow.png`;
+  }
 }

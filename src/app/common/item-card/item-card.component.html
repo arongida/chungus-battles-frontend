@@ -1,64 +1,66 @@
-<div class="mb-2 mt-2 pt-5 text-center text-xl">
-  <mat-card-title>{{ item.name | titlecase }}</mat-card-title>
-</div>
-
-@if (item.showDetails) {
-<div class="flex flex-col flex-1 h-fit place-content-evenly text-center text-white p-1 justify-items-center">
-  <div class="p-1">
-    <p class="font-semibold">
-      Price: <span class="text-yellow-300">{{ item.price }} 🟡</span>
-    </p>
+<div>
+  <div class="mb-2 mt-2 pt-5 text-center text-xl text-white">
+    <mat-card-title>{{ item.name | titlecase }}</mat-card-title>
   </div>
-  <div class="flex place-content-center text-xs p-1">
-    @if(item.affectedStats.attack !== 0) {
-    <p>
-      Attack:
-      <span class="text-red-500">{{ item.affectedStats.attack }} ⚔️</span>
-    </p>
-    }
 
-    @if(item.affectedStats.attackSpeed !== 0) {
-    <p>
-      A.speed:
-      <span class="text-blue-500">{{ item.affectedStats.attackSpeed * 100 - 100 | number: '1.0-0'}}% ⏩</span>
-    </p>
-    }
+  @if (item.showDetails) {
+  <div class="flex flex-col flex-1 h-fit place-content-evenly text-center p-1 justify-items-center">
+    <div class="p-1">
+      <p class="font-semibold">
+        Price: <span class="text-yellow-300">{{ item.price }} 🟡</span>
+      </p>
+    </div>
+    <div class="grid place-content-center text-sm p-1">
+      @if(item.affectedStats.attack !== 0) {
+      <p>
+        Attack:
+        <span class="text-red-500">{{ item.affectedStats.attack }} ⚔️</span>
+      </p>
+      }
 
-    @if(item.affectedStats.defense !== 0) {
-    <p>
-      Defense:
-      <span class="text-green-500">{{ item.affectedStats.defense }} 🛡️</span>
-    </p>
-    }
+      @if(item.affectedStats.attackSpeed !== 0) {
+      <p>
+        A.speed:
+        <span class="text-blue-500">{{ item.affectedStats.attackSpeed * 100 - 100 | number: '1.0-0'}}% ⏩</span>
+      </p>
+      }
 
-    @if(item.affectedStats.hp !== 0) {
-    <p>
-      Health:
-      <span class="text-pink-500">{{ item.affectedStats.hp }} ❤️</span>
-    </p>
-    }
+      @if(item.affectedStats.defense !== 0) {
+      <p>
+        Defense:
+        <span class="text-green-500">{{ item.affectedStats.defense }} 🛡️</span>
+      </p>
+      }
 
-    @if(item.affectedStats.income !== 0) {
-    <p>
-      Income:
-      <span class="text-yellow-300">{{ item.affectedStats.income }} 💰</span>
-    </p>
-    }
+      @if(item.affectedStats.hp !== 0) {
+      <p>
+        Health:
+        <span class="text-pink-500">{{ item.affectedStats.hp }} ❤️</span>
+      </p>
+      }
 
-    @if(item.affectedStats.hpRegen !== 0) {
-    <p>
-      Regen:
-      <span class="text-orange-500">{{ item.affectedStats.hpRegen }} 🧪</span>
-    </p>
-    }
+      @if(item.affectedStats.income !== 0) {
+      <p>
+        Income:
+        <span class="text-yellow-300">{{ item.affectedStats.income }} 💰</span>
+      </p>
+      }
 
-  </div>
-  @if(item.itemCollections.length > 0) {
-  <div class="p-1 m-1">
-    <span>Sets: </span>
-    <span>{{getItemsCollectionTooltipForItem(item)}}</span>
-    <br>
+      @if(item.affectedStats.hpRegen !== 0) {
+      <p>
+        Regen:
+        <span class="text-orange-500">{{ item.affectedStats.hpRegen }} 🧪</span>
+      </p>
+      }
+
+    </div>
+    @if(item.itemCollections.length > 0) {
+    <div class="p-1 m-1" [ngClass]="{'text-green-500': getIfItemHasActiveSet(item)}">
+      <div>Sets: </div>
+      <div class="whitespace-pre-line">{{getItemsCollectionTooltipForItem(item)}}</div>
+      <br>
+    </div>
+    }
   </div>
   }
 </div>
-}

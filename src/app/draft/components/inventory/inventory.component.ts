@@ -2,18 +2,18 @@ import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Player } from '../../../models/colyseus-schema/PlayerSchema';
 import { Item } from '../../../models/colyseus-schema/ItemSchema';
-import { DecimalPipe, NgClass, TitleCasePipe } from '@angular/common';
+import { NgClass } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
-import { MatChip } from '@angular/material/chips';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
 import { ItemCollection } from '../../../models/colyseus-schema/ItemCollectionSchema';
 import { DraftService } from '../../services/draft.service';
+import { ItemCardComponent } from '../../../common/item-card/item-card.component';
 
 @Component({
   selector: 'app-inventory',
   standalone: true,
-  imports: [NgClass, TitleCasePipe, MatCardModule, MatChip, DecimalPipe, MatButtonModule, MatMenuModule],
+  imports: [NgClass, MatCardModule, MatButtonModule, MatMenuModule, ItemCardComponent],
   templateUrl: './inventory.component.html',
   styleUrl: './inventory.component.scss',
 })
@@ -110,14 +110,14 @@ export class InventoryComponent {
 
   sellSelectedItem(item: Item) {
     this.draftService.sendMessage('sell', {
-      itemId: item.itemId
+      itemId: item.itemId,
     });
     this.displayedInventory = this.player.inventory.filter((soldItem) => soldItem.itemId !== item.itemId);
   }
 
-  equip(item: Item){
+  equip(item: Item) {
     this.draftService.sendMessage('equip', {
-      itemId: item.itemId
+      itemId: item.itemId,
     });
   }
   /*getAggregatedInventory(): {

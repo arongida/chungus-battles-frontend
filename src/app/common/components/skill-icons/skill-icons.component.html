@@ -1,7 +1,7 @@
 <div class="pl-4">
   <div class="text-white flex flex-row fill-slate-100">
     @for (talent of player.talents; track $index) {
-    <div class="p-1 rounded-sm" #tooltip="matTooltip" matTooltip="{{ talent.description }}" matTooltipPosition="above"
+    <div class="p-1 rounded-sm" #tooltip="matTooltip" matTooltip="{{talent.name}} - {{ talent.description }}" matTooltipPosition="above"
       id="talent-{{talent.talentId}}-{{player.playerId}}">
       @if (talent.tags.includes('warrior')) {
       <svg xmlns="http://www.w3.org/2000/svg" height="40px" viewBox="0 -960 960 960" width="40px">
@@ -29,7 +29,7 @@
   </div>
   <div class="flex flex-row">
     @for (itemCollection of getWarriorActiveItemCollections(); track $index) {
-    <div class="p-1 rounded-sm fill-slate-100" #tooltip="matTooltip" matTooltip="{{ itemCollection.effect }}"
+    <div class="p-1 rounded-sm fill-slate-100" #tooltip="matTooltip" matTooltip="{{itemCollection.name}} - {{ itemCollection.effect }}"
       matTooltipPosition="below" id="collection-{{itemCollection.itemCollectionId}}-{{player.playerId}}">
       <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px">
         <path

@@ -1,146 +1,157 @@
 <div class="flex flex-col overflow-y-auto">
-<div class="flex flex-row gap-1 max-w-content" [ngClass]="{'flex-row-reverse': enemy}">
+  <div class="flex flex-row gap-1 max-w-content" [ngClass]="{'flex-row-reverse': enemy}">
 
-  <!-- Stats Section -->
-  <div id="stats" class="bg-center bg-cover w-48 h-64 flex flex-col items-center justify-evenly bg-gray-800 p-4" style="
+    <!-- Stats Section -->
+    <div id="stats" class="bg-center bg-cover w-48 h-64 flex flex-col items-center justify-evenly bg-gray-800 p-4"
+      style="
 background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_0_Empty.png');
 ">
-    <h3 class="text-white text-lg mb-4">Stats</h3>
-    <div class="w-full rounded-md">
-      <div class="text-xs">
-        <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm" #tooltip="matTooltip"
-          matTooltip="Your Health Points, if it reaches zero, you loose the battle." matTooltipPosition="right">
-          <div>Health:</div>
-          <div class="text-pink-500">{{ getPlayerHp() | number: '1.0-0' }} ❤️</div>
-        </div>
+      <h3 class="text-white text-lg mb-4">Stats</h3>
+      <div class="w-full rounded-md">
+        <div class="text-xs">
+          <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm" #tooltip="matTooltip"
+            matTooltip="Your Health Points, if it reaches zero, you loose the battle." matTooltipPosition="right">
+            <div>Health:</div>
+            <div class="text-pink-500">{{ getPlayerHp() | number: '1.0-0' }} ❤️</div>
+          </div>
 
-        @if (combat) {
-        <mat-progress-bar class="red-progress-bar" id="hp" mode="determinate"
-          value="{{ (player.hp / player.maxHp) * 100 }}"></mat-progress-bar>
-        }
+          @if (combat) {
+          <mat-progress-bar class="red-progress-bar" id="hp" mode="determinate"
+            value="{{ (player.hp / player.maxHp) * 100 }}"></mat-progress-bar>
+          }
 
-        <mat-divider></mat-divider>
+          <mat-divider></mat-divider>
 
-        <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm" #tooltip="matTooltip"
-          matTooltip="Increases damage of your attacks by {{ player.attack }}." matTooltipPosition="right">
-          <div>Attack:</div>
-          <div class="text-red-500">{{ player.attack | number: '1.0-0' }} ⚔️</div>
-        </div>
+          <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm" #tooltip="matTooltip"
+            matTooltip="Increases damage of your attacks by {{ player.attack }}." matTooltipPosition="right">
+            <div>Attack:</div>
+            <div class="text-red-500">{{ player.attack | number: '1.0-0' }} ⚔️</div>
+          </div>
 
-        <mat-divider></mat-divider>
+          <mat-divider></mat-divider>
 
-        <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm" #tooltip="matTooltip" matTooltip="Decreases incoming damage from attacks by {{
+          <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm" #tooltip="matTooltip" matTooltip="Decreases incoming damage from attacks by {{
       100 * (1 - 100 / (100 + player.defense)) | number: '1.0-0'
     }}%." matTooltipPosition="right">
-          <div>Defense:</div>
-          <div class="text-green-500">{{ player.defense | number: '1.0' }}🛡️</div>
-        </div>
-
-        <mat-divider></mat-divider>
-
-        <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm" #tooltip="matTooltip"
-          matTooltip="You attack {{ player.attackSpeed }} times in one second." matTooltipPosition="right">
-          <div>Attack Speed:</div>
-          <div class="text-blue-500">
-            {{ player.attackSpeed | number: '1.3-3' }} ⏩
+            <div>Defense:</div>
+            <div class="text-green-500">{{ player.defense | number: '1.0' }}🛡️</div>
           </div>
-        </div>
 
-        <mat-divider></mat-divider>
+          <mat-divider></mat-divider>
 
-        <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm" #tooltip="matTooltip"
-          matTooltip="You gain extra {{player.income}}🟡 at the end of fights." matTooltipPosition="right">
-          <div>Income:</div>
-          <div class="text-yellow-500">
-            +{{ player.income }} 💰
+          <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm" #tooltip="matTooltip"
+            matTooltip="You attack {{ player.attackSpeed }} times in one second." matTooltipPosition="right">
+            <div>Attack Speed:</div>
+            <div class="text-blue-500">
+              {{ player.attackSpeed | number: '1.3-3' }} ⏩
+            </div>
           </div>
-        </div>
-        <mat-divider></mat-divider>
 
-        <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm" #tooltip="matTooltip"
-          matTooltip="You recover {{player.hpRegen}}❤️ every second." matTooltipPosition="right">
-          <div>Regen:</div>
-          <div class="text-orange-500">
-            {{ player.hpRegen }} 🧪
+          <mat-divider></mat-divider>
+
+          <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm" #tooltip="matTooltip"
+            matTooltip="You gain extra {{player.income}}🟡 at the end of fights." matTooltipPosition="right">
+            <div>Income:</div>
+            <div class="text-yellow-500">
+              +{{ player.income }} 💰
+            </div>
           </div>
-        </div>
+          <mat-divider></mat-divider>
 
+          <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm" #tooltip="matTooltip"
+            matTooltip="You recover {{player.hpRegen}}❤️ every second." matTooltipPosition="right">
+            <div>Regen:</div>
+            <div class="text-orange-500">
+              {{ player.hpRegen }} 🧪
+            </div>
+          </div>
+
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- Avatar Section -->
-  <div id="avatar-{{ player.playerId }}"
-    class="bg-cover bg-center w-48 h-64 flex flex-col-reverse items-center bg-gray-800 p-4 shadow-lg relative"
-    style="background-image: url('{{ getAvatarImage() }}');">
-    <div class="relative w-full rounded-md">
-      <!-- Floating Damage Numbers Container -->
-      <div id="damage-numbers-{{ player.playerId }}" class="relative pointer-events-none"></div>
+    <!-- Avatar Section -->
+    <div id="avatar-{{ player.playerId }}"
+      class="bg-cover bg-center w-48 h-64 flex flex-col-reverse items-center bg-gray-800 p-4 shadow-lg relative"
+      style="background-image: url('{{ getAvatarImage() }}');">
+      <div class="relative w-full rounded-md">
+        <!-- Floating Damage Numbers Container -->
+        <div id="damage-numbers-{{ player.playerId }}" class="relative pointer-events-none"></div>
 
-      <div class="w-full text-center text-white bg-black bg-opacity-40 py-1">
-        {{ player ? player.name : 'Avatar Name' }} <br />
-        Level: {{ player.level }}
+        <div class="w-full text-center text-white bg-black bg-opacity-40 py-1">
+          {{ player ? player.name : 'Avatar Name' }} <br />
+          Level: {{ player.level }}
+        </div>
       </div>
+      <div class="absolute" id="attack-{{ player.playerId }}"></div>
     </div>
-    <div class="absolute" id="attack-{{ player.playerId }}"></div>
-  </div>
 
 
-  <div id="equipped-items-{{player.playerId}}"
-    class="bg-center bg-cover w-48 h-64 flex flex-col items-center justify-evenly bg-gray-800 p-4" style="
+    <div id="equipped-items-{{player.playerId}}"
+      class="bg-center bg-cover w-48 h-64 flex flex-col items-center justify-evenly bg-gray-800 p-4" style="
   background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_0_Empty.png');
   ">
 
-    @for (item of player.equippedItems; track $index) {
+      @for (item of player.equippedItems; track $index) {
 
 
-    <div class="border-white text-center hover:bg-amber-800 border h-1/4 w-full m-1.5 flex items-center justify-center"
-      (mouseenter)="onMouseEnterItem(item)" (mouseleave)="onMouseLeaveItem(item)">
-      <div class="w-1/3 flex items-center justify-center">{{item.type[0].toLocaleUpperCase()}}</div>
-      <div class="w-2/3 flex items-center justify-center">{{item.name}}</div>
+      <div
+        class="border-white text-center hover:bg-amber-800 border h-1/4 w-full m-1.5 flex items-center justify-center"
+        (mouseenter)="onMouseEnterItem(item)" (mouseleave)="onMouseLeaveItem(item)">
+        <div class="w-1/3 flex items-center justify-center font-bold">{{item.type[0].toLocaleUpperCase()}}</div>
+        <div class="w-2/3 flex items-center justify-center">{{item.name | titlecase}}</div>
+      </div>
+
+
+      @if (item.showDetails) {
+      <mat-card-content
+        class="absolute text-center top-0 left-full ml-4 w-60 h-80 items-center bg-cover scale-75 shadow-amber-700"
+        [style.background-image]="'url(' + item.image + ')'">
+        <app-item-card [item]="item" [player]="player"></app-item-card>
+      </mat-card-content>
+      }
+      }
+
+      @for (item of getMissingEquipmentSlots(); track $index) {
+      <div class="border-white border h-1/4 w-full m-1.5 flex items-center justify-center">
+        <div class="w-1/3 flex items-center justify-center font-bold">{{item[0].toLocaleUpperCase()}}</div>
+        <div class="w-2/3 flex items-center justify-center">Missing {{item}}</div>
+      </div>
+      }
+
+
     </div>
-
-
-    @if (item.showDetails) {
-    <mat-card-content class="absolute text-center top-0 left-full ml-4 w-48 h-64 flex flex-col items-center justify-evenly 
-    bg-gray-800 p-4 shadow-lg border border-gray-600 rounded-lg"
-      style="background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_0_Empty.png'); background-size: cover;">
-      <app-item-card [item]="item" [player]="player"></app-item-card>
-    </mat-card-content>
-    }
-    }
-
-    @for (item of getMissingEquipmentSlots(); track $index) {
-    <div class="border-white border h-1/4 w-full m-1.5 flex items-center justify-center">
-      <div class="w-1/3 flex items-center justify-center">{{item[0].toLocaleUpperCase()}}</div>
-      <div class="w-2/3 flex items-center justify-center">Missing {{item}}</div>
-    </div>
-    }
-
 
   </div>
 
-</div>
-
-@if (!combat) {
-<div class="bg-stone-800 p-4">
-  <div class="mb-4">
-    <button mat-button class="w-1/5" (click)="selectCategory('all')">All</button>
-    <button mat-button class="w-1/5" (click)="selectCategory('helmet')">Helmets</button>
-    <button mat-button class="w-1/5" (click)="selectCategory('weapon')">Weapons</button>
-    <button mat-button class="w-1/5" (click)="selectCategory('armor')">Armors</button>
-    <button mat-button class="w-1/5" (click)="selectCategory('shield')">Shields</button>
-  </div>
-  <div class="h-48 overflow-y-auto">
-    @for(item of getEquipmentTypeFromInventory(selectedCategory); track $index){
-    <div class="flex">
-      <span class="w-2/5">{{item.name}}</span>
-      <button mat-button class="w-1/5" (click)="equip(item)">equip item</button>
-      <button mat-button class="w-1/5" (click)="unequip(item)">unequip item</button>
-      <button mat-button class="w-1/5" (click)="sellSelectedItem(item)">sell item</button>
+  @if (!combat) {
+  <div class="bg-stone-800 p-4">
+    <div class="mb-4">
+      <button mat-button class="w-1/5" (click)="selectCategory('all')">All</button>
+      <button mat-button class="w-1/5" (click)="selectCategory('helmet')">Helmets</button>
+      <button mat-button class="w-1/5" (click)="selectCategory('weapon')">Weapons</button>
+      <button mat-button class="w-1/5" (click)="selectCategory('armor')">Armors</button>
+      <button mat-button class="w-1/5" (click)="selectCategory('shield')">Shields</button>
     </div>
-    }
+    <div class="h-48 overflow-y-auto">
+      @for(item of getEquipmentTypeFromInventory(selectedCategory); track $index){
+      <div class="flex hover:border-t hover:border-b items-center justify-center" (mouseenter)="onMouseEnterItem(item)" (mouseleave)="onMouseLeaveItem(item)">
+        <span class="w-2/5">{{item.name | titlecase}}</span>
+        <button mat-button class="w-1/5" (click)="equip(item)">equip item</button>
+        <button mat-button class="w-1/5" (click)="unequip(item)">unequip item</button>
+        <button mat-button class="w-1/5" (click)="sellSelectedItem(item)">sell item</button>
+      </div>
+
+      @if (item.showDetails) {
+        <mat-card-content
+          class="absolute text-center top-0 left-full ml-4 w-60 h-80 items-center bg-cover scale-75 shadow-amber-700"
+          [style.background-image]="'url(' + item.image + ')'">
+          <app-item-card [item]="item" [player]="player"></app-item-card>
+        </mat-card-content>
+        }
+
+      }
+    </div>
   </div>
-</div>
-}
+  }
 </div>

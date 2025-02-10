@@ -79,6 +79,6 @@
 
 </mat-toolbar>
 @if (showCharacterDetails) {
-<app-character-details [player]="player" class="relative max-w-content top-16 z-10">
+<app-character-details [player]="player" [combat]="isFighting()" class="relative max-w-fit top-16 z-10">
 </app-character-details>
 }

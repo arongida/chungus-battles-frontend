@@ -15,6 +15,7 @@ import { ItemCollection } from '../../models/colyseus-schema/ItemCollectionSchem
 export class ItemCardComponent {
   @Input({ required: true }) item: Item = new Item();
   @Input({ required: true }) player: Player = new Player();
+  @Input({ required: false }) setTooltipBasedOnInventory: boolean = false;
 
   getItemsCollectionTooltipForItem(item: Item): string {
     const collections = this.player.availableItemCollections.filter((collection) =>
@@ -22,9 +23,11 @@ export class ItemCardComponent {
     );
     const formatCollections = collections
       .map((collection: ItemCollection) => {
-        return `${collection.name} (${this.player.getItemcollectionItemCountFromEquip(
-          collection.itemCollectionId
-        )}/${collection.name.includes('Shield') ? 1 : 3}) - 
+        return `${collection.name} (${
+          this.setTooltipBasedOnInventory
+            ? this.player.getItemcollectionItemCountFromInventory(collection.itemCollectionId)
+            : this.player.getItemcollectionItemCountFromEquip(collection.itemCollectionId)
+        }/${collection.name.includes('Shield') ? 1 : 3}) - 
         ${collection.effect}`;
       })
       .join('\r\n');
@@ -33,6 +36,8 @@ export class ItemCardComponent {
   }
 
   getIfItemHasActiveSet(item: Item): boolean {
-    return this.player.activeItemCollections.some((collection) => item.itemCollections.includes(collection.itemCollectionId));
+    return this.player.activeItemCollections.some((collection) =>
+      item.itemCollections.includes(collection.itemCollectionId)
+    );
   }
 }

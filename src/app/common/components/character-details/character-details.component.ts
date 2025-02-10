@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { Player } from '../../../models/colyseus-schema/PlayerSchema';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { DecimalPipe } from '@angular/common';
+import { DecimalPipe, TitleCasePipe } from '@angular/common';
 import { MatDividerModule } from '@angular/material/divider';
 import { NgClass } from '@angular/common';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -23,6 +23,7 @@ import { MatButtonModule } from '@angular/material/button';
     MatButtonModule,
     MatCardContent,
     ItemCardComponent,
+    TitleCasePipe,
   ],
   templateUrl: './character-details.component.html',
   styleUrl: './character-details.component.scss',

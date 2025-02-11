@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
-import { TitleCasePipe, DecimalPipe } from '@angular/common';
+import { TitleCasePipe, DecimalPipe, NgClass } from '@angular/common';
 import { Item } from '../../models/colyseus-schema/ItemSchema';
 import { Player } from '../../models/colyseus-schema/PlayerSchema';
 import { ItemCollection } from '../../models/colyseus-schema/ItemCollectionSchema';
@@ -8,13 +8,14 @@ import { ItemCollection } from '../../models/colyseus-schema/ItemCollectionSchem
 @Component({
   selector: 'app-item-card',
   standalone: true,
-  imports: [MatCardModule, TitleCasePipe, DecimalPipe],
+  imports: [MatCardModule, TitleCasePipe, DecimalPipe, NgClass],
   templateUrl: './item-card.component.html',
   styleUrl: './item-card.component.scss',
 })
 export class ItemCardComponent {
   @Input({ required: true }) item: Item = new Item();
   @Input({ required: true }) player: Player = new Player();
+  @Input({ required: false }) setTooltipBasedOnInventory: boolean = false;
 
   getItemsCollectionTooltipForItem(item: Item): string {
     const collections = this.player.availableItemCollections.filter((collection) =>
@@ -22,12 +23,21 @@ export class ItemCardComponent {
     );
     const formatCollections = collections
       .map((collection: ItemCollection) => {
-        return `${collection.name} (${this.player.getItemcollectionItemCountFromEquip(
-          collection.itemCollectionId
-        )}/${collection.name.includes('Shield') ? 1 : 3})`;
+        return `${collection.name} (${
+          this.setTooltipBasedOnInventory
+            ? this.player.getItemcollectionItemCountFromInventory(collection.itemCollectionId)
+            : this.player.getItemcollectionItemCountFromEquip(collection.itemCollectionId)
+        }/${collection.name.includes('Shield') ? 1 : 3}) - 
+        ${collection.effect}`;
       })
       .join('\r\n');
 
     return formatCollections;
+  }
+
+  getIfItemHasActiveSet(item: Item): boolean {
+    return this.player.activeItemCollections.some((collection) =>
+      item.itemCollections.includes(collection.itemCollectionId)
+    );
   }
 }

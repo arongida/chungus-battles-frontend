@@ -7,7 +7,6 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { TalentsComponent } from '../../../draft/components/talents/talents.component';
 import { Talent } from '../../../models/colyseus-schema/TalentSchema';
-import { CharacterDetailsDialogComponent } from '../character-details-dialog/character-details-dialog.component';
 import { InventoryComponent } from '../../../draft/components/inventory/inventory.component';
 import { MatTooltip, MatTooltipModule } from '@angular/material/tooltip';
 import { NgClass } from '@angular/common';
@@ -19,7 +18,6 @@ import { CharacterDetailsComponent } from '../character-details/character-detail
 import { MatCardModule } from '@angular/material/card';
 import { MatBadgeModule } from '@angular/material/badge';
 import { SoundOptions, SoundsService } from '../../services/sounds.service';
-import { Item } from '../../../models/colyseus-schema/ItemSchema';
 import { ItemCollection } from '../../../models/colyseus-schema/ItemCollectionSchema';
 
 @Component({
@@ -101,10 +99,10 @@ export class DraftToolbarComponent implements AfterViewChecked, OnInit {
 
   switchCharacterDetails(): void {
     this.showCharacterDetails = !this.showCharacterDetails;
-    console.log('switch: ' + this.showCharacterDetails);
   }
 
   openInventory(): void {
+    this.showCharacterDetails = false;
     const inventoryDialog = this.dialog.open(InventoryComponent, {
       data: {
         player: this.player,
@@ -125,6 +123,7 @@ export class DraftToolbarComponent implements AfterViewChecked, OnInit {
   }
 
   onSelectionChange(event: any, collectionId: number) {
+    this.showCharacterDetails = false;
     event.preventDefault();
     event.stopPropagation();
     this.itemTrackingService.toggleCollectionTracking(collectionId);
@@ -149,16 +148,19 @@ export class DraftToolbarComponent implements AfterViewChecked, OnInit {
   }
 
   switchMute() {
+    this.showCharacterDetails = false;
     this.soundsService.setVolume(this.muted ? 0.1 : 0);
     this.muted = !this.muted;
   }
 
   buyXp() {
+    this.showCharacterDetails = false;
     this.soundsService.playSound(SoundOptions.CLICK);
     this.draftService.sendMessage('buy_xp', {});
   }
 
   refreshShop() {
+    this.showCharacterDetails = false;
     this.soundsService.playSound(SoundOptions.CLICK);
     this.draftService.sendMessage('refresh_shop', {});
   }

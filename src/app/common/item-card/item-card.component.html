@@ -32,6 +32,13 @@
     </p>
     }
 
+    @if(item.affectedStats.flatDmgReduction !== 0) {
+      <p>
+        Damage Reduction:
+        <span class="text-green-600">{{ item.affectedStats.flatDmgReduction }} 🔰</span>
+      </p>
+      }
+
     @if(item.affectedStats.dodgeRate !== 0) {
       <p>
         Dodge:

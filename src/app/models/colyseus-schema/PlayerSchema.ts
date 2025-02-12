@@ -34,6 +34,7 @@ export class Player extends Schema {
   @type('number') hpRegen: number = 0;
   @type('number') refreshShopCost: number = 2;
   @type('number') maxHp: number = 0;
+  @type('number') flatDmgReduction: number = 0;
 
   get gold(): number {
     return this._gold;

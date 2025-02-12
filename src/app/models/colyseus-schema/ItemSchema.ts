@@ -2,7 +2,8 @@ import { Schema, type } from '@colyseus/schema';
 
 export class AffectedStats extends Schema {
   @type('number') hp: number = 0;
-  @type('number') attack: number = 0;
+  @type('number') strength: number = 0;
+  @type('number') accuracy: number = 0;
   @type('number') defense: number = 0;
   @type('number') dodgeRate: number = 0;
   @type('number') flatDmgReduction: number = 0;

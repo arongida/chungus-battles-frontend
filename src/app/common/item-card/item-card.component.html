@@ -10,12 +10,28 @@
         Price: <span class="text-yellow-300">{{ item.price }} 🟡</span>
       </p>
     </div>
+
     <div class="grid place-content-center text-sm p-1">
-      @if(item.affectedStats.attack !== 0) {
+
+      @if(item.type === 'weapon' && ( item.affectedStats.accuracy !== 0 || item.affectedStats.strength !== 0)) {
       <p>
-        Attack:
-        <span class="text-red-500">{{ item.affectedStats.attack }} ⚔️</span>
+        Damage:
+        <span class="text-red-500">+ {{item.affectedStats.accuracy}} - {{ item.affectedStats.strength }} ⚔️</span>
       </p>
+      } @else {
+      @if(item.affectedStats.strength !== 0) {
+      <p>
+        Strength:
+        <span class="text-red-500">{{ item.affectedStats.strength }} ⚔️</span>
+      </p>
+      }
+
+      @if(item.affectedStats.accuracy !== 0) {
+      <p>
+        Accuracy:
+        <span class="text-red-500">{{ item.affectedStats.accuracy }} 🎯</span>
+      </p>
+      }
       }
 
       @if(item.affectedStats.attackSpeed !== 0) {
@@ -25,21 +41,21 @@
       </p>
       }
 
-    @if(item.affectedStats.defense !== 0) {
-    <p>
-      Defense:
-      <span class="text-green-600">{{ item.affectedStats.defense }} 🛡️</span>
-    </p>
-    }
+      @if(item.affectedStats.defense !== 0) {
+      <p>
+        Defense:
+        <span class="text-green-600">{{ item.affectedStats.defense }} 🛡️</span>
+      </p>
+      }
 
-    @if(item.affectedStats.flatDmgReduction !== 0) {
+      @if(item.affectedStats.flatDmgReduction !== 0) {
       <p>
         Damage Reduction:
         <span class="text-green-600">{{ item.affectedStats.flatDmgReduction }} 🔰</span>
       </p>
       }
 
-    @if(item.affectedStats.dodgeRate !== 0) {
+      @if(item.affectedStats.dodgeRate !== 0) {
       <p>
         Dodge:
         <span class="text-green-400">{{ item.affectedStats.dodgeRate }} 🦵</span>

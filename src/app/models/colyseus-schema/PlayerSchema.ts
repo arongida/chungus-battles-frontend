@@ -7,7 +7,8 @@ export class Player extends Schema {
   @type('number') playerId: number = 0;
   @type('string') name: string = 'name';
   @type('number') private _hp: number = 0;
-  @type('number') private _attack: number = 0;
+  @type('number') private _strength: number = 0;
+  @type('number') private _accuracy: number = 0;
   @type('number') private _gold: number = 0;
   @type('number') xp: number = 0;
   @type('number') private _level: number = 0;
@@ -68,12 +69,20 @@ export class Player extends Schema {
     this._hp = value < 0 ? 0 : value;
   }
 
-  get attack(): number {
-    return this._attack;
+  get strength(): number {
+    return this._strength;
   }
 
-  set attack(value: number) {
-    this._attack = value < 1 ? 1 : value;
+  set strength(value: number) {
+    this._strength = value < 1 ? 1 : value;
+  }
+
+  get accuracy(): number {
+    return this._accuracy;
+  }
+
+  set accuracy(value: number) {
+    this._accuracy = value < 1 ? 1 : value;
   }
 
   get poisonStack(): number {

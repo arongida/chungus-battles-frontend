@@ -23,9 +23,9 @@ background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/
           <mat-divider></mat-divider>
 
           <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm" #tooltip="matTooltip"
-            matTooltip="Increases damage of your attacks by {{ player.attack }}." matTooltipPosition="right">
+            matTooltip="Your attacks deal {{player.accuracy}} - {{ player.strength }} damage." matTooltipPosition="right">
             <div>Attack:</div>
-            <div class="text-red-500">{{ player.attack | number: '1.0-0' }} ⚔️</div>
+            <div class="text-red-500">{{player.accuracy | number: '1.0-0'}} - {{ player.strength | number: '1.0-0' }} ⚔️</div>
           </div>
 
           <mat-divider></mat-divider>

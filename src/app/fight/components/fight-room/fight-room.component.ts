@@ -191,6 +191,13 @@ export class FightRoomComponent {
     damageNumber.textContent = `-${damage}`;
     damageNumber.style.left = `${Math.random() * 100}%`; // Random horizontal position
 
+    // Scale font size based on damage value
+    const minSize = 16; // Minimum font size in pixels
+    const maxSize = 48; // Maximum font size in pixels
+    const scaleFactor = 0.5; // Adjust this to fine-tune scaling
+
+    damageNumber.style.fontSize = `${minSize + damage * scaleFactor}px`;
+
     if (damageNumbersContainer) damageNumbersContainer.appendChild(damageNumber);
 
     setTimeout(() => {

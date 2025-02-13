@@ -153,7 +153,7 @@ background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/
     </mat-tab-group>
     <div class="h-48 overflow-y-auto">
       @for(item of getEquipmentTypeFromInventory(selectedCategory); track $index){
-      <div class="flex hover:border-t hover:border-b items-center justify-center" (mouseenter)="onMouseEnterItem(item)"
+      <div class="flex items-center justify-center hover:shadow-md shadow-gray-700" (mouseenter)="onMouseEnterItem(item)"
         (mouseleave)="onMouseLeaveItem(item)">
         <span class="w-2/4">{{item.name | titlecase}}</span>
         @if(this.selectedCategory === "equipped"){

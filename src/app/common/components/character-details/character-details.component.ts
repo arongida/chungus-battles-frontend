@@ -10,7 +10,7 @@ import { MatCardContent } from '@angular/material/card';
 import { ItemCardComponent } from '../../item-card/item-card.component';
 import { DraftService } from '../../../draft/services/draft.service';
 import { MatButtonModule } from '@angular/material/button';
-import {MatTabsModule} from '@angular/material/tabs';
+import {MatTabChangeEvent, MatTabsModule} from '@angular/material/tabs';
 
 
 @Component({
@@ -61,6 +61,7 @@ export class CharacterDetailsComponent {
   }
 
   onMouseLeaveItem(item: Item) {
+    if (!item.showDetails) return;
     item.showDetails = false;
     item.image = item.imageCache!;
   }
@@ -81,12 +82,20 @@ export class CharacterDetailsComponent {
     return missingSlots;
   }
 
-  selectCategory(category: string) {
-    this.selectedCategory = category;
-    this.player.inventory.forEach(element => {
-      console.log(element);
-    });
+  selectCategory(event: MatTabChangeEvent) {
+    const categoryName = event.tab.textLabel.toLocaleLowerCase().substring(0,event.tab.textLabel.length -1);
+    if(categoryName === "al"){
+      this.selectedCategory = "inventory";
+    }else{
+      this.selectedCategory = categoryName;
+    }
+    console.log(this.selectedCategory);
+  }
 
+  onTabChange(event: MatTabChangeEvent){
+    this.selectedCategory = event.tab.textLabel.toLocaleLowerCase();
+
+    console.log('Selected Tab:', this.selectedCategory);
   }
 
   getEquipmentTypeFromInventory(itemType: string): Item[] {
@@ -104,24 +113,21 @@ export class CharacterDetailsComponent {
     this.draftService.sendMessage('sell', {
       itemId: item.itemId
     });
+    this.onMouseLeaveItem(item);
   }
 
   equip(item: Item) {
     this.draftService.sendMessage('equip', {
       itemId: item.itemId
     });
+    this.onMouseLeaveItem(item);
   }
 
   unequip(item: Item) {
     this.draftService.sendMessage('unequip', {
       itemId: item.itemId
     });
-    this.player.inventory.forEach(element => {
-      console.log("inventory element: ", element);
-    });
-    this.player.equippedItems.forEach(element => {
-      console.log("equipped item: ", element);
-    });
+    this.onMouseLeaveItem(item);
   }
 
   getItemPriceRounded(item: Item) {

@@ -61,6 +61,7 @@ export class CharacterDetailsComponent {
   }
 
   onMouseLeaveItem(item: Item) {
+    if (!item.showDetails) return;
     item.showDetails = false;
     item.image = item.imageCache!;
   }
@@ -112,18 +113,21 @@ export class CharacterDetailsComponent {
     this.draftService.sendMessage('sell', {
       itemId: item.itemId
     });
+    this.onMouseLeaveItem(item);
   }
 
   equip(item: Item) {
     this.draftService.sendMessage('equip', {
       itemId: item.itemId
     });
+    this.onMouseLeaveItem(item);
   }
 
   unequip(item: Item) {
     this.draftService.sendMessage('unequip', {
       itemId: item.itemId
     });
+    this.onMouseLeaveItem(item);
   }
 
   getItemPriceRounded(item: Item) {

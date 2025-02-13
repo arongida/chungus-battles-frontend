@@ -23,9 +23,11 @@ background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/
           <mat-divider></mat-divider>
 
           <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm" #tooltip="matTooltip"
-            matTooltip="Your attacks deal {{player.accuracy}} - {{ player.strength }} damage." matTooltipPosition="right">
+            matTooltip="Your attacks deal {{player.accuracy}} - {{ player.strength }} damage."
+            matTooltipPosition="right">
             <div>Attack:</div>
-            <div class="text-red-500">{{player.accuracy | number: '1.0-0'}} - {{ player.strength | number: '1.0-0' }} ⚔️</div>
+            <div class="text-red-500">{{player.accuracy | number: '1.0-0'}} - {{ player.strength | number: '1.0-0' }} ⚔️
+            </div>
           </div>
 
           <mat-divider></mat-divider>
@@ -137,20 +139,26 @@ background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/
   @if (!combat) {
   <div class="bg-stone-800 p-4">
     <div class="mb-4">
-      <button mat-button class="w-1/5" (click)="selectCategory('all')">All</button>
-      <button mat-button class="w-1/5" (click)="selectCategory('helmet')">Helmets</button>
-      <button mat-button class="w-1/5" (click)="selectCategory('weapon')">Weapons</button>
-      <button mat-button class="w-1/5" (click)="selectCategory('armor')">Armors</button>
-      <button mat-button class="w-1/5" (click)="selectCategory('shield')">Shields</button>
+      <button mat-button class="w-1/6" (click)="selectCategory('inventory')" >Inventory</button>
+      <button mat-button class="w-1/6" (click)="selectCategory('equipped')">Equipped</button>
+      <button mat-button class="w-1/6" (click)="selectCategory('helmet')">Helmets</button>
+      <button mat-button class="w-1/6" (click)="selectCategory('weapon')">Weapons</button>
+      <button mat-button class="w-1/6" (click)="selectCategory('armor')">Armors</button>
+      <button mat-button class="w-1/6" (click)="selectCategory('shield')">Shields</button>
     </div>
     <div class="h-48 overflow-y-auto">
       @for(item of getEquipmentTypeFromInventory(selectedCategory); track $index){
       <div class="flex hover:border-t hover:border-b items-center justify-center" (mouseenter)="onMouseEnterItem(item)"
-        (mouseleave)="onMouseLeaveItem(item)">
-        <span class="w-2/5">{{item.name | titlecase}}</span>
-        <button mat-button class="w-1/5" (click)="equip(item)">equip item</button>
-        <button mat-button class="w-1/5" (click)="unequip(item)">unequip item</button>
-        <button mat-button class="w-1/5" (click)="sellSelectedItem(item)">sell item</button>
+        (mouseleave)="onMouseLeaveItem(item)"
+        >
+        <span class="w-2/4">{{item.name | titlecase}}</span>
+        @if(this.selectedCategory === "equipped"){
+        <button mat-button class="w-2/4" (click)="unequip(item)">unequip item</button>
+        }@else{
+        <button mat-button class="w-1/4" (click)="equip(item)">equip item</button>
+        <button mat-button class="w-1/4" (click)="sellSelectedItem(item)">sell item |
+          ${{getItemPriceRounded(item)}}</button>
+        }
       </div>
 
       @if (item.showDetails) {

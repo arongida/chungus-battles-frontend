@@ -10,6 +10,8 @@ import { MatCardContent } from '@angular/material/card';
 import { ItemCardComponent } from '../../item-card/item-card.component';
 import { DraftService } from '../../../draft/services/draft.service';
 import { MatButtonModule } from '@angular/material/button';
+import {MatTabsModule} from '@angular/material/tabs';
+
 
 @Component({
   selector: 'app-character-details',
@@ -24,6 +26,7 @@ import { MatButtonModule } from '@angular/material/button';
     MatCardContent,
     ItemCardComponent,
     TitleCasePipe,
+    MatTabsModule
   ],
   templateUrl: './character-details.component.html',
   styleUrl: './character-details.component.scss',
@@ -32,11 +35,12 @@ export class CharacterDetailsComponent {
   @Input({ required: true }) player: Player = new Player();
   @Input() enemy: boolean = false;
   @Input() combat: boolean = false;
-  selectedCategory : string = "all";
+  selectedCategory: string = "inventory";
 
   constructor(public draftService: DraftService) {
-    
+
   }
+
 
   getAvatarImage(): string {
     let avatar =
@@ -68,26 +72,30 @@ export class CharacterDetailsComponent {
   getMissingEquipmentSlots(): string[] {
     const slots = ['weapon', 'armor', 'helmet', 'shield'];
     const equippedSlots = this.player.equippedItems.map((item) => item.type);
-    console.log(equippedSlots);
     let missingSlots: string[] = [];
     slots.forEach((slot) => {
       if (!equippedSlots.includes(slot)) {
         missingSlots.push(slot);
       }
     });
-    console.log(missingSlots);  
     return missingSlots;
   }
 
-  selectCategory(category: string){
+  selectCategory(category: string) {
     this.selectedCategory = category;
-    console.log(this.selectedCategory);
+    this.player.inventory.forEach(element => {
+      console.log(element);
+    });
+
   }
 
-  getEquipmentTypeFromInventory(itemType : string): Item[] {
-    if(itemType === "all"){
+  getEquipmentTypeFromInventory(itemType: string): Item[] {
+    if (itemType === "inventory") {
       return this.player.inventory as unknown as Item[];
-    }else{
+    } else if (itemType === "equipped") {
+      return this.player.equippedItems as unknown as Item[];
+    }
+    else {
       return this.player.inventory.filter(item => item.type === itemType);
     }
   }
@@ -98,19 +106,29 @@ export class CharacterDetailsComponent {
     });
   }
 
-  equip(item: Item){
+  equip(item: Item) {
     this.draftService.sendMessage('equip', {
       itemId: item.itemId
     });
   }
 
-  unequip(item: Item){
+  unequip(item: Item) {
     this.draftService.sendMessage('unequip', {
       itemId: item.itemId
     });
+    this.player.inventory.forEach(element => {
+      console.log("inventory element: ", element);
+    });
+    this.player.equippedItems.forEach(element => {
+      console.log("equipped item: ", element);
+    });
   }
 
-  getItemBackground(item: Item){
+  getItemPriceRounded(item: Item) {
+    return Math.floor(item.price * 0.7);
+  }
+
+  getItemBackground(item: Item) {
     return `https://chungus-battles.b-cdn.net/chungus-battles-assets/level_${item.tier}_glow.png`;
   }
 }

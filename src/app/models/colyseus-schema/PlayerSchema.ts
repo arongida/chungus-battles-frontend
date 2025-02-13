@@ -25,12 +25,12 @@ export class Player extends Schema {
   @type([Talent]) talents: ArraySchema<Talent> = new ArraySchema<Talent>();
   @type([Item]) inventory: ArraySchema<Item> = new ArraySchema<Item>();
   @type([Item]) equippedItems: ArraySchema<Item> = new ArraySchema<Item>();
-	@type([ItemCollection]) activeItemCollections: ArraySchema<ItemCollection> =
-		new ArraySchema<ItemCollection>();
-	@type([ItemCollection])
-	availableItemCollections: ArraySchema<ItemCollection> =
-		new ArraySchema<ItemCollection>();
-	@type('number') dodgeRate: number = 0;
+  @type([ItemCollection]) activeItemCollections: ArraySchema<ItemCollection> =
+    new ArraySchema<ItemCollection>();
+  @type([ItemCollection])
+  availableItemCollections: ArraySchema<ItemCollection> =
+    new ArraySchema<ItemCollection>();
+  @type('number') dodgeRate: number = 0;
   @type('number') income: number = 0;
   @type('number') hpRegen: number = 0;
   @type('number') refreshShopCost: number = 2;
@@ -107,11 +107,11 @@ export class Player extends Schema {
     this._defense = value < 0 ? 0 : value;
   }
 
-  getItemcollectionItemCountFromEquip(collectionId: number) {
+  getItemcollectionItemCountFromEquip(collectionId: number): number {
     return this.equippedItems.filter((item) => item.itemCollections.includes(collectionId)).length;
   }
 
-  getItemcollectionItemCountFromInventory(collectionId: number) {
+  getItemcollectionItemCountFromInventory(collectionId: number): number {
     return this.inventory.filter((item) => item.itemCollections.includes(collectionId)).length;
   }
 }

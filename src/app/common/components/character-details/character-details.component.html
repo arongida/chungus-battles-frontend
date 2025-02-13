@@ -138,19 +138,23 @@ background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/
 
   @if (!combat) {
   <div class="bg-stone-800 p-4">
-    <div class="mb-4">
-      <button mat-button class="w-1/6" (click)="selectCategory('inventory')" >Inventory</button>
-      <button mat-button class="w-1/6" (click)="selectCategory('equipped')">Equipped</button>
-      <button mat-button class="w-1/6" (click)="selectCategory('helmet')">Helmets</button>
-      <button mat-button class="w-1/6" (click)="selectCategory('weapon')">Weapons</button>
-      <button mat-button class="w-1/6" (click)="selectCategory('armor')">Armors</button>
-      <button mat-button class="w-1/6" (click)="selectCategory('shield')">Shields</button>
-    </div>
+    <mat-tab-group (selectedTabChange)="onTabChange($event)" class="mb-4">
+      <mat-tab label="Inventory" class="w-1/6">
+        <mat-tab-group (selectedTabChange)="selectCategory($event)">
+          <mat-tab label="All" class="w-1/5"></mat-tab>
+          <mat-tab label="Helmets" class="w-1/5"></mat-tab>
+          <mat-tab label="Weapons" class="w-1/5"></mat-tab>
+          <mat-tab label="Armors" class="w-1/5"></mat-tab>
+          <mat-tab label="Shields" class="w-1/5"></mat-tab>
+        </mat-tab-group>
+      </mat-tab>
+      <mat-tab label="Equipped" class="w-1/6"></mat-tab>
+
+    </mat-tab-group>
     <div class="h-48 overflow-y-auto">
       @for(item of getEquipmentTypeFromInventory(selectedCategory); track $index){
       <div class="flex hover:border-t hover:border-b items-center justify-center" (mouseenter)="onMouseEnterItem(item)"
-        (mouseleave)="onMouseLeaveItem(item)"
-        >
+        (mouseleave)="onMouseLeaveItem(item)">
         <span class="w-2/4">{{item.name | titlecase}}</span>
         @if(this.selectedCategory === "equipped"){
         <button mat-button class="w-2/4" (click)="unequip(item)">unequip item</button>

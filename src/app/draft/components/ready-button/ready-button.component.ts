@@ -33,6 +33,7 @@ export class ReadyButtonComponent {
 
   async startFight() {
     this.soundsService.playSound(SoundOptions.CLICK);
+    this.characterDetailsService.showCharacterDetails.set(false);
     if (this.loading) return;
     this.loading = true;
     const playerId = localStorage.getItem('playerId');

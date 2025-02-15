@@ -1,10 +1,9 @@
-import { Component, OnInit, untracked } from '@angular/core';
+import { Component, OnInit, signal, untracked } from '@angular/core';
 import { DraftService } from '../../services/draft.service';
 import { Player } from '../../../models/colyseus-schema/PlayerSchema';
 import { Item } from '../../../models/colyseus-schema/ItemSchema';
 import { ShopComponent } from '../shop/shop.component';
 import { ReadyButtonComponent } from '../ready-button/ready-button.component';
-import { TalentsComponent } from '../talents/talents.component';
 import { Talent } from '../../../models/colyseus-schema/TalentSchema';
 import { TriggerCollectionMessage, TriggerTalentMessage } from '../../../models/message-types/MessageTypes';
 import { triggerTalentActivation, triggerItemCollectionActivation } from '../../../common/TriggerAnimations';
@@ -14,6 +13,7 @@ import { RoundInfoComponent } from '../../../common/components/round-info/round-
 import { DraftToolbarComponent } from '../../../common/components/draft-toolbar/draft-toolbar.component';
 import { SkillIconsComponent } from '../../../common/components/skill-icons/skill-icons.component';
 import { MusicOptions, SoundsService } from '../../../common/services/sounds.service';
+import { Sign } from 'crypto';
 
 @Component({
   selector: 'app-draft-room',
@@ -21,7 +21,6 @@ import { MusicOptions, SoundsService } from '../../../common/services/sounds.ser
   imports: [
     ShopComponent,
     ReadyButtonComponent,
-    TalentsComponent,
     RoundInfoComponent,
     ReadyButtonComponent,
     DraftToolbarComponent,

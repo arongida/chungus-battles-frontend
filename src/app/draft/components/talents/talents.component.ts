@@ -3,8 +3,7 @@ import { Talent } from '../../../models/colyseus-schema/TalentSchema';
 import { MatCardModule } from '@angular/material/card';
 import { DraftService } from '../../services/draft.service';
 import { MatButtonModule } from '@angular/material/button';
-import { MatChip } from '@angular/material/chips';
-import { NgClass, SlicePipe } from '@angular/common';
+import { NgClass } from '@angular/common';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatIconModule } from '@angular/material/icon';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
@@ -16,9 +15,7 @@ import { SoundOptions, SoundsService } from '../../../common/services/sounds.ser
   imports: [
     MatCardModule,
     MatButtonModule,
-    SlicePipe,
     MatTooltipModule,
-    MatChip,
     MatIconModule,
     NgClass,
   ],

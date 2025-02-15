@@ -11,6 +11,7 @@ import { Player } from '../../../models/colyseus-schema/PlayerSchema';
 import { ItemTrackingService } from '../../../common/services/item-tracking.service';
 import { SoundOptions, SoundsService } from '../../../common/services/sounds.service';
 import { ItemCardComponent } from '../../../common/item-card/item-card.component';
+import { CharacterDetailsService } from '../../../common/services/character-details.service';
 
 @Component({
   selector: 'app-shop',
@@ -24,7 +25,7 @@ import { ItemCardComponent } from '../../../common/item-card/item-card.component
     CdkDrag,
     CdkDropList,
     DragDropModule,
-    ItemCardComponent
+    ItemCardComponent,
   ],
   templateUrl: './shop.component.html',
   styleUrl: './shop.component.scss',
@@ -39,13 +40,19 @@ export class ShopComponent {
   tempCard: HTMLElement | null = null;
   trackedCollectionIds = computed(() => this.itemTrackingService.trackedCollectionIds());
 
-  constructor(public draftService: DraftService, private itemTrackingService: ItemTrackingService, private soundsService: SoundsService) {
+  constructor(
+    public draftService: DraftService,
+    private itemTrackingService: ItemTrackingService,
+    private soundsService: SoundsService,
+    private characterDetailsService: CharacterDetailsService
+  ) {
     this.shop = [] as Item[];
     this.player = new Player();
   }
 
   @Input({ required: true }) shop: Item[];
   @Input({ required: true }) player: Player;
+  @Input({ required: false }) showCharacterDetails: boolean = false;
 
   onMouseEnterItem(item: Item) {
     if (this.draggingCard) return;
@@ -63,7 +70,6 @@ export class ShopComponent {
   getItemImage(item: Item) {
     return item.image ? item.image : 'https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_0_Empty.png';
   }
-
 
   cardDragStarted(item: Item) {
     this.draggingCard = true;
@@ -88,6 +94,7 @@ export class ShopComponent {
     this.previewBuyItem = false;
     this.tempCard?.remove();
     this.tempCard = null;
+    this.characterDetailsService.showCharacterDetails.set(true);
   }
 
   resetDrag(item: Item) {

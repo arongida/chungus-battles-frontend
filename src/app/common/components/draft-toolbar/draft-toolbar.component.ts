@@ -19,6 +19,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatBadgeModule } from '@angular/material/badge';
 import { SoundOptions, SoundsService } from '../../services/sounds.service';
 import { ItemCollection } from '../../../models/colyseus-schema/ItemCollectionSchema';
+import { CharacterDetailsService } from '../../services/character-details.service';
 
 @Component({
   selector: 'app-draft-toolbar',
@@ -44,6 +45,7 @@ export class DraftToolbarComponent implements AfterViewChecked, OnInit {
   hoverShopRefresh = false;
   hoverBuyXp = false;
   muted = false;
+  showCharacterDetails = computed(() => this.characterDetailsService.showCharacterDetails());
 
   private previousValue: number = 0;
   private talentDialogRef: MatDialogRef<TalentsComponent, any> | null = null;
@@ -52,13 +54,13 @@ export class DraftToolbarComponent implements AfterViewChecked, OnInit {
   constructor(
     public itemTrackingService: ItemTrackingService,
     public draftService: DraftService,
-    private soundsService: SoundsService
+    private soundsService: SoundsService,
+    private characterDetailsService: CharacterDetailsService
   ) {}
 
   @Input({ required: true }) player: Player = new Player();
   @Input({ required: false })
   availableTalents?: Talent[] = [];
-  showCharacterDetails = false;
 
   @ViewChild('talentPickerTooltip')
   talentPickerTooltip!: MatTooltip;
@@ -98,11 +100,11 @@ export class DraftToolbarComponent implements AfterViewChecked, OnInit {
   }
 
   switchCharacterDetails(): void {
-    this.showCharacterDetails = !this.showCharacterDetails;
+    this.characterDetailsService.toggleCharacterDetails();
   }
 
   openInventory(): void {
-    this.showCharacterDetails = false;
+    this.characterDetailsService.showCharacterDetails.set(false);
     const inventoryDialog = this.dialog.open(InventoryComponent, {
       data: {
         player: this.player,
@@ -123,7 +125,7 @@ export class DraftToolbarComponent implements AfterViewChecked, OnInit {
   }
 
   onSelectionChange(event: any, collectionId: number) {
-    this.showCharacterDetails = false;
+    this.characterDetailsService.showCharacterDetails.set(false);
     event.preventDefault();
     event.stopPropagation();
     this.itemTrackingService.toggleCollectionTracking(collectionId);
@@ -148,19 +150,19 @@ export class DraftToolbarComponent implements AfterViewChecked, OnInit {
   }
 
   switchMute() {
-    this.showCharacterDetails = false;
+    this.characterDetailsService.showCharacterDetails.set(false);
     this.soundsService.setVolume(this.muted ? 0.1 : 0);
     this.muted = !this.muted;
   }
 
   buyXp() {
-    this.showCharacterDetails = false;
+    this.characterDetailsService.showCharacterDetails.set(false);
     this.soundsService.playSound(SoundOptions.CLICK);
     this.draftService.sendMessage('buy_xp', {});
   }
 
   refreshShop() {
-    this.showCharacterDetails = false;
+    this.characterDetailsService.showCharacterDetails.set(false);
     this.soundsService.playSound(SoundOptions.CLICK);
     this.draftService.sendMessage('refresh_shop', {});
   }

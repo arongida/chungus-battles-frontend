@@ -1,9 +1,11 @@
 <div class="fixed-button">
-  <button [disabled]="loading || availableTalents.length > 0" mat-fab extended color="primary" (click)="startFight()">
+  <button [disabled]="loading || availableTalents.length > 0" mat-fab extended color="primary" (click)="startFight()"
+    #avatarTooltip="matTooltip" matTooltip="You have unequipped items!" matTooltipPosition="above"
+    [matTooltipDisabled]="!shouldShowEquipmentWarning()" (mouseenter)="openCharacterDetails()">
     @if (loading) {
     <mat-spinner diameter="24"></mat-spinner>
     } @else if (availableTalents.length > 0) {
-      Please select a talent!
+    Please select a talent!
     }
     @else {
     Ready to Chungus!

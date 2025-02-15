@@ -111,7 +111,12 @@ export class Player extends Schema {
     return this.equippedItems.filter((item) => item.itemCollections.includes(collectionId)).length;
   }
 
-  getItemcollectionItemCountFromInventory(collectionId: number): number {
-    return this.inventory.filter((item) => item.itemCollections.includes(collectionId)).length;
+  getItemcollectionItemCountTotal(collectionId: number): number {
+    const allItems = [...this.inventory, ...this.equippedItems];
+    console.log(allItems.length);
+    if (allItems.length === 0) return 0;
+    const itemsInSet = allItems.filter((item) => item.itemCollections.includes(collectionId));
+    const setItemSet = new Set(itemsInSet.map((item) => item.itemId));
+    return setItemSet.size;
   }
 }

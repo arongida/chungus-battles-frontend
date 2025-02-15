@@ -25,7 +25,7 @@ export class ItemCardComponent {
       .map((collection: ItemCollection) => {
         return `${collection.name} (${
           this.setTooltipBasedOnInventory
-            ? this.player.getItemcollectionItemCountFromInventory(collection.itemCollectionId) + this.player.getItemcollectionItemCountFromEquip(collection.itemCollectionId)
+            ? this.player.getItemcollectionItemCountTotal(collection.itemCollectionId)
             : this.player.getItemcollectionItemCountFromEquip(collection.itemCollectionId)
         }/ 3) - 
         ${collection.effect}`;

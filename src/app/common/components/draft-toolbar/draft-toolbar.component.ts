@@ -139,8 +139,7 @@ export class DraftToolbarComponent implements AfterViewChecked, OnInit {
 
   getProgress(collection: ItemCollection) {
     return (
-      (this.player?.getItemcollectionItemCountFromInventory(collection.itemCollectionId) +
-        this.player?.getItemcollectionItemCountFromEquip(collection.itemCollectionId) /
+      (this.player?.getItemcollectionItemCountTotal(collection.itemCollectionId) /
           (collection.name.includes('Shield') ? 1 : 3)) *
       100
     );

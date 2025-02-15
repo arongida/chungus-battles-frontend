@@ -1,6 +1,6 @@
 <div id="round-info" class="flex flex-col flex-1 text-white">
     <h2 #tooltip="matTooltip"
-        matTooltip="Round counter, you will get matched against same (or lower if non existent) players in battle!"
+        matTooltip="You will get matched agains similar round players in battle!"
         matTooltipPosition="right" id="round-title">
         ROUND: {{ player.round }}
     </h2>
@@ -8,7 +8,7 @@
         matTooltipPosition="right">
         Lives left: {{ getLivesString() }}
     </div>
-    <div #tooltip="matTooltip" matTooltip="If you win 10 times, you are victorious!" matTooltipPosition="right">
+    <div #tooltip="matTooltip" matTooltip="Reach the top or die trying, glory awaits!" matTooltipPosition="right">
         Wins: {{ getPlayerWins() }}
     </div>
 </div>

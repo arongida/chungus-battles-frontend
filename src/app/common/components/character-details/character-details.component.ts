@@ -57,7 +57,8 @@ export class CharacterDetailsComponent {
   onMouseEnterItem(item: Item) {
     item.showDetails = true;
     item.imageCache = item.image;
-    item.image = `https://chungus-battles.b-cdn.net/chungus-battles-assets/level_${item.tier}_glow.png`;
+    item.image = `https://chungus-battles.b-cdn.net/chungus-battles-assets/level_${item.tier < 10 ? item.tier : item.tier - 90}_glow.png`;
+    console.log(item.tier);
   }
 
   onMouseLeaveItem(item: Item) {

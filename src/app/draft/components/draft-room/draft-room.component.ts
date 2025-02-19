@@ -1,7 +1,6 @@
 import {
   Component,
   OnInit,
-  signal,
   untracked,
 } from '@angular/core';
 import { DraftService } from '../../services/draft.service';
@@ -43,7 +42,6 @@ import {
   MusicOptions,
   SoundsService,
 } from '../../../common/services/sounds.service';
-import { Sign } from 'crypto';
 
 @Component({
   selector: 'app-draft-room',

@@ -54,10 +54,10 @@ export class ReadyButtonComponent {
     const inventoryItemTypesSet = new Set(this.player.inventory.map((item) => item.type));
     let showWarning = false;
     inventoryItemTypesSet.forEach((type) => {
-      if (!this.player.equippedItems.find((item) => item.type === type)) {
-        showWarning = true;
-        this.missingEquipment = true;
-      }
+      // if (!this.player.equippedItems.find((item) => item.type === type)) {
+      //   showWarning = true;
+      //   this.missingEquipment = true;
+      // }
     });
     return showWarning;
   }

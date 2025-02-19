@@ -73,14 +73,14 @@ export class CharacterDetailsComponent {
 
   getMissingEquipmentSlots(): string[] {
     const slots = ['weapon', 'armor', 'helmet', 'shield'];
-    const equippedSlots = this.player.equippedItems.map((item) => item.type);
-    let missingSlots: string[] = [];
-    slots.forEach((slot) => {
-      if (!equippedSlots.includes(slot)) {
-        missingSlots.push(slot);
-      }
-    });
-    return missingSlots;
+    // const equippedSlots = this.player.equippedItems.map((item) => item.type);
+    // let missingSlots: string[] = [];
+    // slots.forEach((slot) => {
+    //   if (!equippedSlots.includes(slot)) {
+    //     missingSlots.push(slot);
+    //   }
+    // });
+    return slots;
   }
 
   selectCategory(event: MatTabChangeEvent) {
@@ -119,7 +119,8 @@ export class CharacterDetailsComponent {
 
   equip(item: Item) {
     this.draftService.sendMessage('equip', {
-      itemId: item.itemId
+      itemId: item.itemId,
+      slot: 'helmet'
     });
     this.onMouseLeaveItem(item);
   }

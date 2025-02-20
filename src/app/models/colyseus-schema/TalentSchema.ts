@@ -1,4 +1,5 @@
 import { Schema, type } from '@colyseus/schema';
+import { AffectedStats } from './AffectedStatsSchema';
 
 export class Talent extends Schema {
   @type('number') talentId: number = 0;
@@ -11,4 +12,5 @@ export class Talent extends Schema {
   @type('string') imageCache?: string = '';
   @type(['string']) tags: string[] = new Array<string>();
   @type('string') triggerType: string = '';
+  @type(AffectedStats) affectedStats: AffectedStats = new AffectedStats();
 }

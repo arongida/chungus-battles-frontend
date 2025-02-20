@@ -1,4 +1,4 @@
-import { Schema, Context, type } from '@colyseus/schema';
+import { Schema, type } from '@colyseus/schema';
 import { Player } from './PlayerSchema';
 
 export class FightState extends Schema {

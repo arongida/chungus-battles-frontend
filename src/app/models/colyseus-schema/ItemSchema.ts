@@ -16,5 +16,5 @@ export class Item extends Schema {
   @type(['number']) itemCollections: number[] = [];
   @type('string') type: string = '';
   @type(['string']) equipOptions: SetSchema<string> = new SetSchema();
-  showDetails: boolean = false;
+  @type('boolean') showDetails: boolean = false;
 }

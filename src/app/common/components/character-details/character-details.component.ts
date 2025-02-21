@@ -18,9 +18,6 @@ import {MatTabChangeEvent, MatTabsModule} from '@angular/material/tabs';
 import {
   EquipSlot
 } from '../../../models/types/EquipSlotTypes';
-import {
-  EquippedItemComponent
-} from '../equipped-item/equipped-item.component';
 
 
 @Component({
@@ -47,6 +44,7 @@ export class CharacterDetailsComponent {
   @Input() enemy: boolean = false;
   @Input() combat: boolean = false;
   selectedCategory: string = "inventory";
+  hoveredEquipment: EquipSlot | null = null;
 
   constructor(public draftService: DraftService) {
 
@@ -65,11 +63,20 @@ export class CharacterDetailsComponent {
     return this.player.hp > 0 && this.player.hp < 1 ? 1 : this.player.hp;
   }
 
+  onMouseEnterEquip(hoveredEquip: EquipSlot) {
+    this.hoveredEquipment = hoveredEquip;
+  }
+
+  onMouseLeaveEquip() {
+    this.hoveredEquipment = null;
+  }
+
   onMouseEnterItem(item?: Item) {
     if (!item) return;
+    if (item.showDetails) return;
     item.showDetails = true;
     item.imageCache = item.image;
-    item.image = `https://chungus-battles.b-cdn.net/chungus-battles-assets/level_${item.tier < 10 ? item.tier : item.tier - 90}_glow.png`;
+    item.image = this.getItemBackground(item);
   }
 
   onMouseLeaveItem(item?: Item) {
@@ -80,7 +87,7 @@ export class CharacterDetailsComponent {
   }
 
   getItem(type: string) {
-    return this.player.inventory.find((item) => item.type === type) ?? new Item();
+    return this.player.inventory.find((item) => item.type === type);
   }
 
   getMissingEquipmentSlots(): string[] {
@@ -111,10 +118,11 @@ export class CharacterDetailsComponent {
 
   getEquipmentTypeFromInventory(itemType: string): Item[] {
     if (itemType === "inventory") {
-      return this.player.inventory as unknown as Item[];
-    } else if (itemType === "equipped") {
-      return Array.from(this.player.equippedItems.values());
+      return this.player.inventory;
     }
+    //else if (itemType === "equipped") {
+    //   return Array.from(this.player.equippedItems.values());
+    // }
     else {
       return this.player.inventory.filter(item => item.type === itemType);
     }
@@ -135,8 +143,8 @@ export class CharacterDetailsComponent {
     this.onMouseLeaveItem(item);
   }
 
-  unequip(item: Item, slot: EquipSlot) {
-    console.log(slot);
+  unequip(item: Item | undefined, slot: EquipSlot) {
+    if (!item) return;
     this.draftService.sendMessage('unequip', {
       itemId: item.itemId,
       slot: slot
@@ -149,7 +157,7 @@ export class CharacterDetailsComponent {
   }
 
   getItemBackground(item: Item) {
-    return `https://chungus-battles.b-cdn.net/chungus-battles-assets/level_${item.tier}_glow.png`;
+    return `https://chungus-battles.b-cdn.net/chungus-battles-assets/level_${item.tier < 10 ? item.tier : item.tier - 90}_glow.png`;
   }
 
   getItemAtSlot(slot: EquipSlot) {

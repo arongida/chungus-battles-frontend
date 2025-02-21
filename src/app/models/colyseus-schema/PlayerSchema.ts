@@ -125,8 +125,10 @@ export class Player extends Schema {
   }
 
   getItemcollectionItemCountTotal(collectionId: number): number {
-    console.log('get item total');
-    const allItems = [...this.inventory, ...Array.from(this.equippedItems.values())];
+    const allItems = [...this.inventory];
+    this.equippedItems.forEach((value)=> {
+      allItems.push(value);
+    });
     if (allItems.length === 0) return 0;
     const itemsInSet = allItems.filter((item) => item.itemCollections.includes(collectionId));
     const setItemSet = new Set(itemsInSet.map((item) => item.itemId));

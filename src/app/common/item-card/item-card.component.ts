@@ -16,6 +16,7 @@ export class ItemCardComponent {
   @Input({ required: false }) item: Item = new Item();
   @Input({ required: true }) player: Player = new Player();
   @Input({ required: false }) setTooltipBasedOnInventory: boolean = false;
+  @Input({ required: false }) showDetails = false;
 
   getItemsCollectionTooltipForItem(item: Item): string {
     const collections = this.player.availableItemCollections.filter((collection) =>

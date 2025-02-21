@@ -6,7 +6,7 @@ import {
   DamageMessage,
   TriggerTalentMessage,
   TriggerCollectionMessage,
-} from '../../../models/message-types/MessageTypes';
+} from '../../../models/types/MessageTypes';
 import { CombatLogComponent } from '../combat-log/combat-log.component';
 import { DraftService } from '../../../draft/services/draft.service';
 import { MatSnackBar } from '@angular/material/snack-bar';

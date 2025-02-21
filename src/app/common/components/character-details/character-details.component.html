@@ -143,33 +143,30 @@ background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/
          style="
   background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_0_Empty.png');
   ">
-      <div
-        class="border-white text-center hover:bg-amber-800 border h-1/4 w-full m-1.5 flex items-center justify-center">
+      @for (item of player.equippedItems.values(); track item.itemId) {
         <div
-          class="w-2/3 flex items-center justify-center">{{ getItemAtSlot(EquipSlot.HELMET)?.name | titlecase }}
-        </div>
-      </div>
+          class="border-white text-center hover:bg-amber-800 border h-1/4 w-full m-1.5 flex items-center justify-center"
+          (mouseenter)="onMouseEnterEquip(item.equipOptions.values().next().value)"
+          (mouseleave)="onMouseLeaveEquip()"
+          (click)="unequip(item, item.equipOptions.values().next().value)"
+        >
+          <div
 
-      <div
-        class="border-white text-center hover:bg-amber-800 border h-1/4 w-full m-1.5 flex items-center justify-center">
-        <div
-          class="w-2/3 flex items-center justify-center">{{ getItemAtSlot(EquipSlot.ARMOR)?.name | titlecase }}
+            class="w-2/3 flex items-center justify-center">{{ item.name | titlecase }}
+          </div>
         </div>
-      </div>
 
-      <div
-        class="border-white text-center hover:bg-amber-800 border h-1/4 w-full m-1.5 flex items-center justify-center">
-        <div
-          class="w-2/3 flex items-center justify-center">{{ getItemAtSlot(EquipSlot.MAIN_HAND)?.name | titlecase }}
-        </div>
-      </div>
+        @if (hoveredEquipment === item.equipOptions.values().next().value) {
+          <mat-card-content
+            class="absolute text-center top-0 left-full ml-4 w-60 h-80 items-center bg-cover scale-75 shadow-amber-700"
+            [style.background-image]="'url(' + getItemBackground(item) + ')'">
+            <app-item-card [item]="item"
+                           [player]="player"
+                           [showDetails]="true"></app-item-card>
+          </mat-card-content>
+        }
 
-      <div
-        class="border-white text-center hover:bg-amber-800 border h-1/4 w-full m-1.5 flex items-center justify-center">
-        <div
-          class="w-2/3 flex items-center justify-center">{{ getItemAtSlot(EquipSlot.OFF_HAND)?.name | titlecase }}
-        </div>
-      </div>
+      }
     </div>
   </div>
 
@@ -192,7 +189,7 @@ background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/
                      class="w-1/5"></mat-tab>
           </mat-tab-group>
         </mat-tab>
-        <mat-tab label="Equipped" class="w-1/6"></mat-tab>
+        <!--        <mat-tab label="Equipped" class="w-1/6"></mat-tab>-->
 
       </mat-tab-group>
       <div class="h-48 overflow-y-auto">

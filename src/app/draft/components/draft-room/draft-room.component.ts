@@ -20,7 +20,7 @@ import {
 import {
   TriggerCollectionMessage,
   TriggerTalentMessage,
-} from '../../../models/message-types/MessageTypes';
+} from '../../../models/types/MessageTypes';
 import {
   triggerTalentActivation,
   triggerItemCollectionActivation,

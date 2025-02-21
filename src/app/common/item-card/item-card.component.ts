@@ -13,7 +13,7 @@ import { ItemCollection } from '../../models/colyseus-schema/ItemCollectionSchem
   styleUrl: './item-card.component.scss',
 })
 export class ItemCardComponent {
-  @Input({ required: true }) item: Item = new Item();
+  @Input({ required: false }) item: Item = new Item();
   @Input({ required: true }) player: Player = new Player();
   @Input({ required: false }) setTooltipBasedOnInventory: boolean = false;
 
@@ -27,7 +27,7 @@ export class ItemCardComponent {
           this.setTooltipBasedOnInventory
             ? this.player.getItemcollectionItemCountTotal(collection.itemCollectionId)
             : this.player.getItemcollectionItemCountFromEquip(collection.itemCollectionId)
-        }/ 3) - 
+        }/ 3) -
         ${collection.effect}`;
       })
       .join('\r\n');

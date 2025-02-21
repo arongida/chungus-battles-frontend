@@ -15,6 +15,12 @@ import { ItemCardComponent } from '../../item-card/item-card.component';
 import { DraftService } from '../../../draft/services/draft.service';
 import { MatButtonModule } from '@angular/material/button';
 import {MatTabChangeEvent, MatTabsModule} from '@angular/material/tabs';
+import {
+  EquipSlot
+} from '../../../models/types/EquipSlotTypes';
+import {
+  EquippedItemComponent
+} from '../equipped-item/equipped-item.component';
 
 
 @Component({
@@ -59,14 +65,15 @@ export class CharacterDetailsComponent {
     return this.player.hp > 0 && this.player.hp < 1 ? 1 : this.player.hp;
   }
 
-  onMouseEnterItem(item: Item) {
+  onMouseEnterItem(item?: Item) {
+    if (!item) return;
     item.showDetails = true;
     item.imageCache = item.image;
     item.image = `https://chungus-battles.b-cdn.net/chungus-battles-assets/level_${item.tier < 10 ? item.tier : item.tier - 90}_glow.png`;
-    console.log(item.tier);
   }
 
-  onMouseLeaveItem(item: Item) {
+  onMouseLeaveItem(item?: Item) {
+    if (!item) return;
     if (!item.showDetails) return;
     item.showDetails = false;
     item.image = item.imageCache!;
@@ -100,15 +107,13 @@ export class CharacterDetailsComponent {
 
   onTabChange(event: MatTabChangeEvent){
     this.selectedCategory = event.tab.textLabel.toLocaleLowerCase();
-
-    console.log('Selected Tab:', this.selectedCategory);
   }
 
   getEquipmentTypeFromInventory(itemType: string): Item[] {
     if (itemType === "inventory") {
       return this.player.inventory as unknown as Item[];
     } else if (itemType === "equipped") {
-      return this.player.equippedItems as unknown as Item[];
+      return Array.from(this.player.equippedItems.values());
     }
     else {
       return this.player.inventory.filter(item => item.type === itemType);
@@ -122,17 +127,19 @@ export class CharacterDetailsComponent {
     this.onMouseLeaveItem(item);
   }
 
-  equip(item: Item) {
+  equip(item: Item, slot: EquipSlot) {
     this.draftService.sendMessage('equip', {
       itemId: item.itemId,
-      slot: 'helmet'
+      slot: slot
     });
     this.onMouseLeaveItem(item);
   }
 
-  unequip(item: Item) {
+  unequip(item: Item, slot: EquipSlot) {
+    console.log(slot);
     this.draftService.sendMessage('unequip', {
-      itemId: item.itemId
+      itemId: item.itemId,
+      slot: slot
     });
     this.onMouseLeaveItem(item);
   }
@@ -144,4 +151,11 @@ export class CharacterDetailsComponent {
   getItemBackground(item: Item) {
     return `https://chungus-battles.b-cdn.net/chungus-battles-assets/level_${item.tier}_glow.png`;
   }
+
+  getItemAtSlot(slot: EquipSlot) {
+    const itemAtSlot = this.player.equippedItems.get(slot);
+    return itemAtSlot;
+  }
+
+  protected readonly EquipSlot = EquipSlot;
 }

@@ -1,7 +1,11 @@
 import { Component, Input } from '@angular/core';
 import { Player } from '../../../models/colyseus-schema/PlayerSchema';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { DecimalPipe, TitleCasePipe } from '@angular/common';
+import {
+  DecimalPipe,
+  NgStyle,
+  TitleCasePipe,
+} from '@angular/common';
 import { MatDividerModule } from '@angular/material/divider';
 import { NgClass } from '@angular/common';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -11,6 +15,9 @@ import { ItemCardComponent } from '../../item-card/item-card.component';
 import { DraftService } from '../../../draft/services/draft.service';
 import { MatButtonModule } from '@angular/material/button';
 import {MatTabChangeEvent, MatTabsModule} from '@angular/material/tabs';
+import {
+  EquipSlot
+} from '../../../models/types/EquipSlotTypes';
 
 
 @Component({
@@ -26,7 +33,8 @@ import {MatTabChangeEvent, MatTabsModule} from '@angular/material/tabs';
     MatCardContent,
     ItemCardComponent,
     TitleCasePipe,
-    MatTabsModule
+    MatTabsModule,
+    NgStyle,
   ],
   templateUrl: './character-details.component.html',
   styleUrl: './character-details.component.scss',
@@ -36,6 +44,7 @@ export class CharacterDetailsComponent {
   @Input() enemy: boolean = false;
   @Input() combat: boolean = false;
   selectedCategory: string = "inventory";
+  hoveredEquipment: EquipSlot | null = null;
 
   constructor(public draftService: DraftService) {
 
@@ -54,33 +63,43 @@ export class CharacterDetailsComponent {
     return this.player.hp > 0 && this.player.hp < 1 ? 1 : this.player.hp;
   }
 
-  onMouseEnterItem(item: Item) {
-    item.showDetails = true;
-    item.imageCache = item.image;
-    item.image = `https://chungus-battles.b-cdn.net/chungus-battles-assets/level_${item.tier < 10 ? item.tier : item.tier - 90}_glow.png`;
-    console.log(item.tier);
+  onMouseEnterEquip(hoveredEquip: EquipSlot) {
+    this.hoveredEquipment = hoveredEquip;
   }
 
-  onMouseLeaveItem(item: Item) {
+  onMouseLeaveEquip() {
+    this.hoveredEquipment = null;
+  }
+
+  onMouseEnterItem(item?: Item) {
+    if (!item) return;
+    if (item.showDetails) return;
+    item.showDetails = true;
+    item.imageCache = item.image;
+    item.image = this.getItemBackground(item);
+  }
+
+  onMouseLeaveItem(item?: Item) {
+    if (!item) return;
     if (!item.showDetails) return;
     item.showDetails = false;
     item.image = item.imageCache!;
   }
 
   getItem(type: string) {
-    return this.player.inventory.find((item) => item.type === type) ?? new Item();
+    return this.player.inventory.find((item) => item.type === type);
   }
 
   getMissingEquipmentSlots(): string[] {
     const slots = ['weapon', 'armor', 'helmet', 'shield'];
-    const equippedSlots = this.player.equippedItems.map((item) => item.type);
-    let missingSlots: string[] = [];
-    slots.forEach((slot) => {
-      if (!equippedSlots.includes(slot)) {
-        missingSlots.push(slot);
-      }
-    });
-    return missingSlots;
+    // const equippedSlots = this.player.equippedItems.map((item) => item.type);
+    // let missingSlots: string[] = [];
+    // slots.forEach((slot) => {
+    //   if (!equippedSlots.includes(slot)) {
+    //     missingSlots.push(slot);
+    //   }
+    // });
+    return slots;
   }
 
   selectCategory(event: MatTabChangeEvent) {
@@ -95,16 +114,15 @@ export class CharacterDetailsComponent {
 
   onTabChange(event: MatTabChangeEvent){
     this.selectedCategory = event.tab.textLabel.toLocaleLowerCase();
-
-    console.log('Selected Tab:', this.selectedCategory);
   }
 
   getEquipmentTypeFromInventory(itemType: string): Item[] {
     if (itemType === "inventory") {
-      return this.player.inventory as unknown as Item[];
-    } else if (itemType === "equipped") {
-      return this.player.equippedItems as unknown as Item[];
+      return this.player.inventory;
     }
+    //else if (itemType === "equipped") {
+    //   return Array.from(this.player.equippedItems.values());
+    // }
     else {
       return this.player.inventory.filter(item => item.type === itemType);
     }
@@ -117,16 +135,19 @@ export class CharacterDetailsComponent {
     this.onMouseLeaveItem(item);
   }
 
-  equip(item: Item) {
+  equip(item: Item, slot: EquipSlot) {
     this.draftService.sendMessage('equip', {
-      itemId: item.itemId
+      itemId: item.itemId,
+      slot: slot
     });
     this.onMouseLeaveItem(item);
   }
 
-  unequip(item: Item) {
+  unequip(item: Item | undefined, slot: EquipSlot) {
+    if (!item) return;
     this.draftService.sendMessage('unequip', {
-      itemId: item.itemId
+      itemId: item.itemId,
+      slot: slot
     });
     this.onMouseLeaveItem(item);
   }
@@ -136,6 +157,13 @@ export class CharacterDetailsComponent {
   }
 
   getItemBackground(item: Item) {
-    return `https://chungus-battles.b-cdn.net/chungus-battles-assets/level_${item.tier}_glow.png`;
+    return `https://chungus-battles.b-cdn.net/chungus-battles-assets/level_${item.tier < 10 ? item.tier : item.tier - 90}_glow.png`;
   }
+
+  getItemAtSlot(slot: EquipSlot) {
+    const itemAtSlot = this.player.equippedItems.get(slot);
+    return itemAtSlot;
+  }
+
+  protected readonly EquipSlot = EquipSlot;
 }

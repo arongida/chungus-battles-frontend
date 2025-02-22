@@ -1,4 +1,9 @@
-import { Schema, type, ArraySchema } from '@colyseus/schema';
+import {
+  ArraySchema,
+  MapSchema,
+  Schema,
+  type,
+} from '@colyseus/schema';
 import { Talent } from './TalentSchema';
 import { Item } from './ItemSchema';
 import { ItemCollection } from './ItemCollectionSchema';
@@ -24,7 +29,7 @@ export class Player extends Schema {
     'https://chungus-battles.b-cdn.net/chungus-battles-assets/Portrait_ID_0_Placeholder.png';
   @type([Talent]) talents: ArraySchema<Talent> = new ArraySchema<Talent>();
   @type([Item]) inventory: ArraySchema<Item> = new ArraySchema<Item>();
-  @type([Item]) equippedItems: ArraySchema<Item> = new ArraySchema<Item>();
+  @type({ map: Item }) equippedItems = new MapSchema<Item>();
   @type([ItemCollection]) activeItemCollections: ArraySchema<ItemCollection> =
     new ArraySchema<ItemCollection>();
   @type([ItemCollection])
@@ -108,12 +113,22 @@ export class Player extends Schema {
   }
 
   getItemcollectionItemCountFromEquip(collectionId: number): number {
-    return this.equippedItems.filter((item) => item.itemCollections.includes(collectionId)).length;
+    let counter = 0;
+
+    this.equippedItems.forEach((item) => {
+      if (item.itemCollections.includes(collectionId)) {
+        counter++;
+      }
+    });
+
+    return counter;
   }
 
   getItemcollectionItemCountTotal(collectionId: number): number {
-    const allItems = [...this.inventory, ...this.equippedItems];
-    console.log(allItems.length);
+    const allItems = [...this.inventory];
+    this.equippedItems.forEach((value)=> {
+      allItems.push(value);
+    });
     if (allItems.length === 0) return 0;
     const itemsInSet = allItems.filter((item) => item.itemCollections.includes(collectionId));
     const setItemSet = new Set(itemsInSet.map((item) => item.itemId));

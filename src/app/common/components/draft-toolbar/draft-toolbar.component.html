@@ -5,7 +5,7 @@
       (click)="switchCharacterDetails()">
     <span class="text-center">{{player.name}}</span>
     <span class="text-sm text-center" #goldTooltip="matTooltip"
-      matTooltip="{{player.income + player.round * 4}} gold per round." matTooltipPosition="below">Gold: {{ player.gold
+      matTooltip="{{player.income + player.round * 2}} gold per round." matTooltipPosition="below">Gold: {{ player.gold
       }} 🟡</span>
 
     @if (this.availableTalents && this.availableTalents.length > 0) {

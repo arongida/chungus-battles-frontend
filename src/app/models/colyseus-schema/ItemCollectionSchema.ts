@@ -10,4 +10,5 @@ export class ItemCollection extends Schema {
   @type(['string']) tags: ArraySchema<string> = new ArraySchema<string>();
   @type('number') tier: number = 0;
   @type(AffectedStats) affectedStats: AffectedStats = new AffectedStats();
+  @type(['string']) triggerTypes: ArraySchema<string> = new ArraySchema();
 }

@@ -92,10 +92,10 @@ export class DraftToolbarComponent implements AfterViewChecked, OnInit {
         talents: this.availableTalents,
         playerLevel: this.player?.level ?? 1,
       },
-      maxWidth: '100vw',
-      maxHeight: '100vh',
-      height: '80%',
-      width: '100%',
+      maxWidth: '20vw',
+      maxHeight: '70vh',
+      height: '70%',
+      width: '20%',
     });
   }
 

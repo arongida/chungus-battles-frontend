@@ -10,18 +10,14 @@ export class ItemTrackingService {
   static isLocalStorageAvailable = typeof localStorage !== 'undefined';
 
   constructor() {
-    // Initialize from localStorage if available
     this.loadTrackedCollectionsFromLocalStorage();
   }
 
-  // Getter for the signal
   trackedCollectionIds() {
     return this.trackedCollectionIdsSignal();
   }
 
-  // Method to update the tracked collections
   updateTrackedCollections(newCollectionIds: number[]) {
-    // Use untracked when reading from localStorage to prevent cycles
     this.trackedCollectionIdsSignal.set(newCollectionIds);
 
     this.saveTrackedCollectionsToLocalStorage();
@@ -39,7 +35,6 @@ export class ItemTrackingService {
 
   saveTrackedCollectionsToLocalStorage() {
     if (!ItemTrackingService.isLocalStorageAvailable || !this.isInitialized) return;
-    console.log('save triggered');
     localStorage.setItem('trackedCollections', JSON.stringify(this.trackedCollectionIdsSignal()));
   }
 
@@ -49,7 +44,6 @@ export class ItemTrackingService {
     if (saved) {
       try {
         const parsedData = JSON.parse(saved);
-        // Use update instead of set to avoid triggering effects during initialization
         this.trackedCollectionIdsSignal.set(parsedData);
         this.isInitialized = true;
       } catch (e) {

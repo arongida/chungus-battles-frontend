@@ -1,22 +1,39 @@
 import { Component, Input } from '@angular/core';
-import { Player } from '../../../models/colyseus-schema/PlayerSchema';
-import { MatTooltipModule } from '@angular/material/tooltip';
+import {
+  Player,
+} from '../../../models/colyseus-schema/PlayerSchema';
+import {
+  MatTooltipModule,
+} from '@angular/material/tooltip';
 import {
   DecimalPipe,
+  NgClass,
   NgStyle,
   TitleCasePipe,
 } from '@angular/common';
-import { MatDividerModule } from '@angular/material/divider';
-import { NgClass } from '@angular/common';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { Item } from '../../../models/colyseus-schema/ItemSchema';
-import { MatCardContent } from '@angular/material/card';
-import { ItemCardComponent } from '../../item-card/item-card.component';
-import { DraftService } from '../../../draft/services/draft.service';
-import { MatButtonModule } from '@angular/material/button';
-import {MatTabChangeEvent, MatTabsModule} from '@angular/material/tabs';
 import {
-  EquipSlot
+  MatDividerModule,
+} from '@angular/material/divider';
+import {
+  MatProgressBarModule,
+} from '@angular/material/progress-bar';
+import {
+  Item,
+} from '../../../models/colyseus-schema/ItemSchema';
+import { MatCardContent } from '@angular/material/card';
+import {
+  ItemCardComponent,
+} from '../../item-card/item-card.component';
+import {
+  DraftService,
+} from '../../../draft/services/draft.service';
+import { MatButtonModule } from '@angular/material/button';
+import {
+  MatTabChangeEvent,
+  MatTabsModule,
+} from '@angular/material/tabs';
+import {
+  EquipSlot,
 } from '../../../models/types/EquipSlotTypes';
 
 
@@ -43,8 +60,9 @@ export class CharacterDetailsComponent {
   @Input({ required: true }) player: Player = new Player();
   @Input() enemy: boolean = false;
   @Input() combat: boolean = false;
-  selectedCategory: string = "inventory";
+  selectedCategory: string = 'inventory';
   hoveredEquipment: EquipSlot | null = null;
+  equipSlotsOptions = Object.values(EquipSlot) as EquipSlot[];
 
   constructor(public draftService: DraftService) {
 
@@ -90,38 +108,26 @@ export class CharacterDetailsComponent {
     return this.player.inventory.find((item) => item.type === type);
   }
 
-  getMissingEquipmentSlots(): string[] {
-    const slots = ['weapon', 'armor', 'helmet', 'shield'];
-    // const equippedSlots = this.player.equippedItems.map((item) => item.type);
-    // let missingSlots: string[] = [];
-    // slots.forEach((slot) => {
-    //   if (!equippedSlots.includes(slot)) {
-    //     missingSlots.push(slot);
-    //   }
-    // });
-    return slots;
-  }
-
   selectCategory(event: MatTabChangeEvent) {
-    const categoryName = event.tab.textLabel.toLocaleLowerCase().substring(0,event.tab.textLabel.length -1);
-    if(categoryName === "al"){
-      this.selectedCategory = "inventory";
-    }else{
+    const categoryName = event.tab.textLabel.toLocaleLowerCase().substring(0, event.tab.textLabel.length - 1);
+    if (categoryName === 'al') {
+      this.selectedCategory = 'inventory';
+    } else {
       this.selectedCategory = categoryName;
     }
     console.log(this.selectedCategory);
   }
 
-  onTabChange(event: MatTabChangeEvent){
+  onTabChange(event: MatTabChangeEvent) {
     this.selectedCategory = event.tab.textLabel.toLocaleLowerCase();
   }
 
   getEquipmentTypeFromInventory(itemType: string): Item[] {
-    if (itemType === "inventory") {
+    if (itemType === 'inventory') {
       return this.player.inventory;
     }
-    //else if (itemType === "equipped") {
-    //   return Array.from(this.player.equippedItems.values());
+      //else if (itemType === "equipped") {
+      //   return Array.from(this.player.equippedItems.values());
     // }
     else {
       return this.player.inventory.filter(item => item.type === itemType);
@@ -130,7 +136,7 @@ export class CharacterDetailsComponent {
 
   sellSelectedItem(item: Item) {
     this.draftService.sendMessage('sell', {
-      itemId: item.itemId
+      itemId: item.itemId,
     });
     this.onMouseLeaveItem(item);
   }
@@ -138,7 +144,7 @@ export class CharacterDetailsComponent {
   equip(item: Item, slot: EquipSlot) {
     this.draftService.sendMessage('equip', {
       itemId: item.itemId,
-      slot: slot
+      slot: slot,
     });
     this.onMouseLeaveItem(item);
   }
@@ -147,7 +153,7 @@ export class CharacterDetailsComponent {
     if (!item) return;
     this.draftService.sendMessage('unequip', {
       itemId: item.itemId,
-      slot: slot
+      slot: slot,
     });
     this.onMouseLeaveItem(item);
   }
@@ -156,13 +162,26 @@ export class CharacterDetailsComponent {
     return Math.floor(item.price * 0.7);
   }
 
-  getItemBackground(item: Item) {
-    return `https://chungus-battles.b-cdn.net/chungus-battles-assets/level_${item.tier < 10 ? item.tier : item.tier - 90}_glow.png`;
+  getItemBackground(item?: Item) {
+    return item ? `https://chungus-battles.b-cdn.net/chungus-battles-assets/level_${item.tier < 10 ? item.tier : item.tier - 90}_glow.png` : `https://chungus-battles.b-cdn.net/chungus-battles-assets/level_1_glow.png`;
   }
 
   getItemAtSlot(slot: EquipSlot) {
-    const itemAtSlot = this.player.equippedItems.get(slot);
-    return itemAtSlot;
+    return this.player.equippedItems.get(slot);
+  }
+
+  getEmojiForSlot(slot: EquipSlot) {
+    switch (slot) {
+      case EquipSlot.ARMOR:
+        return '🧥';
+      case EquipSlot.HELMET:
+        return '👑'
+      case EquipSlot.MAIN_HAND:
+        return '🫲'
+      case EquipSlot.OFF_HAND:
+        return '🫱'
+      default: return '🫲'
+    }
   }
 
   protected readonly EquipSlot = EquipSlot;

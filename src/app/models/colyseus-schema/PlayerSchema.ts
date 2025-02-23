@@ -124,14 +124,24 @@ export class Player extends Schema {
     return counter;
   }
 
-  getItemcollectionItemCountTotal(collectionId: number): number {
+  getAllItems(): Item[] {
     const allItems = [...this.inventory];
     this.equippedItems.forEach((value)=> {
       allItems.push(value);
     });
+    return allItems;
+  }
+
+  getItemcollectionItemCountTotal(collectionId: number): number {
+    const allItems = this.getAllItems();
     if (allItems.length === 0) return 0;
     const itemsInSet = allItems.filter((item) => item.itemCollections.includes(collectionId));
     const setItemSet = new Set(itemsInSet.map((item) => item.itemId));
     return setItemSet.size;
+  }
+
+  getOwnedCountForItem(item: Item): number {
+    const allItems = this.getAllItems();
+    return allItems.filter((i) => i.itemId === item.itemId).length;
   }
 }

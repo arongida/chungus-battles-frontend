@@ -1,9 +1,19 @@
 import { Component, Input } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
-import { TitleCasePipe, DecimalPipe, NgClass } from '@angular/common';
-import { Item } from '../../models/colyseus-schema/ItemSchema';
-import { Player } from '../../models/colyseus-schema/PlayerSchema';
-import { ItemCollection } from '../../models/colyseus-schema/ItemCollectionSchema';
+import {
+  DecimalPipe,
+  NgClass,
+  TitleCasePipe,
+} from '@angular/common';
+import {
+  Item,
+} from '../../models/colyseus-schema/ItemSchema';
+import {
+  Player,
+} from '../../models/colyseus-schema/PlayerSchema';
+import {
+  ItemCollection,
+} from '../../models/colyseus-schema/ItemCollectionSchema';
 import { ItemRarity } from '../../models/types/ItemTypes';
 
 @Component({
@@ -23,7 +33,7 @@ export class ItemCardComponent {
     const collections = this.player.availableItemCollections.filter((collection) =>
       item.itemCollections.includes(collection.itemCollectionId)
     );
-    const formatCollections = collections
+    return collections
       .map((collection: ItemCollection) => {
         return `${collection.name} (${
           this.setTooltipBasedOnInventory
@@ -33,8 +43,6 @@ export class ItemCardComponent {
         ${collection.effect}`;
       })
       .join('\r\n');
-
-    return formatCollections;
   }
 
   getIfItemHasActiveSet(item: Item): boolean {

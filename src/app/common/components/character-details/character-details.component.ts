@@ -167,8 +167,7 @@ export class CharacterDetailsComponent {
   }
 
   getItemAtSlot(slot: EquipSlot) {
-    const itemAtSlot = this.player.equippedItems.get(slot);
-    return itemAtSlot;
+    return this.player.equippedItems.get(slot);
   }
 
   getEmojiForSlot(slot: EquipSlot) {

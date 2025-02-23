@@ -134,7 +134,7 @@ export class ShopComponent {
     this.tempCard = null;
   }
 
-  canBuyItemPredicate = (drag: CdkDrag) => {
+  canBuyItemPredicate = () => {
     return this.canBuyItem(this.draggedCard);
   };
 

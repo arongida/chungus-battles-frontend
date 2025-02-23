@@ -33,7 +33,6 @@
   </div>
 
   <div
-    class="fixed -bottom-20 md:-bottom-30 lg:-bottom-40 flex items-center justify-center w-screen opacity-0 flex flex-col"
     [ngClass]="{'opacity-80':draggingCard}">
 
     <div id="drop-zone" [cdkDropListSortingDisabled]="true"
@@ -45,7 +44,7 @@
          (cdkDropListDropped)="onDrop($event)">
 
       <div
-        class="text-center absolute top-8 md:top-10 lg:top-12 text-center bg-black text-white px-2 py-1 rounded"> {{ getBuyingTooltip() }}
+        class="absolute top-8 md:top-10 lg:top-12 text-center bg-black text-white px-2 py-1 rounded"> {{ getBuyingTooltip() }}
       </div>
 
     </div>

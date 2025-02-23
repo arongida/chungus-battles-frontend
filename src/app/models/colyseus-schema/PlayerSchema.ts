@@ -7,6 +7,7 @@ import {
 import { Talent } from './TalentSchema';
 import { Item } from './ItemSchema';
 import { ItemCollection } from './ItemCollectionSchema';
+import { ItemRarity } from '../types/ItemTypes';
 
 export class Player extends Schema {
   @type('number') playerId: number = 0;
@@ -126,7 +127,7 @@ export class Player extends Schema {
 
   getAllItems(): Item[] {
     const allItems = [...this.inventory];
-    this.equippedItems.forEach((value)=> {
+    this.equippedItems.forEach((value) => {
       allItems.push(value);
     });
     return allItems;
@@ -142,6 +143,12 @@ export class Player extends Schema {
 
   getOwnedCountForItem(item: Item): number {
     const allItems = this.getAllItems();
-    return allItems.filter((i) => i.itemId === item.itemId).length;
+    let counter = 0;
+    const sameItems = allItems.filter(filterItem => item.itemId === filterItem.itemId);
+    sameItems.forEach(item => {
+      if (item.rarity === ItemRarity.EPIC) counter += 4;
+      else counter += item.rarity;
+    });
+    return counter;
   }
 }

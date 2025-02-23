@@ -4,3 +4,17 @@ export enum ItemType {
   HELMET = 'helmet',
   SHIELD = 'shield',
 }
+
+export enum EquipSlot {
+  ARMOR = 'armor',
+  HELMET = 'helmet',
+  MAIN_HAND = 'mainHand',
+  OFF_HAND = 'offHand'
+}
+
+export enum ItemRarity {
+  COMMON = 1,
+  RARE = 2,
+  EPIC = 3,
+  LEGENDARY = 4
+}

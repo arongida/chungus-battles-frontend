@@ -109,6 +109,7 @@ export class DraftRoomComponent implements OnInit {
 
       // Assign the Player instance to this.player
       this.player = player;
+      console.log('re assigning player');
 
       this.shop = state.shop as Item[];
       this.availableTalents = state.availableTalents as Talent[];

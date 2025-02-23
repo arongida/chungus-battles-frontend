@@ -33,6 +33,9 @@ import {
 import {
   CharacterDetailsService,
 } from '../../../common/services/character-details.service';
+import {
+  ItemRarity,
+} from '../../../models/types/ItemTypes';
 
 @Component({
   selector: 'app-shop',
@@ -156,9 +159,21 @@ export class ShopComponent {
   }
 
 
-  isCardHighlighted(item: Item): boolean {
+  isCardTracked(item: Item): boolean {
     const isOwned = this.player.getOwnedCountForItem(item) > 0;
     const isTracked = item.itemCollections.some((collectionId) => this.trackedCollectionIds().includes(collectionId));
     return isTracked && !isOwned;
   }
+
+  itemMergeRarity(item: Item): ItemRarity | 0 {
+    if (item.sold) return 0;
+    const mergedNumber = this.player.getOwnedCountForItem(item);
+    if (mergedNumber === 0) return 0;
+    if (mergedNumber === 7) return ItemRarity.LEGENDARY;
+    if (mergedNumber === 3) return ItemRarity.EPIC;
+    if (mergedNumber >= 1) return ItemRarity.RARE;
+    return 0;
+  }
+
+  protected readonly ItemRarity = ItemRarity;
 }

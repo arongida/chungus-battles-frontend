@@ -1,9 +1,20 @@
 import { Component, Input } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
-import { TitleCasePipe, DecimalPipe, NgClass } from '@angular/common';
-import { Item } from '../../models/colyseus-schema/ItemSchema';
-import { Player } from '../../models/colyseus-schema/PlayerSchema';
-import { ItemCollection } from '../../models/colyseus-schema/ItemCollectionSchema';
+import {
+  DecimalPipe,
+  NgClass,
+  TitleCasePipe,
+} from '@angular/common';
+import {
+  Item,
+} from '../../models/colyseus-schema/ItemSchema';
+import {
+  Player,
+} from '../../models/colyseus-schema/PlayerSchema';
+import {
+  ItemCollection,
+} from '../../models/colyseus-schema/ItemCollectionSchema';
+import { ItemRarity } from '../../models/types/ItemTypes';
 
 @Component({
   selector: 'app-item-card',
@@ -13,7 +24,7 @@ import { ItemCollection } from '../../models/colyseus-schema/ItemCollectionSchem
   styleUrl: './item-card.component.scss',
 })
 export class ItemCardComponent {
-  @Input({ required: false }) item: Item = new Item();
+  @Input({ required: true }) item: Item = new Item();
   @Input({ required: true }) player: Player = new Player();
   @Input({ required: false }) setTooltipBasedOnInventory: boolean = false;
   @Input({ required: false }) showDetails = false;
@@ -22,7 +33,7 @@ export class ItemCardComponent {
     const collections = this.player.availableItemCollections.filter((collection) =>
       item.itemCollections.includes(collection.itemCollectionId)
     );
-    const formatCollections = collections
+    return collections
       .map((collection: ItemCollection) => {
         return `${collection.name} (${
           this.setTooltipBasedOnInventory
@@ -32,8 +43,6 @@ export class ItemCardComponent {
         ${collection.effect}`;
       })
       .join('\r\n');
-
-    return formatCollections;
   }
 
   getIfItemHasActiveSet(item: Item): boolean {
@@ -41,4 +50,6 @@ export class ItemCardComponent {
       item.itemCollections.includes(collection.itemCollectionId)
     );
   }
+
+  protected readonly ItemRarity = ItemRarity;
 }

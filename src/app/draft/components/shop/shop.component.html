@@ -12,22 +12,33 @@
            [cdkDragFreeDragPosition]="dragPosition"
            (cdkDragExited)="onDragExited($event, cardRef, gridRef)"
            class="overflow-hidden"
-           >
-
+      >
 
         <div
-          [ngClass]="{'opacity-0':item.sold,'pointer-events-none':item.sold, 'shadow-lg':isCardHighlighted(item)}"
+          [ngClass]="{'opacity-0':item.sold,'pointer-events-none':item.sold, 'shadow-lg':isCardTracked(item)}"
           [style.background-image]="'url(' + getItemImage(item) + ')'"
           id="item-{{ $index }}"
           class="w-60 h-80 items-center bg-cover scale-75 shadow-amber-700"
           (mouseenter)="onMouseEnterItem(item)"
           (mouseleave)="onMouseLeaveItem(item)">
 
+          @if (itemMergeRarity(item) > 0) {
+            <span class="relative flex size-3">
+            <span
+              class="absolute inline-flex h-full w-full animate-ping rounded-full opacity-75"
+              [ngClass]="{'bg-blue-400': itemMergeRarity(item) === ItemRarity.RARE,'bg-purple-400': itemMergeRarity(item) === ItemRarity.EPIC, 'bg-orange-400': itemMergeRarity(item) === ItemRarity.LEGENDARY}"></span>
+            <span
+              class="relative inline-flex size-3 rounded-full"
+              [ngClass]="{'bg-blue-500': itemMergeRarity(item) === ItemRarity.RARE, 'bg-purple-500': itemMergeRarity(item) === ItemRarity.EPIC, 'bg-orange-500': itemMergeRarity(item) === ItemRarity.LEGENDARY}"></span>
+          </span>
+          }
+
           <app-item-card [item]="item" [player]="player"
                          [setTooltipBasedOnInventory]="true"></app-item-card>
 
 
         </div>
+
       </div>
     }
   </div>

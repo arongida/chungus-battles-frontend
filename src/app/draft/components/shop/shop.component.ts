@@ -1,17 +1,38 @@
-import { Component, Input, computed } from '@angular/core';
-import { Item } from '../../../models/colyseus-schema/ItemSchema';
+import { Component, computed, Input } from '@angular/core';
+import {
+  Item,
+} from '../../../models/colyseus-schema/ItemSchema';
 import { MatCardModule } from '@angular/material/card';
 import { DraftService } from '../../services/draft.service';
-import { TitleCasePipe, NgClass, DecimalPipe } from '@angular/common';
+import { NgClass } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { CdkDrag, CdkDragDrop, CdkDragExit, CdkDropList, DragDropModule } from '@angular/cdk/drag-drop';
-import { Player } from '../../../models/colyseus-schema/PlayerSchema';
-import { ItemTrackingService } from '../../../common/services/item-tracking.service';
-import { SoundOptions, SoundsService } from '../../../common/services/sounds.service';
-import { ItemCardComponent } from '../../../common/item-card/item-card.component';
-import { CharacterDetailsService } from '../../../common/services/character-details.service';
+import {
+  MatTooltipModule,
+} from '@angular/material/tooltip';
+import {
+  CdkDrag,
+  CdkDragDrop,
+  CdkDragExit,
+  CdkDropList,
+  DragDropModule,
+} from '@angular/cdk/drag-drop';
+import {
+  Player,
+} from '../../../models/colyseus-schema/PlayerSchema';
+import {
+  ItemTrackingService,
+} from '../../../common/services/item-tracking.service';
+import {
+  SoundOptions,
+  SoundsService,
+} from '../../../common/services/sounds.service';
+import {
+  ItemCardComponent,
+} from '../../../common/item-card/item-card.component';
+import {
+  CharacterDetailsService,
+} from '../../../common/services/character-details.service';
 
 @Component({
   selector: 'app-shop',
@@ -31,8 +52,7 @@ import { CharacterDetailsService } from '../../../common/services/character-deta
   styleUrl: './shop.component.scss',
 })
 export class ShopComponent {
-  hoverShopRefresh = false;
-  hoverBuyXp = false;
+  draggedCard: Item | null = null;
   dragPosition = { x: 0, y: 0 };
   draggingCard = false;
   dragIndex = 0;
@@ -44,7 +64,7 @@ export class ShopComponent {
     public draftService: DraftService,
     private itemTrackingService: ItemTrackingService,
     private soundsService: SoundsService,
-    private characterDetailsService: CharacterDetailsService
+    private characterDetailsService: CharacterDetailsService,
   ) {
     this.shop = [] as Item[];
     this.player = new Player();
@@ -74,16 +94,25 @@ export class ShopComponent {
   cardDragStarted(item: Item) {
     this.draggingCard = true;
     this.dragIndex = this.shop.indexOf(item);
+    this.draggedCard = item;
   }
 
   onDrop(event: CdkDragDrop<any[]>) {
     this.draggingCard = false;
-    // Get the dragged item from the event
+    this.draggedCard = null;
     const item = this.shop[event.previousIndex];
-    // Check if the player has enough gold and the item is not sold
-    if (this.player.gold >= item.price && !item.sold) {
+    if (this.canBuyItem(item)) {
       this.buyItem(item);
     }
+  }
+
+  canBuyItem(item: Item | null) {
+    if (!item) return false;
+    return this.player.gold >= item.price && !item.sold;
+  }
+
+  getBuyingTooltip() {
+    return this.canBuyItem(this.draggedCard) ? 'Buy for ' + this.draggedCard?.price : 'Not enough money!';
   }
 
   buyItem(item: Item) {
@@ -105,14 +134,13 @@ export class ShopComponent {
     this.tempCard = null;
   }
 
+  canBuyItemPredicate = (drag: CdkDrag) => {
+    return this.canBuyItem(this.draggedCard);
+  };
+
   onDragExited(event: CdkDragExit, cardElementRef: HTMLElement, gridRef: HTMLElement) {
     if (this.tempCard) return;
-    console.log('onDragExited', event, cardElementRef);
-    //copy the card element to the original position
     const cardElement = cardElementRef.childNodes[0].cloneNode(true);
-    //insert copy of the card element to the original position
-    console.log('inserting at index ', this.dragIndex);
-    console.log('gridRef.childNodes', gridRef.childNodes);
     gridRef.insertBefore(cardElement, gridRef.childNodes[this.dragIndex * 2]);
     this.tempCard = cardElement as HTMLElement;
   }

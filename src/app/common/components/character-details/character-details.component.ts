@@ -33,8 +33,8 @@ import {
   MatTabsModule,
 } from '@angular/material/tabs';
 import {
-  EquipSlot,
-} from '../../../models/types/EquipSlotTypes';
+  EquipSlot, ItemRarity,
+} from '../../../models/types/ItemTypes';
 
 
 @Component({
@@ -185,4 +185,5 @@ export class CharacterDetailsComponent {
   }
 
   protected readonly EquipSlot = EquipSlot;
+  protected readonly ItemRarity = ItemRarity;
 }

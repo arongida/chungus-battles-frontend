@@ -8,6 +8,7 @@ export class Item extends Schema {
   @type('number') price: number = 0;
   @type(AffectedStats) affectedStats: AffectedStats = new AffectedStats();
   @type('number') tier: number = 0;
+  @type('number') rarity: number = 1;
   @type('string') image: string = '';
   @type('string') imageCache?: string = this.image;
   @type(['string']) tags: string[] = new Array<string>();

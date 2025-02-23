@@ -127,12 +127,9 @@ export class ShopComponent {
     return false;
   }
 
-  getNumberOfOwnedItems(item: Item): number {
-    return this.player.inventory.filter((i) => i.itemId === item.itemId).length;
-  }
 
   isCardHighlighted(item: Item): boolean {
-    const isOwned = this.getNumberOfOwnedItems(item) > 0;
+    const isOwned = this.player.getOwnedCountForItem(item) > 0;
     const isTracked = item.itemCollections.some((collectionId) => this.trackedCollectionIds().includes(collectionId));
     return isTracked && !isOwned;
   }

@@ -34,45 +34,15 @@ background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/
           <div
             class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm"
             #tooltip="matTooltip"
-            matTooltip="Your attacks deal {{player.accuracy}} - {{ player.strength }} damage."
+            matTooltip="Your attacks deal {{player.accuracy | number: '1.3-3'}} - {{ player.strength | number: '1.3-3'}} damage."
             matTooltipPosition="right">
             <div>Attack:</div>
             <div
-              class="text-red-500">{{ player.accuracy | number: '1.0-0' }}
-              - {{ player.strength | number: '1.0-0' }} ⚔️
+              class="text-red-500">{{ player.accuracy | number: '1.0-1' }}
+              - {{ player.strength | number: '1.0-1' }} ⚔️
             </div>
           </div>
 
-          <mat-divider></mat-divider>
-
-          <div
-            class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm">
-
-            <div class="text-green-600"
-                 #tooltip="matTooltip"
-                 matTooltip="Decreases incoming damage from attacks by {{
-              100 * (1 - 100 / (100 + player.defense)) | number: '1.0-0'
-            }}%."
-                 matTooltipPosition="above">{{ player.defense | number: '1.0' }}
-              🛡️
-            </div>
-
-            <div class="text-green-500"
-                 #tooltip="matTooltip"
-                 matTooltip="Decreases incoming damage from attacks by {{ player.flatDmgReduction}}."
-                 matTooltipPosition="above">{{ player.flatDmgReduction }}
-              🔰
-            </div>
-
-            <div #tooltip="matTooltip"
-                 matTooltip="Chance to dodge an attack - {{
-              100 * (1 - 100 / (100 + player.dodgeRate)) | number: '1.0-0'
-            }}%." matTooltipPosition="right"
-                 class="text-green-400">{{ player.dodgeRate | number: '1.0' }}
-              🦵
-            </div>
-
-          </div>
 
           <mat-divider></mat-divider>
 
@@ -86,6 +56,8 @@ background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/
             <div class="text-blue-500">
               {{ player.attackSpeed | number: '1.3-3' }} ⏩
             </div>
+
+
           </div>
 
           <mat-divider></mat-divider>
@@ -103,14 +75,43 @@ background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/
           <mat-divider></mat-divider>
 
           <div
-            class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm"
-            #tooltip="matTooltip"
-            matTooltip="You recover {{player.hpRegen}}❤️ every second."
-            matTooltipPosition="right">
-            <div>Regen:</div>
-            <div class="text-orange-500">
-              {{ player.hpRegen }} 🧪
+            class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm">
+            <div class="text-orange-500 pl-1"
+                 #tooltip="matTooltip"
+                 matTooltip="You recover {{player.hpRegen}}❤️ every second."
+                 matTooltipPosition="above">
+              {{ player.hpRegen | number: '1.0-3' }} 🧪
             </div>
+            <div class="text-green-500 pr-1"
+                 #tooltip="matTooltip"
+                 matTooltip="Decreases incoming damage from attacks by {{ player.flatDmgReduction | number: '1.3-3'}}."
+                 matTooltipPosition="above">{{ player.flatDmgReduction | number: '1.3-3' }}
+              🔰
+            </div>
+          </div>
+
+          <mat-divider></mat-divider>
+
+          <div
+            class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm">
+
+            <div class="text-green-600 pl-1"
+                 #tooltip="matTooltip"
+                 matTooltip="Decreases incoming damage from attacks by {{
+              100 * (1 - 100 / (100 + player.defense)) | number: '1.0-0'
+            }}%."
+                 matTooltipPosition="below">{{ player.defense | number: '1.0-2' }}
+              🛡️
+            </div>
+
+            <div #tooltip="matTooltip"
+                 matTooltip="Chance to dodge an attack - {{
+              100 * (1 - 100 / (100 + player.dodgeRate)) | number: '1.0-0'
+            }}%." matTooltipPosition="below"
+                 class="text-green-400 pr-1">{{ player.dodgeRate | number: '1.0-2' }}
+              🦵
+            </div>
+
           </div>
 
         </div>

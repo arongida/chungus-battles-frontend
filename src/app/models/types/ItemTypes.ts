@@ -6,8 +6,8 @@ export enum ItemType {
 }
 
 export enum EquipSlot {
-  ARMOR = 'armor',
   HELMET = 'helmet',
+  ARMOR = 'armor',
   MAIN_HAND = 'mainHand',
   OFF_HAND = 'offHand'
 }

@@ -177,10 +177,10 @@ export class CharacterDetailsComponent {
       case EquipSlot.HELMET:
         return '👑'
       case EquipSlot.MAIN_HAND:
-        return '🫲'
+        return '🗡️'
       case EquipSlot.OFF_HAND:
-        return '🫱'
-      default: return '🫲'
+        return '🛡️'
+      default: return '🗡️'
     }
   }
 

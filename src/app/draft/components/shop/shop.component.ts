@@ -61,13 +61,11 @@ export class ShopComponent {
   dragIndex = 0;
   previewBuyItem = false;
   tempCard: HTMLElement | null = null;
-  trackedCollectionIds = computed(() => this.itemTrackingService.trackedCollectionIds());
 
   constructor(
     public draftService: DraftService,
-    private itemTrackingService: ItemTrackingService,
     private soundsService: SoundsService,
-    private characterDetailsService: CharacterDetailsService,
+    public characterDetailsService: CharacterDetailsService,
   ) {
     this.shop = [] as Item[];
     this.player = new Player();
@@ -159,18 +157,13 @@ export class ShopComponent {
   }
 
 
-  isCardTracked(item: Item): boolean {
-    const isOwned = this.player.getOwnedCountForItem(item) > 0;
-    const isTracked = item.itemCollections.some((collectionId) => this.trackedCollectionIds().includes(collectionId));
-    return isTracked && !isOwned;
-  }
-
   itemMergeRarity(item: Item): ItemRarity | 0 {
     if (item.sold) return 0;
     const mergedNumber = this.player.getOwnedCountForItem(item);
     if (mergedNumber === 0) return 0;
     if (mergedNumber === 7) return ItemRarity.LEGENDARY;
     if (mergedNumber === 3) return ItemRarity.EPIC;
+    if (mergedNumber === 4 || mergedNumber === 2 ||mergedNumber === 6) return ItemRarity.COMMON;
     if (mergedNumber >= 1) return ItemRarity.RARE;
     return 0;
   }

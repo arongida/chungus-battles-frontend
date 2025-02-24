@@ -113,17 +113,17 @@ export class Player extends Schema {
     this._defense = value < 0 ? 0 : value;
   }
 
-  getItemcollectionItemCountFromEquip(collectionId: number): number {
-    let counter = 0;
-
-    this.equippedItems.forEach((item) => {
-      if (item.itemCollections.includes(collectionId)) {
-        counter++;
-      }
-    });
-
-    return counter;
-  }
+  // getItemcollectionItemCountFromEquip(collectionId: number): number {
+  //   let counter = 0;
+  //
+  //   this.equippedItems.forEach((item) => {
+  //     if (item.itemCollections.includes(collectionId)) {
+  //       counter++;
+  //     }
+  //   });
+  //
+  //   return counter;
+  // }
 
   getAllItems(): Item[] {
     const allItems = [...this.inventory];
@@ -133,13 +133,13 @@ export class Player extends Schema {
     return allItems;
   }
 
-  getItemcollectionItemCountTotal(collectionId: number): number {
-    const allItems = this.getAllItems();
-    if (allItems.length === 0) return 0;
-    const itemsInSet = allItems.filter((item) => item.itemCollections.includes(collectionId));
-    const setItemSet = new Set(itemsInSet.map((item) => item.itemId));
-    return setItemSet.size;
-  }
+  // getItemcollectionItemCountTotal(collectionId: number): number {
+  //   const allItems = this.inventory;
+  //   if (allItems.length === 0) return 0;
+  //   const itemsInSet = allItems.filter((item) => item.itemCollections.includes(collectionId));
+  //   const setItemSet = new Set(itemsInSet.map((item) => item.itemId));
+  //   return setItemSet.size;
+  // }
 
   getOwnedCountForItem(item: Item): number {
     const allItems = this.getAllItems();

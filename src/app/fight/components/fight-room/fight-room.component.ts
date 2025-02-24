@@ -67,6 +67,8 @@ export class FightRoomComponent {
           // Assign the Player instance to this.player
           this.player = player;
           this.enemy = enemy;
+
+          console.log('reassigning player');
         });
 
         room.onMessage('game_over', (message: string) => {
@@ -75,7 +77,7 @@ export class FightRoomComponent {
           this.battleOver = true;
         });
 
-        room.onMessage('end_battle', (message: string) => {
+        room.onMessage('end_battle', () => {
           this.openSnackBar('The battle has ended', 'Exit', room.state.player.playerId, room.state.player.name);
           this.battleOver = true;
         });
@@ -191,10 +193,8 @@ export class FightRoomComponent {
     damageNumber.textContent = `-${damage}`;
     damageNumber.style.left = `${Math.random() * 100}%`; // Random horizontal position
 
-    // Scale font size based on damage value
-    const minSize = 16; // Minimum font size in pixels
-    const maxSize = 48; // Maximum font size in pixels
-    const scaleFactor = 0.5; // Adjust this to fine-tune scaling
+    const minSize = 16;
+    const scaleFactor = 0.5;
 
     damageNumber.style.fontSize = `${minSize + damage * scaleFactor}px`;
 

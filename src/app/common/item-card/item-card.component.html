@@ -111,12 +111,96 @@
           }
 
         </div>
-        @if (item.itemCollections.length > 0) {
+        @if (item.set) {
           <div class="p-1 m-1"
-               [ngClass]="{'text-green-500': getIfItemHasActiveSet(item)}">
-            <div>Sets:</div>
+               [ngClass]="{'text-green-500': item.setActive, 'text-slate-300': !item.setActive}">
+            <div>{{item.set | titlecase}} set bonus:</div>
+            <div>{{item.setActive ? '(active)': '(inactive)'}}</div>
             <div
-              class="whitespace-pre-line">{{ getItemsCollectionTooltipForItem(item) }}
+              class="whitespace-pre-line">
+
+              @if (item.setBonusStats.strength !== 0) {
+                <p>
+                  Strength:
+                  <span
+                    class="text-red-500">{{ item.setBonusStats.strength }}
+                    ⚔️</span>
+                </p>
+              }
+
+              @if (item.setBonusStats.accuracy !== 0) {
+                <p>
+                  Accuracy:
+                  <span
+                    class="text-red-500">{{ item.setBonusStats.accuracy }}
+                    🎯</span>
+                </p>
+              }
+
+
+              @if (item.setBonusStats.attackSpeed !== 0 && item.setBonusStats.attackSpeed !== 1) {
+                <p>
+                  A.speed:
+                  <span
+                    class="text-blue-500">{{ item.setBonusStats.attackSpeed * 100 - 100 | number: '1.0-0' }}
+                    % ⏩</span>
+                </p>
+              }
+
+              @if (item.setBonusStats.defense !== 0) {
+                <p>
+                  Defense:
+                  <span
+                    class="text-green-600">{{ item.setBonusStats.defense }}
+                    🛡️</span>
+                </p>
+              }
+
+              @if (item.setBonusStats.flatDmgReduction !== 0) {
+                <p>
+                  Damage Reduction:
+                  <span
+                    class="text-green-600">{{ item.setBonusStats.flatDmgReduction }}
+                    🔰</span>
+                </p>
+              }
+
+              @if (item.setBonusStats.dodgeRate !== 0) {
+                <p>
+                  Dodge:
+                  <span
+                    class="text-green-400">{{ item.setBonusStats.dodgeRate }}
+                    🦵</span>
+                </p>
+              }
+
+              @if (item.setBonusStats.maxHp !== 0) {
+                <p>
+                  Health:
+                  <span
+                    class="text-pink-500">{{ item.setBonusStats.maxHp }}
+                    ❤️</span>
+                </p>
+              }
+
+              @if (item.setBonusStats.income !== 0) {
+                <p>
+                  Income:
+                  <span
+                    class="text-yellow-300">{{ item.setBonusStats.income }}
+                    💰</span>
+                </p>
+              }
+
+              @if (item.setBonusStats.hpRegen !== 0) {
+                <p>
+                  Regen:
+                  <span
+                    class="text-orange-500">{{ item.setBonusStats.hpRegen }}
+                    🧪</span>
+                </p>
+              }
+
             </div>
             <br>
           </div>

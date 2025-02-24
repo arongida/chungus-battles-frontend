@@ -28,27 +28,6 @@
     </div>
   </span>
 
-  <button matTooltipHideDelay="1000" #tooltip="matTooltip" matTooltipPosition="left"
-    matTooltip="Highlight missing items from item sets!" mat-button [matMenuTriggerFor]="menu">Item Sets</button>
-  <mat-menu #menu="matMenu">
-    <div class="flex flex-col p-3 m-3 min-w-fit text-center justify-items-center" (click)="$event.stopPropagation();">
-      @for (collection of player.availableItemCollections; track collection.itemCollectionId) {
-
-      <mat-chip-option class="m-1 text-xs" #tooltip="matTooltip" matTooltipPosition="left"
-        [selected]="selectedCollections().includes(collection.itemCollectionId)"
-        (selectionChange)="handleSelectionChange($event, collection.itemCollectionId)" [matTooltip]="collection.effect">
-        {{collection.name}}
-        <mat-progress-bar [id]="'collection-progress-' + collection.itemCollectionId" mode="determinate"
-          [value]="getProgress(collection)"></mat-progress-bar>
-      </mat-chip-option>
-
-      }
-    </div>
-  </mat-menu>
-
-
-
-
 
   <button mat-icon-button matBadge="{{player.inventory.length}}" (click)="openInventory()">
     <mat-icon>markunread_mailbox</mat-icon>

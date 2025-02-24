@@ -171,6 +171,7 @@ export class ShopComponent {
     if (mergedNumber === 0) return 0;
     if (mergedNumber === 7) return ItemRarity.LEGENDARY;
     if (mergedNumber === 3) return ItemRarity.EPIC;
+    if (mergedNumber === 4 || mergedNumber === 2 ||mergedNumber === 6) return ItemRarity.COMMON;
     if (mergedNumber >= 1) return ItemRarity.RARE;
     return 0;
   }

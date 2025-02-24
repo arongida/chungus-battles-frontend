@@ -26,10 +26,10 @@
             <span class="relative flex size-3">
             <span
               class="absolute inline-flex h-full w-full animate-ping rounded-full opacity-75"
-              [ngClass]="{'bg-blue-400': itemMergeRarity(item) === ItemRarity.RARE,'bg-purple-400': itemMergeRarity(item) === ItemRarity.EPIC, 'bg-orange-400': itemMergeRarity(item) === ItemRarity.LEGENDARY}"></span>
+              [ngClass]="{'bg-slate-200': itemMergeRarity(item) === ItemRarity.COMMON,'bg-blue-400': itemMergeRarity(item) === ItemRarity.RARE,'bg-purple-400': itemMergeRarity(item) === ItemRarity.EPIC, 'bg-orange-400': itemMergeRarity(item) === ItemRarity.LEGENDARY}"></span>
             <span
               class="relative inline-flex size-3 rounded-full"
-              [ngClass]="{'bg-blue-500': itemMergeRarity(item) === ItemRarity.RARE, 'bg-purple-500': itemMergeRarity(item) === ItemRarity.EPIC, 'bg-orange-500': itemMergeRarity(item) === ItemRarity.LEGENDARY}"></span>
+              [ngClass]="{'bg-slate-300': itemMergeRarity(item) === ItemRarity.COMMON,'bg-blue-500': itemMergeRarity(item) === ItemRarity.RARE, 'bg-purple-500': itemMergeRarity(item) === ItemRarity.EPIC, 'bg-orange-500': itemMergeRarity(item) === ItemRarity.LEGENDARY}"></span>
           </span>
           }
 

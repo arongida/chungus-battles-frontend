@@ -42,6 +42,9 @@ import {
   MusicOptions,
   SoundsService,
 } from '../../../common/services/sounds.service';
+import {
+  CharacterDetailsService
+} from '../../../common/services/character-details.service';
 
 @Component({
   selector: 'app-draft-room',
@@ -63,7 +66,7 @@ export class DraftRoomComponent implements OnInit {
   availableTalents: Talent[];
   availableCollections?: ItemCollection[];
 
-  constructor(public draftService: DraftService, private snackBar: MatSnackBar, private soundsService: SoundsService) {
+  constructor(public draftService: DraftService, private snackBar: MatSnackBar, private soundsService: SoundsService, private characterDetailsService: CharacterDetailsService) {
     this.player = new Player();
     this.shop = [] as Item[];
     this.availableTalents = [] as Talent[];
@@ -78,21 +81,16 @@ export class DraftRoomComponent implements OnInit {
       await this.draftService.reconnect(untracked(() => localStorage.getItem('reconnectToken')) as string);
     }
 
-    this.draftService.room?.onMessage('trigger_talent', (message: TriggerTalentMessage) => {
-      triggerTalentActivation(message.talentId, message.playerId);
-      console.log('trigger_talent', message);
-    });
+    // this.draftService.room?.onMessage('trigger_talent', (message: TriggerTalentMessage) => {
+    //   triggerTalentActivation(message.talentId, message.playerId);
+    //   console.log('trigger_talent', message);
+    // });
 
-    this.draftService.room?.onMessage('trigger_collection', (message: TriggerCollectionMessage) => {
-      if (this.player) {
-        triggerItemCollectionActivation(message.collectionId, message.playerId);
-      }
-    });
 
     this.draftService.room?.onMessage('draft_log', (message: string) => {
       console.log('draft_log', message);
       this.snackBar.open(message, 'Close', {
-        duration: 3000,
+        duration: 5000,
       });
     });
 
@@ -102,18 +100,19 @@ export class DraftRoomComponent implements OnInit {
       const plainPlayerObject = state.player;
 
       // Create a new Player instance
-      const player = new Player();
+      this.player = new Player().assign(plainPlayerObject);
 
-      // Copy properties from the plain object to the new Player instance
-      Object.assign(player, plainPlayerObject);
 
       // Assign the Player instance to this.player
-      this.player = player;
       console.log('re assigning player');
 
       this.shop = state.shop as Item[];
       this.availableTalents = state.availableTalents as Talent[];
       this.availableCollections = state.player.availableItemCollections as ItemCollection[];
     });
+  }
+
+  closeCharacterDetails(): void {
+    this.characterDetailsService.closeCharacterDetails();
   }
 }

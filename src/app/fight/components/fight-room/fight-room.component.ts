@@ -67,6 +67,8 @@ export class FightRoomComponent {
           // Assign the Player instance to this.player
           this.player = player;
           this.enemy = enemy;
+
+          console.log('reassigning player');
         });
 
         room.onMessage('game_over', (message: string) => {

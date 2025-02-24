@@ -10,4 +10,8 @@ export class CharacterDetailsService {
     this.showCharacterDetails.set(!this.showCharacterDetails());
   }
 
+  closeCharacterDetails() {
+    this.showCharacterDetails.set(false);
+  }
+
 }

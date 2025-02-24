@@ -49,7 +49,6 @@ export class DraftToolbarComponent implements AfterViewChecked, OnInit {
 
   private previousValue: number = 0;
   private talentDialogRef: MatDialogRef<TalentsComponent, any> | null = null;
-  selectedCollections = computed(() => this.itemTrackingService.trackedCollectionIds());
 
   constructor(
     public itemTrackingService: ItemTrackingService,
@@ -92,10 +91,7 @@ export class DraftToolbarComponent implements AfterViewChecked, OnInit {
         talents: this.availableTalents,
         playerLevel: this.player?.level ?? 1,
       },
-      maxWidth: '20vw',
-      maxHeight: '70vh',
-      height: '70%',
-      width: '20%',
+
     });
   }
 
@@ -124,26 +120,6 @@ export class DraftToolbarComponent implements AfterViewChecked, OnInit {
     this.hoverBuyXp = !this.hoverBuyXp;
   }
 
-  onSelectionChange(event: any, collectionId: number) {
-    this.characterDetailsService.showCharacterDetails.set(false);
-    event.preventDefault();
-    event.stopPropagation();
-    this.itemTrackingService.toggleCollectionTracking(collectionId);
-  }
-
-  handleSelectionChange(event: MatChipSelectionChange, collectionId: number) {
-    if (event.isUserInput) {
-      this.itemTrackingService.toggleCollectionTracking(collectionId);
-    }
-  }
-
-  getProgress(collection: ItemCollection) {
-    return (
-      (this.player?.getItemcollectionItemCountTotal(collection.itemCollectionId) /
-          (collection.name.includes('Shield') ? 1 : 3)) *
-      100
-    );
-  }
 
   isFighting(): boolean {
     return !this.draftService.room;

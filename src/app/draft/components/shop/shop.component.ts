@@ -61,13 +61,11 @@ export class ShopComponent {
   dragIndex = 0;
   previewBuyItem = false;
   tempCard: HTMLElement | null = null;
-  trackedCollectionIds = computed(() => this.itemTrackingService.trackedCollectionIds());
 
   constructor(
     public draftService: DraftService,
-    private itemTrackingService: ItemTrackingService,
     private soundsService: SoundsService,
-    private characterDetailsService: CharacterDetailsService,
+    public characterDetailsService: CharacterDetailsService,
   ) {
     this.shop = [] as Item[];
     this.player = new Player();
@@ -158,12 +156,6 @@ export class ShopComponent {
     return false;
   }
 
-
-  isCardTracked(item: Item): boolean {
-    const isOwned = this.player.getOwnedCountForItem(item) > 0;
-    const isTracked = item.itemCollections.some((collectionId) => this.trackedCollectionIds().includes(collectionId));
-    return isTracked && !isOwned;
-  }
 
   itemMergeRarity(item: Item): ItemRarity | 0 {
     if (item.sold) return 0;

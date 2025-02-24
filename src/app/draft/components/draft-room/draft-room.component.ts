@@ -17,14 +17,6 @@ import {
 import {
   Talent,
 } from '../../../models/colyseus-schema/TalentSchema';
-import {
-  TriggerCollectionMessage,
-  TriggerTalentMessage,
-} from '../../../models/types/MessageTypes';
-import {
-  triggerTalentActivation,
-  triggerItemCollectionActivation,
-} from '../../../common/TriggerAnimations';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {
   ItemCollection,
@@ -66,7 +58,7 @@ export class DraftRoomComponent implements OnInit {
   availableTalents: Talent[];
   availableCollections?: ItemCollection[];
 
-  constructor(public draftService: DraftService, private snackBar: MatSnackBar, private soundsService: SoundsService, private characterDetailsService: CharacterDetailsService) {
+  constructor(public draftService: DraftService, private snackBar: MatSnackBar, private soundsService: SoundsService) {
     this.player = new Player();
     this.shop = [] as Item[];
     this.availableTalents = [] as Talent[];
@@ -112,7 +104,4 @@ export class DraftRoomComponent implements OnInit {
     });
   }
 
-  closeCharacterDetails(): void {
-    this.characterDetailsService.closeCharacterDetails();
-  }
 }

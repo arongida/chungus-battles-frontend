@@ -11,9 +11,6 @@ import {
 import {
   Player,
 } from '../../models/colyseus-schema/PlayerSchema';
-import {
-  ItemCollection,
-} from '../../models/colyseus-schema/ItemCollectionSchema';
 import { ItemRarity } from '../../models/types/ItemTypes';
 
 @Component({

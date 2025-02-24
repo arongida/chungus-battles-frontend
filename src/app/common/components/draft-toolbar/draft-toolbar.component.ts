@@ -11,14 +11,11 @@ import { InventoryComponent } from '../../../draft/components/inventory/inventor
 import { MatTooltip, MatTooltipModule } from '@angular/material/tooltip';
 import { NgClass } from '@angular/common';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatChipSelectionChange, MatChipsModule } from '@angular/material/chips';
-import { ItemTrackingService } from '../../services/item-tracking.service';
 import { DraftService } from '../../../draft/services/draft.service';
 import { CharacterDetailsComponent } from '../character-details/character-details.component';
 import { MatCardModule } from '@angular/material/card';
 import { MatBadgeModule } from '@angular/material/badge';
 import { SoundOptions, SoundsService } from '../../services/sounds.service';
-import { ItemCollection } from '../../../models/colyseus-schema/ItemCollectionSchema';
 import { CharacterDetailsService } from '../../services/character-details.service';
 
 @Component({
@@ -32,7 +29,6 @@ import { CharacterDetailsService } from '../../services/character-details.servic
     MatTooltipModule,
     NgClass,
     MatMenuModule,
-    MatChipsModule,
     MatCardModule,
     CharacterDetailsComponent,
     MatBadgeModule,
@@ -48,10 +44,9 @@ export class DraftToolbarComponent implements AfterViewChecked, OnInit {
   showCharacterDetails = computed(() => this.characterDetailsService.showCharacterDetails());
 
   private previousValue: number = 0;
-  private talentDialogRef: MatDialogRef<TalentsComponent, any> | null = null;
+  private talentDialogRef: MatDialogRef<TalentsComponent> | null = null;
 
   constructor(
-    public itemTrackingService: ItemTrackingService,
     public draftService: DraftService,
     private soundsService: SoundsService,
     private characterDetailsService: CharacterDetailsService
@@ -101,7 +96,7 @@ export class DraftToolbarComponent implements AfterViewChecked, OnInit {
 
   openInventory(): void {
     this.characterDetailsService.showCharacterDetails.set(false);
-    const inventoryDialog = this.dialog.open(InventoryComponent, {
+    this.dialog.open(InventoryComponent, {
       data: {
         player: this.player,
       },

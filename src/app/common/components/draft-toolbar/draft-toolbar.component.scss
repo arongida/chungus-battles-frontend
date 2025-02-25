@@ -1,3 +1,8 @@
 .mdc-evolution-chip__cell {
   overflow: hidden !important;
 }
+
+.clicked {
+  background-color: white !important;  /* Changes the full background */
+  color: brown !important;           /* Ensures text/icon visibility */
+}

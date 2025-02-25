@@ -146,8 +146,6 @@ export class DraftToolbarComponent implements AfterViewChecked, OnInit {
     }else{
       this.draftService.sendMessage('unlock-shop', {});
     }
-    console.log(this.isLocked);
-    console.log("players locked shop: ", this.player.lockedShop);
-    
+
   }
 }

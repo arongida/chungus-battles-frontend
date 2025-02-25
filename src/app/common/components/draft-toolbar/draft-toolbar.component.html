@@ -53,6 +53,9 @@
       (mouseleave)="switchShopRefreshAnimate()">
       <mat-icon [ngClass]="{'animate-spin': hoverShopRefresh}">refresh</mat-icon>
     </button>
+    <button #tooltip="matTooltip" matTooltip="4 gold = 4 xp" matTooltipPosition="left" mat-fab color="text-white"
+      class="m-2 p-2 flex-1" (click)="lockShop()"><mat-icon [ngClass]="">lock_open</mat-icon>
+    </button>
   </div>
   }
 

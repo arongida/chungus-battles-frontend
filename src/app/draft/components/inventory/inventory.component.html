@@ -3,14 +3,6 @@
   <button mat-button (click)="backToDefault()" class="px-4 py-2 bg-[#654321] text-white rounded-md">Obtained</button>
   <button mat-button (click)="sortByName()" class="px-4 py-2 bg-[#654321] text-white rounded-md">A-Z</button>
   <button mat-button (click)="sortByLevel()" class="px-4 py-2 bg-[#654321] text-white rounded-md">Level</button>
-  <button mat-button [matMenuTriggerFor]="menu" class="px-4 py-2 bg-[#654321] text-white rounded-md">Sets</button>
-  <mat-menu #menu="matMenu">
-    @for (collection of player.activeItemCollections; track $index){
-    <button (click)="listOfSets(collection.name); setSelectedCollection(collection)" mat-menu-item>
-      {{ collection.name }}
-    </button>
-    }
-  </mat-menu>
 </div>
 
 @if(isDisplayingSets){
@@ -22,9 +14,9 @@
 </div>
 }
 
-<div id="inventory-grid" [ngClass]="{ 
-    'grid-cols-4': !isDisplayingSets, 
-    'grid-cols-3': isDisplayingSets 
+<div id="inventory-grid" [ngClass]="{
+    'grid-cols-4': !isDisplayingSets,
+    'grid-cols-3': isDisplayingSets
   }" class="grid gap-4 place-items-center">
 
   @for (item of displayedInventory; track $index) {

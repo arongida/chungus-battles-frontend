@@ -16,7 +16,6 @@ export class Item extends Schema {
   @type(['string']) tags: string[] = new Array<string>();
   @type('boolean') sold: boolean = false;
   @type('boolean') equipped: boolean = false;
-  @type(['number']) itemCollections: number[] = [];
   @type('string') type: string = '';
   @type('string') set: string = '';
   @type(['string']) equipOptions: SetSchema<string> = new SetSchema();

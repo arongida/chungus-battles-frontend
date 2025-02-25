@@ -17,6 +17,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatBadgeModule } from '@angular/material/badge';
 import { SoundOptions, SoundsService } from '../../services/sounds.service';
 import { CharacterDetailsService } from '../../services/character-details.service';
+import { Item } from '../../../models/colyseus-schema/ItemSchema';
 
 @Component({
   selector: 'app-draft-toolbar',
@@ -50,11 +51,11 @@ export class DraftToolbarComponent implements AfterViewChecked, OnInit {
     public draftService: DraftService,
     private soundsService: SoundsService,
     private characterDetailsService: CharacterDetailsService
-  ) {}
+  ) { }
 
   @Input({ required: true }) player: Player = new Player();
-  @Input({ required: false })
-  availableTalents?: Talent[] = [];
+  @Input({ required: false }) availableTalents?: Talent[] = [];
+  isLocked : Boolean = false;
 
   @ViewChild('talentPickerTooltip')
   talentPickerTooltip!: MatTooltip;
@@ -136,5 +137,17 @@ export class DraftToolbarComponent implements AfterViewChecked, OnInit {
     this.characterDetailsService.showCharacterDetails.set(false);
     this.soundsService.playSound(SoundOptions.CLICK);
     this.draftService.sendMessage('refresh_shop', {});
+  }
+
+  lockShop() {
+    this.isLocked = !this.isLocked;
+    if(this.isLocked){
+      this.draftService.sendMessage('lock-shop', {});
+    }else{
+      this.draftService.sendMessage('unlock-shop', {});
+    }
+    console.log(this.isLocked);
+    console.log("players locked shop: ", this.player.lockedShop);
+    
   }
 }

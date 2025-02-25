@@ -89,24 +89,7 @@ export class InventoryComponent {
     }
   }
 
-  listOfSets(collectionName: string) {
-    this.isDisplayingSets = true;
-    const selectedCollection = this.player.activeItemCollections.find(
-      (collection) => collection.name === collectionName
-    );
 
-    if (selectedCollection) {
-      this.displayedInventory = this.player.inventory.filter((item) =>
-        item.itemCollections.includes(selectedCollection.itemCollectionId)
-      );
-    } else {
-      console.log(`No item collection found with the name ${collectionName}`);
-    }
-  }
-
-  setSelectedCollection(collection: ItemCollection) {
-    this.selectedItemCollection = collection;
-  }
 
   sellSelectedItem(item: Item) {
     this.draftService.sendMessage('sell', {

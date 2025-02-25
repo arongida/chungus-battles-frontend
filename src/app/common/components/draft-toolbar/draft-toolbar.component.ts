@@ -17,7 +17,6 @@ import { MatCardModule } from '@angular/material/card';
 import { MatBadgeModule } from '@angular/material/badge';
 import { SoundOptions, SoundsService } from '../../services/sounds.service';
 import { CharacterDetailsService } from '../../services/character-details.service';
-import { Item } from '../../../models/colyseus-schema/ItemSchema';
 
 @Component({
   selector: 'app-draft-toolbar',

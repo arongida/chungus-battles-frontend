@@ -50,11 +50,11 @@ export class DraftToolbarComponent implements AfterViewChecked, OnInit {
     public draftService: DraftService,
     private soundsService: SoundsService,
     private characterDetailsService: CharacterDetailsService
-  ) {}
+  ) { }
 
   @Input({ required: true }) player: Player = new Player();
-  @Input({ required: false })
-  availableTalents?: Talent[] = [];
+  @Input({ required: false }) availableTalents?: Talent[] = [];
+  isLocked : Boolean = false;
 
   @ViewChild('talentPickerTooltip')
   talentPickerTooltip!: MatTooltip;
@@ -136,5 +136,15 @@ export class DraftToolbarComponent implements AfterViewChecked, OnInit {
     this.characterDetailsService.showCharacterDetails.set(false);
     this.soundsService.playSound(SoundOptions.CLICK);
     this.draftService.sendMessage('refresh_shop', {});
+  }
+
+  lockShop() {
+    this.isLocked = !this.isLocked;
+    if(this.isLocked){
+      this.draftService.sendMessage('lock-shop', {});
+    }else{
+      this.draftService.sendMessage('unlock-shop', {});
+    }
+
   }
 }

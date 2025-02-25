@@ -30,6 +30,7 @@ export class Player extends Schema {
     'https://chungus-battles.b-cdn.net/chungus-battles-assets/Portrait_ID_0_Placeholder.png';
   @type([Talent]) talents: ArraySchema<Talent> = new ArraySchema<Talent>();
   @type([Item]) inventory: ArraySchema<Item> = new ArraySchema<Item>();
+  @type([Item]) lockedShop: ArraySchema<Item> = new ArraySchema<Item>();
   @type({ map: Item }) equippedItems = new MapSchema<Item>();
   @type([ItemCollection]) activeItemCollections: ArraySchema<ItemCollection> =
     new ArraySchema<ItemCollection>();
@@ -150,5 +151,9 @@ export class Player extends Schema {
       else counter += item.rarity;
     });
     return counter;
+  }
+
+  setLockedShopToDefault(){
+    this.lockedShop = new ArraySchema<Item>();
   }
 }

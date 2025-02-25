@@ -30,7 +30,7 @@
 
 
   <button mat-icon-button matBadge="{{player.inventory.length}}" (click)="openInventory()">
-    <mat-icon>markunread_mailbox</mat-icon>
+    <mat-icon>menu_book</mat-icon>
   </button>
 
   <button mat-icon-button (click)="switchMute()">
@@ -53,6 +53,13 @@
       (mouseleave)="switchShopRefreshAnimate()">
       <mat-icon [ngClass]="{'animate-spin': hoverShopRefresh}">refresh</mat-icon>
     </button>
+    @if(isLocked){
+    <button #tooltip="matTooltip" matTooltip="Your current shop is locked for the next round." matTooltipPosition="below" mat-fab color="text-white"
+      class="m-2 p-2 flex-1" [ngClass]="{'clicked' : isLocked}" (click)="lockShop()"><mat-icon>lock_outline</mat-icon>    
+    </button>} @else {
+      <button #tooltip="matTooltip" matTooltip="Lock your current shop for the next round." matTooltipPosition="below" mat-fab color="text-white"
+      class="m-2 p-2 flex-1" [ngClass]="{'clicked' : isLocked}" (click)="lockShop()"><mat-icon>lock_open</mat-icon>    
+    </button>}
   </div>
   }
 

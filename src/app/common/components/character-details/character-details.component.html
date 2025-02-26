@@ -218,7 +218,18 @@ background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/
               class="w-2/4"
               [ngClass]="{'text-blue-500': item.rarity === ItemRarity.RARE, 'text-purple-500': item.rarity === ItemRarity.EPIC, 'text-orange-500': item.rarity === ItemRarity.LEGENDARY}">{{ item.name | titlecase }}</span>
 
-
+          @if(item.type === "weapon"){
+            @for(itemEquipOption of item.equipOptions.values(); track $index){
+            <button mat-button class="w-1/4"
+                    (click)="equip(item, itemEquipOption)">
+              Equip to {{itemEquipOption}}
+            </button>
+          }
+            <button mat-button class="w-1/4"
+                    (click)="sellSelectedItem(item)">
+              Sell +{{ getItemPriceRounded(item) }}🟡
+            </button>
+          } @else { 
             <button mat-button class="w-1/4"
                     (click)="equip(item, item.equipOptions.values().next().value)">
               Equip
@@ -227,7 +238,7 @@ background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/
                     (click)="sellSelectedItem(item)">
               Sell +{{ getItemPriceRounded(item) }}🟡
             </button>
-
+          }
           </div>
 
           @if (item.showDetails) {

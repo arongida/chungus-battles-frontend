@@ -146,8 +146,6 @@ export class CharacterDetailsComponent {
       itemId: item.itemId,
       slot: slot,
     });
-    console.log(item);
-    console.log(slot);
     this.onMouseLeaveItem(item);
   }
 

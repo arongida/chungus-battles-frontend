@@ -141,7 +141,7 @@ export class CharacterDetailsComponent {
     this.onMouseLeaveItem(item);
   }
 
-  equip(item: Item, slot: EquipSlot) {
+  equip(item: Item, slot: EquipSlot | string) {
     this.draftService.sendMessage('equip', {
       itemId: item.itemId,
       slot: slot,
@@ -189,5 +189,5 @@ export class CharacterDetailsComponent {
   protected readonly EquipSlot = EquipSlot;
   protected readonly ItemRarity = ItemRarity;
 
-  
+
 }

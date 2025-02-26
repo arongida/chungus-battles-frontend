@@ -122,7 +122,7 @@ export class CharacterDetailsComponent {
     this.selectedCategory = event.tab.textLabel.toLocaleLowerCase();
   }
 
-  getEquipmentTypeFromInventory(itemType: string): Item[] {
+  getEquipmentTypeFromInventory(itemType: string) {
     if (itemType === 'inventory') {
       return this.player.inventory;
     }
@@ -146,6 +146,8 @@ export class CharacterDetailsComponent {
       itemId: item.itemId,
       slot: slot,
     });
+    console.log(item);
+    console.log(slot);
     this.onMouseLeaveItem(item);
   }
 
@@ -186,4 +188,6 @@ export class CharacterDetailsComponent {
 
   protected readonly EquipSlot = EquipSlot;
   protected readonly ItemRarity = ItemRarity;
+
+  
 }

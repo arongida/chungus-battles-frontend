@@ -18,6 +18,9 @@ import { CharacterDetailsComponent } from '../../../common/components/character-
 import { SkillIconsComponent } from '../../../common/components/skill-icons/skill-icons.component';
 import { DraftToolbarComponent } from '../../../common/components/draft-toolbar/draft-toolbar.component';
 import { MusicOptions, SoundOptions, SoundsService } from '../../../common/services/sounds.service';
+import {
+  PhaserGame
+} from '../../phaser/phaser-game.component';
 
 @Component({
   selector: 'app-fight-room',
@@ -27,8 +30,7 @@ import { MusicOptions, SoundOptions, SoundsService } from '../../../common/servi
     CombatLogComponent,
     MatTooltipModule,
     RoundInfoComponent,
-    CharacterDetailsComponent,
-    SkillIconsComponent,
+    PhaserGame,
   ],
   templateUrl: './fight-room.component.html',
   styleUrl: './fight-room.component.scss',
@@ -39,7 +41,6 @@ export class FightRoomComponent {
   combatLog: string = '';
   gameOver: boolean = false;
   battleOver: boolean = false;
-  leaveLoading: boolean = false;
 
   constructor(
     private fightService: FightService,

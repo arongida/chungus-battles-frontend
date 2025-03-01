@@ -4,39 +4,9 @@
 
 
 
-<div class="flex flex-col justify-center items-center w-screen h-screen  bg-amber-950 bg-cover 
-  bg-[url('https://chungus-battles.b-cdn.net/chungus-battles-assets/BG_01.png')]">
-
-  <div class="grid grid-cols-1 grid-rows-2 w-3/4 scale-50 lg:scale-100">
-
-
-
-    @if (enemy) {
-    <div id="enemy" class="flex justify-center items-center bg-amber-900 bg-opacity-20 pb-5">
-      <div class="grid grid-rows-1 grid-cols-2">
-        <app-skill-icons class="px-2 z-10" [player]="enemy"></app-skill-icons>
-        <app-character-details [combat]="true" [player]="enemy" [enemy]="true"
-          class="min-w-fit max-w-fit"></app-character-details>
-      </div>
-    </div>
-    }
-
-
-    @if (player) {
-    <div id="character" class="flex justify-center items-center bg-amber-900 bg-opacity-20">
-      <div class="grid grid-rows-1 grid-cols-2">
-        <app-character-details [combat]="true" [player]="player" class="min-w-fit max-w-fit"></app-character-details>
-        <app-skill-icons class="px-2 z-10" [player]="player"></app-skill-icons>
-      </div>
-    </div>
-    }
-
-
-
-  </div>
-
+<div class="flex justify-center items-center overflow-hidden">
+  @defer {<phaser-game />}
 </div>
-
 
 
 @if (player) {

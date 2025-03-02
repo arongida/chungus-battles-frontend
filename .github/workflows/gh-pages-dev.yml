@@ -1,0 +1,21 @@
+name: Deploy Frontend to GH Pages
+on:
+  push:
+    branches:
+      - feat/phaser-battle
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4.2.0
+      - name: Adding Node.js
+        uses: actions/setup-node@v4.0.4
+        with:
+          node-version: 22
+      - name: Prepare and deploy
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          npm install
+          npm run ng -- deploy --base-href=/chungus-battles-frontend/ --name="arongida" --email="arkheonos@gmail.com" --remote=origin

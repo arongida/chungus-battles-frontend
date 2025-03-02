@@ -8,18 +8,20 @@ export class Game extends Scene
         super('Game');
     }
 
+
     preload ()
     {
-        this.load.setPath('assets');
-        
-        this.load.image('star', 'star.png');
-        this.load.image('background', 'bg.png');
-        this.load.image('logo', 'logo.png');
+        this.load.crossOrigin = 'anonymous';
+        this.load.setPath('https://chungus-battles.b-cdn.net/chungus-battles-assets');
+
+        this.load.image('background', 'BG_01.png', {
+          responseType: 'blob',
+          headers: {'Access-Control-Allow-Origin': '*'}});
     }
 
     create ()
     {
-        
+
         this.add.image(512, 384, 'background');
         this.add.image(512, 350, 'logo').setDepth(100);
         this.add.text(512, 490, 'Make something fun!\nand share it with us:\nsupport@phaser.io', {
@@ -27,7 +29,7 @@ export class Game extends Scene
             stroke: '#000000', strokeThickness: 8,
             align: 'center'
         }).setOrigin(0.5).setDepth(100);
-        
+
         EventBus.emit('current-scene-ready', this);
 
     }

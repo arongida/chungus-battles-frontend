@@ -11,25 +11,19 @@ export class Game extends Scene
 
     preload ()
     {
-        this.load.crossOrigin = 'anonymous';
-        this.load.setPath('https://chungus-battles.b-cdn.net/chungus-battles-assets');
+        this.load.setPath('assets');
+        this.load.spritesheet('player-idle','sprites/warrior/Idle.png', {frameWidth: 72, frameHeight: 86})
+        this.load.spritesheet('player','sprites/warrior/Attack 1.png', {frameWidth: 85, frameHeight: 86})
 
-        this.load.image('background', 'BG_01.png', {
-          responseType: 'blob',
-          headers: {'Access-Control-Allow-Origin': '*'}});
     }
 
     create ()
     {
 
-        this.add.image(512, 384, 'background');
-        this.add.image(512, 350, 'logo').setDepth(100);
-        this.add.text(512, 490, 'Make something fun!\nand share it with us:\nsupport@phaser.io', {
-            fontFamily: 'Arial Black', fontSize: 38, color: '#ffffff',
-            stroke: '#000000', strokeThickness: 8,
-            align: 'center'
-        }).setOrigin(0.5).setDepth(100);
-
+        const player = this.add.sprite(200, 500, 'player');
+        player.anims.create({key: 'player-attack', frames: 'player', duration: 500, repeat: -1});
+        player.setScale(4);
+        player.play('player-attack');
         EventBus.emit('current-scene-ready', this);
 
     }

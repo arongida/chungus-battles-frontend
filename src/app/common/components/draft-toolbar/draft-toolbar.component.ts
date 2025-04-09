@@ -17,6 +17,9 @@ import { MatCardModule } from '@angular/material/card';
 import { MatBadgeModule } from '@angular/material/badge';
 import { SoundOptions, SoundsService } from '../../services/sounds.service';
 import { CharacterDetailsService } from '../../services/character-details.service';
+import {
+  TutorialComponent
+} from '../../../draft/components/tutorial/tutorial.component';
 
 @Component({
   selector: 'app-draft-toolbar',
@@ -105,6 +108,12 @@ export class DraftToolbarComponent implements AfterViewChecked, OnInit {
       height: '100%',
       width: '80%',
     });
+  }
+
+  openTutorial(): void {
+    this.dialog.open(TutorialComponent, {
+
+    })
   }
 
   switchShopRefreshAnimate() {

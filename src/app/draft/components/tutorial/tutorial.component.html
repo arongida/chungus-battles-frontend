@@ -1,0 +1,35 @@
+<mat-stepper orientation="vertical" class="p-6 rounded-2xl">
+  <mat-step>
+    <ng-template matStepLabel>
+      <h2 class="text-xl font-semibold flex items-center gap-2 text-indigo-700">
+        <span class="material-icons">construction</span> Draft Phase
+      </h2>
+    </ng-template>
+    <div class="mt-2">
+      <ul class="list-disc list-inside space-y-2">
+        <li><strong>Buy items</strong> using your gold.</li>
+        <li><strong>Select new talents</strong> when you level up.</li>
+        <li><strong>Equip your items</strong> strategically.</li>
+        <li>Get a <strong>set bonus</strong> by equipping at least two items of the same set.</li>
+        <li>Once you're ready, <strong>face your opponent</strong>.</li>
+      </ul>
+    </div>
+  </mat-step>
+
+  <mat-step>
+    <ng-template matStepLabel>
+      <h2 class="text-xl font-semibold flex items-center gap-2 text-rose-700">
+        <span class="material-icons">sports_martial_arts</span> Battle Phase
+      </h2>
+    </ng-template>
+    <div class="mt-2">
+      <ul class="list-disc list-inside space-y-2">
+        <li>The battle is <strong>fully automatic</strong>.</li>
+        <li>Fight against <strong>"ghosts"</strong> of other players.</li>
+        <li><strong>Earn gold and experience</strong> after each battle.</li>
+        <li>You have <strong>three lives</strong>. Losing a battle costs one.</li>
+        <li>Your run <strong>ends when you run out of lives</strong>.</li>
+      </ul>
+    </div>
+  </mat-step>
+</mat-stepper>

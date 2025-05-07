@@ -1,6 +1,15 @@
 # Chungus Battles Frontend
 
-This is the front-end of the game Chungus Battles, created in Angular, Angular Material UI and tailwind CSS.
+This is the front-end of the game Chungus Battles, created with:
+<div align="left">
+  <img src="https://img.shields.io/badge/Angular-DD0031?style=for-the-badge&logo=angular&logoColor=white" alt="Angular" />
+  <br>
+  <img src="https://img.shields.io/badge/Angular%20Material-009688?style=for-the-badge&logo=angular&logoColor=white" alt="Angular Material" />
+  <br>
+  <img src="https://img.shields.io/badge/TailwindCSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white" alt="TailwindCSS" />
+  <br>
+  <img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
+</div>
 
 ## Live Demo
 https://arongida.github.io/chungus-battles-frontend

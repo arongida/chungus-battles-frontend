@@ -20,7 +20,36 @@ Run `ng serve --hmr` for a dev server. Navigate to `http://localhost:4200/`. Nee
 
 ## Game description
 
-1. Draft Phase: Buy items, XP, select talents to make yourself stronger.
-2. Battle Phase: Battle other players' characters who are at the same turn counter as you are. Battle is fully automatic.
-3. If you loose 3 battles you are out!
-4. If you win 10 battles you win!
+Chungus Battles is a turn-based auto-battler where strategic decisions in the draft phase directly impact your performance in battle.
+
+🃏 Draft Phase
+
+In each turn, you'll have the chance to:
+
+    Buy items and gain XP
+
+    Equip items to your character
+
+    Select the best talent that suits your strategy
+
+    Lock your shop to preserve good options for the next round
+
+    Make tactical choices to prepare for upcoming battles
+
+Careful planning in this phase is key to outsmarting your opponents.
+
+⚔️ Battle Phase
+
+Face off against other players' characters who are at the same turn count as you.
+
+    Battles are fully automatic
+
+    Watch your build come to life in combat
+
+🏆 Win Conditions
+
+    Lose 3 battles — you're eliminated
+
+    Win 10 battles — you win the game
+
+    Endgame: the final phase becomes King of the Hill, where surviving players battle for dominance until one remains!

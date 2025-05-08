@@ -38,6 +38,10 @@ In each turn, you'll have the chance to:
 
 Careful planning in this phase is key to outsmarting your opponents.
 
+<p align="left">
+  <img src="./src/assets/screenshot1.png" alt="Chungus Battles Screenshot" width="600"/>
+</p>
+
 ⚔️ Battle Phase
 
 Face off against other players' characters who are at the same turn count as you.
@@ -45,7 +49,9 @@ Face off against other players' characters who are at the same turn count as you
     Battles are fully automatic
 
     Watch your build come to life in combat
-
+<p align="left">
+  <img src="./src/assets/screenshot2.png" alt="Chungus Battles Screenshot" width="600"/>
+</p>
 🏆 Win Conditions
 
     Lose 3 battles — you're eliminated

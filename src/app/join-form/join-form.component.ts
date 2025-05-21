@@ -67,7 +67,7 @@ export class JoinFormComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   ngAfterViewInit(): void {
-    
+
     if (isPlatformBrowser(this.platformId)) {
       // Only run the animation interval in the browser
       this.intervalId = setInterval(() => {
@@ -103,7 +103,7 @@ export class JoinFormComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   async onFormSubmit() {
-    
+
     if (this.nameControl.invalid) {
       const errorMessage = this.getInputErrorMessage();
       this.snackBar.open(errorMessage, 'Close', {
@@ -111,7 +111,7 @@ export class JoinFormComponent implements AfterViewInit, OnDestroy, OnInit {
       });
       return;
     }
-    
+
     this.soundsService.playSound(SoundOptions.CLICK);
     this.loading = true;
     this.itemTrackingService.resetTrackedCollections();

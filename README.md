@@ -1,6 +1,15 @@
 # Chungus Battles Frontend
 
-This is the front-end of the game Chungus Battles, created in Angular, Angular Material UI and tailwind CSS.
+This is the front-end of the game Chungus Battles, created with:
+<div align="left">
+  <img src="https://img.shields.io/badge/Angular-DD0031?style=for-the-badge&logo=angular&logoColor=white" alt="Angular" />
+  <br>
+  <img src="https://img.shields.io/badge/Angular%20Material-009688?style=for-the-badge&logo=angular&logoColor=white" alt="Angular Material" />
+  <br>
+  <img src="https://img.shields.io/badge/TailwindCSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white" alt="TailwindCSS" />
+  <br>
+  <img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
+</div>
 
 ## Live Demo
 https://arongida.github.io/chungus-battles-frontend
@@ -11,7 +20,40 @@ Run `ng serve --hmr` for a dev server. Navigate to `http://localhost:4200/`. Nee
 
 ## Game description
 
-1. Draft Phase: Buy items, XP, select talents to make yourself stronger.
-2. Battle Phase: Battle other players' characters who are at the same turn counter as you are. Battle is fully automatic.
-3. If you loose 3 battles you are out!
-4. If you win 10 battles you win!
+Chungus Battles is a turn-based auto-battler where strategic decisions in the draft phase directly impact your performance in battle.
+
+🃏 Draft Phase
+
+In each turn, you'll have the chance to:
+
+    Buy items and gain XP
+
+    Equip items to your character
+
+    Select the best talent that suits your strategy
+
+    Lock your shop to preserve good options for the next round
+
+    Make tactical choices to prepare for upcoming battles
+
+Careful planning in this phase is key to outsmarting your opponents.
+
+<p align="left">
+  <img src="./src/assets/screenshot1.png" alt="Chungus Battles Screenshot" width="600"/>
+</p>
+
+⚔️ Battle Phase
+
+Face off against other players' characters who are at the same turn count as you.
+
+    Battles are fully automatic
+
+    Watch your build come to life in combat
+<p align="left">
+  <img src="./src/assets/screenshot2.png" alt="Chungus Battles Screenshot" width="600"/>
+</p>
+🏆 Win Conditions
+
+    Lose 3 battles — you're eliminated
+
+    Endgame: the final phase becomes King of the Hill, where surviving players battle for dominance until one remains!

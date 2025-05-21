@@ -56,6 +56,4 @@ Face off against other players' characters who are at the same turn count as you
 
     Lose 3 battles — you're eliminated
 
-    Win 10 battles — you win the game
-
     Endgame: the final phase becomes King of the Hill, where surviving players battle for dominance until one remains!

@@ -18,6 +18,7 @@ import { CharacterDetailsComponent } from '../../../common/components/character-
 import { SkillIconsComponent } from '../../../common/components/skill-icons/skill-icons.component';
 import { DraftToolbarComponent } from '../../../common/components/draft-toolbar/draft-toolbar.component';
 import { MusicOptions, SoundOptions, SoundsService } from '../../../common/services/sounds.service';
+import { EquipSlot } from '../../../models/types/ItemTypes';
 
 @Component({
   selector: 'app-fight-room',
@@ -212,15 +213,17 @@ export class FightRoomComponent {
 
     const attack = document.createElement('img');
     attack.style.scale = '0.5';
+    attack.style.position = 'fixed';
+    attack.style.left = `${40 + Math.random() * 20}%`; // Random horizontal position
 
     if (attackerId === this.player?.playerId) {
       attack.classList.add('animate-attack');
-      attack.src = 'https://chungus-battles.b-cdn.net/chungus-battles-assets/Sword-2.png';
+      attack.src = this.player.equippedItems.get(EquipSlot.MAIN_HAND)?.image || 'https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_81_Moldy_bread.png';
       const oldAttack = document.querySelector('.animate-attack');
       oldAttack?.remove();
     } else if (attackerId === this.enemy?.playerId) {
       attack.classList.add('animate-attack-enemy');
-      attack.src = 'https://chungus-battles.b-cdn.net/chungus-battles-assets/Sword-2-enemy.png';
+      attack.src = this.enemy.equippedItems.get(EquipSlot.MAIN_HAND)?.image || 'https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_81_Moldy_bread.png';
       const oldAttack = document.querySelector('.animate-attack-enemy');
       oldAttack?.remove();
     }

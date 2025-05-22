@@ -229,7 +229,7 @@ background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/
                     (click)="sellSelectedItem(item)">
               Sell +{{ getItemPriceRounded(item) }}🟡
             </button>
-          } @else { 
+          } @else {
             <button mat-button class="w-1/4"
                     (click)="equip(item, item.equipOptions.values().next().value)">
               Equip
@@ -243,7 +243,7 @@ background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/
 
           @if (item.showDetails) {
             <mat-card-content
-              class="absolute text-center top-0 left-full ml-4 w-60 h-80 items-center bg-cover scale-75 shadow-amber-700"
+              class="fixed text-center top-16 left-full ml-4 w-60 h-80 items-center bg-cover scale-75 shadow-amber-700"
               [style.background-image]="'url(' + item.image + ')'">
               <app-item-card [item]="item"
                              [player]="player"></app-item-card>

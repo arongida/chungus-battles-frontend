@@ -31,69 +31,50 @@ body {
 }
 
 .animate-attack {
-  @apply transition-all;
-  animation: attack 3s cubic-bezier(0, 1.38, 0.83, 0.67) infinite;
-}
-
-.animate-avatar-attack {
-  @apply transition-all;
-  animation: avatar-attack 3s cubic-bezier(0, 1.38, 0.83, 0.67) infinite;
+  /* No need for transition-all here, animation handles it */
+  animation: player-shoot 1s ease-out forwards; /* Shorter duration for shooting */
 }
 
 .animate-attack-enemy {
-  @apply transition-all;
-  animation: attack-enemy 3s cubic-bezier(0, 1.38, 0.83, 0.67) infinite;
+  /* No need for transition-all here, animation handles it */
+  animation: enemy-shoot 1s ease-out forwards; /* Shorter duration for shooting */
 }
 
-.animate-avatar-attack-enemy {
-  @apply transition-all;
-  animation: avatar-attack-enemy 3s cubic-bezier(0, 1.38, 0.83, 0.67) infinite;
-}
 
 .animate-talent {
   @apply transition-all fill-red-700;
   animation: activate 0.5s ease forwards;
 }
 
-@keyframes attack {
-  from {
-    transform: rotate(0deg);
-    transform-origin: 30% 70%;
+@keyframes player-shoot {
+  0% {
+    transform: translateY(-80vh) rotate(0deg);
+    opacity: 1;
   }
-  to {
-    transform: rotate(360deg);
-    transform-origin: 30% 70%;
+  80% {
+    opacity: 1;
   }
-}
-
-@keyframes avatar-attack {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(30deg);
+  100% {
+    transform: translateY(-180vh) rotate(360deg);
+    opacity: 0;
   }
 }
 
-@keyframes attack-enemy {
-  from {
-    transform: rotate(0deg);
-    transform-origin: 70% 70%;
+
+@keyframes enemy-shoot {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
   }
-  to {
-    transform: rotate(-360deg);
-    transform-origin: 70% 70%;
+  80% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(120vh) rotate(360deg);
+    opacity: 0;
   }
 }
 
-@keyframes avatar-attack-enemy {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(-30deg);
-  }
-}
 
 @keyframes floatUp {
   0% {

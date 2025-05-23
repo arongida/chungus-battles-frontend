@@ -1,4 +1,5 @@
-import { Component, effect } from '@angular/core';
+import { Component, effect, Inject, PLATFORM_ID, Renderer2 } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common'; // Import for platform check
 import { FightService } from '../../services/fight.service';
 import { Player } from '../../../models/colyseus-schema/PlayerSchema';
 import {
@@ -47,25 +48,23 @@ export class FightRoomComponent {
     private draftService: DraftService,
     private snackBar: MatSnackBar,
     private router: Router,
-    private soundsService: SoundsService
+    private soundsService: SoundsService,
+    private renderer: Renderer2, // Inject Renderer2
+    @Inject(PLATFORM_ID) private platformId: Object // Inject PLATFORM_ID
   ) {
     effect(() => {
       const room = this.fightService.room();
       if (room) {
         room.onStateChange((state) => {
-          // Assuming state.player is a plain object
           const plainPlayerObject = state.player;
           const plainEnemyObject = state.enemy;
 
-          // Create a new Player instance
           const player = new Player();
           const enemy = new Player();
 
-          // Copy properties from the plain object to the new Player instance
           Object.assign(player, plainPlayerObject);
           Object.assign(enemy, plainEnemyObject);
 
-          // Assign the Player instance to this.player
           this.player = player;
           this.enemy = enemy;
 
@@ -84,13 +83,9 @@ export class FightRoomComponent {
         });
 
         room.onMessage('combat_log', (message: string) => {
-          // Regular expression to match and replace decimal numbers
           const formattedMessage = message.replace(/(\d*\.\d+)/g, (match) => {
-            console.log('match', match);
-            // Use Number.toFixed(2) to format each matched number to 2 decimal places
             return parseFloat(match).toFixed(2);
           });
-
           this.combatLog += formattedMessage + '\n';
         });
 
@@ -140,15 +135,13 @@ export class FightRoomComponent {
 
   async ngOnInit(): Promise<void> {
     this.soundsService.playMusic(MusicOptions.BATTLE);
-
     const room = this.fightService.room();
-
     if (!room) {
       await this.fightService.reconnect(localStorage.getItem('reconnectToken') as string);
     }
   }
 
-  private async endBattle(plyerId: number, name: string, gameOver: boolean = false, message: string) {
+  private async endBattle(playerId: number, name: string, gameOver: boolean = false, message: string) {
     this.fightService.leave(false);
     this.soundsService.stopMusic();
     if (gameOver) {
@@ -158,9 +151,10 @@ export class FightRoomComponent {
         this.router.navigate(['/end', { won: 'lost' }]);
       }
     } else {
-      const errorMessage = await this.draftService.joinOrCreate(name, plyerId);
+      const errorMessage = await this.draftService.joinOrCreate(name, playerId);
       if (errorMessage) {
-        if (this.gameOver) {
+        // Re-open snackbar if draft joining failed
+        if (this.gameOver) { // 'gameOver' might have been set by a previous message
           this.openSnackBar(message, 'Exit', this.player?.playerId ?? 0, this.player?.name ?? '', true);
         } else {
           this.openSnackBar('The battle has ended', 'Exit', this.player?.playerId ?? 0, this.player?.name ?? '');
@@ -170,65 +164,109 @@ export class FightRoomComponent {
   }
 
   triggerShowHealingNumber(healing: number, playerId: number) {
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+
     const healingNumbersContainer = document.getElementById(`damage-numbers-${playerId}`);
-    const healingNumber = document.createElement('div');
+    if (!healingNumbersContainer) {
+      console.warn(`Healing container not found for playerId: ${playerId}`);
+      return;
+    }
 
-    //avatarToHeal?.classList.add('animate-heal');
-    healingNumber.classList.add('healing-number');
-    healingNumber.textContent = `+${healing}`;
-    healingNumber.style.left = `${Math.random() * 100}%`; // Random horizontal position
+    const healingNumber = this.renderer.createElement('div');
+    this.renderer.addClass(healingNumber, 'healing-number');
 
-    if (healingNumbersContainer) healingNumbersContainer.appendChild(healingNumber);
+    const textNode = this.renderer.createText(`+${healing}`);
+    this.renderer.appendChild(healingNumber, textNode);
+
+    this.renderer.setStyle(healingNumber, 'left', `${Math.random() * 100}%`);
+
+    this.renderer.appendChild(healingNumbersContainer, healingNumber);
 
     setTimeout(() => {
-      healingNumber.remove();
+      if (healingNumber.parentNode === healingNumbersContainer) { // Ensure it's still parented correctly
+        this.renderer.removeChild(healingNumbersContainer, healingNumber);
+      }
     }, 3000);
   }
 
   triggerShowDamageNumber(damage: number, defenderId: number) {
-    const damageNumbersContainer = document.getElementById(`damage-numbers-${defenderId}`);
-    const damageNumber = document.createElement('div');
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
 
-    //avatarToHit?.classList.add('animate-hit');
-    damageNumber.classList.add('damage-number');
-    damageNumber.textContent = `-${damage}`;
-    damageNumber.style.left = `${Math.random() * 100}%`;
+    const damageNumbersContainer = document.getElementById(`damage-numbers-${defenderId}`);
+    if (!damageNumbersContainer) {
+      console.warn(`Damage container not found for defenderId: ${defenderId}`);
+      return;
+    }
+
+    const damageNumber = this.renderer.createElement('div');
+    this.renderer.addClass(damageNumber, 'damage-number');
+
+    const textNode = this.renderer.createText(`-${damage}`);
+    this.renderer.appendChild(damageNumber, textNode);
+
+    this.renderer.setStyle(damageNumber, 'left', `${Math.random() * 100}%`);
 
     const minSize = 16;
     const scaleFactor = 0.5;
+    this.renderer.setStyle(damageNumber, 'fontSize', `${minSize + damage * scaleFactor}px`);
 
-    damageNumber.style.fontSize = `${minSize + damage * scaleFactor}px`;
-
-    if (damageNumbersContainer) damageNumbersContainer.appendChild(damageNumber);
+    this.renderer.appendChild(damageNumbersContainer, damageNumber);
 
     setTimeout(() => {
-      damageNumber.remove();
+      if (damageNumber.parentNode === damageNumbersContainer) { // Ensure it's still parented correctly
+        this.renderer.removeChild(damageNumbersContainer, damageNumber);
+      }
     }, 3000);
   }
 
   triggerAttack(attackerId: number) {
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+
     this.soundsService.playSound(SoundOptions.ATTACK);
 
     const attackContainer = document.getElementById(`attack-${attackerId}`);
-
-    const attack = document.createElement('img');
-    attack.style.scale = '0.5';
-    attack.style.position = 'fixed';
-    attack.style.left = `${25 + Math.random() * 35}%`;
-    attack.style.zIndex = '100';
-
-    if (attackerId === this.player?.playerId) {
-      attack.classList.add('animate-attack');
-      attack.src = this.player.equippedItems.get(EquipSlot.MAIN_HAND)?.image || 'https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_81_Moldy_bread.png';
-      const oldAttack = document.querySelector('.animate-attack');
-      oldAttack?.remove();
-    } else if (attackerId === this.enemy?.playerId) {
-      attack.classList.add('animate-attack-enemy');
-      attack.src = this.enemy.equippedItems.get(EquipSlot.MAIN_HAND)?.image || 'https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_81_Moldy_bread.png';
-      const oldAttack = document.querySelector('.animate-attack-enemy');
-      oldAttack?.remove();
+    if (!attackContainer) {
+      console.warn(`Attack container not found for attackerId: ${attackerId}`);
+      return;
     }
 
-    if (attackContainer) attackContainer.appendChild(attack);
+    // Remove previous attack animation element using Renderer2 if found
+    let oldAttackElement: Element | null = null;
+    if (attackerId === this.player?.playerId) {
+      oldAttackElement = document.querySelector('.animate-attack');
+    } else if (attackerId === this.enemy?.playerId) {
+      oldAttackElement = document.querySelector('.animate-attack-enemy');
+    }
+
+    if (oldAttackElement && oldAttackElement.parentNode) {
+      this.renderer.removeChild(oldAttackElement.parentNode, oldAttackElement);
+    }
+
+    // Create and configure new attack animation element
+    const attackImg: HTMLImageElement = this.renderer.createElement('img');
+    this.renderer.setStyle(attackImg, 'scale', '0.5');
+    this.renderer.setStyle(attackImg, 'position', 'fixed');
+    this.renderer.setStyle(attackImg, 'left', `${25 + Math.random() * 35}%`);
+    this.renderer.setStyle(attackImg, 'zIndex', '100');
+
+    let imgSrc = 'https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_81_Moldy_bread.png'; // Default image
+
+    if (attackerId === this.player?.playerId && this.player) {
+      this.renderer.addClass(attackImg, 'animate-attack');
+      imgSrc = this.player.equippedItems.get(EquipSlot.MAIN_HAND)?.image || imgSrc;
+    } else if (attackerId === this.enemy?.playerId && this.enemy) {
+      this.renderer.addClass(attackImg, 'animate-attack-enemy');
+      imgSrc = this.enemy.equippedItems.get(EquipSlot.MAIN_HAND)?.image || imgSrc;
+    }
+    this.renderer.setAttribute(attackImg, 'src', imgSrc);
+
+    this.renderer.appendChild(attackContainer, attackImg);
+
   }
 }

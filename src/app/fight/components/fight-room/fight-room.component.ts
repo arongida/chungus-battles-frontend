@@ -192,7 +192,7 @@ export class FightRoomComponent {
     //avatarToHit?.classList.add('animate-hit');
     damageNumber.classList.add('damage-number');
     damageNumber.textContent = `-${damage}`;
-    damageNumber.style.left = `${Math.random() * 100}%`; // Random horizontal position
+    damageNumber.style.left = `${Math.random() * 100}%`;
 
     const minSize = 16;
     const scaleFactor = 0.5;
@@ -214,7 +214,8 @@ export class FightRoomComponent {
     const attack = document.createElement('img');
     attack.style.scale = '0.5';
     attack.style.position = 'fixed';
-    attack.style.left = `${40 + Math.random() * 20}%`; // Random horizontal position
+    attack.style.left = `${25 + Math.random() * 35}%`;
+    attack.style.zIndex = '100';
 
     if (attackerId === this.player?.playerId) {
       attack.classList.add('animate-attack');

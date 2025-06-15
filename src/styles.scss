@@ -31,13 +31,11 @@ body {
 }
 
 .animate-attack {
-  /* No need for transition-all here, animation handles it */
-  animation: player-shoot 1s ease-out forwards; /* Shorter duration for shooting */
+  animation: player-shoot 1s ease-out forwards;
 }
 
 .animate-attack-enemy {
-  /* No need for transition-all here, animation handles it */
-  animation: enemy-shoot 1s ease-out forwards; /* Shorter duration for shooting */
+  animation: enemy-shoot 1s ease-out forwards;
 }
 
 
@@ -48,14 +46,14 @@ body {
 
 @keyframes player-shoot {
   0% {
-    transform: translateY(-80vh) rotate(0deg);
+    transform: translateY(-100vh) rotate(0deg);
     opacity: 1;
   }
   80% {
     opacity: 1;
   }
   100% {
-    transform: translateY(-180vh) rotate(360deg);
+    transform: translateY(-200vh) rotate(360deg);
     opacity: 0;
   }
 }
@@ -70,7 +68,7 @@ body {
     opacity: 1;
   }
   100% {
-    transform: translateY(120vh) rotate(360deg);
+    transform: translateY(100vh) rotate(360deg);
     opacity: 0;
   }
 }

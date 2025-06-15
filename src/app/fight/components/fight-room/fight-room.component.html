@@ -16,6 +16,8 @@
             <app-character-details [combat]="true"
                                    [player]="enemy"
                                    [enemy]="true"
+                                   [playerBeingHit]="playerBeingHit"
+                                   [enemyBeingHit]="enemyBeingHit"
                                    class="min-w-fit max-w-fit"></app-character-details>
 
             <app-skill-icons class="px-2 z-10"
@@ -36,6 +38,8 @@
                              [player]="player"></app-skill-icons>
             <app-character-details [combat]="true"
                                    [player]="player"
+                                   [playerBeingHit]="playerBeingHit"
+                                   [enemyBeingHit]="enemyBeingHit"
                                    class="min-w-fit max-w-fit"></app-character-details>
           </div>
         </div>

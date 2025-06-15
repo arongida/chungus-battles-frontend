@@ -1,4 +1,11 @@
-import { Component, effect, Inject, PLATFORM_ID, Renderer2 } from '@angular/core';
+import {
+  Component,
+  effect,
+  Inject,
+  OnInit,
+  PLATFORM_ID,
+  Renderer2,
+} from '@angular/core';
 import { isPlatformBrowser } from '@angular/common'; // Import for platform check
 import { FightService } from '../../services/fight.service';
 import { Player } from '../../../models/colyseus-schema/PlayerSchema';
@@ -35,13 +42,14 @@ import { EquipSlot } from '../../../models/types/ItemTypes';
   templateUrl: './fight-room.component.html',
   styleUrl: './fight-room.component.scss',
 })
-export class FightRoomComponent {
+export class FightRoomComponent implements OnInit{
   player: Player | null = null;
   enemy: Player | null = null;
   combatLog: string = '';
   gameOver: boolean = false;
   battleOver: boolean = false;
-  leaveLoading: boolean = false;
+  playerBeingHit = false;
+  enemyBeingHit = false;
 
   constructor(
     private fightService: FightService,
@@ -99,6 +107,7 @@ export class FightRoomComponent {
           if (this.player && this.enemy) {
             const roundedDamage = Math.round(message.damage);
             this.triggerShowDamageNumber(roundedDamage, message.playerId);
+            this.triggerDamagedAvatarImage(message.playerId)
           }
         });
 
@@ -153,8 +162,7 @@ export class FightRoomComponent {
     } else {
       const errorMessage = await this.draftService.joinOrCreate(name, playerId);
       if (errorMessage) {
-        // Re-open snackbar if draft joining failed
-        if (this.gameOver) { // 'gameOver' might have been set by a previous message
+        if (this.gameOver) {
           this.openSnackBar(message, 'Exit', this.player?.playerId ?? 0, this.player?.name ?? '', true);
         } else {
           this.openSnackBar('The battle has ended', 'Exit', this.player?.playerId ?? 0, this.player?.name ?? '');
@@ -185,10 +193,25 @@ export class FightRoomComponent {
     this.renderer.appendChild(healingNumbersContainer, healingNumber);
 
     setTimeout(() => {
-      if (healingNumber.parentNode === healingNumbersContainer) { // Ensure it's still parented correctly
+      if (healingNumber.parentNode === healingNumbersContainer) {
         this.renderer.removeChild(healingNumbersContainer, healingNumber);
       }
     }, 3000);
+  }
+
+  triggerDamagedAvatarImage(damagedPlayerId: number) {
+
+    if (damagedPlayerId === Number(localStorage.getItem("playerId"))) {
+      this.playerBeingHit = true;
+      setTimeout(() => {
+        this.playerBeingHit = false;
+      }, 200)
+    } else {
+      this.enemyBeingHit = true;
+      setTimeout(() => {
+        this.enemyBeingHit = false;
+      }, 200)
+    }
   }
 
   triggerShowDamageNumber(damage: number, defenderId: number) {

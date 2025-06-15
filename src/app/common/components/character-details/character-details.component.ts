@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, input, Input } from '@angular/core';
 import {
   Player,
 } from '../../../models/colyseus-schema/PlayerSchema';
@@ -60,6 +60,8 @@ export class CharacterDetailsComponent {
   @Input({ required: true }) player: Player = new Player();
   @Input() enemy: boolean = false;
   @Input() combat: boolean = false;
+  playerBeingHit = input(false);
+  enemyBeingHit = input(false);
   selectedCategory: string = 'inventory';
   hoveredEquipment: EquipSlot | null = null;
   equipSlotsOptions = Object.values(EquipSlot) as EquipSlot[];
@@ -73,7 +75,17 @@ export class CharacterDetailsComponent {
     let avatar =
       this.player?.avatarUrl ||
       'https://chungus-battles.b-cdn.net/chungus-battles-assets/Portrait_ID_0_Placeholder.png';
-    if (this.enemy) avatar = avatar.replace('.png', '_enemy.png');
+
+
+    if ((this.enemy && this.enemyBeingHit()) || this.playerBeingHit()) {
+      // Logic for when the component has the 'cringe' class
+      avatar = avatar.replace('.png', '_cringe.png'); // Or your desired image
+    }
+
+    if (this.enemy) {
+      avatar = avatar.replace('.png', '_enemy.png');
+    }
+
     return avatar;
   }
 
@@ -184,7 +196,6 @@ export class CharacterDetailsComponent {
     }
   }
 
-  protected readonly EquipSlot = EquipSlot;
   protected readonly ItemRarity = ItemRarity;
 
 

@@ -1,0 +1,15 @@
+.flash-hit {
+  animation: flash-red 0.3s ease-in-out;
+}
+
+@keyframes flash-red {
+  0% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.5) sepia(1) hue-rotate(-50deg) saturate(2);
+  }
+  100% {
+    filter: brightness(1);
+  }
+}

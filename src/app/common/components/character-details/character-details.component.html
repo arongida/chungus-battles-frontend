@@ -122,6 +122,7 @@ background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/
     <div
       class="bg-cover bg-center w-48 h-64 flex flex-col-reverse items-center bg-gray-800 p-4 shadow-lg relative"
       id="avatar-{{ player.playerId }}"
+      [ngClass]="{ 'flash-hit': (enemy && enemyBeingHit()) || (!enemy && playerBeingHit()) }"
       [ngStyle]="{'background-image': 'url(' + getAvatarImage() + ')'}">
       <div class="relative w-full rounded-md">
         <!-- Floating Damage Numbers Container -->

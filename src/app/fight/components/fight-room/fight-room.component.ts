@@ -20,7 +20,7 @@ import { DraftService } from '../../../draft/services/draft.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { triggerTalentActivation, triggerItemCollectionActivation } from '../../../common/TriggerAnimations';
+import { triggerTalentActivation, triggerItemCollectionActivation, triggerWeaponAttack, triggerAvatarHit } from '../../../common/TriggerAnimations';
 import { RoundInfoComponent } from '../../../common/components/round-info/round-info.component';
 import { CharacterDetailsComponent } from '../../../common/components/character-details/character-details.component';
 import { SkillIconsComponent } from '../../../common/components/skill-icons/skill-icons.component';
@@ -200,7 +200,7 @@ export class FightRoomComponent implements OnInit{
   }
 
   triggerDamagedAvatarImage(damagedPlayerId: number) {
-
+    triggerAvatarHit(damagedPlayerId);
     if (damagedPlayerId === Number(localStorage.getItem("playerId"))) {
       this.playerBeingHit = true;
       setTimeout(() => {
@@ -250,46 +250,7 @@ export class FightRoomComponent implements OnInit{
     if (!isPlatformBrowser(this.platformId)) {
       return;
     }
-
     this.soundsService.playSound(SoundOptions.ATTACK);
-
-    const attackContainer = document.getElementById(`attack-${attackerId}`);
-    if (!attackContainer) {
-      console.warn(`Attack container not found for attackerId: ${attackerId}`);
-      return;
-    }
-
-    // Remove previous attack animation element using Renderer2 if found
-    let oldAttackElement: Element | null = null;
-    if (attackerId === this.player?.playerId) {
-      oldAttackElement = document.querySelector('.animate-attack');
-    } else if (attackerId === this.enemy?.playerId) {
-      oldAttackElement = document.querySelector('.animate-attack-enemy');
-    }
-
-    if (oldAttackElement && oldAttackElement.parentNode) {
-      this.renderer.removeChild(oldAttackElement.parentNode, oldAttackElement);
-    }
-
-    // Create and configure new attack animation element
-    const attackImg: HTMLImageElement = this.renderer.createElement('img');
-    this.renderer.setStyle(attackImg, 'scale', '0.5');
-    this.renderer.setStyle(attackImg, 'position', 'fixed');
-    this.renderer.setStyle(attackImg, 'left', `${25 + Math.random() * 35}%`);
-    this.renderer.setStyle(attackImg, 'zIndex', '100');
-
-    let imgSrc = 'https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_81_Moldy_bread.png'; // Default image
-
-    if (attackerId === this.player?.playerId && this.player) {
-      this.renderer.addClass(attackImg, 'animate-attack');
-      imgSrc = this.player.equippedItems.get(EquipSlot.MAIN_HAND)?.image || imgSrc;
-    } else if (attackerId === this.enemy?.playerId && this.enemy) {
-      this.renderer.addClass(attackImg, 'animate-attack-enemy');
-      imgSrc = this.enemy.equippedItems.get(EquipSlot.MAIN_HAND)?.image || imgSrc;
-    }
-    this.renderer.setAttribute(attackImg, 'src', imgSrc);
-
-    this.renderer.appendChild(attackContainer, attackImg);
-
+    triggerWeaponAttack(attackerId, EquipSlot.MAIN_HAND);
   }
 }

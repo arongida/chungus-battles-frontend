@@ -149,6 +149,7 @@ background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/
       @for (slot of equipSlotsOptions; track $index) {
         @if (getItemAtSlot(slot)) {
           <div
+            id="equipped-slot-{{slot}}-{{player.playerId}}"
             class="border-white text-center hover:bg-amber-800 border h-1/4 w-full m-1.5 flex items-center justify-center"
             (mouseenter)="onMouseEnterEquip(slot)"
             (mouseleave)="onMouseLeaveEquip()"
@@ -172,6 +173,7 @@ background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/
           }
         } @else {
           <div
+            id="equipped-slot-{{slot}}-{{player.playerId}}"
             class="border-white text-center hover:bg-amber-800 border h-1/4 w-full m-1.5 flex items-center justify-center"
           >
             <div

@@ -1,8 +1,12 @@
 import { Component, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Player } from '../models/colyseus-schema/PlayerSchema';
+import { Item } from '../models/colyseus-schema/ItemSchema';
 import { environment } from '../../environments/environment';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
+import { MapSchema } from '@colyseus/schema';
+import { CharacterDetailsDialogComponent } from '../common/components/character-details-dialog/character-details-dialog.component';
 
 @Component({
   selector: 'app-end',
@@ -21,7 +25,7 @@ export class EndComponent implements OnDestroy {
 
   private intervalId: any;
 
-  constructor(private router: Router, private route: ActivatedRoute) {}
+  constructor(private router: Router, private route: ActivatedRoute, private dialog: MatDialog) {}
 
   ngOnInit() {
     this.playerId = Number(localStorage.getItem('playerId')) ?? 0;
@@ -50,6 +54,31 @@ export class EndComponent implements OnDestroy {
     } catch (error) {
       console.error('Error fetching player data:', error);
     }
+  }
+
+  async viewPlayerBuild(playerId: number) {
+    try {
+      const data = await fetch(`${environment.expressServer}/playerBuild?playerId=${playerId}`).then(res => res.json());
+      const player = this.buildPlayerFromData(data);
+      this.dialog.open(CharacterDetailsDialogComponent, { data: { player } });
+    } catch (error) {
+      console.error('Error fetching player build:', error);
+    }
+  }
+
+  private buildPlayerFromData(data: any): Player {
+    const player = new Player();
+    Object.assign(player, data);
+    const equippedMap = new MapSchema<Item>();
+    if (data.equippedItems) {
+      Object.entries(data.equippedItems).forEach(([slot, itemData]) => {
+        const item = new Item();
+        Object.assign(item, itemData as any);
+        equippedMap.set(slot, item);
+      });
+    }
+    player.equippedItems = equippedMap;
+    return player;
   }
 
   goToHome() {

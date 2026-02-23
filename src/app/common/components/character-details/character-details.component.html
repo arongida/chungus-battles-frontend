@@ -3,6 +3,7 @@
        [ngClass]="{'flex-row-reverse': enemy}">
 
     <!-- Stats Section -->
+    @if (showStats) {
     <div id="stats"
          class="bg-center bg-cover w-48 h-64 flex flex-col items-center justify-evenly bg-gray-800 p-4"
          style="
@@ -117,6 +118,7 @@ background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/
         </div>
       </div>
     </div>
+    }
 
     <!-- Avatar Section -->
     <div
@@ -140,120 +142,115 @@ background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/
 
 
     <div id="equipped-items-{{player.playerId}}"
-         class="bg-center bg-cover w-48 h-64 flex flex-col items-center justify-evenly bg-gray-800 p-4"
-         style="
-  background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_0_Empty.png');
-  ">
+         class="bg-center bg-cover w-48 h-64 flex flex-col bg-amber-950 p-2"
+         style="background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_0_Empty.png');">
 
+      <div class="text-amber-500 text-xs font-semibold tracking-widest w-full text-center pb-1 mb-1 shrink-0">
+        ⚔️ EQUIPPED
+      </div>
 
-      @for (slot of equipSlotsOptions; track $index) {
-        @if (getItemAtSlot(slot)) {
-          <div
-            id="equipped-slot-{{slot}}-{{player.playerId}}"
-            class="border-white text-center hover:bg-amber-800 border h-1/4 w-full m-1.5 flex items-center justify-center"
-            (mouseenter)="onMouseEnterEquip(slot)"
-            (mouseleave)="onMouseLeaveEquip()"
-            (click)="unequip(getItemAtSlot(slot), slot)"
-          >
+      <div class="flex flex-col justify-evenly flex-1 w-full gap-1">
+        @for (slot of equipSlotsOptions; track $index) {
+          @if (getItemAtSlot(slot)) {
             <div
-              class="w-full flex items-center justify-center"
-              [ngClass]="{'text-blue-500': getItemAtSlot(slot)!.rarity === ItemRarity.RARE, 'text-purple-500': getItemAtSlot(slot)!.rarity === ItemRarity.EPIC, 'text-orange-500': getItemAtSlot(slot)!.rarity === ItemRarity.LEGENDARY}"
-            >{{ getEmojiForSlot(slot) }} {{ getItemAtSlot(slot)!.name | titlecase }} {{ getEmojiForSlot(slot) }}
+              id="equipped-slot-{{slot}}-{{player.playerId}}"
+              class="border border-amber-600/70 bg-amber-900/30 hover:bg-amber-700/40 w-full flex items-center justify-center cursor-pointer transition-colors"
+              (mouseenter)="onMouseEnterEquip(slot)"
+              (mouseleave)="onMouseLeaveEquip()"
+              (click)="unequip(getItemAtSlot(slot), slot)"
+            >
+              <div
+                class="w-full flex items-center justify-center text-xs px-1 truncate"
+                [ngClass]="{'text-blue-400': getItemAtSlot(slot)!.rarity === ItemRarity.RARE, 'text-purple-400': getItemAtSlot(slot)!.rarity === ItemRarity.EPIC, 'text-orange-400': getItemAtSlot(slot)!.rarity === ItemRarity.LEGENDARY, 'text-gray-200': getItemAtSlot(slot)!.rarity !== ItemRarity.RARE && getItemAtSlot(slot)!.rarity !== ItemRarity.EPIC && getItemAtSlot(slot)!.rarity !== ItemRarity.LEGENDARY}"
+              >{{ getEmojiForSlot(slot) }} {{ getItemAtSlot(slot)!.name | titlecase }} {{ getEmojiForSlot(slot) }}
+              </div>
             </div>
-          </div>
 
-          @if (hoveredEquipment === slot) {
-            <mat-card-content
-              class="absolute text-center top-0 left-full ml-4 w-60 h-80 items-center bg-cover scale-75 shadow-amber-700"
-              [style.background-image]="'url(' + getItemBackground(getItemAtSlot(slot)) + ')'">
-              <app-item-card [item]="getItemAtSlot(slot)!"
-                             [player]="player"
-                             [showDetails]="true"></app-item-card>
-            </mat-card-content>
+            @if (hoveredEquipment === slot) {
+              <mat-card-content
+                class="absolute text-center top-0 left-full ml-4 w-60 h-80 items-center bg-cover scale-75 shadow-amber-700"
+                [style.background-image]="'url(' + getItemBackground(getItemAtSlot(slot)) + ')'">
+                <app-item-card [item]="getItemAtSlot(slot)!"
+                               [player]="player"
+                               [showDetails]="true"></app-item-card>
+              </mat-card-content>
+            }
+          } @else {
+            <div
+              id="equipped-slot-{{slot}}-{{player.playerId}}"
+              class="border border-dashed border-amber-900/60 w-full flex items-center justify-center"
+            >
+              <div class="w-full flex items-center justify-center text-xs text-gray-600">
+                {{ getEmojiForSlot(slot) }} No {{ slot }} {{ getEmojiForSlot(slot) }}
+              </div>
+            </div>
           }
-        } @else {
-          <div
-            id="equipped-slot-{{slot}}-{{player.playerId}}"
-            class="border-white text-center hover:bg-amber-800 border h-1/4 w-full m-1.5 flex items-center justify-center"
-          >
-            <div
-              class="w-full flex items-center justify-center">
-              {{ getEmojiForSlot(slot) }}
-              No {{ slot }} {{ getEmojiForSlot(slot) }}
-            </div>
-          </div>
-
         }
-      }
+      </div>
     </div>
   </div>
 
   @if (!combat) {
-    <div class="bg-stone-800 p-4">
+    <div class="border border-amber-700/50 p-2" style="background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_0_Empty.png'); background-size: 400%; background-position: center;">
       <mat-tab-group
         (selectedTabChange)="onTabChange($event)"
-        class="mb-4">
+        class="mb-2">
         <mat-tab label="Inventory" class="w-1/6">
           <mat-tab-group
             (selectedTabChange)="selectCategory($event)">
             <mat-tab label="All" class="w-1/5"></mat-tab>
-            <mat-tab label="Helmets"
-                     class="w-1/5"></mat-tab>
-            <mat-tab label="Weapons"
-                     class="w-1/5"></mat-tab>
-            <mat-tab label="Armors"
-                     class="w-1/5"></mat-tab>
-            <mat-tab label="Shields"
-                     class="w-1/5"></mat-tab>
+            <mat-tab label="Helmets" class="w-1/5"></mat-tab>
+            <mat-tab label="Weapons" class="w-1/5"></mat-tab>
+            <mat-tab label="Armors" class="w-1/5"></mat-tab>
+            <mat-tab label="Shields" class="w-1/5"></mat-tab>
           </mat-tab-group>
         </mat-tab>
-        <!--        <mat-tab label="Equipped" class="w-1/6"></mat-tab>-->
-
       </mat-tab-group>
       <div class="h-48 overflow-y-auto">
         @for (item of getEquipmentTypeFromInventory(selectedCategory); track $index) {
           <div
-            class="flex items-center justify-center hover:shadow-md shadow-gray-700"
+            class="flex items-center gap-2 py-1 px-2 border-b border-b-amber-900/30 hover:bg-amber-900/25 transition-colors"
+            [style.border-left]="getRarityBorder(item.rarity)"
             (mouseenter)="onMouseEnterItem(item)"
             (mouseleave)="onMouseLeaveItem(item)">
+            <img alt="Item details" [src]="item.imageCache || item.image" class="w-6 h-6 object-contain shrink-0">
             <span
-              class="w-2/4"
-              [ngClass]="{'text-blue-500': item.rarity === ItemRarity.RARE, 'text-purple-500': item.rarity === ItemRarity.EPIC, 'text-orange-500': item.rarity === ItemRarity.LEGENDARY}">{{ item.name | titlecase }}</span>
-
-          @if(item.type === "weapon"){
-            @for(itemEquipOption of item.equipOptions.values(); track $index){
-            <button mat-button class="w-1/4"
-                    (click)="equip(item, itemEquipOption)">
-              Equip to {{itemEquipOption}}
-            </button>
-          }
-            <button mat-button class="w-1/4"
-                    (click)="sellSelectedItem(item)">
-              Sell +{{ getItemPriceRounded(item) }}🟡
-            </button>
-          } @else {
-            <button mat-button class="w-1/4"
-                    (click)="equip(item, item.equipOptions.values().next().value)">
-              Equip
-            </button>
-            <button mat-button class="w-1/4"
-                    (click)="sellSelectedItem(item)">
-              Sell +{{ getItemPriceRounded(item) }}🟡
-            </button>
-          }
+              class="flex-1 text-xs truncate"
+              [ngClass]="{'text-blue-400': item.rarity === ItemRarity.RARE, 'text-purple-400': item.rarity === ItemRarity.EPIC, 'text-orange-400': item.rarity === ItemRarity.LEGENDARY, 'text-gray-200': item.rarity !== ItemRarity.RARE && item.rarity !== ItemRarity.EPIC && item.rarity !== ItemRarity.LEGENDARY}">
+              {{ item.name | titlecase }} {{item.rarity}}
+            </span>
+            @if(item.type === "weapon"){
+              @for(itemEquipOption of item.equipOptions.values(); track $index){
+                <button mat-button class="!text-xs !min-w-0 !px-2 text-amber-400"
+                        (click)="equip(item, itemEquipOption)">
+                  Equip {{itemEquipOption}}
+                </button>
+              }
+              <button mat-button class="!text-xs !min-w-0 !px-2 text-yellow-500"
+                      (click)="sellSelectedItem(item)">
+                +{{ getItemPriceRounded(item) }}🟡
+              </button>
+            } @else {
+              <button mat-button class="!text-xs !min-w-0 !px-2 text-amber-400"
+                      (click)="equip(item, item.equipOptions.values().next().value)">
+                Equip
+              </button>
+              <button mat-button class="!text-xs !min-w-0 !px-2 text-yellow-500"
+                      (click)="sellSelectedItem(item)">
+                +{{ getItemPriceRounded(item) }}🟡
+              </button>
+            }
           </div>
-
-          @if (item.showDetails) {
-            <mat-card-content
-              class="fixed text-center top-16 left-full ml-4 w-60 h-80 items-center bg-cover scale-75 shadow-amber-700"
-              [style.background-image]="'url(' + item.image + ')'">
-              <app-item-card [item]="item"
-                             [player]="player"></app-item-card>
-            </mat-card-content>
-          }
 
         }
       </div>
+      @if (hoveredInventoryItem) {
+        <mat-card-content
+          class="absolute text-center top-0 left-full ml-4 w-60 h-80 items-center bg-cover scale-75 shadow-amber-700"
+          [style.background-image]="'url(' + getItemBackground(hoveredInventoryItem) + ')'">
+          <app-item-card [item]="hoveredInventoryItem" [player]="player" [showDetails]="true"></app-item-card>
+        </mat-card-content>
+      }
     </div>
   }
 </div>

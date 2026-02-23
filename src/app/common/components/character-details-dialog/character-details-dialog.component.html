@@ -1,1 +1,5 @@
-<app-character-details [player]="player"></app-character-details>
+<div class="flex flex-col items-center gap-2 p-2">
+  <h2 class="text-white text-lg font-semibold">{{ player.name }}'s Build</h2>
+  <app-character-details [player]="player" [combat]="true" [showStats]="false"></app-character-details>
+  <app-skill-icons [player]="player"></app-skill-icons>
+</div>

@@ -6,17 +6,21 @@
 
   <div class="w-full max-w-md bg-gray-800 bg-opacity-50 rounded-lg shadow-lg p-6">
     @for (Player of topPlayers; track Player.playerId) {
-    @if (Player.playerId === playerId) {
-    <div class="text-lg text-yellow-600 mb-2">{{ $index + 1 }}. {{ Player.name }} - {{ Player.wins }} win</div>
-    } @else {
-    <div class="text-lg text-white mb-2">{{ $index + 1 }}. {{ Player.name }} - {{ Player.wins }} win</div>
-    }
+      @if (Player.playerId === playerId) {
+        <div class="text-lg text-yellow-600 mb-2 cursor-pointer hover:underline" (click)="viewPlayerBuild(Player.playerId)">
+          {{ $index + 1 }}. {{ Player.name }} - {{ Player.wins }} win
+        </div>
+      } @else {
+        <div class="text-lg text-white mb-2 cursor-pointer hover:underline" (click)="viewPlayerBuild(Player.playerId)">
+          {{ $index + 1 }}. {{ Player.name }} - {{ Player.wins }} win
+        </div>
+      }
     }
     @if (!topListContainsPlayer()) {
-    <span>
-      ...
-    </span>
-    <div class="text-lg text-yellow-600 mb-2">{{ playerRank }}. {{ playerName }} - {{ playerWins }} win</div>
+      <span>...</span>
+      <div class="text-lg text-yellow-600 mb-2 cursor-pointer hover:underline" (click)="viewPlayerBuild(playerId)">
+        {{ playerRank }}. {{ playerName }} - {{ playerWins }} win
+      </div>
     }
   </div>
 

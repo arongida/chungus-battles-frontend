@@ -3,6 +3,7 @@
        [ngClass]="{'flex-row-reverse': enemy}">
 
     <!-- Stats Section -->
+    @if (showStats) {
     <div id="stats"
          class="bg-center bg-cover w-48 h-64 flex flex-col items-center justify-evenly bg-gray-800 p-4"
          style="
@@ -117,6 +118,7 @@ background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/
         </div>
       </div>
     </div>
+    }
 
     <!-- Avatar Section -->
     <div

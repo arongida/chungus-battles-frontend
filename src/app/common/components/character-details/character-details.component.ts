@@ -60,6 +60,7 @@ export class CharacterDetailsComponent {
   @Input({ required: true }) player: Player = new Player();
   @Input() enemy: boolean = false;
   @Input() combat: boolean = false;
+  @Input() showStats: boolean = true;
   playerBeingHit = input(false);
   enemyBeingHit = input(false);
   selectedCategory: string = 'inventory';

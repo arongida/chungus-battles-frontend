@@ -64,6 +64,7 @@ export class CharacterDetailsComponent {
   enemyBeingHit = input(false);
   selectedCategory: string = 'inventory';
   hoveredEquipment: EquipSlot | null = null;
+  hoveredInventoryItem: Item | null = null;
   equipSlotsOptions = Object.values(EquipSlot) as EquipSlot[];
 
   constructor(public draftService: DraftService) {
@@ -104,6 +105,7 @@ export class CharacterDetailsComponent {
   onMouseEnterItem(item?: Item) {
     if (!item) return;
     if (item.showDetails) return;
+    this.hoveredInventoryItem = item;
     item.showDetails = true;
     item.imageCache = item.image;
     item.image = this.getItemBackground(item);
@@ -112,6 +114,7 @@ export class CharacterDetailsComponent {
   onMouseLeaveItem(item?: Item) {
     if (!item) return;
     if (!item.showDetails) return;
+    this.hoveredInventoryItem = null;
     item.showDetails = false;
     item.image = item.imageCache!;
   }
@@ -172,6 +175,15 @@ export class CharacterDetailsComponent {
 
   getItemPriceRounded(item: Item) {
     return Math.floor(item.price * 0.7);
+  }
+
+  getRarityBorder(rarity: ItemRarity | string): string {
+    switch (rarity) {
+      case ItemRarity.RARE:      return '2px solid #60a5fa';
+      case ItemRarity.EPIC:      return '2px solid #c084fc';
+      case ItemRarity.LEGENDARY: return '2px solid #fb923c';
+      default:                   return '2px solid #92400e';
+    }
   }
 
   getItemBackground(item?: Item) {

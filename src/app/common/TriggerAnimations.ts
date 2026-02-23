@@ -1,3 +1,19 @@
+export function triggerWeaponAttack(playerId: number, slot: string) {
+  const el = document.getElementById(`equipped-slot-${slot}-${playerId}`);
+  if (el) {
+    el.classList.add('animate-weapon-attack');
+    setTimeout(() => el.classList.remove('animate-weapon-attack'), 400);
+  }
+}
+
+export function triggerAvatarHit(playerId: number) {
+  const el = document.getElementById(`avatar-${playerId}`);
+  if (el) {
+    el.classList.add('animate-avatar-hit');
+    setTimeout(() => el.classList.remove('animate-avatar-hit'), 400);
+  }
+}
+
 export function triggerTalentActivation(talentId: number, playerId: number) {
   const talentContainer = document.getElementById(
     `talent-${talentId}-${playerId}`

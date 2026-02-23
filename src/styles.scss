@@ -30,49 +30,17 @@ body {
   -webkit-text-stroke: 1px rgb(8, 238, 96);
 }
 
-.animate-attack {
-  animation: player-shoot 1s ease-out forwards;
+.animate-weapon-attack {
+  animation: weapon-flash 0.4s ease-out forwards;
 }
 
-.animate-attack-enemy {
-  animation: enemy-shoot 1s ease-out forwards;
+.animate-avatar-hit {
+  animation: avatar-shake 0.4s ease-out;
 }
-
 
 .animate-talent {
-  @apply transition-all fill-red-700;
-  animation: activate 0.5s ease forwards;
+  animation: weapon-flash 0.4s ease-out forwards;
 }
-
-@keyframes player-shoot {
-  0% {
-    transform: translateY(-100vh) rotate(0deg);
-    opacity: 1;
-  }
-  80% {
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(-200vh) rotate(360deg);
-    opacity: 0;
-  }
-}
-
-
-@keyframes enemy-shoot {
-  0% {
-    transform: translateY(0) rotate(0deg);
-    opacity: 1;
-  }
-  80% {
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(100vh) rotate(360deg);
-    opacity: 0;
-  }
-}
-
 
 @keyframes floatUp {
   0% {
@@ -85,16 +53,19 @@ body {
   }
 }
 
-@keyframes activate {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.1);
-  }
-  100% {
-    transform: scale(1);
-  }
+@keyframes weapon-flash {
+  0%   { transform: scale(1);    filter: brightness(1); }
+  30%  { transform: scale(1.25); filter: brightness(2.5); }
+  100% { transform: scale(1);    filter: brightness(1); }
+}
+
+@keyframes avatar-shake {
+  0%   { transform: translateX(0); }
+  20%  { transform: translateX(-8px); }
+  40%  { transform: translateX(8px); }
+  60%  { transform: translateX(-5px); }
+  80%  { transform: translateX(5px); }
+  100% { transform: translateX(0); }
 }
 
 

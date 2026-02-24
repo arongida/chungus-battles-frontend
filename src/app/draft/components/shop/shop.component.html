@@ -2,7 +2,7 @@
      class="flex flex-col items-center h-full justify-evenly">
   <div #gridRef cdkDropList
        [cdkDropListSortingDisabled]="true"
-       [cdkDropListEnterPredicate]="preventDropBack" class="shop-grid grid-cols-3 grid-rows-2 gap-1 grid p-4 h-full scale-[0.55] sm:scale-65 md:scale-75 lg:scale-90 xl:scale-100">
+       [cdkDropListEnterPredicate]="preventDropBack" class="shop-grid grid-cols-2 sm:grid-cols-3 gap-2 grid p-2 sm:p-4">
 
     @for (item of shop; track $index) {
       <div #cardRef cdkDrag [cdkDragDisabled]="item.sold"
@@ -17,7 +17,7 @@
           [ngClass]="{'opacity-0':item.sold,'pointer-events-none':item.sold}"
           [style.background-image]="'url(' + getItemImage(item) + ')'"
           id="item-{{ $index }}"
-          class="w-60 h-80 items-center bg-cover scale-75 shadow-amber-700"
+          class="w-40 h-56 sm:w-44 sm:h-60 md:w-52 md:h-72 lg:w-60 lg:h-80 items-center bg-cover bg-center shadow-amber-700"
           (mouseenter)="onMouseEnterItem(item)"
           (mouseleave)="onMouseLeaveItem(item)"
           (click)="characterDetailsService.closeCharacterDetails()">

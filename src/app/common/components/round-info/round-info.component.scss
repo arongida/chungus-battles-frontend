@@ -1,6 +1,13 @@
 #round-info {
-    position: fixed;
+  position: fixed;
+  bottom: 0.5rem;
+  left: 0.5rem;
+  z-index: 1000;
+  font-size: 0.7rem;
+
+  @media (min-width: 640px) {
     bottom: 1rem;
     left: 1rem;
-    z-index: 1000;
+    font-size: 0.875rem;
   }
+}

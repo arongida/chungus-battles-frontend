@@ -5,7 +5,7 @@
     <!-- Stats Section -->
     @if (showStats) {
     <div id="stats"
-         class="bg-center bg-cover w-48 h-64 flex flex-col items-center justify-evenly bg-gray-800 p-4"
+         class="bg-center bg-cover w-36 h-52 sm:w-44 sm:h-60 md:w-48 md:h-64 flex flex-col items-center justify-evenly bg-gray-800 p-4"
          style="
 background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_0_Empty.png');
 ">
@@ -122,7 +122,7 @@ background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/
 
     <!-- Avatar Section -->
     <div
-      class="bg-cover bg-center w-48 h-64 flex flex-col-reverse items-center bg-gray-800 p-4 shadow-lg relative"
+      class="bg-cover bg-center w-36 h-52 sm:w-44 sm:h-60 md:w-48 md:h-64 flex flex-col-reverse items-center bg-gray-800 p-4 shadow-lg relative"
       id="avatar-{{ player.playerId }}"
       [ngStyle]="{'background-image': 'url(' + getAvatarImage() + ')'}">
       <div class="relative w-full rounded-md">
@@ -142,7 +142,7 @@ background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/
 
 
     <div id="equipped-items-{{player.playerId}}"
-         class="bg-center bg-cover w-48 h-64 flex flex-col bg-amber-950 p-2"
+         class="bg-center bg-cover w-36 h-52 sm:w-44 sm:h-60 md:w-48 md:h-64 flex flex-col bg-amber-950 p-2"
          style="background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_0_Empty.png');">
 
       <div class="text-amber-500 text-xs font-semibold tracking-widest w-full text-center pb-1 mb-1 shrink-0">
@@ -168,7 +168,7 @@ background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/
 
             @if (hoveredEquipment === slot) {
               <mat-card-content
-                class="absolute text-center top-0 left-full ml-4 w-60 h-80 items-center bg-cover scale-75 shadow-amber-700"
+                class="absolute text-center top-0 left-full ml-2 w-60 h-80 items-center bg-cover scale-50 sm:scale-75 shadow-amber-700 hidden sm:block"
                 [style.background-image]="'url(' + getItemBackground(getItemAtSlot(slot)) + ')'">
                 <app-item-card [item]="getItemAtSlot(slot)!"
                                [player]="player"
@@ -206,7 +206,7 @@ background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/
           </mat-tab-group>
         </mat-tab>
       </mat-tab-group>
-      <div class="h-48 overflow-y-auto">
+      <div class="h-40 sm:h-48 overflow-y-auto">
         @for (item of getEquipmentTypeFromInventory(selectedCategory); track $index) {
           <div
             class="flex items-center gap-2 py-1 px-2 border-b border-b-amber-900/30 hover:bg-amber-900/25 transition-colors"
@@ -246,7 +246,7 @@ background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/
       </div>
       @if (hoveredInventoryItem) {
         <mat-card-content
-          class="absolute text-center top-0 left-full ml-4 w-60 h-80 items-center bg-cover scale-75 shadow-amber-700"
+          class="absolute text-center top-0 left-full ml-2 w-60 h-80 items-center bg-cover scale-50 sm:scale-75 shadow-amber-700 hidden sm:block"
           [style.background-image]="'url(' + getItemBackground(hoveredInventoryItem) + ')'">
           <app-item-card [item]="hoveredInventoryItem" [player]="player" [showDetails]="true"></app-item-card>
         </mat-card-content>

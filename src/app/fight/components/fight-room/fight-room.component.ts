@@ -20,6 +20,8 @@ import { DraftService } from '../../../draft/services/draft.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { triggerTalentActivation, triggerItemCollectionActivation, triggerWeaponAttack, triggerAvatarHit } from '../../../common/TriggerAnimations';
 import { RoundInfoComponent } from '../../../common/components/round-info/round-info.component';
 import { CharacterDetailsComponent } from '../../../common/components/character-details/character-details.component';
@@ -35,6 +37,8 @@ import { EquipSlot } from '../../../models/types/ItemTypes';
     DraftToolbarComponent,
     CombatLogComponent,
     MatTooltipModule,
+    MatButtonModule,
+    MatIconModule,
     RoundInfoComponent,
     CharacterDetailsComponent,
     SkillIconsComponent,
@@ -50,6 +54,7 @@ export class FightRoomComponent implements OnInit{
   battleOver: boolean = false;
   playerBeingHit = false;
   enemyBeingHit = false;
+  showCombatLog = false;
 
   constructor(
     private fightService: FightService,

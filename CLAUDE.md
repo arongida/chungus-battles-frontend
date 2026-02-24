@@ -21,7 +21,7 @@ ng test --include='**/path/to/file.spec.ts'
 ng deploy
 ```
 
-The app requires the game server running at `ws://localhost:2567` (configured in `src/environments/environment.development.ts`).
+The app requires the game server running at `ws://localhost:2567` (configured in `src/environments/environment.development.ts`). The backend project is at `../chungus-battles-backend` (sibling directory).
 
 ## Architecture
 

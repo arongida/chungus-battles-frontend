@@ -2,8 +2,7 @@
      class="flex flex-col items-center h-full justify-evenly">
   <div #gridRef cdkDropList
        [cdkDropListSortingDisabled]="true"
-       [cdkDropListEnterPredicate]="preventDropBack" class="grid-cols-3 grid-rows-2 gap-1 grid p-4 h-full scale-50 lg:scale-75
-  xl:scale-100">
+       [cdkDropListEnterPredicate]="preventDropBack" class="shop-grid grid-cols-3 grid-rows-2 gap-1 grid p-4 h-full scale-[0.55] sm:scale-65 md:scale-75 lg:scale-90 xl:scale-100">
 
     @for (item of shop; track $index) {
       <div #cardRef cdkDrag [cdkDragDisabled]="item.sold"

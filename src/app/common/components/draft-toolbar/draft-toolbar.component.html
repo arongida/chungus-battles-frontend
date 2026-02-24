@@ -1,12 +1,12 @@
 <mat-toolbar class="w-screen fixed top-0 z-10">
-  <div class="flex justify-between gap-4 items-center">
-    <img class="w-12 h-12 rounded-full object-cover hover:border-white hover:border"
+  <div class="flex justify-between gap-1 sm:gap-4 items-center">
+    <img class="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover hover:border-white hover:border shrink-0"
       [ngClass]="{'border': showCharacterDetails()}" src="{{player.avatarUrl.replace('01','transparent')}}" alt="player"
       (click)="switchCharacterDetails()">
-    <span class="text-center">{{player.name}}</span>
-    <span class="text-sm text-center" #goldTooltip="matTooltip"
-      matTooltip="{{player.income + player.round * 2}} gold per round." matTooltipPosition="below">Gold: {{ player.gold
-      }} 🟡</span>
+    <span class="text-center text-sm max-w-16 truncate sm:max-w-none sm:text-base">{{player.name}}</span>
+    <span class="text-xs sm:text-sm text-center shrink-0" #goldTooltip="matTooltip"
+      matTooltip="{{player.income + player.round * 2}} gold per round." matTooltipPosition="below">
+      <span class="hidden sm:inline">Gold: </span>{{ player.gold }} 🟡</span>
 
     @if (this.availableTalents && this.availableTalents.length > 0) {
 
@@ -19,10 +19,10 @@
 
   </div>
   <span class="flex-auto">
-    <div class="flex flex-col gap-1 w-1/3 mx-auto">
+    <div class="flex flex-col gap-1 w-1/4 sm:w-1/3 mx-auto">
       <div class="flex justify-between">
-        <label class="text-xs text-center" for="xp">XP: {{ player.xp }} / {{ player.maxXp }}</label>
-        <label class="text-xs text-center" for="xp">Level: {{ player.level }}</label>
+        <label class="text-xs text-center" for="xp"><span class="hidden sm:inline">XP: </span>{{ player.xp }}/{{ player.maxXp }}</label>
+        <label class="text-xs text-center" for="xp"><span class="hidden sm:inline">Level: </span>{{ player.level }}</label>
       </div>
       <mat-progress-bar id="xp" mode="determinate" value="{{ (player.xp / player.maxXp) * 100 }}"></mat-progress-bar>
     </div>
@@ -42,26 +42,26 @@
   </button>
 
   @if(!isFighting()) {
-  <div class="fixed top-20 right-2 flex-row-reverse">
+  <div class="fixed top-16 right-1 sm:top-20 sm:right-2 flex flex-col scale-75 sm:scale-90 md:scale-100 origin-top-right">
 
     <button [disabled]="player.gold < 4 || player.level > 4 " #tooltip="matTooltip" matTooltip="4 gold = 4 xp"
-      matTooltipPosition="left" mat-fab color="text-white" class="m-2 p-2 flex-1" (click)="buyXp()"
+      matTooltipPosition="left" mat-mini-fab color="text-white" class="m-1 sm:m-2" (click)="buyXp()"
       (mouseenter)="switchBuyXpAnimate()" (mouseleave)="switchBuyXpAnimate()">
       <mat-icon [ngClass]="{'animate-bounce': hoverBuyXp}">keyboard_arrow_up</mat-icon>
     </button>
 
     <button [disabled]="player.gold < player.refreshShopCost" #tooltip="matTooltip"
-      matTooltip="{{player.refreshShopCost}} gold" mat-fab matTooltipPosition="below" color="text-white"
-      class="m-2 p-2 flex-1" (click)="refreshShop()" (mouseenter)="switchShopRefreshAnimate()"
+      matTooltip="{{player.refreshShopCost}} gold" mat-mini-fab matTooltipPosition="below" color="text-white"
+      class="m-1 sm:m-2" (click)="refreshShop()" (mouseenter)="switchShopRefreshAnimate()"
       (mouseleave)="switchShopRefreshAnimate()">
       <mat-icon [ngClass]="{'animate-spin': hoverShopRefresh}">refresh</mat-icon>
     </button>
     @if(isLocked){
-    <button #tooltip="matTooltip" matTooltip="Your current shop is locked for the next round." matTooltipPosition="below" mat-fab color="text-white"
-      class="m-2 p-2 flex-1" [ngClass]="{'clicked' : isLocked}" (click)="lockShop()"><mat-icon>lock_outline</mat-icon>
+    <button #tooltip="matTooltip" matTooltip="Your current shop is locked for the next round." matTooltipPosition="below" mat-mini-fab color="text-white"
+      class="m-1 sm:m-2" [ngClass]="{'clicked' : isLocked}" (click)="lockShop()"><mat-icon>lock_outline</mat-icon>
     </button>} @else {
-      <button #tooltip="matTooltip" matTooltip="Lock your current shop for the next round." matTooltipPosition="below" mat-fab color="text-white"
-      class="m-2 p-2 flex-1" [ngClass]="{'clicked' : isLocked}" (click)="lockShop()"><mat-icon>lock_open</mat-icon>
+      <button #tooltip="matTooltip" matTooltip="Lock your current shop for the next round." matTooltipPosition="below" mat-mini-fab color="text-white"
+      class="m-1 sm:m-2" [ngClass]="{'clicked' : isLocked}" (click)="lockShop()"><mat-icon>lock_open</mat-icon>
     </button>}
   </div>
   }

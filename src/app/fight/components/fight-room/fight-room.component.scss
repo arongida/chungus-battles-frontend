@@ -18,3 +18,17 @@
   right: 50%;
   z-index: 1000;
 }
+
+@media (max-width: 640px) {
+  #active-collections-player {
+    right: auto;
+    left: 0.5rem;
+    top: 4rem;
+  }
+
+  #active-collections-enemy {
+    right: auto;
+    left: 0.5rem;
+    bottom: 4rem;
+  }
+}

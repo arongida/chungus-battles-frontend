@@ -1,4 +1,4 @@
-import { AfterViewChecked, Component, Input, OnInit, ViewChild, computed, inject } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild, computed, inject } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -39,14 +39,13 @@ import {
   templateUrl: './draft-toolbar.component.html',
   styleUrl: './draft-toolbar.component.scss',
 })
-export class DraftToolbarComponent implements AfterViewChecked, OnInit {
+export class DraftToolbarComponent implements OnChanges, OnInit {
   dialog = inject(MatDialog);
   hoverShopRefresh = false;
   hoverBuyXp = false;
   muted = false;
   showCharacterDetails = computed(() => this.characterDetailsService.showCharacterDetails());
 
-  private previousValue: number = 0;
   private talentDialogRef: MatDialogRef<TalentsComponent> | null = null;
 
   constructor(
@@ -66,30 +65,35 @@ export class DraftToolbarComponent implements AfterViewChecked, OnInit {
     this.muted = this.soundsService.volume === 0;
   }
 
-  ngAfterViewChecked() {
-    const currentValue = this.availableTalents?.length;
+  ngOnChanges(changes: SimpleChanges): void {
+    const change = changes['availableTalents'];
+    if (!change) return;
 
-    const talentDialogisOpen = this.talentDialogRef ? this.talentDialogRef.getState() : null;
-
+    // Show tooltip when talents first become available
     if (
-      this.previousValue === 0 &&
-      currentValue === 2 &&
+      (change.previousValue?.length ?? 0) === 0 &&
+      change.currentValue?.length === 2 &&
+      this.talentPickerTooltip &&
       !this.talentPickerTooltip._isTooltipVisible() &&
-      !talentDialogisOpen
+      !this.talentDialogRef?.getState()
     ) {
-      this.talentPickerTooltip.show();
+      setTimeout(() => this.talentPickerTooltip?.show(), 0);
     }
-    this.previousValue = currentValue ?? 0;
+
+    // Push updated talents into the dialog if it is open
+    const instance = this.talentDialogRef?.componentInstance;
+    if (instance && change.currentValue) {
+      instance.talents.set(change.currentValue.map((t: Talent) => ({ ...t })));
+    }
   }
 
   openTalentPickerDialog(): void {
     this.soundsService.playSound(SoundOptions.CLICK);
     this.talentDialogRef = this.dialog.open(TalentsComponent, {
       data: {
-        talents: this.availableTalents,
+        talents: this.availableTalents?.map(t => ({ ...t })),
         playerLevel: this.player?.level ?? 1,
       },
-
     });
   }
 

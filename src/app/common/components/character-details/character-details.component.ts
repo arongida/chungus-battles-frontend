@@ -120,10 +120,6 @@ export class CharacterDetailsComponent {
     item.image = item.imageCache!;
   }
 
-  getItem(type: string) {
-    return this.player.inventory.find((item) => item.type === type);
-  }
-
   selectCategory(event: MatTabChangeEvent) {
     const categoryName = event.tab.textLabel.toLocaleLowerCase().substring(0, event.tab.textLabel.length - 1);
     if (categoryName === 'al') {

@@ -1,7 +1,7 @@
 <div class="pl-1 sm:pl-4">
   <div class="text-white flex flex-row fill-slate-100">
     @for (talent of player.talents; track $index) {
-    <div class="p-1 rounded-sm" #tooltip="matTooltip" matTooltip="{{talent.name}} - {{ talent.description }}" matTooltipPosition="above"
+    <div class="p-1 rounded-sm"  matTooltip="{{talent.name}} - {{ talent.description }}" matTooltipPosition="above"
       id="talent-{{talent.talentId}}-{{player.playerId}}">
       @if (talent.tags.includes('warrior')) {
       <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 sm:w-10 sm:h-10" viewBox="0 -960 960 960">

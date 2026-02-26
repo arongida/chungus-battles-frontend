@@ -40,13 +40,13 @@ export class EndComponent implements OnDestroy {
   async fetchPlayerData() {
     try {
       // Get top players
-      const topPlayersUrl = `${environment.expressServer}/topPlayers?numberOfPlayers=10`;
+      const topPlayersUrl = `${environment.gameServer}/topPlayers?numberOfPlayers=10`;
       const topPlayerResults = await fetch(topPlayersUrl).then(res => res.json());
       console.log('Top players:', topPlayerResults);
       this.topPlayers = topPlayerResults;
 
       // Get player rank
-      const playerRankUrl = `${environment.expressServer}/rank?playerId=${this.playerId}`;
+      const playerRankUrl = `${environment.gameServer}/rank?playerId=${this.playerId}`;
       const playerRankResult = await fetch(playerRankUrl).then(res => res.json());
       this.playerRank = playerRankResult.rank;
       this.playerName = playerRankResult.name;
@@ -58,7 +58,7 @@ export class EndComponent implements OnDestroy {
 
   async viewPlayerBuild(playerId: number) {
     try {
-      const data = await fetch(`${environment.expressServer}/playerBuild?playerId=${playerId}`).then(res => res.json());
+      const data = await fetch(`${environment.gameServer}/playerBuild?playerId=${playerId}`).then(res => res.json());
       const player = this.buildPlayerFromData(data);
       this.dialog.open(CharacterDetailsDialogComponent, { data: { player } });
     } catch (error) {

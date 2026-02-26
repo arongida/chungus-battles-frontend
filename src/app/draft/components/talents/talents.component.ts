@@ -1,4 +1,4 @@
-import { Component, Inject, Input } from '@angular/core';
+import { Component, Inject, signal } from '@angular/core';
 import { Talent } from '../../../models/colyseus-schema/TalentSchema';
 import { MatCardModule } from '@angular/material/card';
 import { DraftService } from '../../services/draft.service';
@@ -24,7 +24,7 @@ import { SoundOptions, SoundsService } from '../../../common/services/sounds.ser
 })
 export class TalentsComponent {
   hoverTelentRefresh = false;
-  talents: Talent[];
+  talents = signal<Talent[]>([]);
   playerLevel: number;
 
   constructor(
@@ -34,7 +34,7 @@ export class TalentsComponent {
     public dialogRef: MatDialogRef<TalentsComponent>,
     private soundsService: SoundsService
   ) {
-    this.talents = data.talents;
+    this.talents.set(data.talents);
     this.playerLevel = data.playerLevel;
   }
 

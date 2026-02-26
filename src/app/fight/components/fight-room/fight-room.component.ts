@@ -5,6 +5,7 @@ import {
   OnInit,
   PLATFORM_ID,
   Renderer2,
+  signal,
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common'; // Import for platform check
 import { FightService } from '../../services/fight.service';
@@ -47,14 +48,13 @@ import { EquipSlot } from '../../../models/types/ItemTypes';
   styleUrl: './fight-room.component.scss',
 })
 export class FightRoomComponent implements OnInit{
-  player: Player | null = null;
-  enemy: Player | null = null;
-  combatLog: string = '';
-  gameOver: boolean = false;
-  battleOver: boolean = false;
-  playerBeingHit = false;
-  enemyBeingHit = false;
-  showCombatLog = false;
+  player = signal<Player | null>(null);
+  enemy = signal<Player | null>(null);
+  combatLog = signal('');
+  gameOver = false;
+  battleOver = false;
+  playerBeingHit = signal(false);
+  enemyBeingHit = signal(false);
 
   constructor(
     private fightService: FightService,
@@ -69,19 +69,12 @@ export class FightRoomComponent implements OnInit{
       const room = this.fightService.room();
       if (room) {
         room.onStateChange((state) => {
-          const plainPlayerObject = state.player;
-          const plainEnemyObject = state.enemy;
-
           const player = new Player();
           const enemy = new Player();
-
-          Object.assign(player, plainPlayerObject);
-          Object.assign(enemy, plainEnemyObject);
-
-          this.player = player;
-          this.enemy = enemy;
-
-          console.log('reassigning player');
+          Object.assign(player, state.player);
+          Object.assign(enemy, state.enemy);
+          this.player.set(player);
+          this.enemy.set(enemy);
         });
 
         room.onMessage('game_over', (message: string) => {
@@ -96,44 +89,38 @@ export class FightRoomComponent implements OnInit{
         });
 
         room.onMessage('combat_log', (message: string) => {
-          const formattedMessage = message.replace(/(\d*\.\d+)/g, (match) => {
-            return parseFloat(match).toFixed(2);
-          });
-          this.combatLog += formattedMessage + '\n';
+          const formatted = message.replace(/(\d*\.\d+)/g, (match) => parseFloat(match).toFixed(2));
+          this.combatLog.update(log => log + formatted + '\n');
         });
 
         room.onMessage('attack', (message: number) => {
-          if (this.player && this.enemy) {
+          if (this.player() && this.enemy()) {
             this.triggerAttack(message);
           }
         });
 
         room.onMessage('damage', (message: DamageMessage) => {
-          if (this.player && this.enemy) {
-            const roundedDamage = Math.round(message.damage);
-            this.triggerShowDamageNumber(roundedDamage, message.playerId);
-            this.triggerDamagedAvatarImage(message.playerId)
+          if (this.player() && this.enemy()) {
+            this.triggerShowDamageNumber(Math.round(message.damage), message.playerId);
+            this.triggerDamagedAvatarImage(message.playerId);
           }
         });
 
         room.onMessage('healing', (message: HealingMessage) => {
-          if (this.player && this.enemy) {
-            const roundedHealing = Math.round(message.healing);
-            this.triggerShowHealingNumber(roundedHealing, message.playerId);
+          if (this.player() && this.enemy()) {
+            this.triggerShowHealingNumber(Math.round(message.healing), message.playerId);
           }
         });
 
         room.onMessage('trigger_talent', (message: TriggerTalentMessage) => {
-          if (this.player && this.enemy) {
+          if (this.player() && this.enemy()) {
             triggerTalentActivation(message.talentId, message.playerId);
-            console.log('trigger_talent', message);
           }
         });
 
         room.onMessage('trigger_collection', (message: TriggerCollectionMessage) => {
-          if (this.player && this.enemy) {
+          if (this.player() && this.enemy()) {
             triggerItemCollectionActivation(message.collectionId, message.playerId);
-            console.log('trigger_collection', message);
           }
         });
       }
@@ -168,9 +155,9 @@ export class FightRoomComponent implements OnInit{
       const errorMessage = await this.draftService.joinOrCreate(name, playerId);
       if (errorMessage) {
         if (this.gameOver) {
-          this.openSnackBar(message, 'Exit', this.player?.playerId ?? 0, this.player?.name ?? '', true);
+          this.openSnackBar(message, 'Exit', this.player()?.playerId ?? 0, this.player()?.name ?? '', true);
         } else {
-          this.openSnackBar('The battle has ended', 'Exit', this.player?.playerId ?? 0, this.player?.name ?? '');
+          this.openSnackBar('The battle has ended', 'Exit', this.player()?.playerId ?? 0, this.player()?.name ?? '');
         }
       }
     }
@@ -207,15 +194,11 @@ export class FightRoomComponent implements OnInit{
   triggerDamagedAvatarImage(damagedPlayerId: number) {
     triggerAvatarHit(damagedPlayerId);
     if (damagedPlayerId === Number(localStorage.getItem("playerId"))) {
-      this.playerBeingHit = true;
-      setTimeout(() => {
-        this.playerBeingHit = false;
-      }, 200)
+      this.playerBeingHit.set(true);
+      setTimeout(() => this.playerBeingHit.set(false), 200);
     } else {
-      this.enemyBeingHit = true;
-      setTimeout(() => {
-        this.enemyBeingHit = false;
-      }, 200)
+      this.enemyBeingHit.set(true);
+      setTimeout(() => this.enemyBeingHit.set(false), 200);
     }
   }
 

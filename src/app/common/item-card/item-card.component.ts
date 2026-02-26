@@ -28,5 +28,4 @@ export class ItemCardComponent {
 
 
   protected readonly ItemRarity = ItemRarity;
-  protected readonly String = String;
 }

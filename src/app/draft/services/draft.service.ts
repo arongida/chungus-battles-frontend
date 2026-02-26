@@ -1,9 +1,15 @@
-import { Injectable, effect, signal, untracked } from '@angular/core';
-import * as Colyseus from 'colyseus.js';
-import { environment } from '../../../environments/environment';
+import { Injectable } from '@angular/core';
+import * as Colyseus from '@colyseus/sdk';
+import {
+  environment,
+} from '../../../environments/environment';
 import { Router } from '@angular/router';
-import { DraftState } from '../../models/colyseus-schema/DraftState';
-import { Player } from '../../models/colyseus-schema/PlayerSchema';
+import {
+  DraftState,
+} from '../../models/colyseus-schema/DraftState';
+import {
+  Player,
+} from '../../models/colyseus-schema/PlayerSchema';
 
 @Injectable({
   providedIn: 'root',
@@ -24,17 +30,19 @@ export class DraftService {
     try {
       let playerId = playerIdInput;
       if (!playerId) {
-        const result = await fetch(environment.expressServer + '/playerId')
+        const result = await fetch(environment.gameServer + '/playerId')
           .then((res) => res.json())
           .catch((e) => console.error(e));
         playerId = result.playerId;
       }
+
 
       this.room = await this.client.create('draft_room', {
         name: name,
         playerId: playerId,
         avatarUrl: avatarUrl,
       });
+
 
       this.room.onMessage('*', (type, message) => {
         console.log('message: ', type, message);
@@ -53,8 +61,7 @@ export class DraftService {
       return null;
     } catch (e) {
       console.error('join error', e);
-      const message = e instanceof Error ? e.message : 'Unknown error.';
-      return message;
+      return e instanceof Error ? e.message : 'Unknown error.';
     }
   }
 

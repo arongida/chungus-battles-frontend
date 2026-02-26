@@ -14,7 +14,6 @@ background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/
         <div class="text-xs">
           <div
             class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm"
-            #tooltip="matTooltip"
             matTooltip="Your Health Points, if it reaches zero, you loose the battle."
             matTooltipPosition="right">
             <div>Health:</div>
@@ -34,7 +33,6 @@ background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/
 
           <div
             class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm"
-            #tooltip="matTooltip"
             matTooltip="Your attacks deal {{player.accuracy | number: '1.3-3'}} - {{ player.strength | number: '1.3-3'}} damage."
             matTooltipPosition="right">
             <div>Attack:</div>
@@ -50,7 +48,6 @@ background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/
 
           <div
             class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm"
-            #tooltip="matTooltip"
             matTooltip="You attack {{ player.attackSpeed }} times in one second."
             matTooltipPosition="right">
             <div>Attack Speed:</div>
@@ -65,7 +62,6 @@ background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/
 
           <div
             class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm"
-            #tooltip="matTooltip"
             matTooltip="You gain extra {{player.income}}🟡 at the end of fights."
             matTooltipPosition="right">
             <div>Income:</div>
@@ -78,13 +74,11 @@ background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/
           <div
             class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm">
             <div class="text-orange-500 pl-1"
-                 #tooltip="matTooltip"
                  matTooltip="You recover {{player.hpRegen}}❤️ every second."
                  matTooltipPosition="above">
               {{ player.hpRegen | number: '1.0-3' }} 🧪
             </div>
             <div class="text-green-500 pr-1"
-                 #tooltip="matTooltip"
                  matTooltip="Decreases incoming damage from attacks by {{ player.flatDmgReduction | number: '1.3-3'}}."
                  matTooltipPosition="above">{{ player.flatDmgReduction | number: '1.3-3' }}
               🔰
@@ -97,7 +91,6 @@ background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/
             class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm">
 
             <div class="text-green-600 pl-1"
-                 #tooltip="matTooltip"
                  matTooltip="Decreases incoming damage from attacks by {{
               100 * (1 - 100 / (100 + player.defense)) | number: '1.0-0'
             }}%."
@@ -105,8 +98,8 @@ background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/
               🛡️
             </div>
 
-            <div #tooltip="matTooltip"
-                 matTooltip="Chance to dodge an attack - {{
+            <div
+              matTooltip="Chance to dodge an attack - {{
               100 * (1 - 100 / (100 + player.dodgeRate)) | number: '1.0-0'
             }}%." matTooltipPosition="below"
                  class="text-green-400 pr-1">{{ player.dodgeRate | number: '1.0-2' }}
@@ -232,7 +225,7 @@ background-image: url('https://chungus-battles.b-cdn.net/chungus-battles-assets/
               </button>
             } @else {
               <button mat-button class="!text-xs !min-w-0 !px-2 text-amber-400"
-                      (click)="equip(item, item.equipOptions.values().next().value)">
+                      (click)="equip(item, item.equipOptions.values().next().value ?? '')">
                 Equip
               </button>
               <button mat-button class="!text-xs !min-w-0 !px-2 text-yellow-500"

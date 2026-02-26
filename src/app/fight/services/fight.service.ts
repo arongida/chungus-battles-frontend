@@ -1,5 +1,5 @@
 import { Injectable, signal } from '@angular/core';
-import * as Colyseus from 'colyseus.js';
+import * as Colyseus from '@colyseus/sdk';
 import { environment } from '../../../environments/environment';
 import { Router } from '@angular/router';
 import { FightState } from '../../models/colyseus-schema/FightState';

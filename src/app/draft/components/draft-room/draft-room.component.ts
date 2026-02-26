@@ -1,6 +1,7 @@
 import {
   Component,
   OnInit,
+  signal,
   untracked,
 } from '@angular/core';
 import { DraftService } from '../../services/draft.service';
@@ -34,9 +35,6 @@ import {
   MusicOptions,
   SoundsService,
 } from '../../../common/services/sounds.service';
-import {
-  CharacterDetailsService
-} from '../../../common/services/character-details.service';
 
 @Component({
   selector: 'app-draft-room',
@@ -53,17 +51,12 @@ import {
   styleUrl: './draft-room.component.scss',
 })
 export class DraftRoomComponent implements OnInit {
-  player?: Player;
-  shop?: Item[];
-  availableTalents: Talent[];
-  availableCollections?: ItemCollection[];
+  player = signal<Player | undefined>(new Player());
+  shop = signal<Item[]>([]);
+  availableTalents = signal<Talent[]>([]);
+  availableCollections = signal<ItemCollection[]>([]);
 
-  constructor(public draftService: DraftService, private snackBar: MatSnackBar, private soundsService: SoundsService) {
-    this.player = new Player();
-    this.shop = [] as Item[];
-    this.availableTalents = [] as Talent[];
-    this.availableCollections = [] as ItemCollection[];
-  }
+  constructor(public draftService: DraftService, private snackBar: MatSnackBar, private soundsService: SoundsService) {}
 
   async ngOnInit(): Promise<void> {
 
@@ -81,26 +74,15 @@ export class DraftRoomComponent implements OnInit {
 
     this.draftService.room?.onMessage('draft_log', (message: string) => {
       console.log('draft_log', message);
-      this.snackBar.open(message, 'Close', {
-        duration: 5000,
-      });
+      this.snackBar.open(message, 'Close', { duration: 5000 });
     });
 
     // Listen to changes in the room state
     this.draftService.room?.onStateChange((state) => {
-      // Assuming state.player is a plain object
-      const plainPlayerObject = state.player;
-
-      // Create a new Player instance
-      this.player = new Player().assign(plainPlayerObject);
-
-
-      // Assign the Player instance to this.player
-      console.log('re assigning player');
-
-      this.shop = state.shop as unknown  as Item[];
-      this.availableTalents = state.availableTalents as unknown as Talent[];
-      this.availableCollections = state.player.availableItemCollections as unknown as ItemCollection[];
+      this.player.set(new Player().assign(state.player));
+      this.shop.set([...(state.shop ?? [])] as unknown as Item[]);
+      this.availableTalents.set([...(state.availableTalents ?? [])] as unknown as Talent[]);
+      this.availableCollections.set([...(state.player?.availableItemCollections ?? [])] as unknown as ItemCollection[]);
     });
   }
 

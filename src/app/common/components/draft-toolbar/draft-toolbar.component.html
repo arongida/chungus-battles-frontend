@@ -44,23 +44,23 @@
   @if(!isFighting()) {
   <div class="fixed top-16 right-1 sm:top-20 sm:right-2 flex flex-col scale-75 sm:scale-90 md:scale-100 origin-top-right">
 
-    <button [disabled]="player.gold < 4 || player.level > 4 " #tooltip="matTooltip" matTooltip="4 gold = 4 xp"
+    <button [disabled]="player.gold < 4 || player.level > 4 "  matTooltip="4 gold = 4 xp"
       matTooltipPosition="left" mat-mini-fab color="text-white" class="m-1 sm:m-2" (click)="buyXp()"
       (mouseenter)="switchBuyXpAnimate()" (mouseleave)="switchBuyXpAnimate()">
       <mat-icon [ngClass]="{'animate-bounce': hoverBuyXp}">keyboard_arrow_up</mat-icon>
     </button>
 
-    <button [disabled]="player.gold < player.refreshShopCost" #tooltip="matTooltip"
+    <button [disabled]="player.gold < player.refreshShopCost"
       matTooltip="{{player.refreshShopCost}} gold" mat-mini-fab matTooltipPosition="below" color="text-white"
       class="m-1 sm:m-2" (click)="refreshShop()" (mouseenter)="switchShopRefreshAnimate()"
       (mouseleave)="switchShopRefreshAnimate()">
       <mat-icon [ngClass]="{'animate-spin': hoverShopRefresh}">refresh</mat-icon>
     </button>
     @if(isLocked){
-    <button #tooltip="matTooltip" matTooltip="Your current shop is locked for the next round." matTooltipPosition="below" mat-mini-fab color="text-white"
+    <button  matTooltip="Your current shop is locked for the next round." matTooltipPosition="below" mat-mini-fab color="text-white"
       class="m-1 sm:m-2" [ngClass]="{'clicked' : isLocked}" (click)="lockShop()"><mat-icon>lock_outline</mat-icon>
     </button>} @else {
-      <button #tooltip="matTooltip" matTooltip="Lock your current shop for the next round." matTooltipPosition="below" mat-mini-fab color="text-white"
+      <button  matTooltip="Lock your current shop for the next round." matTooltipPosition="below" mat-mini-fab color="text-white"
       class="m-1 sm:m-2" [ngClass]="{'clicked' : isLocked}" (click)="lockShop()"><mat-icon>lock_open</mat-icon>
     </button>}
   </div>

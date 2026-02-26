@@ -5,7 +5,7 @@
     " [style.background-size]="'100% 100%'" [style.background-position]="'center'">
     <button class="absolute top-10 right-10 z-10" (click)="closeDialog()"><mat-icon>close</mat-icon></button>
     <div class="grid grid-cols-1 scale-75 lg:scale-100">
-      @for (talent of talents; track $index) {
+      @for (talent of talents(); track $index) {
       <div
         class="mx-3 px-3 py-3 flex flex-col align-middle justify-center w-80 h-60 items-center transform transition-transform scale-75 hover:scale-90"
         [style.background-image]="'url(' + getTalentImage(talent) + ')'" [style.background-size]="'100% 100%'"

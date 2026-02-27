@@ -73,16 +73,17 @@ export class EndComponent implements OnInit, OnDestroy {
     const equippedMap = new MapSchema<Item>();
     if (data.equippedItems) {
       Object.entries(data.equippedItems).forEach(([slot, itemData]) => {
+        const { affectedStats: rawAffectedStats, setBonusStats: rawSetBonusStats, ...rest } = itemData as any;
         const item = new Item();
-        Object.assign(item, itemData as any);
-        if ((itemData as any).affectedStats) {
+        Object.assign(item, rest);
+        if (rawAffectedStats) {
           const affectedStats = new AffectedStats();
-          Object.assign(affectedStats, (itemData as any).affectedStats);
+          Object.assign(affectedStats, rawAffectedStats);
           item.affectedStats = affectedStats;
         }
-        if ((itemData as any).setBonusStats) {
+        if (rawSetBonusStats) {
           const setBonusStats = new AffectedStats();
-          Object.assign(setBonusStats, (itemData as any).setBonusStats);
+          Object.assign(setBonusStats, rawSetBonusStats);
           item.setBonusStats = setBonusStats;
         }
         equippedMap.set(slot, item);

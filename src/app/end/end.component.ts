@@ -1,7 +1,8 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Player } from '../models/colyseus-schema/PlayerSchema';
 import { Item } from '../models/colyseus-schema/ItemSchema';
+import { AffectedStats } from '../models/colyseus-schema/AffectedStatsSchema';
 import { environment } from '../../environments/environment';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
@@ -15,9 +16,9 @@ import { CharacterDetailsDialogComponent } from '../common/components/character-
   templateUrl: './end.component.html',
   styleUrl: './end.component.scss',
 })
-export class EndComponent implements OnDestroy {
+export class EndComponent implements OnInit, OnDestroy {
   message: string = 'Game Over';
-  topPlayers: Player[] = [];
+  topPlayers = signal<Player[]>([]);
   playerId: number = 0;
   playerRank: number = 0;
   playerName: string = '';
@@ -43,7 +44,7 @@ export class EndComponent implements OnDestroy {
       const topPlayersUrl = `${environment.gameServer}/topPlayers?numberOfPlayers=10`;
       const topPlayerResults = await fetch(topPlayersUrl).then(res => res.json());
       console.log('Top players:', topPlayerResults);
-      this.topPlayers = topPlayerResults;
+      this.topPlayers.set(topPlayerResults);
 
       // Get player rank
       const playerRankUrl = `${environment.gameServer}/rank?playerId=${this.playerId}`;
@@ -72,8 +73,19 @@ export class EndComponent implements OnDestroy {
     const equippedMap = new MapSchema<Item>();
     if (data.equippedItems) {
       Object.entries(data.equippedItems).forEach(([slot, itemData]) => {
+        const { affectedStats: rawAffectedStats, setBonusStats: rawSetBonusStats, ...rest } = itemData as any;
         const item = new Item();
-        Object.assign(item, itemData as any);
+        Object.assign(item, rest);
+        if (rawAffectedStats) {
+          const affectedStats = new AffectedStats();
+          Object.assign(affectedStats, rawAffectedStats);
+          item.affectedStats = affectedStats;
+        }
+        if (rawSetBonusStats) {
+          const setBonusStats = new AffectedStats();
+          Object.assign(setBonusStats, rawSetBonusStats);
+          item.setBonusStats = setBonusStats;
+        }
         equippedMap.set(slot, item);
       });
     }
@@ -90,7 +102,7 @@ export class EndComponent implements OnDestroy {
   }
 
   topListContainsPlayer() {
-    return this.topPlayers.some(player => player.playerId === this.playerId);
+    return this.topPlayers().some(player => player.playerId === this.playerId);
   }
 
   ngOnDestroy() {

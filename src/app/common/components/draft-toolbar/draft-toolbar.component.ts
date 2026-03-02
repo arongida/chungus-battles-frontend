@@ -69,15 +69,14 @@ export class DraftToolbarComponent implements OnChanges, OnInit {
     const change = changes['availableTalents'];
     if (!change) return;
 
-    // Show tooltip when talents first become available
+    // Auto-open the dialog when talents become available and it isn't already open
     if (
       (change.previousValue?.length ?? 0) === 0 &&
-      change.currentValue?.length === 2 &&
-      this.talentPickerTooltip &&
-      !this.talentPickerTooltip._isTooltipVisible() &&
-      !this.talentDialogRef?.getState()
+      change.currentValue?.length > 0 &&
+      !this.talentDialogRef?.componentInstance
     ) {
-      setTimeout(() => this.talentPickerTooltip?.show(), 0);
+      this.openTalentPickerDialog();
+      return;
     }
 
     // Push updated talents into the dialog if it is open

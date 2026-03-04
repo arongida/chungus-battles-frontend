@@ -1,14 +1,22 @@
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Player } from '../../../models/colyseus-schema/PlayerSchema';
-import { Item } from '../../../models/colyseus-schema/ItemSchema';
+import {
+  Player,
+} from '../../../models/colyseus-schema/PlayerSchema';
+import {
+  Item,
+} from '../../../models/colyseus-schema/ItemSchema';
 import { NgClass } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
-import { ItemCollection } from '../../../models/colyseus-schema/ItemCollectionSchema';
+import {
+  ItemCollection,
+} from '../../../models/colyseus-schema/ItemCollectionSchema';
 import { DraftService } from '../../services/draft.service';
-import { ItemCardComponent } from '../../../common/item-card/item-card.component';
+import {
+  ItemCardComponent,
+} from '../../../common/item-card/item-card.component';
 
 @Component({
   selector: 'app-inventory',
@@ -40,7 +48,7 @@ export class InventoryComponent {
   onMouseEnterItem(item: Item) {
     item.showDetails = true;
     item.imageCache = item.image;
-    item.image = `https://chungus-battles.b-cdn.net/chungus-battles-assets/level_${item.tier}_glow.png`;
+    item.image = `assets/level_${item.tier}_glow.png`;
   }
 
   onMouseLeaveItem(item: Item) {
@@ -53,7 +61,7 @@ export class InventoryComponent {
   }
 
   getItemImage(item: Item) {
-    return item.image ? item.image : 'https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_0_Empty.png';
+    return item.image ? item.image : 'assets/Item_ID_0_Empty.png';
   }
 
   backToDefault() {
@@ -65,12 +73,10 @@ export class InventoryComponent {
     this.isDisplayingSets = false;
     let itemsArray = [...this.player.inventory];
     if (this.isDescending) {
-      const sortedByNameDesc = itemsArray.sort((a, b) => a.name.localeCompare(b.name));
-      this.displayedInventory = sortedByNameDesc;
+      this.displayedInventory = itemsArray.sort((a, b) => a.name.localeCompare(b.name));
       this.isDescending = !this.isDescending;
     } else {
-      const sortedByNameAsc = itemsArray.sort((a, b) => b.name.localeCompare(a.name));
-      this.displayedInventory = sortedByNameAsc;
+      this.displayedInventory = itemsArray.sort((a, b) => b.name.localeCompare(a.name));
       this.isDescending = !this.isDescending;
     }
   }
@@ -79,12 +85,10 @@ export class InventoryComponent {
     this.isDisplayingSets = false;
     let itemsArray = [...this.player.inventory];
     if (this.isDescending) {
-      const sortedByLevel = itemsArray.sort((a, b) => b.tier - a.tier);
-      this.displayedInventory = sortedByLevel;
+      this.displayedInventory = itemsArray.sort((a, b) => b.tier - a.tier);
       this.isDescending = !this.isDescending;
     } else {
-      const sortedByLevel = itemsArray.sort((a, b) => a.tier - b.tier);
-      this.displayedInventory = sortedByLevel;
+      this.displayedInventory = itemsArray.sort((a, b) => a.tier - b.tier);
       this.isDescending = !this.isDescending;
     }
   }
@@ -147,7 +151,7 @@ export class InventoryComponent {
   getItemImage(item: { image: string }): string {
     return (
       item.image ||
-      'https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_0_Empty.png'
+      'assets/Item_ID_0_Empty.png'
     );
   }*/
 }

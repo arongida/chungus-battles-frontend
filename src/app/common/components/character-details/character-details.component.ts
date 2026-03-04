@@ -68,22 +68,24 @@ export class CharacterDetailsComponent {
   hoveredInventoryItem: Item | null = null;
   equipSlotsOptions = Object.values(EquipSlot) as EquipSlot[];
 
-  constructor(public draftService: DraftService) {
+  constructor(public draftService: DraftService) {}
 
+  getPreloadUrls(): string[] {
+    if (!this.player?.avatarUrl) return [];
+    const base = this.player.avatarUrl;
+    const variants = this.enemy ? ['_enemy', '_cringe_enemy'] : ['_cringe'];
+    return variants.map(v => base.replace('.png', `${v}.png`));
   }
 
 
   getAvatarImage(): string {
     let avatar =
       this.player?.avatarUrl ||
-      'https://chungus-battles.b-cdn.net/chungus-battles-assets/Portrait_ID_0_Placeholder.png';
-
+      'assets/Portrait_ID_0_Placeholder.png';
 
     if ((this.enemy && this.enemyBeingHit()) || this.playerBeingHit()) {
-      // Logic for when the component has the 'cringe' class
-      avatar = avatar.replace('.png', '_cringe.png'); // Or your desired image
+      avatar = avatar.replace('.png', '_cringe.png');
     }
-
     if (this.enemy) {
       avatar = avatar.replace('.png', '_enemy.png');
     }
@@ -184,7 +186,7 @@ export class CharacterDetailsComponent {
   }
 
   getItemBackground(item?: Item) {
-    return item ? `https://chungus-battles.b-cdn.net/chungus-battles-assets/level_${item.tier < 10 ? item.tier : item.tier - 90}_glow.png` : `https://chungus-battles.b-cdn.net/chungus-battles-assets/level_1_glow.png`;
+    return item ? `assets/level_${item.tier < 10 ? item.tier : item.tier - 90}_glow.png` : `assets/level_1_glow.png`;
   }
 
   getItemAtSlot(slot: EquipSlot) {

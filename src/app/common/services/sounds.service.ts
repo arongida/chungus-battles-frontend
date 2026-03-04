@@ -43,12 +43,12 @@ export class SoundsService {
 }
 
 export enum MusicOptions {
-  BATTLE = 'https://chungus-battles.b-cdn.net/chungus-battles-assets/music/battle-music.mp3',
-  DRAFT = 'https://chungus-battles.b-cdn.net/chungus-battles-assets/music/shop-music.mp3',
+  BATTLE = 'assets/music/battle-music.mp3',
+  DRAFT = 'assets/music/shop-music.mp3',
 }
 
 export enum SoundOptions {
-  ATTACK = 'https://chungus-battles.b-cdn.net/chungus-battles-assets/sound/sword-attack.mp3',
-  CLICK = 'https://chungus-battles.b-cdn.net/chungus-battles-assets/sound/click-old.mp3',
-  BUY = 'https://chungus-battles.b-cdn.net/chungus-battles-assets/sound/coin-cling.mp3',
+  ATTACK = 'assets/sound/sword-attack.mp3',
+  CLICK = 'assets/sound/click-old.mp3',
+  BUY = 'assets/sound/coin-cling.mp3',
 }

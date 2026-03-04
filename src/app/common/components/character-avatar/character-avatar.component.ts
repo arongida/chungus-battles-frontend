@@ -24,6 +24,13 @@ export class CharacterAvatarComponent {
     this.player = {} as Player;
   }
 
+  getPreloadUrls(): string[] {
+    if (!this.player?.avatarUrl) return [];
+    const base = this.player.avatarUrl;
+    const variants = this.enemy ? ['_enemy', '_cringe_enemy'] : ['_cringe'];
+    return variants.map(v => base.replace('.png', `${v}.png`));
+  }
+
   @Input({ required: true }) player: Player;
   @Input({ required: false }) combat: boolean = false;
   @Input({ required: false }) enemy: boolean = false;
@@ -34,12 +41,11 @@ export class CharacterAvatarComponent {
   getAvatarImage(): string {
     let avatar =
       this.player?.avatarUrl ||
-      'https://chungus-battles.b-cdn.net/chungus-battles-assets/Portrait_ID_0_Placeholder.png';
+      'assets/Portrait_ID_0_Placeholder.png';
 
 
     if (this.isBeingHit) {
-      // Logic for when the component has the 'cringe' class
-      return avatar.replace('.png', '_cringe.png'); // Or your desired image
+      avatar = avatar.replace('.png', '_cringe.png');
     }
 
     if (this.enemy) {

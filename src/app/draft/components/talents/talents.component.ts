@@ -41,14 +41,14 @@ export class TalentsComponent {
   getTalentImage(talent: Talent) {
     return talent.image
       ? talent.image
-      : 'https://chungus-battles.b-cdn.net/chungus-battles-assets/talent_tablet_01_horizontal.png';
+      : 'assets/talent_tablet_01_horizontal.png';
   }
 
   onMouseEnterTalent(talent: Talent) {
     talent.showDetails = true;
     talent.imageCache = talent.image;
     talent.image =
-      'https://chungus-battles.b-cdn.net/chungus-battles-assets/talent_tablet_01_horizontal.png';
+      'assets/talent_tablet_01_horizontal.png';
   }
 
   onMouseLeaveTalent(talent: Talent) {

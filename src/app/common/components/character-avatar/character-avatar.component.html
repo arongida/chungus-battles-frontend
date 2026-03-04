@@ -1,7 +1,11 @@
+<!-- Important image chaches, don't delete! -->
+@for (url of getPreloadUrls(); track url) {
+  <img [src]="url" style="position:fixed;left:-9999px;width:1px;height:1px;pointer-events:none" alt="">
+}
 <!-- Avatar Section -->
 <div id="avatar-{{ player.playerId }}"
   class="bg-cover bg-center w-48 h-64 flex flex-col-reverse items-center bg-gray-800 p-4 shadow-lg relative"
-  style="background-image: url('{{ getAvatarImage() }}');" >
+  [style.background-image]="'url(' + getAvatarImage() + ')'">
   <div class="relative w-full rounded-md">
     <!-- Floating Damage Numbers Container -->
     <div id="damage-numbers-{{ player.playerId }}" class="relative pointer-events-none"></div>
@@ -13,5 +17,5 @@
   </div>
 
   <div class="absolute" id="attack-{{ player.playerId }}"></div>
-  
+
 </div>

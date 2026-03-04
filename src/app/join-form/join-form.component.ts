@@ -41,9 +41,9 @@ import { MusicOptions, SoundOptions, SoundsService } from '../common/services/so
 export class JoinFormComponent implements AfterViewInit, OnDestroy, OnInit {
   nameControl = new FormControl('', Validators.compose([Validators.maxLength(20), Validators.required]));
   avatarOptions = [
-    'https://chungus-battles.b-cdn.net/chungus-battles-assets/warrior_01.png',
-    'https://chungus-battles.b-cdn.net/chungus-battles-assets/thief_01.png',
-    'https://chungus-battles.b-cdn.net/chungus-battles-assets/merchant_01.png',
+    'assets/warrior_01.png',
+    'assets/thief_01.png',
+    'assets/merchant_01.png',
   ];
   fallingItems = itemPictures;
   avatarSelected = this.avatarOptions[1];

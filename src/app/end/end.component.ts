@@ -20,9 +20,9 @@ export class EndComponent implements OnInit, OnDestroy {
   message: string = 'Game Over';
   topPlayers = signal<Player[]>([]);
   playerId: number = 0;
-  playerRank: number = 0;
-  playerName: string = '';
-  playerWins: number = 0;
+  playerRank = signal<number>(0);
+  playerName = signal<string>('');
+  playerWins = signal<number>(0);
 
   private intervalId: any;
 
@@ -49,9 +49,9 @@ export class EndComponent implements OnInit, OnDestroy {
       // Get player rank
       const playerRankUrl = `${environment.gameServer}/rank?playerId=${this.playerId}`;
       const playerRankResult = await fetch(playerRankUrl).then(res => res.json());
-      this.playerRank = playerRankResult.rank;
-      this.playerName = playerRankResult.name;
-      this.playerWins = playerRankResult.wins;
+      this.playerRank.set(playerRankResult.rank);
+      this.playerName.set(playerRankResult.name);
+      this.playerWins.set(playerRankResult.wins);
     } catch (error) {
       console.error('Error fetching player data:', error);
     }

@@ -77,3 +77,9 @@ body {
 .cdk-overlay-backdrop{
   background: #00000080 !important;
 }
+
+.game-bg {
+  background-image: url('assets/BG_01.png');
+  background-size: cover;
+  background-position: center;
+}

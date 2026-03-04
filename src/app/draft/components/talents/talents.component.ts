@@ -1,4 +1,4 @@
-import { Component, Inject, signal } from '@angular/core';
+import { Component, Inject, OnDestroy, signal } from '@angular/core';
 import { Talent } from '../../../models/colyseus-schema/TalentSchema';
 import { MatCardModule } from '@angular/material/card';
 import { DraftService } from '../../services/draft.service';
@@ -22,20 +22,32 @@ import { SoundOptions, SoundsService } from '../../../common/services/sounds.ser
   templateUrl: './talents.component.html',
   styleUrl: './talents.component.scss',
 })
-export class TalentsComponent {
+export class TalentsComponent implements OnDestroy {
   hoverTelentRefresh = false;
   talents = signal<Talent[]>([]);
-  playerLevel: number;
+  talentRerollCost = signal<number>(0);
+
+  private stateCallback: ((state: any) => void) | undefined;
 
   constructor(
     public draftService: DraftService,
     @Inject(MAT_DIALOG_DATA)
-    public data: { talents: Talent[]; playerLevel: number },
+    public data: { talents: Talent[] },
     public dialogRef: MatDialogRef<TalentsComponent>,
     private soundsService: SoundsService
   ) {
     this.talents.set(data.talents);
-    this.playerLevel = data.playerLevel;
+
+    this.stateCallback = (state: any) => {
+      this.talentRerollCost.set(state.talentRerollCost ?? 0);
+    };
+    this.draftService.room?.onStateChange(this.stateCallback);
+  }
+
+  ngOnDestroy() {
+    if (this.stateCallback) {
+      (this.draftService.room?.onStateChange as any).remove?.(this.stateCallback);
+    }
   }
 
   getTalentImage(talent: Talent) {

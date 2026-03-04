@@ -91,7 +91,6 @@ export class DraftToolbarComponent implements OnChanges, OnInit {
     this.talentDialogRef = this.dialog.open(TalentsComponent, {
       data: {
         talents: this.availableTalents?.map(t => ({ ...t })),
-        playerLevel: this.player?.level ?? 1,
       },
     });
   }

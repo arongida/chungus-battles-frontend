@@ -8,7 +8,6 @@ import {
 import {
   DecimalPipe,
   NgClass,
-  NgStyle,
   TitleCasePipe,
 } from '@angular/common';
 import {
@@ -51,7 +50,6 @@ import {
     ItemCardComponent,
     TitleCasePipe,
     MatTabsModule,
-    NgStyle,
   ],
   templateUrl: './character-details.component.html',
   styleUrl: './character-details.component.scss',
@@ -68,27 +66,27 @@ export class CharacterDetailsComponent {
   hoveredInventoryItem: Item | null = null;
   equipSlotsOptions = Object.values(EquipSlot) as EquipSlot[];
 
-  constructor(public draftService: DraftService) {
+  constructor(public draftService: DraftService) {}
 
-  }
-
-
-  getAvatarImage(): string {
-    let avatar =
-      this.player?.avatarUrl ||
-      'https://chungus-battles.b-cdn.net/chungus-battles-assets/Portrait_ID_0_Placeholder.png';
-
-
-    if ((this.enemy && this.enemyBeingHit()) || this.playerBeingHit()) {
-      // Logic for when the component has the 'cringe' class
-      avatar = avatar.replace('.png', '_cringe.png'); // Or your desired image
-    }
-
+  getNormalAvatarImage(): string {
+    let avatar = this.player?.avatarUrl || 'assets/Portrait_ID_0_Placeholder.png';
     if (this.enemy) {
       avatar = avatar.replace('.png', '_enemy.png');
     }
-
     return avatar;
+  }
+
+  getCringeAvatarImage(): string {
+    let avatar = this.player?.avatarUrl || 'assets/Portrait_ID_0_Placeholder.png';
+    avatar = avatar.replace('.png', '_cringe.png');
+    if (this.enemy) {
+      avatar = avatar.replace('.png', '_enemy.png');
+    }
+    return avatar;
+  }
+
+  isShowingCringe(): boolean {
+    return (this.enemy && this.enemyBeingHit()) || this.playerBeingHit();
   }
 
   getPlayerHp(): number {
@@ -184,7 +182,7 @@ export class CharacterDetailsComponent {
   }
 
   getItemBackground(item?: Item) {
-    return item ? `https://chungus-battles.b-cdn.net/chungus-battles-assets/level_${item.tier < 10 ? item.tier : item.tier - 90}_glow.png` : `https://chungus-battles.b-cdn.net/chungus-battles-assets/level_1_glow.png`;
+    return item ? `assets/level_${item.tier < 10 ? item.tier : item.tier - 90}_glow.png` : `assets/level_1_glow.png`;
   }
 
   getItemAtSlot(slot: EquipSlot) {

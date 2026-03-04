@@ -1,4 +1,4 @@
-import { Component, computed, Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import {
   Item,
 } from '../../../models/colyseus-schema/ItemSchema';
@@ -20,9 +20,6 @@ import {
 import {
   Player,
 } from '../../../models/colyseus-schema/PlayerSchema';
-import {
-  ItemTrackingService,
-} from '../../../common/services/item-tracking.service';
 import {
   SoundOptions,
   SoundsService,
@@ -79,7 +76,7 @@ export class ShopComponent {
     if (this.draggingCard) return;
     item.showDetails = true;
     item.imageCache = item.image;
-    item.image = `https://chungus-battles.b-cdn.net/chungus-battles-assets/level_${item.tier}_glow.png`;
+    item.image = `assets/level_${item.tier}_glow.png`;
   }
 
   onMouseLeaveItem(item: Item) {
@@ -89,7 +86,7 @@ export class ShopComponent {
   }
 
   getItemImage(item: Item) {
-    return item.image ? item.image : 'https://chungus-battles.b-cdn.net/chungus-battles-assets/Item_ID_0_Empty.png';
+    return item.image ? item.image : 'assets/Item_ID_0_Empty.png';
   }
 
   cardDragStarted(item: Item) {

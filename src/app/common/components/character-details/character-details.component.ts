@@ -8,7 +8,6 @@ import {
 import {
   DecimalPipe,
   NgClass,
-  NgStyle,
   TitleCasePipe,
 } from '@angular/common';
 import {
@@ -51,7 +50,6 @@ import {
     ItemCardComponent,
     TitleCasePipe,
     MatTabsModule,
-    NgStyle,
   ],
   templateUrl: './character-details.component.html',
   styleUrl: './character-details.component.scss',
@@ -70,27 +68,25 @@ export class CharacterDetailsComponent {
 
   constructor(public draftService: DraftService) {}
 
-  getPreloadUrls(): string[] {
-    if (!this.player?.avatarUrl) return [];
-    const base = this.player.avatarUrl;
-    const variants = this.enemy ? ['_enemy', '_cringe_enemy'] : ['_cringe'];
-    return variants.map(v => base.replace('.png', `${v}.png`));
-  }
-
-
-  getAvatarImage(): string {
-    let avatar =
-      this.player?.avatarUrl ||
-      'assets/Portrait_ID_0_Placeholder.png';
-
-    if ((this.enemy && this.enemyBeingHit()) || this.playerBeingHit()) {
-      avatar = avatar.replace('.png', '_cringe.png');
-    }
+  getNormalAvatarImage(): string {
+    let avatar = this.player?.avatarUrl || 'assets/Portrait_ID_0_Placeholder.png';
     if (this.enemy) {
       avatar = avatar.replace('.png', '_enemy.png');
     }
-
     return avatar;
+  }
+
+  getCringeAvatarImage(): string {
+    let avatar = this.player?.avatarUrl || 'assets/Portrait_ID_0_Placeholder.png';
+    avatar = avatar.replace('.png', '_cringe.png');
+    if (this.enemy) {
+      avatar = avatar.replace('.png', '_enemy.png');
+    }
+    return avatar;
+  }
+
+  isShowingCringe(): boolean {
+    return (this.enemy && this.enemyBeingHit()) || this.playerBeingHit();
   }
 
   getPlayerHp(): number {

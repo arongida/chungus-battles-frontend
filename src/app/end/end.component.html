@@ -19,7 +19,7 @@
     @if (!topListContainsPlayer()) {
       <span>...</span>
       <div class="text-lg text-yellow-600 mb-2 cursor-pointer hover:underline" (click)="viewPlayerBuild(playerId)">
-        {{ playerRank }}. {{ playerName }} - {{ playerWins }} win
+        {{ playerRank() }}. {{ playerName() }} - {{ playerWins() }} win
       </div>
     }
   </div>

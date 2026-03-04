@@ -34,7 +34,9 @@
           }
 
           <app-item-card [item]="item" [player]="player"
-                         [setTooltipBasedOnInventory]="true"></app-item-card>
+                         [setTooltipBasedOnInventory]="true"
+                         [showBuyButton]="true"
+                         (buyClicked)="buyItem(item)"></app-item-card>
 
 
         </div>

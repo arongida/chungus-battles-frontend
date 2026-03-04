@@ -1,5 +1,6 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
 import {
   DecimalPipe,
   NgClass,
@@ -16,7 +17,7 @@ import { ItemRarity } from '../../models/types/ItemTypes';
 @Component({
   selector: 'app-item-card',
   standalone: true,
-  imports: [MatCardModule, TitleCasePipe, DecimalPipe, NgClass],
+  imports: [MatCardModule, MatButtonModule, TitleCasePipe, DecimalPipe, NgClass],
   templateUrl: './item-card.component.html',
   styleUrl: './item-card.component.scss',
 })
@@ -25,7 +26,8 @@ export class ItemCardComponent {
   @Input({ required: true }) player: Player = new Player();
   @Input({ required: false }) setTooltipBasedOnInventory: boolean = false;
   @Input({ required: false }) showDetails = false;
-
+  @Input({ required: false }) showBuyButton = false;
+  @Output() buyClicked = new EventEmitter<void>();
 
   protected readonly ItemRarity = ItemRarity;
 }

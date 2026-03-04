@@ -7,7 +7,7 @@
     <div id="stats"
          class="bg-center bg-cover w-28 h-44 sm:w-36 sm:h-52 md:w-44 md:h-60 lg:w-48 lg:h-64 flex flex-col items-center justify-evenly bg-gray-800 p-1 sm:p-4"
          style="
-background-image: url('assets/Item_ID_0_Empty.png');
+background-image: url('../../../../assets/items/Item_ID_0_Empty.png');
 ">
       <h3 class="text-white text-xs sm:text-lg mb-1 sm:mb-4">Stats</h3>
       <div class="w-full rounded-md">
@@ -141,7 +141,7 @@ background-image: url('assets/Item_ID_0_Empty.png');
 
     <div id="equipped-items-{{player.playerId}}"
          class="bg-center bg-cover w-28 h-44 sm:w-36 sm:h-52 md:w-44 md:h-60 lg:w-48 lg:h-64 flex flex-col bg-amber-950 p-1 sm:p-2"
-         style="background-image: url('assets/Item_ID_0_Empty.png');">
+         style="background-image: url('../../../../assets/items/Item_ID_0_Empty.png');">
 
       <div class="text-amber-500 text-[10px] sm:text-xs font-semibold tracking-tight sm:tracking-widest w-full text-center pb-1 mb-1 shrink-0">
         ⚔️ EQUIPPED
@@ -189,7 +189,7 @@ background-image: url('assets/Item_ID_0_Empty.png');
   </div>
 
   @if (!combat) {
-    <div class="border border-amber-700/50 p-2" style="background-image: url('assets/Item_ID_0_Empty.png'); background-size: 400%; background-position: center;">
+    <div class="border border-amber-700/50 p-2" style="background-image: url('../../../../assets/items/Item_ID_0_Empty.png'); background-size: 400%; background-position: center;">
       <mat-tab-group
         (selectedTabChange)="onTabChange($event)"
         class="mb-2">

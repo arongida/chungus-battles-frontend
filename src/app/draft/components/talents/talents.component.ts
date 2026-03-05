@@ -38,6 +38,11 @@ export class TalentsComponent implements OnDestroy {
   ) {
     this.talents.set(data.talents);
 
+    const currentState = this.draftService.room?.state;
+    if (currentState) {
+      this.talentRerollCost.set(currentState.talentRerollCost ?? 0);
+    }
+
     this.stateCallback = (state: any) => {
       this.talentRerollCost.set(state.talentRerollCost ?? 0);
     };

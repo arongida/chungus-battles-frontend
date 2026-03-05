@@ -16,9 +16,7 @@ import {
 import {
   MatProgressBarModule,
 } from '@angular/material/progress-bar';
-import {
-  Item,
-} from '../../../models/colyseus-schema/ItemSchema';
+import Item from '../../../models/colyseus-schema/ItemSchema';
 import { MatCardContent } from '@angular/material/card';
 import {
   ItemCardComponent,

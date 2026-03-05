@@ -39,3 +39,11 @@ export function triggerItemCollectionActivation(collectionId: number, playerId: 
     }, 500);
   }
 }
+
+export function triggerItemActivation(playerId: number, slot: string) {
+  const el = document.getElementById(`equipped-slot-${slot}-${playerId}`);
+  if (el) {
+    el.classList.add('animate-talent');
+    setTimeout(() => el.classList.remove('animate-talent'), 500);
+  }
+}

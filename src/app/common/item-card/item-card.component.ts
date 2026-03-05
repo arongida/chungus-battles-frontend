@@ -6,9 +6,7 @@ import {
   NgClass,
   TitleCasePipe,
 } from '@angular/common';
-import {
-  Item,
-} from '../../models/colyseus-schema/ItemSchema';
+import Item from '../../models/colyseus-schema/ItemSchema';
 import {
   Player,
 } from '../../models/colyseus-schema/PlayerSchema';

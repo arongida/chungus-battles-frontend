@@ -8,9 +8,7 @@ import { DraftService } from '../../services/draft.service';
 import {
   Player,
 } from '../../../models/colyseus-schema/PlayerSchema';
-import {
-  Item,
-} from '../../../models/colyseus-schema/ItemSchema';
+import Item from '../../../models/colyseus-schema/ItemSchema';
 import { ShopComponent } from '../shop/shop.component';
 import {
   ReadyButtonComponent,

@@ -3,9 +3,7 @@ import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import {
   Player,
 } from '../../../models/colyseus-schema/PlayerSchema';
-import {
-  Item,
-} from '../../../models/colyseus-schema/ItemSchema';
+import Item from '../../../models/colyseus-schema/ItemSchema';
 import { NgClass } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatMenuModule } from '@angular/material/menu';

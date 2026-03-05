@@ -1,7 +1,12 @@
-import { Schema, type, SetSchema } from '@colyseus/schema';
+import {
+  Schema,
+  type,
+  SetSchema,
+  ArraySchema,
+} from '@colyseus/schema';
 import { AffectedStats } from './AffectedStatsSchema';
 
-export class Item extends Schema {
+class Item extends Schema {
   @type('number') itemId: number = 0;
   @type('string') name: string = '';
   @type('string') description: string = '';
@@ -20,4 +25,10 @@ export class Item extends Schema {
   @type('string') set: string = '';
   @type(['string']) equipOptions: SetSchema<string> = new SetSchema();
   @type('boolean') showDetails: boolean = false;
+  @type('number') baseMinDamage: number = 0;
+  @type('number') baseMaxDamage: number = 0;
+  @type('number') baseAttackSpeed: number = 0;
+  @type(['string']) triggerTypes: ArraySchema<string> = new ArraySchema<string>();
 }
+
+export default Item;

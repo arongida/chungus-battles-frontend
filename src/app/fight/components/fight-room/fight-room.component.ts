@@ -69,6 +69,15 @@ export class FightRoomComponent implements OnInit{
     effect(() => {
       const room = this.fightService.room();
       if (room) {
+        if (room.state?.player) {
+          const player = new Player();
+          const enemy = new Player();
+          Object.assign(player, room.state.player);
+          Object.assign(enemy, room.state.enemy);
+          this.player.set(player);
+          this.enemy.set(enemy);
+        }
+
         room.onStateChange((state) => {
           const player = new Player();
           const enemy = new Player();

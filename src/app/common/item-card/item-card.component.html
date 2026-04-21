@@ -1,4 +1,4 @@
-<div class="h-full relative">
+<div class="h-full min-h-[280px] w-[210px] relative">
   <div
     class="mb-2 mt-2 pt-5 text-center text-xl text-white">
     <mat-card-title
@@ -7,6 +7,9 @@
   </div>
 
   @if (item.showDetails || showDetails) {
+    @if (item.description) {
+      <p class="px-3 pb-1 text-xs italic text-slate-300 leading-snug">{{ (item.description | slice:0:1 | uppercase) + (item.description | slice:1) }}</p>
+    }
     <div
       class="flex flex-col min-h-full text-center items-center justify-start p-1">
       <div class="p-1">
@@ -19,14 +22,39 @@
         class="flex flex-col min-h-full items-center justify-center">
         <div class="grid place-content-center text-sm p-1">
 
-          @if (item.type === 'weapon' && (item.affectedStats.accuracy !== 0 || item.affectedStats.strength !== 0)) {
-            <p>
-              Damage:
-              <span
-                class="text-red-500">+ {{ item.affectedStats.accuracy | number: '1.0-1' }}
-                - {{ item.affectedStats.strength | number: '1.0-1' }}
-                ⚔️</span>
-            </p>
+          @if (item.type === 'weapon') {
+            @if (item.baseMinDamage > 0 || item.baseMaxDamage > 0) {
+              <p>
+                Damage:
+                <span class="text-red-500">
+                  {{ item.baseMinDamage | number: '1.0-1' }} - {{ item.baseMaxDamage | number: '1.0-1' }} ⚔️
+                </span>
+              </p>
+            }
+            @if (item.baseAttackSpeed > 0) {
+              <p>
+                Speed:
+                <span class="text-blue-500">{{ item.baseAttackSpeed | number: '1.0-2' }}/s ⏩</span>
+              </p>
+            }
+            @if (item.affectedStats.strength !== 0) {
+              <p>
+                +Strength:
+                <span class="text-red-500">{{ item.affectedStats.strength | number: '1.0-1' }} ⚔️</span>
+              </p>
+            }
+            @if (item.affectedStats.accuracy !== 0) {
+              <p>
+                +Accuracy:
+                <span class="text-red-500">{{ item.affectedStats.accuracy | number: '1.0-1' }} 🎯</span>
+              </p>
+            }
+            @if (item.affectedStats.attackSpeed !== 0 && item.affectedStats.attackSpeed !== 1) {
+              <p>
+                +A.speed:
+                <span class="text-blue-500">{{ item.affectedStats.attackSpeed * 100 - 100 | number: '1.0-0' }}% ⏩</span>
+              </p>
+            }
           } @else {
             @if (item.affectedStats.strength !== 0) {
               <p>
@@ -45,15 +73,15 @@
                   🎯</span>
               </p>
             }
-          }
 
-          @if (item.affectedStats.attackSpeed !== 0 && item.affectedStats.attackSpeed !== 1) {
-            <p>
-              A.speed:
-              <span
-                class="text-blue-500">{{ item.affectedStats.attackSpeed * 100 - 100 | number: '1.0-0' }}
-                % ⏩</span>
-            </p>
+            @if (item.affectedStats.attackSpeed !== 0 && item.affectedStats.attackSpeed !== 1) {
+              <p>
+                A.speed:
+                <span
+                  class="text-blue-500">{{ item.affectedStats.attackSpeed * 100 - 100 | number: '1.0-0' }}
+                  % ⏩</span>
+              </p>
+            }
           }
 
           @if (item.affectedStats.defense !== 0) {

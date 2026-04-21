@@ -5,7 +5,7 @@ import {
   type,
 } from '@colyseus/schema';
 import { Talent } from './TalentSchema';
-import { Item } from './ItemSchema';
+import Item from './ItemSchema';
 import { ItemCollection } from './ItemCollectionSchema';
 import { ItemRarity } from '../types/ItemTypes';
 

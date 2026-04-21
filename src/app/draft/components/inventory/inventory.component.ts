@@ -3,9 +3,7 @@ import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import {
   Player,
 } from '../../../models/colyseus-schema/PlayerSchema';
-import {
-  Item,
-} from '../../../models/colyseus-schema/ItemSchema';
+import Item from '../../../models/colyseus-schema/ItemSchema';
 import { NgClass } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatMenuModule } from '@angular/material/menu';
@@ -17,11 +15,14 @@ import { DraftService } from '../../services/draft.service';
 import {
   ItemCardComponent,
 } from '../../../common/item-card/item-card.component';
+import {
+  ItemHoverCardDirective,
+} from '../../../common/directives/item-hover-card.directive';
 
 @Component({
   selector: 'app-inventory',
   standalone: true,
-  imports: [NgClass, MatCardModule, MatButtonModule, MatMenuModule, ItemCardComponent],
+  imports: [NgClass, MatCardModule, MatButtonModule, MatMenuModule, ItemCardComponent, ItemHoverCardDirective],
   templateUrl: './inventory.component.html',
   styleUrl: './inventory.component.scss',
 })
@@ -45,17 +46,6 @@ export class InventoryComponent {
     this.isDisplayingSets = false;
     this.selectedItemCollection = null;
   }
-  onMouseEnterItem(item: Item) {
-    item.showDetails = true;
-    item.imageCache = item.image;
-    item.image = `assets/level_${item.tier}_glow.png`;
-  }
-
-  onMouseLeaveItem(item: Item) {
-    item.showDetails = false;
-    item.image = item.imageCache!;
-  }
-
   getSellPrice(item: Item) {
     return Math.floor(item.price * 0.7);
   }

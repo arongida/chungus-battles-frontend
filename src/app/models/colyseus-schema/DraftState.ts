@@ -4,7 +4,7 @@ import {
   type,
 } from '@colyseus/schema';
 import { Player } from './PlayerSchema';
-import { Item } from './ItemSchema';
+import Item from './ItemSchema';
 import { Talent } from './TalentSchema';
 import { ItemCollection } from './ItemCollectionSchema';
 

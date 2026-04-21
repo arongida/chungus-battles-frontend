@@ -7,6 +7,11 @@
 
 <div class="w-screen h-screen bg-amber-950 flex flex-col items-center justify-center game-bg">
 
+  @if (!player()) {
+    <div class="absolute inset-0 flex items-center justify-center z-50">
+      <p class="text-amber-200 text-xl animate-pulse">Waiting for fight to start...</p>
+    </div>
+  }
 
   @if (enemy()) {
     <div

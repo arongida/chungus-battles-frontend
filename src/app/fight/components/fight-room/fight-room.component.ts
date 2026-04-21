@@ -15,6 +15,7 @@ import {
   DamageMessage,
   TriggerTalentMessage,
   TriggerCollectionMessage,
+  TriggerItemMessage,
 } from '../../../models/types/MessageTypes';
 import { CombatLogComponent } from '../combat-log/combat-log.component';
 import { DraftService } from '../../../draft/services/draft.service';
@@ -23,7 +24,7 @@ import { Router } from '@angular/router';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { triggerTalentActivation, triggerItemCollectionActivation, triggerWeaponAttack, triggerAvatarHit } from '../../../common/TriggerAnimations';
+import { triggerTalentActivation, triggerItemCollectionActivation, triggerWeaponAttack, triggerAvatarHit, triggerItemActivation } from '../../../common/TriggerAnimations';
 import { RoundInfoComponent } from '../../../common/components/round-info/round-info.component';
 import { CharacterDetailsComponent } from '../../../common/components/character-details/character-details.component';
 import { SkillIconsComponent } from '../../../common/components/skill-icons/skill-icons.component';
@@ -68,6 +69,15 @@ export class FightRoomComponent implements OnInit{
     effect(() => {
       const room = this.fightService.room();
       if (room) {
+        if (room.state?.player) {
+          const player = new Player();
+          const enemy = new Player();
+          Object.assign(player, room.state.player);
+          Object.assign(enemy, room.state.enemy);
+          this.player.set(player);
+          this.enemy.set(enemy);
+        }
+
         room.onStateChange((state) => {
           const player = new Player();
           const enemy = new Player();
@@ -121,6 +131,12 @@ export class FightRoomComponent implements OnInit{
         room.onMessage('trigger_collection', (message: TriggerCollectionMessage) => {
           if (this.player() && this.enemy()) {
             triggerItemCollectionActivation(message.collectionId, message.playerId);
+          }
+        });
+
+        room.onMessage('trigger_item', (message: TriggerItemMessage) => {
+          if (this.player() && this.enemy()) {
+            triggerItemActivation(message.playerId, message.slot);
           }
         });
       }

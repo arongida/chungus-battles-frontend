@@ -16,13 +16,10 @@ import {
 import {
   MatProgressBarModule,
 } from '@angular/material/progress-bar';
+import Item from '../../../models/colyseus-schema/ItemSchema';
 import {
-  Item,
-} from '../../../models/colyseus-schema/ItemSchema';
-import { MatCardContent } from '@angular/material/card';
-import {
-  ItemCardComponent,
-} from '../../item-card/item-card.component';
+  ItemHoverCardDirective,
+} from '../../directives/item-hover-card.directive';
 import {
   DraftService,
 } from '../../../draft/services/draft.service';
@@ -46,8 +43,7 @@ import {
     MatDividerModule,
     NgClass,
     MatButtonModule,
-    MatCardContent,
-    ItemCardComponent,
+    ItemHoverCardDirective,
     TitleCasePipe,
     MatTabsModule,
   ],
@@ -62,8 +58,6 @@ export class CharacterDetailsComponent {
   playerBeingHit = input(false);
   enemyBeingHit = input(false);
   selectedCategory: string = 'inventory';
-  hoveredEquipment: EquipSlot | null = null;
-  hoveredInventoryItem: Item | null = null;
   equipSlotsOptions = Object.values(EquipSlot) as EquipSlot[];
 
   constructor(public draftService: DraftService) {}
@@ -91,31 +85,6 @@ export class CharacterDetailsComponent {
 
   getPlayerHp(): number {
     return this.player.hp > 0 && this.player.hp < 1 ? 1 : this.player.hp;
-  }
-
-  onMouseEnterEquip(hoveredEquip: EquipSlot) {
-    this.hoveredEquipment = hoveredEquip;
-  }
-
-  onMouseLeaveEquip() {
-    this.hoveredEquipment = null;
-  }
-
-  onMouseEnterItem(item?: Item) {
-    if (!item) return;
-    if (item.showDetails) return;
-    this.hoveredInventoryItem = item;
-    item.showDetails = true;
-    item.imageCache = item.image;
-    item.image = this.getItemBackground(item);
-  }
-
-  onMouseLeaveItem(item?: Item) {
-    if (!item) return;
-    if (!item.showDetails) return;
-    this.hoveredInventoryItem = null;
-    item.showDetails = false;
-    item.image = item.imageCache!;
   }
 
   selectCategory(event: MatTabChangeEvent) {
@@ -148,7 +117,6 @@ export class CharacterDetailsComponent {
     this.draftService.sendMessage('sell', {
       itemId: item.itemId,
     });
-    this.onMouseLeaveItem(item);
   }
 
   equip(item: Item, slot: EquipSlot | string) {
@@ -156,7 +124,6 @@ export class CharacterDetailsComponent {
       itemId: item.itemId,
       slot: slot,
     });
-    this.onMouseLeaveItem(item);
   }
 
   unequip(item: Item | undefined, slot: EquipSlot) {
@@ -165,7 +132,6 @@ export class CharacterDetailsComponent {
       itemId: item.itemId,
       slot: slot,
     });
-    this.onMouseLeaveItem(item);
   }
 
   getItemPriceRounded(item: Item) {

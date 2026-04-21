@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Player } from '../models/colyseus-schema/PlayerSchema';
-import { Item } from '../models/colyseus-schema/ItemSchema';
+import Item from '../models/colyseus-schema/ItemSchema';
 import { AffectedStats } from '../models/colyseus-schema/AffectedStatsSchema';
 import { environment } from '../../environments/environment';
 import { MatButtonModule } from '@angular/material/button';

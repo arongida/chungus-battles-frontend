@@ -17,3 +17,9 @@ export type TriggerCollectionMessage = {
   playerId: number;
   collectionId: number;
 };
+
+export type TriggerItemMessage = {
+  playerId: number;
+  itemId: number;
+  slot: string;
+};

@@ -24,7 +24,7 @@ import { Router } from '@angular/router';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { triggerTalentActivation, triggerItemCollectionActivation, triggerWeaponAttack, triggerAvatarHit, triggerItemActivation } from '../../../common/TriggerAnimations';
+import { triggerTalentActivation, triggerAvatarHit, triggerItemActivation } from '../../../common/TriggerAnimations';
 import { RoundInfoComponent } from '../../../common/components/round-info/round-info.component';
 import { CharacterDetailsComponent } from '../../../common/components/character-details/character-details.component';
 import { SkillIconsComponent } from '../../../common/components/skill-icons/skill-icons.component';
@@ -125,12 +125,6 @@ export class FightRoomComponent implements OnInit{
         room.onMessage('trigger_talent', (message: TriggerTalentMessage) => {
           if (this.player() && this.enemy()) {
             triggerTalentActivation(message.talentId, message.playerId);
-          }
-        });
-
-        room.onMessage('trigger_collection', (message: TriggerCollectionMessage) => {
-          if (this.player() && this.enemy()) {
-            triggerItemCollectionActivation(message.collectionId, message.playerId);
           }
         });
 
@@ -255,6 +249,5 @@ export class FightRoomComponent implements OnInit{
       return;
     }
     this.soundsService.playSound(SoundOptions.ATTACK);
-    triggerWeaponAttack(attackerId, EquipSlot.MAIN_HAND);
   }
 }

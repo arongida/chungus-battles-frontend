@@ -1,4 +1,4 @@
-<div class="h-full relative">
+<div class="h-full min-h-[280px] w-[210px] relative">
   <div
     class="mb-2 mt-2 pt-5 text-center text-xl text-white">
     <mat-card-title
@@ -7,6 +7,9 @@
   </div>
 
   @if (item.showDetails || showDetails) {
+    @if (item.description) {
+      <p class="px-3 pb-1 text-xs italic text-slate-300 leading-snug">{{ (item.description | slice:0:1 | uppercase) + (item.description | slice:1) }}</p>
+    }
     <div
       class="flex flex-col min-h-full text-center items-center justify-start p-1">
       <div class="p-1">

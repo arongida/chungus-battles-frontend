@@ -55,17 +55,18 @@ export class ItemHoverCardDirective implements OnDestroy {
       positionStrategy: this.overlay
         .position()
         .flexibleConnectedTo(this.elementRef)
+        .withFlexibleDimensions(false)
         .withPositions([
           { originX: 'end', originY: 'center', overlayX: 'start', overlayY: 'center', offsetX: 8 },
           { originX: 'start', originY: 'center', overlayX: 'end', overlayY: 'center', offsetX: -8 },
           { originX: 'center', originY: 'bottom', overlayX: 'center', overlayY: 'top', offsetY: 8 },
         ]),
       scrollStrategy: this.overlay.scrollStrategies.reposition(),
+      width: '210px',
+      height: '280px',
     });
 
     const pane = this.overlayRef.overlayElement;
-    pane.style.width = '240px';
-    pane.style.minHeight = '280px';
     pane.style.backgroundImage = `url(assets/level_${tier}_glow.png)`;
     pane.style.backgroundSize = 'cover';
     pane.style.backgroundPosition = 'center';

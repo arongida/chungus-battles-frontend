@@ -104,8 +104,11 @@ export class ShopComponent {
   }
 
   getBuyingTooltip() {
-    return this.canBuyItem(this.draggedCard) ? 'Buy for ' + this.draggedCard?.price : 'Not enough money!';
+    return this.canBuyItem(this.draggedCard)
+      ? ((this.draggedCard?.rarity ?? 0) <= 1 ? 'Buy for ' : 'Upgrade for ') + this.draggedCard?.price
+      : 'Not enough money!';
   }
+
 
   buyItem(item: Item) {
     this.draftService.sendMessage('buy', {

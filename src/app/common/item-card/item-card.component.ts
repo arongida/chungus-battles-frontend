@@ -31,21 +31,9 @@ export class ItemCardComponent {
 
   protected readonly ItemRarity = ItemRarity;
 
-  get upgradeRarity(): ItemRarity | 0 {
-    if (!this.showBuyButton) return 0;
-    if (this.item.sold) return 0;
-    const count = this.player.getOwnedCountForItem(this.item);
-    if (count === 0) return 0;
-    if (count === 7) return ItemRarity.LEGENDARY;
-    if (count === 3) return ItemRarity.EPIC;
-    if (count === 2 || count === 4 || count === 6) return ItemRarity.COMMON;
-    if (count >= 1) return ItemRarity.RARE;
-    return 0;
-  }
-
   get titleColorClass(): string {
-    if (this.upgradeRarity === ItemRarity.COMMON) return 'text-slate-300';
-    const r = this.upgradeRarity || this.item.rarity;
+    if (this.item.rarity === ItemRarity.COMMON) return 'text-slate-300';
+    const r = this.item.rarity;
     if (r === ItemRarity.RARE) return 'text-blue-500';
     if (r === ItemRarity.EPIC) return 'text-purple-500';
     if (r === ItemRarity.LEGENDARY) return 'text-orange-500';

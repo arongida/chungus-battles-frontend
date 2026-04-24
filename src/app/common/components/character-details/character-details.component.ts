@@ -135,7 +135,7 @@ export class CharacterDetailsComponent {
   }
 
   getItemPriceRounded(item: Item) {
-    return Math.floor(item.price * 0.7);
+    return Math.floor(item.price * 0.7 * item.rarity);
   }
 
   getRarityBorder(rarity: ItemRarity | string): string {

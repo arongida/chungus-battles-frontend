@@ -1,246 +1,225 @@
 <div class="flex flex-col h-full min-h-[280px] w-full overflow-hidden">
   <div class="mb-2 mt-2 pt-5 text-center text-xl text-white flex-none">
-    <mat-card-title
-      [ngClass]="titleColorClass"
-      [class.animate-pulse]="item.rarity > 1">{{ item.name | titlecase }}
+    <mat-card-title [ngClass]="titleColorClass" [class.animate-pulse]="item.rarity > 1">{{ item.name | titlecase }}
     </mat-card-title>
   </div>
 
   @if (item.showDetails || showDetails) {
-    <div class="flex-1 overflow-y-auto text-center">
-      @if (item.description) {
-        <p class="px-3 pb-1 text-xs italic text-slate-300 leading-snug line-clamp-2">{{ (item.description | slice:0:1 | uppercase) + (item.description | slice:1) }}</p>
+  <div class="flex-1 overflow-y-auto text-center">
+    @if (item.description) {
+    <p class="px-3 pb-1 text-xs italic text-slate-300 leading-snug line-clamp-2">{{ (item.description | slice:0:1 |
+      uppercase) + (item.description | slice:1) }}</p>
+    }
+    <div class="flex flex-col items-center justify-start p-1">
+      @if (showBuyButton) {
+      <div class="p-1">
+        <p class="font-semibold">
+          Price: <span class="text-yellow-300">{{ item.price }} 🟡</span>
+        </p>
+      </div>
       }
-      <div class="flex flex-col items-center justify-start p-1">
-        <div class="p-1">
-          <p class="font-semibold">
-            Price: <span
-            class="text-yellow-300">{{ item.price }} 🟡</span>
+      <div class="flex flex-col items-center">
+        <div class="grid place-content-center text-sm p-1">
+
+          @if (item.type === 'weapon') {
+          @if (item.baseMinDamage > 0 || item.baseMaxDamage > 0) {
+          <p>
+            Damage:
+            <span class="text-red-500">
+              {{ item.baseMinDamage | number: '1.0-1' }} - {{ item.baseMaxDamage | number: '1.0-1' }} ⚔️
+            </span>
           </p>
+          }
+          @if (item.baseAttackSpeed > 0) {
+          <p>
+            Speed:
+            <span class="text-blue-500">{{ item.baseAttackSpeed | number: '1.0-2' }}/s ⏩</span>
+          </p>
+          }
+          @if (item.affectedStats.strength !== 0) {
+          <p>
+            +Strength:
+            <span class="text-red-500">{{ item.affectedStats.strength | number: '1.0-1' }} ⚔️</span>
+          </p>
+          }
+          @if (item.affectedStats.accuracy !== 0) {
+          <p>
+            +Accuracy:
+            <span class="text-red-500">{{ item.affectedStats.accuracy | number: '1.0-1' }} 🎯</span>
+          </p>
+          }
+          @if (item.affectedStats.attackSpeed !== 0 && item.affectedStats.attackSpeed !== 1) {
+          <p>
+            +A.speed:
+            <span class="text-blue-500">{{ item.affectedStats.attackSpeed * 100 - 100 | number: '1.0-0' }}% ⏩</span>
+          </p>
+          }
+          } @else {
+          @if (item.affectedStats.strength !== 0) {
+          <p>
+            Strength:
+            <span class="text-red-500">{{ item.affectedStats.strength | number: '1.0-1' }}
+              ⚔️</span>
+          </p>
+          }
+
+          @if (item.affectedStats.accuracy !== 0) {
+          <p>
+            Accuracy:
+            <span class="text-red-500">{{ item.affectedStats.accuracy | number: '1.0-1' }}
+              🎯</span>
+          </p>
+          }
+
+          @if (item.affectedStats.attackSpeed !== 0 && item.affectedStats.attackSpeed !== 1) {
+          <p>
+            A.speed:
+            <span class="text-blue-500">{{ item.affectedStats.attackSpeed * 100 - 100 | number: '1.0-0' }}
+              % ⏩</span>
+          </p>
+          }
+          }
+
+          @if (item.affectedStats.defense !== 0) {
+          <p>
+            Defense:
+            <span class="text-green-600">{{ item.affectedStats.defense | number: '1.0-2' }}
+              🛡️</span>
+          </p>
+          }
+
+          @if (item.affectedStats.flatDmgReduction !== 0) {
+          <p>
+            Damage Reduction:
+            <span class="text-green-600">{{ item.affectedStats.flatDmgReduction | number: '1.0-2' }}
+              🔰</span>
+          </p>
+          }
+
+          @if (item.affectedStats.dodgeRate !== 0) {
+          <p>
+            Dodge:
+            <span class="text-green-400">{{ item.affectedStats.dodgeRate | number: '1.0-2' }}
+              🦵</span>
+          </p>
+          }
+
+          @if (item.affectedStats.maxHp !== 0) {
+          <p>
+            Health:
+            <span class="text-pink-500">{{ item.affectedStats.maxHp | number: '1.0-0' }}
+              ❤️</span>
+          </p>
+          }
+
+          @if (item.affectedStats.income !== 0) {
+          <p>
+            Income:
+            <span class="text-yellow-300">{{ item.affectedStats.income | number: '1.0-0' }}
+              💰</span>
+          </p>
+          }
+
+          @if (item.affectedStats.hpRegen !== 0) {
+          <p>
+            Regen:
+            <span class="text-orange-500">{{ item.affectedStats.hpRegen | number: '1.0-2' }}
+              🧪</span>
+          </p>
+          }
+
         </div>
-        <div class="flex flex-col items-center">
-          <div class="grid place-content-center text-sm p-1">
+        @if (item.set) {
+        <div class="p-1 m-1" [ngClass]="{'text-green-500': item.setActive, 'text-slate-300': !item.setActive}">
+          <div>{{item.set | titlecase}} set bonus:</div>
+          <div>{{item.setActive ? '(active)': '(inactive)'}}</div>
+          <div class="whitespace-pre-line">
 
-            @if (item.type === 'weapon') {
-              @if (item.baseMinDamage > 0 || item.baseMaxDamage > 0) {
-                <p>
-                  Damage:
-                  <span class="text-red-500">
-                    {{ item.baseMinDamage | number: '1.0-1' }} - {{ item.baseMaxDamage | number: '1.0-1' }} ⚔️
-                  </span>
-                </p>
-              }
-              @if (item.baseAttackSpeed > 0) {
-                <p>
-                  Speed:
-                  <span class="text-blue-500">{{ item.baseAttackSpeed | number: '1.0-2' }}/s ⏩</span>
-                </p>
-              }
-              @if (item.affectedStats.strength !== 0) {
-                <p>
-                  +Strength:
-                  <span class="text-red-500">{{ item.affectedStats.strength | number: '1.0-1' }} ⚔️</span>
-                </p>
-              }
-              @if (item.affectedStats.accuracy !== 0) {
-                <p>
-                  +Accuracy:
-                  <span class="text-red-500">{{ item.affectedStats.accuracy | number: '1.0-1' }} 🎯</span>
-                </p>
-              }
-              @if (item.affectedStats.attackSpeed !== 0 && item.affectedStats.attackSpeed !== 1) {
-                <p>
-                  +A.speed:
-                  <span class="text-blue-500">{{ item.affectedStats.attackSpeed * 100 - 100 | number: '1.0-0' }}% ⏩</span>
-                </p>
-              }
-            } @else {
-              @if (item.affectedStats.strength !== 0) {
-                <p>
-                  Strength:
-                  <span
-                    class="text-red-500">{{ item.affectedStats.strength | number: '1.0-1' }}
-                    ⚔️</span>
-                </p>
-              }
-
-              @if (item.affectedStats.accuracy !== 0) {
-                <p>
-                  Accuracy:
-                  <span
-                    class="text-red-500">{{ item.affectedStats.accuracy | number: '1.0-1' }}
-                    🎯</span>
-                </p>
-              }
-
-              @if (item.affectedStats.attackSpeed !== 0 && item.affectedStats.attackSpeed !== 1) {
-                <p>
-                  A.speed:
-                  <span
-                    class="text-blue-500">{{ item.affectedStats.attackSpeed * 100 - 100 | number: '1.0-0' }}
-                    % ⏩</span>
-                </p>
-              }
+            @if (item.setBonusStats.strength !== 0) {
+            <p>
+              Strength:
+              <span class="text-red-500">{{ item.setBonusStats.strength | number: '1.0-1' }}
+                ⚔️</span>
+            </p>
             }
 
-            @if (item.affectedStats.defense !== 0) {
-              <p>
-                Defense:
-                <span
-                  class="text-green-600">{{ item.affectedStats.defense | number: '1.0-2' }}
-                  🛡️</span>
-              </p>
+            @if (item.setBonusStats.accuracy !== 0) {
+            <p>
+              Accuracy:
+              <span class="text-red-500">{{ item.setBonusStats.accuracy | number: '1.0-1' }}
+                🎯</span>
+            </p>
             }
 
-            @if (item.affectedStats.flatDmgReduction !== 0) {
-              <p>
-                Damage Reduction:
-                <span
-                  class="text-green-600">{{ item.affectedStats.flatDmgReduction | number: '1.0-2' }}
-                  🔰</span>
-              </p>
+            @if (item.setBonusStats.attackSpeed !== 0 && item.setBonusStats.attackSpeed !== 1) {
+            <p>
+              A.speed:
+              <span class="text-blue-500">{{ item.setBonusStats.attackSpeed * 100 - 100 | number: '1.0-0' }}
+                % ⏩</span>
+            </p>
             }
 
-            @if (item.affectedStats.dodgeRate !== 0) {
-              <p>
-                Dodge:
-                <span
-                  class="text-green-400">{{ item.affectedStats.dodgeRate | number: '1.0-2' }}
-                  🦵</span>
-              </p>
+            @if (item.setBonusStats.defense !== 0) {
+            <p>
+              Defense:
+              <span class="text-green-600">{{ item.setBonusStats.defense | number: '1.0-2' }}
+                🛡️</span>
+            </p>
             }
 
-            @if (item.affectedStats.maxHp !== 0) {
-              <p>
-                Health:
-                <span
-                  class="text-pink-500">{{ item.affectedStats.maxHp | number: '1.0-0' }}
-                  ❤️</span>
-              </p>
+            @if (item.setBonusStats.flatDmgReduction !== 0) {
+            <p>
+              Damage Reduction:
+              <span class="text-green-600">{{ item.setBonusStats.flatDmgReduction | number: '1.0-2' }}
+                🔰</span>
+            </p>
             }
 
-            @if (item.affectedStats.income !== 0) {
-              <p>
-                Income:
-                <span
-                  class="text-yellow-300">{{ item.affectedStats.income | number: '1.0-0' }}
-                  💰</span>
-              </p>
+            @if (item.setBonusStats.dodgeRate !== 0) {
+            <p>
+              Dodge:
+              <span class="text-green-400">{{ item.setBonusStats.dodgeRate | number: '1.0-2' }}
+                🦵</span>
+            </p>
             }
 
-            @if (item.affectedStats.hpRegen !== 0) {
-              <p>
-                Regen:
-                <span
-                  class="text-orange-500">{{ item.affectedStats.hpRegen | number: '1.0-2' }}
-                  🧪</span>
-              </p>
+            @if (item.setBonusStats.maxHp !== 0) {
+            <p>
+              Health:
+              <span class="text-pink-500">{{ item.setBonusStats.maxHp | number: '1.0-0' }}
+                ❤️</span>
+            </p>
+            }
+
+            @if (item.setBonusStats.income !== 0) {
+            <p>
+              Income:
+              <span class="text-yellow-300">{{ item.setBonusStats.income | number: '1.0-0' }}
+                💰</span>
+            </p>
+            }
+
+            @if (item.setBonusStats.hpRegen !== 0) {
+            <p>
+              Regen:
+              <span class="text-orange-500">{{ item.setBonusStats.hpRegen | number: '1.0-2' }}
+                🧪</span>
+            </p>
             }
 
           </div>
-          @if (item.set) {
-            <div class="p-1 m-1"
-                 [ngClass]="{'text-green-500': item.setActive, 'text-slate-300': !item.setActive}">
-              <div>{{item.set | titlecase}} set bonus:</div>
-              <div>{{item.setActive ? '(active)': '(inactive)'}}</div>
-              <div class="whitespace-pre-line">
-
-                @if (item.setBonusStats.strength !== 0) {
-                  <p>
-                    Strength:
-                    <span
-                      class="text-red-500">{{ item.setBonusStats.strength | number: '1.0-1' }}
-                      ⚔️</span>
-                  </p>
-                }
-
-                @if (item.setBonusStats.accuracy !== 0) {
-                  <p>
-                    Accuracy:
-                    <span
-                      class="text-red-500">{{ item.setBonusStats.accuracy | number: '1.0-1' }}
-                      🎯</span>
-                  </p>
-                }
-
-                @if (item.setBonusStats.attackSpeed !== 0 && item.setBonusStats.attackSpeed !== 1) {
-                  <p>
-                    A.speed:
-                    <span
-                      class="text-blue-500">{{ item.setBonusStats.attackSpeed * 100 - 100 | number: '1.0-0' }}
-                      % ⏩</span>
-                  </p>
-                }
-
-                @if (item.setBonusStats.defense !== 0) {
-                  <p>
-                    Defense:
-                    <span
-                      class="text-green-600">{{ item.setBonusStats.defense | number: '1.0-2' }}
-                      🛡️</span>
-                  </p>
-                }
-
-                @if (item.setBonusStats.flatDmgReduction !== 0) {
-                  <p>
-                    Damage Reduction:
-                    <span
-                      class="text-green-600">{{ item.setBonusStats.flatDmgReduction | number: '1.0-2' }}
-                      🔰</span>
-                  </p>
-                }
-
-                @if (item.setBonusStats.dodgeRate !== 0) {
-                  <p>
-                    Dodge:
-                    <span
-                      class="text-green-400">{{ item.setBonusStats.dodgeRate | number: '1.0-2' }}
-                      🦵</span>
-                  </p>
-                }
-
-                @if (item.setBonusStats.maxHp !== 0) {
-                  <p>
-                    Health:
-                    <span
-                      class="text-pink-500">{{ item.setBonusStats.maxHp | number: '1.0-0' }}
-                      ❤️</span>
-                  </p>
-                }
-
-                @if (item.setBonusStats.income !== 0) {
-                  <p>
-                    Income:
-                    <span
-                      class="text-yellow-300">{{ item.setBonusStats.income | number: '1.0-0' }}
-                      💰</span>
-                  </p>
-                }
-
-                @if (item.setBonusStats.hpRegen !== 0) {
-                  <p>
-                    Regen:
-                    <span
-                      class="text-orange-500">{{ item.setBonusStats.hpRegen | number: '1.0-2' }}
-                      🧪</span>
-                  </p>
-                }
-
-              </div>
-            </div>
-          }
         </div>
+        }
       </div>
     </div>
-    @if (showBuyButton) {
-      <div class="flex-none pb-4 pt-1 flex justify-center">
-        <button mat-fab extended
-                [disabled]="player.gold < item.price"
-                color="primary"
-                (click)="$event.stopPropagation(); buyClicked.emit()">
-          {{ item.rarity > 1 ? 'Upgrade' : 'Buy' }} {{ item.price }} 🟡
-        </button>
-      </div>
-    }
+  </div>
+  @if (showBuyButton) {
+  <div class="flex-none pb-4 pt-1 flex justify-center">
+    <button mat-fab extended [disabled]="player.gold < item.price" color="primary"
+      (click)="$event.stopPropagation(); buyClicked.emit()">
+      {{ item.rarity > 1 ? 'Upgrade' : 'Buy' }} {{ item.price }} 🟡
+    </button>
+  </div>
+  }
   }
 </div>

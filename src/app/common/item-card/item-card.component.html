@@ -2,7 +2,7 @@
   <div class="mb-2 mt-2 pt-5 text-center text-xl text-white flex-none">
     <mat-card-title
       [ngClass]="titleColorClass"
-      [class.animate-pulse]="upgradeRarity > 0">{{ item.name | titlecase }}
+      [class.animate-pulse]="item.rarity > 1">{{ item.name | titlecase }}
     </mat-card-title>
   </div>
 
@@ -238,7 +238,7 @@
                 [disabled]="player.gold < item.price"
                 color="primary"
                 (click)="$event.stopPropagation(); buyClicked.emit()">
-          {{ upgradeRarity > 0 ? 'Upgrade' : 'Buy' }} {{ item.price }} 🟡
+          {{ item.rarity > 1 ? 'Upgrade' : 'Buy' }} {{ item.price }} 🟡
         </button>
       </div>
     }

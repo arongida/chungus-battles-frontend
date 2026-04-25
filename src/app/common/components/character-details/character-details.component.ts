@@ -31,6 +31,8 @@ import {
 import {
   EquipSlot, ItemRarity,
 } from '../../../models/types/ItemTypes';
+import { InfoHintDirective } from '../../directives/info-hint.directive';
+import { InfoContent } from '../../models/info-content';
 
 
 @Component({
@@ -46,6 +48,7 @@ import {
     ItemHoverCardDirective,
     TitleCasePipe,
     MatTabsModule,
+    InfoHintDirective,
   ],
   templateUrl: './character-details.component.html',
   styleUrl: './character-details.component.scss',
@@ -171,5 +174,38 @@ export class CharacterDetailsComponent {
 
   protected readonly ItemRarity = ItemRarity;
 
+  readonly equipHint: InfoContent = {
+    title: 'Equip Item',
+    entries: [
+      { icon: '🗡️', label: 'Equip', text: 'Place this item into an equipment slot. Equipped items provide their stats during battle.' },
+      { icon: '🔗', label: 'Set Bonus', text: 'Equipping two items from the same set activates a powerful set bonus.' },
+      { icon: '↩️', label: 'Unequip', text: 'Click an equipped item in the slots above to unequip and return it to your inventory.' },
+    ],
+  };
 
+  readonly sellHint: InfoContent = {
+    title: 'Sell Item',
+    entries: [
+      { icon: '🟡', label: 'Sell for Gold', text: 'Sell this item for 70% of its base price. Sold items cannot be recovered.' },
+    ],
+  };
+
+  get allStatsHint(): InfoContent {
+    const dodgeChance = Math.round(100 * (1 - 100 / (100 + this.player.dodgeRate)));
+    const defenseReduction = Math.round(100 * (1 - 100 / (100 + this.player.defense)));
+    return {
+      title: 'Your Stats',
+      entries: [
+        { icon: '❤️', label: 'Health', text: `${Math.round(this.player.maxHp)} HP total. Reaches zero = you lose the battle.`, color: 'text-pink-500' },
+        { icon: '🎯', label: 'Accuracy', text: `+${this.player.accuracy.toFixed(1)} added to your weapon's minimum damage roll.`, color: 'text-red-400' },
+        { icon: '⚔️', label: 'Strength', text: `+${this.player.strength.toFixed(1)} added to your weapon's maximum damage roll.`, color: 'text-red-400' },
+        { icon: '⏩', label: 'Speed Bonus', text: `${((this.player.attackSpeed - 1) * 100).toFixed(0)}% multiplier applied to all weapon attack speeds.`, color: 'text-blue-400' },
+        { icon: '💰', label: 'Income', text: `+${this.player.income} bonus gold earned at the end of each fight.`, color: 'text-yellow-400' },
+        { icon: '🧪', label: 'HP Regen', text: `Recover ${this.player.hpRegen.toFixed(3)} HP every second during battle.`, color: 'text-orange-400' },
+        { icon: '🔰', label: 'Flat Damage Reduction', text: `Reduces all incoming damage by ${this.player.flatDmgReduction.toFixed(3)} flat.`, color: 'text-green-400' },
+        { icon: '🛡️', label: 'Defense', text: `Reduces incoming damage by ${defenseReduction}% (DR formula applied to ${this.player.defense.toFixed(2)} defense).`, color: 'text-green-400' },
+        { icon: '🦵', label: 'Dodge', text: `${dodgeChance}% chance to completely dodge an incoming attack.`, color: 'text-green-400' },
+      ],
+    };
+  }
 }

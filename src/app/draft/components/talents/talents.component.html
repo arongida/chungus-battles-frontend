@@ -10,7 +10,8 @@
         class="mx-3 px-3 py-3 flex flex-col align-middle justify-center w-80 h-60 items-center transform transition-transform scale-75 hover:scale-90"
         [style.background-image]="'url(' + getTalentImage(talent) + ')'" [style.background-size]="'100% 100%'"
         [style.background-position]="'center'" (mouseenter)="onMouseEnterTalent(talent)"
-        (mouseleave)="onMouseLeaveTalent(talent)" (click)="selectTalent(talent.talentId)">
+        (mouseleave)="onMouseLeaveTalent(talent)" (click)="selectTalent(talent.talentId)"
+        [appInfoHint]="getTalentHint(talent)">
         <h1 class="mb-5 mt-2 text-2xl text-center">
           {{ talent.name }}
         </h1>

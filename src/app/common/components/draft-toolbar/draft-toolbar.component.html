@@ -4,14 +4,12 @@
       [ngClass]="{'border': showCharacterDetails()}" src="{{player.avatarUrl.replace('01','transparent')}}" alt="player"
       (click)="switchCharacterDetails()">
     <span class="text-center text-sm max-w-16 truncate sm:max-w-none sm:text-base">{{player.name}}</span>
-    <span class="text-xs sm:text-sm text-center shrink-0" #goldTooltip="matTooltip"
-      matTooltip="{{player.income + player.round * 2}} gold per round." matTooltipPosition="below">
+    <span class="text-xs sm:text-sm text-center shrink-0 cursor-default" [appInfoHint]="goldHint">
       <span class="hidden sm:inline">Gold: </span>{{ player.gold }} 🟡</span>
 
     @if (this.availableTalents && this.availableTalents.length > 0) {
 
-    <button mat-mini-fab (click)="openTalentPickerDialog()" #talentPickerTooltip="matTooltip"
-      matTooltip="Choose new talent!" matTooltipPosition="below" matTooltipHideDelay="1000">
+    <button mat-mini-fab (click)="openTalentPickerDialog()" [appInfoHint]="talentHint">
       <mat-icon class="animate-bounce">keyboard_arrow_up</mat-icon>
     </button>
 
@@ -28,8 +26,13 @@
     </div>
   </span>
 
-  <button mat-icon-button (click)="openTutorial()">
-    <mat-icon>help</mat-icon>
+  <button mat-icon-button (click)="toggleInfoBox()"
+    [class.text-amber-400]="infoBoxService.isVisible()"
+    [class.text-gray-400]="!infoBoxService.isVisible()"
+    [class.ring-1]="infoBoxService.isVisible()"
+    [class.ring-amber-400]="infoBoxService.isVisible()"
+    [class.rounded-full]="infoBoxService.isVisible()">
+    <mat-icon>{{ infoBoxService.isVisible() ? 'help' : 'help_outline' }}</mat-icon>
   </button>
 
   <button mat-icon-button matBadge="{{player.inventory.length}}" (click)="openInventory()">
@@ -44,23 +47,23 @@
   @if(!isFighting()) {
   <div class="fixed top-16 right-1 sm:top-20 sm:right-2 flex flex-col scale-75 sm:scale-90 md:scale-100 origin-top-right">
 
-    <button [disabled]="player.gold < 4 || player.level > 4 "  matTooltip="4 gold = 4 xp"
-      matTooltipPosition="left" mat-mini-fab color="text-white" class="m-1 sm:m-2" (click)="buyXp()"
+    <button [disabled]="player.gold < 4 || player.level > 4 " [appInfoHint]="buyXpHint"
+      mat-mini-fab color="text-white" class="m-1 sm:m-2" (click)="buyXp()"
       (mouseenter)="switchBuyXpAnimate()" (mouseleave)="switchBuyXpAnimate()">
       <mat-icon [ngClass]="{'animate-bounce': hoverBuyXp}">keyboard_arrow_up</mat-icon>
     </button>
 
-    <button [disabled]="player.gold < player.refreshShopCost"
-      matTooltip="{{player.refreshShopCost}} gold" mat-mini-fab matTooltipPosition="below" color="text-white"
+    <button [disabled]="player.gold < player.refreshShopCost" [appInfoHint]="refreshShopHint"
+      mat-mini-fab color="text-white"
       class="m-1 sm:m-2" (click)="refreshShop()" (mouseenter)="switchShopRefreshAnimate()"
       (mouseleave)="switchShopRefreshAnimate()">
       <mat-icon [ngClass]="{'animate-spin': hoverShopRefresh}">refresh</mat-icon>
     </button>
     @if(isLocked){
-    <button  matTooltip="Your current shop is locked for the next round." matTooltipPosition="below" mat-mini-fab color="text-white"
+    <button [appInfoHint]="lockShopHint" mat-mini-fab color="text-white"
       class="m-1 sm:m-2" [ngClass]="{'clicked' : isLocked}" (click)="lockShop()"><mat-icon>lock_outline</mat-icon>
     </button>} @else {
-      <button  matTooltip="Lock your current shop for the next round." matTooltipPosition="below" mat-mini-fab color="text-white"
+      <button [appInfoHint]="lockShopHint" mat-mini-fab color="text-white"
       class="m-1 sm:m-2" [ngClass]="{'clicked' : isLocked}" (click)="lockShop()"><mat-icon>lock_open</mat-icon>
     </button>}
   </div>
@@ -71,3 +74,5 @@
 <app-character-details [player]="player" [combat]="isFighting()" class="relative max-w-fit top-16 z-10">
 </app-character-details>
 }
+
+<app-info-box></app-info-box>

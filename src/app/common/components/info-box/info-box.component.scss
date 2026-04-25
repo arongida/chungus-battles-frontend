@@ -1,0 +1,138 @@
+.info-box {
+  position: fixed;
+  top: 56px;
+  right: 52px;
+  width: 320px;
+  background: rgba(10, 10, 15, 0.97);
+  border: 1px solid rgba(180, 120, 30, 0.5);
+  border-radius: 6px;
+  box-shadow: 0 0 20px rgba(180, 120, 30, 0.15), 0 4px 24px rgba(0, 0, 0, 0.8);
+  z-index: 20;
+  overflow: hidden;
+  animation: slideDown 0.18s ease-out;
+
+  @media (min-width: 640px) {
+    top: 64px;
+    right: 64px;
+    width: 340px;
+  }
+
+  @media (min-width: 768px) {
+    right: 72px;
+    width: 360px;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.info-box-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px 6px;
+  background: rgba(180, 120, 30, 0.1);
+}
+
+.info-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  color: #d97706;
+}
+
+.info-title {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #f59e0b;
+}
+
+.info-divider {
+  height: 1px;
+  background: linear-gradient(to right, rgba(180, 120, 30, 0.5), transparent);
+  margin: 0 12px;
+}
+
+.info-entries {
+  padding: 8px 14px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  max-height: 440px;
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    width: 3px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(180, 120, 30, 0.4);
+    border-radius: 2px;
+  }
+}
+
+.info-entry {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  line-height: 1.4;
+}
+
+.entry-icon {
+  font-size: 14px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.entry-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.entry-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #fbbf24;
+  letter-spacing: 0.04em;
+}
+
+.entry-text {
+  font-size: 12px;
+  color: #cbd5e1;
+  line-height: 1.5;
+}
+
+.info-idle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  opacity: 0.45;
+}
+
+.idle-icon {
+  font-size: 14px;
+  width: 14px;
+  height: 14px;
+  color: #94a3b8;
+  flex-shrink: 0;
+}
+
+.idle-text {
+  font-size: 11px;
+  color: #94a3b8;
+  font-style: italic;
+}

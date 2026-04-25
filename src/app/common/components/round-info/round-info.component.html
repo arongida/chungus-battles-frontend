@@ -1,22 +1,16 @@
 <div id="round-info" class="text-white">
-  <div class="hud-card">
-    <div class="hud-row"
-         matTooltip="You will get matched against similar round players in battle!"
-         matTooltipPosition="right">
+  <div class="hud-card cursor-default" [appInfoHint]="roundInfoHint">
+    <div class="hud-row">
       <span class="hud-label">Round</span>
       <span class="hud-value round-value">{{ player.round }}</span>
     </div>
     <div class="hud-divider"></div>
-    <div class="hud-row"
-         matTooltip="If you run out of lives, you will lose. You get -1 life for a lost combat."
-         matTooltipPosition="right">
+    <div class="hud-row">
       <span class="hud-label">Lives</span>
       <span class="hud-lives">{{ getLivesString() }}</span>
     </div>
     <div class="hud-divider"></div>
-    <div class="hud-row"
-         matTooltip="Reach the top or die trying, glory awaits!"
-         matTooltipPosition="right">
+    <div class="hud-row">
       <span class="hud-label">Wins</span>
       <span class="hud-value wins-value">{{ getPlayerWins() }}</span>
     </div>

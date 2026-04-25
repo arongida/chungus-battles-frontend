@@ -1,0 +1,31 @@
+@if (isVisible()) {
+  <div class="info-box">
+    @if (currentContent(); as content) {
+      <div class="info-box-header">
+        <mat-icon class="info-icon">auto_awesome</mat-icon>
+        <span class="info-title">{{ content.title }}</span>
+      </div>
+      <div class="info-divider"></div>
+      <div class="info-entries">
+        @for (entry of content.entries; track $index) {
+          <div class="info-entry">
+            @if (entry.icon) {
+              <span class="entry-icon">{{ entry.icon }}</span>
+            }
+            <div class="entry-body">
+              @if (entry.label) {
+                <span class="entry-label" [ngClass]="entry.color ?? ''">{{ entry.label }}</span>
+              }
+              <span class="entry-text">{{ entry.text }}</span>
+            </div>
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="info-idle">
+        <mat-icon class="idle-icon">info_outline</mat-icon>
+        <span class="idle-text">Hover over elements to learn more</span>
+      </div>
+    }
+  </div>
+}

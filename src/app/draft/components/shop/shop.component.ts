@@ -28,6 +28,9 @@ import {
 import {
   CharacterDetailsService,
 } from '../../../common/services/character-details.service';
+import { InfoHintDirective } from '../../../common/directives/info-hint.directive';
+import { InfoContent } from '../../../common/models/info-content';
+import { ItemRarity } from '../../../models/types/ItemTypes';
 @Component({
   selector: 'app-shop',
   standalone: true,
@@ -41,6 +44,7 @@ import {
     CdkDropList,
     DragDropModule,
     ItemCardComponent,
+    InfoHintDirective,
   ],
   templateUrl: './shop.component.html',
   styleUrl: './shop.component.scss',
@@ -103,6 +107,29 @@ export class ShopComponent {
     return this.player.gold >= item.price && !item.sold;
   }
 
+  getItemInfoHint(item: Item): InfoContent {
+    const isUpgrade = item.rarity > ItemRarity.COMMON;
+    if (isUpgrade) {
+      return {
+        title: `Upgrade: ${item.name}`,
+        entries: [
+          { icon: '⬆️', label: 'Upgrade Available', text: `You already own ${item.name}. Buying it again will upgrade it to a higher rarity tier, making it more powerful.` },
+          { icon: '🟡', label: 'Cost', text: `${item.price} gold to upgrade.` },
+          { icon: '🖱️', label: 'How to buy', text: 'Click the Buy button or drag the item to the drop zone at the bottom.' },
+        ],
+      };
+    }
+    return {
+      title: `Buy: ${item.name}`,
+      entries: [
+        { icon: '🛒', label: 'Buy Item', text: `Costs ${item.price} gold. After buying, the item goes to your inventory.` },
+        { icon: '🗡️', label: 'Equip It', text: 'Open your character details (avatar button) and use the Equip button.' },
+        { icon: '🔗', label: 'Set Bonus', text: 'Equip two items from the same set to activate a powerful set bonus.' },
+        { icon: '🖱️', label: 'How to buy', text: 'Click the Buy button or drag the item to the drop zone at the bottom.' },
+      ],
+    };
+  }
+
   getBuyingTooltip() {
     return this.canBuyItem(this.draggedCard)
       ? ((this.draggedCard?.rarity ?? 0) <= 1 ? 'Buy for ' : 'Upgrade for ') + this.draggedCard?.price
@@ -133,7 +160,7 @@ export class ShopComponent {
     return this.canBuyItem(this.draggedCard);
   };
 
-  onDragExited(event: CdkDragExit, cardElementRef: HTMLElement, gridRef: HTMLElement) {
+  onDragExited(_event: CdkDragExit, cardElementRef: HTMLElement, gridRef: HTMLElement) {
     if (this.tempCard) return;
     const cardElement = cardElementRef.childNodes[0].cloneNode(true);
     gridRef.insertBefore(cardElement, gridRef.childNodes[this.dragIndex * 2]);

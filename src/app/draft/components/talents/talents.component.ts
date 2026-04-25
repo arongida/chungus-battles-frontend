@@ -8,6 +8,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatIconModule } from '@angular/material/icon';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { SoundOptions, SoundsService } from '../../../common/services/sounds.service';
+import { InfoHintDirective } from '../../../common/directives/info-hint.directive';
+import { InfoContent } from '../../../common/models/info-content';
 
 @Component({
   selector: 'app-talents',
@@ -18,6 +20,7 @@ import { SoundOptions, SoundsService } from '../../../common/services/sounds.ser
     MatTooltipModule,
     MatIconModule,
     NgClass,
+    InfoHintDirective,
   ],
   templateUrl: './talents.component.html',
   styleUrl: './talents.component.scss',
@@ -82,6 +85,20 @@ export class TalentsComponent implements OnDestroy {
       talentId: talentId,
     });
     this.dialogRef.close();
+  }
+
+  getTalentHint(talent: Talent): InfoContent {
+    const cost = this.talentRerollCost();
+    const rerollText = cost === 0
+      ? 'You can reroll the talent selection for free using the button below.'
+      : `You can reroll the talent selection for ${cost} 🟡 using the button below.`;
+    return {
+      title: 'Choose a Talent',
+      entries: [
+        { icon: '🌟', label: talent.name, text: 'Click to permanently unlock this talent. It will enhance your character for the rest of the run.' },
+        { icon: '🔄', label: 'Reroll', text: rerollText },
+      ],
+    };
   }
 
   closeDialog() {

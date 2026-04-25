@@ -17,9 +17,10 @@ import { MatCardModule } from '@angular/material/card';
 import { MatBadgeModule } from '@angular/material/badge';
 import { SoundOptions, SoundsService } from '../../services/sounds.service';
 import { CharacterDetailsService } from '../../services/character-details.service';
-import {
-  TutorialComponent
-} from '../../../draft/components/tutorial/tutorial.component';
+import { InfoBoxService } from '../../services/info-box.service';
+import { InfoBoxComponent } from '../info-box/info-box.component';
+import { InfoHintDirective } from '../../directives/info-hint.directive';
+import { InfoContent } from '../../models/info-content';
 
 @Component({
   selector: 'app-draft-toolbar',
@@ -35,16 +36,57 @@ import {
     MatCardModule,
     CharacterDetailsComponent,
     MatBadgeModule,
+    InfoBoxComponent,
+    InfoHintDirective,
   ],
   templateUrl: './draft-toolbar.component.html',
   styleUrl: './draft-toolbar.component.scss',
 })
 export class DraftToolbarComponent implements OnChanges, OnInit {
   dialog = inject(MatDialog);
+  infoBoxService = inject(InfoBoxService);
   hoverShopRefresh = false;
   hoverBuyXp = false;
   muted = false;
   showCharacterDetails = computed(() => this.characterDetailsService.showCharacterDetails());
+
+  readonly goldHint: InfoContent = {
+    title: 'Gold & Income',
+    entries: [
+      { icon: '🟡', label: 'Gold', text: 'Your current gold. Spend it to buy and upgrade items in the shop.' },
+      { icon: '💰', label: 'Income', text: 'You earn bonus gold at the end of each fight based on your income stat.' },
+    ],
+  };
+
+  readonly buyXpHint: InfoContent = {
+    title: 'Buy XP',
+    entries: [
+      { icon: '⬆️', label: 'Buy XP', text: 'Spend 4 gold to gain 4 XP. Leveling up gives you more item slots and unlocks new talents.' },
+    ],
+  };
+
+  get refreshShopHint(): InfoContent {
+    return {
+      title: 'Refresh Shop',
+      entries: [
+        { icon: '🔄', label: 'Refresh', text: `Spend ${this.player.refreshShopCost} gold to roll a new set of items in the shop.` },
+      ],
+    };
+  }
+
+  readonly lockShopHint: InfoContent = {
+    title: 'Lock Shop',
+    entries: [
+      { icon: '🔒', label: 'Lock', text: 'Lock your current shop items so they persist into the next round — useful when you cannot afford something right now.' },
+    ],
+  };
+
+  readonly talentHint: InfoContent = {
+    title: 'New Talent Available!',
+    entries: [
+      { icon: '🌟', label: 'Talent', text: 'You have unlocked a new talent! Click to choose a permanent passive ability that enhances your build.' },
+    ],
+  };
 
   private talentDialogRef: MatDialogRef<TalentsComponent> | null = null;
 
@@ -112,10 +154,8 @@ export class DraftToolbarComponent implements OnChanges, OnInit {
     });
   }
 
-  openTutorial(): void {
-    this.dialog.open(TutorialComponent, {
-
-    })
+  toggleInfoBox(): void {
+    this.infoBoxService.toggle();
   }
 
   switchShopRefreshAnimate() {

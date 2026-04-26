@@ -5,14 +5,16 @@ import Item from '../models/colyseus-schema/ItemSchema';
 import { AffectedStats } from '../models/colyseus-schema/AffectedStatsSchema';
 import { environment } from '../../environments/environment';
 import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { MatDialog } from '@angular/material/dialog';
 import { MapSchema } from '@colyseus/schema';
 import { CharacterDetailsDialogComponent } from '../common/components/character-details-dialog/character-details-dialog.component';
+import { InfoBoxService } from '../common/services/info-box.service';
 
 @Component({
   selector: 'app-end',
   standalone: true,
-  imports: [MatButtonModule],
+  imports: [MatButtonModule, MatIconModule],
   templateUrl: './end.component.html',
   styleUrl: './end.component.scss',
 })
@@ -26,16 +28,35 @@ export class EndComponent implements OnInit, OnDestroy {
 
   private intervalId: any;
 
-  constructor(private router: Router, private route: ActivatedRoute, private dialog: MatDialog) {}
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
+    private dialog: MatDialog,
+    private infoBoxService: InfoBoxService,
+  ) {}
+
+  get infoBoxVisible() {
+    return this.infoBoxService.isVisible;
+  }
+
+  toggleInfoBox() {
+    this.infoBoxService.toggle();
+  }
 
   ngOnInit() {
     this.playerId = Number(localStorage.getItem('playerId')) ?? 0;
-
     this.fetchPlayerData();
+    this.intervalId = setInterval(() => this.fetchPlayerData(), 5000);
 
-    this.intervalId = setInterval(() => {
-      this.fetchPlayerData();
-    }, 5000);
+    this.infoBoxService.clearContent();
+    this.infoBoxService.setPageDefault({
+      title: 'End of Run',
+      entries: [
+        { icon: '🏆', label: 'Top Fighters', text: 'Click on any player in the leaderboard to inspect their full build — equipped items, stats, and talents.' },
+        { icon: '⭐', label: 'Your Rank', text: 'Your rank is based on total wins. Keep playing to climb higher!' },
+        { icon: '🔄', label: 'Play Again', text: 'Hit RESTART to try a new run with a different character or strategy.' },
+      ],
+    });
   }
 
   async fetchPlayerData() {
@@ -109,5 +130,7 @@ export class EndComponent implements OnInit, OnDestroy {
     if (this.intervalId) {
       clearInterval(this.intervalId);
     }
+    this.infoBoxService.clearPageDefault();
+    this.infoBoxService.clearContent();
   }
 }

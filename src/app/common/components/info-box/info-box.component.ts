@@ -1,5 +1,5 @@
-import { Component, inject } from '@angular/core';
-import { NgClass } from '@angular/common';
+import { Component, computed, ElementRef, inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { DOCUMENT, isPlatformBrowser, NgClass } from '@angular/common';
 import { InfoBoxService } from '../../services/info-box.service';
 import { MatIconModule } from '@angular/material/icon';
 
@@ -10,9 +10,20 @@ import { MatIconModule } from '@angular/material/icon';
   templateUrl: './info-box.component.html',
   styleUrl: './info-box.component.scss',
 })
-export class InfoBoxComponent {
+export class InfoBoxComponent implements OnInit {
   private infoBoxService = inject(InfoBoxService);
+  private el = inject(ElementRef);
+  private document = inject(DOCUMENT);
+  private platformId = inject(PLATFORM_ID);
 
   isVisible = this.infoBoxService.isVisible;
-  currentContent = this.infoBoxService.currentContent;
+  displayContent = computed(() =>
+    this.infoBoxService.currentContent() ?? this.infoBoxService.pageDefault()
+  );
+
+  ngOnInit() {
+    if (isPlatformBrowser(this.platformId)) {
+      this.document.body.appendChild(this.el.nativeElement);
+    }
+  }
 }

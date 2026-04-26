@@ -9,7 +9,8 @@
 
     @if (this.availableTalents && this.availableTalents.length > 0) {
 
-    <button mat-mini-fab (click)="openTalentPickerDialog()" [appInfoHint]="talentHint">
+    <button mat-mini-fab (click)="toggleTalentPicker()" [appInfoHint]="talentHint"
+      [class.ring-2]="showTalentPicker()" [class.ring-yellow-400]="showTalentPicker()">
       <mat-icon class="animate-bounce">keyboard_arrow_up</mat-icon>
     </button>
 
@@ -75,4 +76,11 @@
 </app-character-details>
 }
 
-<app-info-box></app-info-box>
+@if (showTalentPicker() && availableTalents && availableTalents.length > 0) {
+<app-talents
+  [talentsList]="availableTalents"
+  (panelClosed)="closeTalentPicker()"
+  (talentChosen)="closeTalentPicker()">
+</app-talents>
+}
+

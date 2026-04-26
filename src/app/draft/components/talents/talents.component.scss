@@ -1,7 +1,13 @@
-.mat-stepper-vertical {
-  margin-top: 8px;
-}
+.talent-panel {
+  position: fixed;
+  top: 56px;
+  left: 4px;
+  z-index: 30;
+  max-height: calc(100vh - 60px);
+  overflow-y: auto;
 
-.mat-mdc-form-field {
-  margin-top: 16px;
+  @media (min-width: 640px) {
+    top: 64px;
+    left: 8px;
+  }
 }

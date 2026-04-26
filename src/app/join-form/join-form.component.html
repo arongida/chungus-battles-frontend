@@ -36,7 +36,15 @@
       rel="noopener noreferrer">pkart</a></span>
 </div>
 
-<div class="fixed top-5 right-5">
+<div class="fixed top-5 right-5 flex items-center">
+  <button mat-icon-button (click)="toggleInfoBox()"
+    [class.text-amber-400]="infoBoxVisible()"
+    [class.text-gray-400]="!infoBoxVisible()"
+    [class.ring-1]="infoBoxVisible()"
+    [class.ring-amber-400]="infoBoxVisible()"
+    [class.rounded-full]="infoBoxVisible()">
+    <mat-icon>{{ infoBoxVisible() ? 'help' : 'help_outline' }}</mat-icon>
+  </button>
   <button mat-icon-button (click)="switchMute()">
     @if(muted) {<mat-icon>volume_off</mat-icon>}
     @else {<mat-icon>volume_up</mat-icon>}

@@ -1,3 +1,17 @@
+.details-panel {
+  background: rgba(10, 10, 15, 0.97);
+  border: 1px solid rgba(180, 120, 30, 0.5);
+  border-radius: 6px;
+  box-shadow: 0 0 20px rgba(180, 120, 30, 0.15), 0 4px 24px rgba(0, 0, 0, 0.8);
+  overflow: hidden;
+  animation: slideDown 0.18s ease-out;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 .item-panel-bg {
   background-image: url('../../../../assets/items/Item_ID_0_Empty.png');
 }

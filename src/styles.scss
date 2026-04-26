@@ -74,6 +74,10 @@ body {
   overflow: visible !important;
 }
 
+.cdk-overlay-container {
+  z-index: 800 !important;
+}
+
 .cdk-overlay-backdrop{
   background: #00000080 !important;
 }

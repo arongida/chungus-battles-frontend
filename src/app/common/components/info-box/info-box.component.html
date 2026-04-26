@@ -1,6 +1,6 @@
 @if (isVisible()) {
   <div class="info-box">
-    @if (currentContent(); as content) {
+    @if (displayContent(); as content) {
       <div class="info-box-header">
         <mat-icon class="info-icon">auto_awesome</mat-icon>
         <span class="info-title">{{ content.title }}</span>

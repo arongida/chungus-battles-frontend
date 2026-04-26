@@ -26,6 +26,11 @@ export class SoundsService {
     this.volume = volume;
     if (!this.music) return;
     this.music.volume = this.volume;
+    if (volume === 0) {
+      this.music.pause();
+    } else if (this.music.src && this.music.paused) {
+      this.music.play();
+    }
   }
 
   stopMusic() {

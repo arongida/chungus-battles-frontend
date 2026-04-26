@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild, computed, inject } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild, computed, inject, signal } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -18,7 +18,6 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { SoundOptions, SoundsService } from '../../services/sounds.service';
 import { CharacterDetailsService } from '../../services/character-details.service';
 import { InfoBoxService } from '../../services/info-box.service';
-import { InfoBoxComponent } from '../info-box/info-box.component';
 import { InfoHintDirective } from '../../directives/info-hint.directive';
 import { InfoContent } from '../../models/info-content';
 
@@ -36,8 +35,8 @@ import { InfoContent } from '../../models/info-content';
     MatCardModule,
     CharacterDetailsComponent,
     MatBadgeModule,
-    InfoBoxComponent,
     InfoHintDirective,
+    TalentsComponent,
   ],
   templateUrl: './draft-toolbar.component.html',
   styleUrl: './draft-toolbar.component.scss',
@@ -48,6 +47,7 @@ export class DraftToolbarComponent implements OnChanges, OnInit {
   hoverShopRefresh = false;
   hoverBuyXp = false;
   muted = false;
+  showTalentPicker = signal(false);
   showCharacterDetails = computed(() => this.characterDetailsService.showCharacterDetails());
 
   readonly goldHint: InfoContent = {
@@ -88,8 +88,6 @@ export class DraftToolbarComponent implements OnChanges, OnInit {
     ],
   };
 
-  private talentDialogRef: MatDialogRef<TalentsComponent> | null = null;
-
   constructor(
     public draftService: DraftService,
     private soundsService: SoundsService,
@@ -100,9 +98,6 @@ export class DraftToolbarComponent implements OnChanges, OnInit {
   @Input({ required: false }) availableTalents?: Talent[] = [];
   isLocked : Boolean = false;
 
-  @ViewChild('talentPickerTooltip')
-  talentPickerTooltip!: MatTooltip;
-
   ngOnInit(): void {
     this.muted = this.soundsService.volume === 0;
   }
@@ -110,31 +105,21 @@ export class DraftToolbarComponent implements OnChanges, OnInit {
   ngOnChanges(changes: SimpleChanges): void {
     const change = changes['availableTalents'];
     if (!change) return;
-
-    // Auto-open the dialog when talents become available and it isn't already open
-    if (
-      (change.previousValue?.length ?? 0) === 0 &&
-      change.currentValue?.length > 0 &&
-      !this.talentDialogRef?.componentInstance
-    ) {
-      this.openTalentPickerDialog();
-      return;
+    if ((change.previousValue?.length ?? 0) === 0 && change.currentValue?.length > 0) {
+      this.showTalentPicker.set(true);
     }
-
-    // Push updated talents into the dialog if it is open
-    const instance = this.talentDialogRef?.componentInstance;
-    if (instance && change.currentValue) {
-      instance.talents.set(change.currentValue.map((t: Talent) => ({ ...t })));
+    if ((change.currentValue?.length ?? 0) === 0) {
+      this.showTalentPicker.set(false);
     }
   }
 
-  openTalentPickerDialog(): void {
+  toggleTalentPicker(): void {
     this.soundsService.playSound(SoundOptions.CLICK);
-    this.talentDialogRef = this.dialog.open(TalentsComponent, {
-      data: {
-        talents: this.availableTalents?.map(t => ({ ...t })),
-      },
-    });
+    this.showTalentPicker.update(v => !v);
+  }
+
+  closeTalentPicker(): void {
+    this.showTalentPicker.set(false);
   }
 
   switchCharacterDetails(): void {

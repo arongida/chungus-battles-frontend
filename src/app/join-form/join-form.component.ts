@@ -22,6 +22,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { itemPictures } from './item-image-links';
 import { ItemTrackingService } from '../common/services/item-tracking.service';
 import { MusicOptions, SoundOptions, SoundsService } from '../common/services/sounds.service';
+import { InfoBoxService } from '../common/services/info-box.service';
 
 @Component({
   selector: 'app-join-form',
@@ -59,11 +60,26 @@ export class JoinFormComponent implements AfterViewInit, OnDestroy, OnInit {
     private renderer: Renderer2,
     private itemTrackingService: ItemTrackingService,
     private soundsService: SoundsService,
+    private infoBoxService: InfoBoxService,
     @Inject(PLATFORM_ID) private platformId: Object,
   ) {}
 
+  get infoBoxVisible() {
+    return this.infoBoxService.isVisible;
+  }
+
   ngOnInit() {
     this.soundsService.playMusic(MusicOptions.DRAFT);
+    this.infoBoxService.clearContent();
+    this.infoBoxService.setPageDefault({
+      title: 'Choose Your Character',
+      entries: [
+        { icon: '⚔️', label: 'Warrior', text: 'Starts with a melee weapon — high damage, slower attack speed. Great for burst.' },
+        { icon: '🗡️', label: 'Thief', text: 'Starts with a fast dagger — lower damage per hit but attacks very quickly.' },
+        { icon: '💰', label: 'Merchant', text: 'Starts with a unique item — gains economic advantages.' },
+        { icon: '💡', label: 'Tip', text: 'Your character choice affects your starting weapon only. Items you buy can take any build in any direction.' },
+      ],
+    });
   }
 
   ngAfterViewInit(): void {
@@ -77,10 +93,15 @@ export class JoinFormComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   ngOnDestroy(): void {
-    // Clear the interval when the component is destroyed
     if (this.intervalId) {
       clearInterval(this.intervalId);
     }
+    this.infoBoxService.clearPageDefault();
+    this.infoBoxService.clearContent();
+  }
+
+  toggleInfoBox() {
+    this.infoBoxService.toggle();
   }
 
   onNextButton() {

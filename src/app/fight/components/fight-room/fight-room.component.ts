@@ -31,6 +31,7 @@ import { SkillIconsComponent } from '../../../common/components/skill-icons/skil
 import { DraftToolbarComponent } from '../../../common/components/draft-toolbar/draft-toolbar.component';
 import { MusicOptions, SoundOptions, SoundsService } from '../../../common/services/sounds.service';
 import { EquipSlot } from '../../../models/types/ItemTypes';
+import { InfoBoxService } from '../../../common/services/info-box.service';
 
 @Component({
   selector: 'app-fight-room',
@@ -63,8 +64,9 @@ export class FightRoomComponent implements OnInit{
     private snackBar: MatSnackBar,
     private router: Router,
     private soundsService: SoundsService,
-    private renderer: Renderer2, // Inject Renderer2
-    @Inject(PLATFORM_ID) private platformId: Object // Inject PLATFORM_ID
+    private infoBoxService: InfoBoxService,
+    private renderer: Renderer2,
+    @Inject(PLATFORM_ID) private platformId: Object
   ) {
     effect(() => {
       const room = this.fightService.room();
@@ -91,11 +93,15 @@ export class FightRoomComponent implements OnInit{
           this.openSnackBar(message, 'Exit', room.state.player.playerId, room.state.player.name, true);
           this.gameOver = true;
           this.battleOver = true;
+          localStorage.setItem('battleEndState', JSON.stringify({ type: 'game_over', message }));
+          this.showBattleOverInfo(true);
         });
 
         room.onMessage('end_battle', () => {
           this.openSnackBar('The battle has ended', 'Exit', room.state.player.playerId, room.state.player.name);
           this.battleOver = true;
+          localStorage.setItem('battleEndState', JSON.stringify({ type: 'end_battle' }));
+          this.showBattleOverInfo(false);
         });
 
         room.onMessage('combat_log', (message: string) => {
@@ -138,7 +144,7 @@ export class FightRoomComponent implements OnInit{
   }
 
   openSnackBar(message: string, action: string, playerId: number, name: string, gameOver: boolean = false) {
-    const matSnackBarRef = this.snackBar.open(message, action);
+    const matSnackBarRef = this.snackBar.open(message, action, { panelClass: 'chungus-snackbar' });
     matSnackBarRef.onAction().subscribe(() => {
       this.endBattle(playerId, name, gameOver, message);
     });
@@ -150,9 +156,45 @@ export class FightRoomComponent implements OnInit{
     if (!room) {
       await this.fightService.reconnect(localStorage.getItem('reconnectToken') as string);
     }
+    this.restoreBattleEndState();
+  }
+
+  private restoreBattleEndState(): void {
+    const raw = localStorage.getItem('battleEndState');
+    if (!raw) return;
+    try {
+      const state = JSON.parse(raw) as { type: string; message?: string };
+      const player = this.player();
+      if (!player) return;
+      if (state.type === 'game_over') {
+        this.gameOver = true;
+        this.battleOver = true;
+        this.openSnackBar(state.message ?? 'Game over', 'Exit', player.playerId, player.name, true);
+        this.showBattleOverInfo(true);
+      } else if (state.type === 'end_battle') {
+        this.battleOver = true;
+        this.openSnackBar('The battle has ended', 'Exit', player.playerId, player.name);
+        this.showBattleOverInfo(false);
+      }
+    } catch {}
+  }
+
+  private showBattleOverInfo(gameOver: boolean): void {
+    if (gameOver) {
+      this.infoBoxService.setPageDefault({
+        title: 'Game Over',
+        entries: [{ icon: '🏆', label: 'Exit', text: 'The game has ended! Click Exit in the banner to see your results.' }],
+      });
+    } else {
+      this.infoBoxService.setPageDefault({
+        title: 'Battle Over',
+        entries: [{ icon: '✅', label: 'Next Round', text: 'The battle is over! Click Exit in the banner to head back to the draft.' }],
+      });
+    }
   }
 
   private async endBattle(playerId: number, name: string, gameOver: boolean = false, message: string) {
+    localStorage.removeItem('battleEndState');
     this.fightService.leave(false);
     this.soundsService.stopMusic();
     if (gameOver) {

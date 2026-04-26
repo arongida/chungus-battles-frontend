@@ -89,6 +89,20 @@ export class DraftToolbarComponent implements OnChanges, OnInit {
     ],
   };
 
+  readonly draftReadyHint: InfoContent = {
+    title: 'Ready to Fight?',
+    entries: [
+      { icon: '⚔️', label: 'Start Battle', text: 'When you\'re happy with your build, click the Fight button at the bottom to start the round.' },
+    ],
+  };
+
+  readonly fightingHint: InfoContent = {
+    title: 'Battle in Progress',
+    entries: [
+      { icon: '⏳', label: 'Please Wait', text: 'The fight is underway — sit back and watch! The next draft round will begin when it\'s over.' },
+    ],
+  };
+
   constructor(
     public draftService: DraftService,
     private soundsService: SoundsService,
@@ -100,6 +114,7 @@ export class DraftToolbarComponent implements OnChanges, OnInit {
 
   ngOnInit(): void {
     this.muted = this.soundsService.volume === 0;
+    this.infoBoxService.setPageDefault(this.isFighting() ? this.fightingHint : this.draftReadyHint);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -107,9 +122,11 @@ export class DraftToolbarComponent implements OnChanges, OnInit {
     if (!change) return;
     if ((change.previousValue?.length ?? 0) === 0 && change.currentValue?.length > 0) {
       this.showTalentPicker.set(true);
+      this.infoBoxService.setPageDefault(this.talentHint);
     }
     if ((change.currentValue?.length ?? 0) === 0) {
       this.showTalentPicker.set(false);
+      this.infoBoxService.setPageDefault(this.draftReadyHint);
     }
   }
 

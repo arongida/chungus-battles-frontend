@@ -82,6 +82,26 @@ body {
   background: #00000080 !important;
 }
 
+.chungus-snackbar {
+  .mdc-snackbar__surface {
+    background: rgba(10, 10, 15, 0.97) !important;
+    border: 1px solid rgba(180, 120, 30, 0.5) !important;
+    border-radius: 6px !important;
+    box-shadow: 0 0 20px rgba(180, 120, 30, 0.15), 0 4px 24px rgba(0, 0, 0, 0.8) !important;
+  }
+
+  .mat-mdc-snack-bar-label {
+    color: #cbd5e1 !important;
+    font-size: 13px !important;
+  }
+
+  .mat-mdc-snack-bar-action .mat-mdc-button {
+    color: #f59e0b !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.06em !important;
+  }
+}
+
 .game-bg {
   background-image: url('assets/BG_01.png');
   background-size: cover;

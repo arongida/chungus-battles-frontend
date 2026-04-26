@@ -17,4 +17,9 @@ export class InfoHintDirective {
       this.infoBoxService.setContent(this.infoHint);
     }
   }
+
+  @HostListener('mouseleave')
+  onMouseLeave(): void {
+    this.infoBoxService.clearContentDelayed();
+  }
 }

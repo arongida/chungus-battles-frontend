@@ -11,12 +11,25 @@ export class InfoBoxService {
     this.isVisible.update(v => !v);
   }
 
+  private _clearTimer: ReturnType<typeof setTimeout> | null = null;
+
   setContent(content: InfoContent): void {
+    if (this._clearTimer) {
+      clearTimeout(this._clearTimer);
+      this._clearTimer = null;
+    }
     this.currentContent.set(content);
   }
 
   clearContent(): void {
     this.currentContent.set(null);
+  }
+
+  clearContentDelayed(ms = 1000): void {
+    this._clearTimer = setTimeout(() => {
+      this._clearTimer = null;
+      this.currentContent.set(null);
+    }, ms);
   }
 
   setPageDefault(content: InfoContent): void {

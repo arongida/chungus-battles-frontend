@@ -145,6 +145,7 @@ export class ShopComponent {
     this.previewBuyItem = false;
     this.tempCard?.remove();
     this.tempCard = null;
+    this.characterDetailsService.showTalentPicker.set(false);
     this.characterDetailsService.showCharacterDetails.set(true);
   }
 

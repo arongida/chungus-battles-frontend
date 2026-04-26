@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild, computed, inject, signal } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild, computed, inject } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -44,10 +44,11 @@ import { InfoContent } from '../../models/info-content';
 export class DraftToolbarComponent implements OnChanges, OnInit {
   dialog = inject(MatDialog);
   infoBoxService = inject(InfoBoxService);
+  private characterDetailsService = inject(CharacterDetailsService);
   hoverShopRefresh = false;
   hoverBuyXp = false;
   muted = false;
-  showTalentPicker = signal(false);
+  showTalentPicker = this.characterDetailsService.showTalentPicker;
   showCharacterDetails = computed(() => this.characterDetailsService.showCharacterDetails());
 
   readonly goldHint: InfoContent = {
@@ -91,7 +92,6 @@ export class DraftToolbarComponent implements OnChanges, OnInit {
   constructor(
     public draftService: DraftService,
     private soundsService: SoundsService,
-    private characterDetailsService: CharacterDetailsService
   ) { }
 
   @Input({ required: true }) player: Player = new Player();
@@ -123,6 +123,7 @@ export class DraftToolbarComponent implements OnChanges, OnInit {
   }
 
   switchCharacterDetails(): void {
+    this.showTalentPicker.set(false);
     this.characterDetailsService.toggleCharacterDetails();
   }
 

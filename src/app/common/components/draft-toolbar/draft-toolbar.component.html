@@ -10,8 +10,13 @@
     @if (this.availableTalents && this.availableTalents.length > 0) {
 
     <button mat-mini-fab (click)="toggleTalentPicker()" [appInfoHint]="talentHint"
-      [class.ring-2]="showTalentPicker()" [class.ring-yellow-400]="showTalentPicker()">
-      <mat-icon class="animate-bounce">keyboard_arrow_up</mat-icon>
+      [class.ring-2]="showTalentPicker()"
+      [class.ring-yellow-400]="showTalentPicker()"
+      [class.bg-yellow-400]="showTalentPicker()"
+      [class.text-black]="showTalentPicker()">
+      <mat-icon [class.animate-bounce]="!showTalentPicker()">
+        {{ showTalentPicker() ? 'keyboard_arrow_down' : 'keyboard_arrow_up' }}
+      </mat-icon>
     </button>
 
     }

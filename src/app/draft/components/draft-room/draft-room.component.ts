@@ -72,7 +72,7 @@ export class DraftRoomComponent implements OnInit {
 
     this.draftService.room?.onMessage('draft_log', (message: string) => {
       console.log('draft_log', message);
-      this.snackBar.open(message, 'Close', { duration: 5000 });
+      this.snackBar.open(message, 'Close', { duration: 5000, panelClass: 'chungus-snackbar' });
     });
 
     // Listen to changes in the room state

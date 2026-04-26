@@ -129,6 +129,7 @@ export class JoinFormComponent implements AfterViewInit, OnDestroy, OnInit {
       const errorMessage = this.getInputErrorMessage();
       this.snackBar.open(errorMessage, 'Close', {
         duration: 3000,
+        panelClass: 'chungus-snackbar',
       });
       return;
     }
@@ -138,7 +139,7 @@ export class JoinFormComponent implements AfterViewInit, OnDestroy, OnInit {
     this.itemTrackingService.resetTrackedCollections();
     const joinResult = await this.draftService.joinOrCreate(this.nameControl.value!, undefined, this.avatarSelected);
     if (joinResult) {
-      this.snackBar.open(joinResult, 'Close');
+      this.snackBar.open(joinResult, 'Close', { panelClass: 'chungus-snackbar' });
     }
     this.loading = false;
   }

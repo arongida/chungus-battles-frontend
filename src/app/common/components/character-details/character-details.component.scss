@@ -21,3 +21,18 @@
   background-size: 400%;
   background-position: center;
 }
+@keyframes slot-activate {
+  0%   { transform: scale(1); filter: brightness(1); }
+  40%  { transform: scale(1.35); filter: brightness(1.5); }
+  70%  { transform: scale(1.1); }
+  100% { transform: scale(1); filter: brightness(1); }
+}
+
+.slot-activated {
+  border: 2px solid #f59e0b !important;
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.6), inset 0 0 10px rgba(245, 158, 11, 0.15);
+}
+
+.slot-pulse img {
+  animation: slot-activate 0.35s cubic-bezier(0.25, 1.5, 0.5, 1) forwards;
+}

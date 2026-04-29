@@ -62,8 +62,14 @@ export class CharacterDetailsComponent {
   enemyBeingHit = input(false);
   selectedCategory: string = 'inventory';
   equipSlotsOptions = Object.values(EquipSlot) as EquipSlot[];
+  equipSlot = EquipSlot;
+  equipmentLayout = [
+    [EquipSlot.HELMET],
+    [EquipSlot.MAIN_HAND, EquipSlot.OFF_HAND],
+    [EquipSlot.ARMOR]
+  ];
 
-  constructor(public draftService: DraftService) {}
+  constructor(public draftService: DraftService) { }
 
   getNormalAvatarImage(): string {
     let avatar = this.player?.avatarUrl || 'assets/Portrait_ID_0_Placeholder.png';
@@ -108,8 +114,8 @@ export class CharacterDetailsComponent {
     if (itemType === 'inventory') {
       return this.player.inventory;
     }
-      //else if (itemType === "equipped") {
-      //   return Array.from(this.player.equippedItems.values());
+    //else if (itemType === "equipped") {
+    //   return Array.from(this.player.equippedItems.values());
     // }
     else {
       return this.player.inventory.filter(item => item.type === itemType);
@@ -143,10 +149,10 @@ export class CharacterDetailsComponent {
 
   getRarityBorder(rarity: ItemRarity | string): string {
     switch (rarity) {
-      case ItemRarity.RARE:      return '2px solid #60a5fa';
-      case ItemRarity.EPIC:      return '2px solid #c084fc';
+      case ItemRarity.RARE: return '2px solid #60a5fa';
+      case ItemRarity.EPIC: return '2px solid #c084fc';
       case ItemRarity.LEGENDARY: return '2px solid #fb923c';
-      default:                   return '2px solid #92400e';
+      default: return '2px solid #92400e';
     }
   }
 
@@ -158,18 +164,21 @@ export class CharacterDetailsComponent {
     return this.player.equippedItems.get(slot);
   }
 
-  getEmojiForSlot(slot: EquipSlot) {
-    switch (slot) {
-      case EquipSlot.ARMOR:
-        return '🧥';
-      case EquipSlot.HELMET:
-        return '👑'
-      case EquipSlot.MAIN_HAND:
-        return '🗡️'
-      case EquipSlot.OFF_HAND:
-        return '🛡️'
-      default: return '🗡️'
-    }
+  triggerSlotActivation(slot: string): void {
+    const el = document.getElementById(`equipped-slot-${slot}-${this.player.playerId}`);
+    if (!el) return;
+
+    el.classList.add('slot-activated');
+    el.classList.remove('slot-pulse');
+    void el.offsetWidth; // force reflow to re-trigger animation
+    el.classList.add('slot-pulse');
+
+    setTimeout(() => el.classList.remove('slot-pulse'), 350);
+  }
+
+  deactivateSlot(slot: string): void {
+    const el = document.getElementById(`equipped-slot-${slot}-${this.player.playerId}`);
+    el?.classList.remove('slot-activated');
   }
 
   protected readonly ItemRarity = ItemRarity;

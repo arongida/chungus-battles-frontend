@@ -1,148 +1,149 @@
 <div class="details-panel">
-<div class="flex flex-col overflow-x-hidden max-w-[344px] sm:max-w-[440px] md:max-w-[536px] lg:max-w-[584px]">
-  <div class="flex flex-row gap-1 max-w-content"
-       [ngClass]="{'flex-row-reverse': enemy}">
+  <div class="flex flex-col overflow-x-hidden max-w-[344px] sm:max-w-[440px] md:max-w-[536px] lg:max-w-[584px]">
+    <div class="flex flex-row gap-1 max-w-content" [ngClass]="{'flex-row-reverse': enemy}">
 
-    <!-- Stats Section -->
-    @if (showStats) {
-    <div id="stats"
-         class="item-panel-bg bg-center bg-cover w-28 h-44 sm:w-36 sm:h-52 md:w-44 md:h-60 lg:w-48 lg:h-64 flex flex-col items-center justify-evenly bg-gray-800 p-1 sm:p-4 cursor-default"
-         [appInfoHint]="allStatsHint">
-      <h3 class="text-white text-xs sm:text-lg mb-1 sm:mb-4">Stats</h3>
-      <div class="w-full rounded-md">
-        <div class="text-xs">
-          <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm">
-            <div>Health:</div>
-            <div class="text-pink-500">{{ getPlayerHp() | number: '1.0-0' }} ❤️</div>
-          </div>
-
-          @if (combat) {
-            <mat-progress-bar class="red-progress-bar"
-                              id="hp" mode="determinate"
-                              value="{{ (player.hp / player.maxHp) * 100 }}"></mat-progress-bar>
-          }
-
-          <mat-divider></mat-divider>
-
-          <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm">
-            <div>Accuracy:</div>
-            <div class="text-red-500">+{{ player.accuracy | number: '1.0-1' }} 🎯</div>
-          </div>
-
-          <mat-divider></mat-divider>
-
-          <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm">
-            <div>Strength:</div>
-            <div class="text-red-500">+{{ player.strength | number: '1.0-1' }} ⚔️</div>
-          </div>
-
-          <mat-divider></mat-divider>
-
-          <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm">
-            <div>Spd. Bonus:</div>
-            <div class="text-blue-500">
-              {{ (player.attackSpeed - 1) >= 0 ? '+' : '' }}{{ (player.attackSpeed - 1) * 100 | number: '1.0-0' }}% ⏩
+      <!-- Stats Section -->
+      @if (showStats) {
+      <div id="stats"
+        class="item-panel-bg bg-center bg-cover w-28 h-44 sm:w-36 sm:h-52 md:w-44 md:h-60 lg:w-48 lg:h-64 flex flex-col items-center justify-evenly bg-gray-800 p-1 sm:p-4 cursor-default"
+        [appInfoHint]="allStatsHint">
+        <h3 class="text-white text-xs sm:text-lg mb-1 sm:mb-4">Stats</h3>
+        <div class="w-full rounded-md">
+          <div class="text-xs">
+            <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm">
+              <div>Health:</div>
+              <div class="text-pink-500">{{ getPlayerHp() | number: '1.0-0' }} ❤️</div>
             </div>
+
+            @if (combat) {
+            <mat-progress-bar class="red-progress-bar" id="hp" mode="determinate"
+              value="{{ (player.hp / player.maxHp) * 100 }}"></mat-progress-bar>
+            }
+
+            <mat-divider></mat-divider>
+
+            <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm">
+              <div>Accuracy:</div>
+              <div class="text-red-500">+{{ player.accuracy | number: '1.0-1' }} 🎯</div>
+            </div>
+
+            <mat-divider></mat-divider>
+
+            <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm">
+              <div>Strength:</div>
+              <div class="text-red-500">+{{ player.strength | number: '1.0-1' }} ⚔️</div>
+            </div>
+
+            <mat-divider></mat-divider>
+
+            <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm">
+              <div>Spd. Bonus:</div>
+              <div class="text-blue-500">
+                {{ (player.attackSpeed - 1) >= 0 ? '+' : '' }}{{ (player.attackSpeed - 1) * 100 | number: '1.0-0' }}% ⏩
+              </div>
+            </div>
+
+            <mat-divider></mat-divider>
+
+            <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm">
+              <div>Income:</div>
+              <div class="text-yellow-500">+{{ player.income }} 💰</div>
+            </div>
+
+            <mat-divider></mat-divider>
+
+            <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm">
+              <div class="text-orange-500 pl-1">{{ player.hpRegen | number: '1.0-3' }} 🧪</div>
+              <div class="text-green-500 pr-1">{{ player.flatDmgReduction | number: '1.3-3' }} 🔰</div>
+            </div>
+
+            <mat-divider></mat-divider>
+
+            <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm">
+              <div class="text-green-600 pl-1">{{ player.defense | number: '1.0-2' }} 🛡️</div>
+              <div class="text-green-400 pr-1">{{ player.dodgeRate | number: '1.0-2' }} 🦵</div>
+            </div>
+
           </div>
-
-          <mat-divider></mat-divider>
-
-          <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm">
-            <div>Income:</div>
-            <div class="text-yellow-500">+{{ player.income }} 💰</div>
-          </div>
-
-          <mat-divider></mat-divider>
-
-          <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm">
-            <div class="text-orange-500 pl-1">{{ player.hpRegen | number: '1.0-3' }} 🧪</div>
-            <div class="text-green-500 pr-1">{{ player.flatDmgReduction | number: '1.3-3' }} 🔰</div>
-          </div>
-
-          <mat-divider></mat-divider>
-
-          <div class="flex flex-row justify-between p-1 hover:bg-slate-700 rounded-sm">
-            <div class="text-green-600 pl-1">{{ player.defense | number: '1.0-2' }} 🛡️</div>
-            <div class="text-green-400 pr-1">{{ player.dodgeRate | number: '1.0-2' }} 🦵</div>
-          </div>
-
         </div>
       </div>
-    </div>
-    }
+      }
 
-    <!-- Avatar Section -->
-    <div
-      class="w-28 h-44 sm:w-36 sm:h-52 md:w-44 md:h-60 lg:w-48 lg:h-64 flex flex-col-reverse items-center bg-gray-800 p-1 sm:p-4 shadow-lg relative"
-      id="avatar-{{ player.playerId }}">
-      <div class="absolute inset-0 bg-cover bg-center"
-           [style.background-image]="'url(' + getNormalAvatarImage() + ')'"
-           [class.opacity-0]="isShowingCringe()"></div>
-      <div class="absolute inset-0 bg-cover bg-center"
-           [style.background-image]="'url(' + getCringeAvatarImage() + ')'"
-           [class.opacity-0]="!isShowingCringe()"></div>
-      <div class="relative w-full rounded-md z-10">
-        <!-- Floating Damage Numbers Container -->
-        <div id="damage-numbers-{{ player.playerId }}"
-             class="relative pointer-events-none"></div>
+      <!-- Avatar Section -->
+      <div
+        class="w-28 h-44 sm:w-36 sm:h-52 md:w-44 md:h-60 lg:w-48 lg:h-64 flex flex-col-reverse items-center bg-gray-800 p-1 sm:p-4 shadow-lg relative"
+        id="avatar-{{ player.playerId }}">
+        <div class="absolute inset-0 bg-cover bg-center"
+          [style.background-image]="'url(' + getNormalAvatarImage() + ')'" [class.opacity-0]="isShowingCringe()"></div>
+        <div class="absolute inset-0 bg-cover bg-center"
+          [style.background-image]="'url(' + getCringeAvatarImage() + ')'" [class.opacity-0]="!isShowingCringe()"></div>
+        <div class="relative w-full rounded-md z-10">
+          <!-- Floating Damage Numbers Container -->
+          <div id="damage-numbers-{{ player.playerId }}" class="relative pointer-events-none"></div>
+
+          <div class="w-full text-center text-white bg-black bg-opacity-40 py-1">
+            {{ player ? player.name : 'Avatar Name' }} <br />
+            Level: {{ player.level }}
+          </div>
+        </div>
+        <div class="absolute" id="attack-{{ player.playerId }}"></div>
+      </div>
+
+
+      <div id="equipped-items-{{player.playerId}}"
+        class="item-panel-bg bg-center bg-cover w-28 h-44 sm:w-36 sm:h-52 md:w-44 md:h-60 lg:w-48 lg:h-64 flex flex-col bg-amber-950 p-1 sm:p-2">
 
         <div
-          class="w-full text-center text-white bg-black bg-opacity-40 py-1">
-          {{ player ? player.name : 'Avatar Name' }} <br />
-          Level: {{ player.level }}
+          class="text-amber-500 text-[10px] sm:text-xs font-semibold tracking-tight sm:tracking-widest w-full text-center pb-1 mb-1 shrink-0">
+          ⚔️ EQUIPPED
+        </div>
+        <div class="flex flex-col justify-evenly flex-1 w-full gap-1">
+          <div class="flex-col justify-evenly">
+            <div class="flex flex-col gap-2">
+
+              @for (row of equipmentLayout; track $index) {
+              <div class="flex justify-center gap-2">
+
+                @for (slot of row; track slot) {
+
+                @if (getItemAtSlot(slot); as equippedItem) {
+
+                <!-- ✅ SAME combat slot -->
+                <div id="equipped-slot-{{slot}}-{{player.playerId}}" class="w-16 h-16 flex items-center justify-center"
+                  (click)="unequip(getItemAtSlot(slot), slot)">
+                  <div class="inline-block hover:bg-amber-700/40 transition-colors" [appItemHoverCard]="equippedItem"
+                    [hoverPlayer]="player">
+                    <img [src]="equippedItem.image" class="block max-w-16 max-h-16 object-contain" />
+                  </div>
+
+                </div>
+
+                } @else {
+
+                <!-- empty slot -->
+                <div class="border border-dashed border-amber-900/60
+                   w-16 h-16 flex items-center justify-center">
+                  <img [src]="getItemBackground()" class="w-16 h-16 object-contain">
+                </div>
+
+                }
+
+                }
+
+              </div>
+              }
+
+            </div>
+          </div>
         </div>
       </div>
-      <div class="absolute"
-           id="attack-{{ player.playerId }}"></div>
     </div>
 
-
-    <div id="equipped-items-{{player.playerId}}"
-         class="item-panel-bg bg-center bg-cover w-28 h-44 sm:w-36 sm:h-52 md:w-44 md:h-60 lg:w-48 lg:h-64 flex flex-col bg-amber-950 p-1 sm:p-2">
-
-      <div class="text-amber-500 text-[10px] sm:text-xs font-semibold tracking-tight sm:tracking-widest w-full text-center pb-1 mb-1 shrink-0">
-        ⚔️ EQUIPPED
-      </div>
-
-      <div class="flex flex-col justify-evenly flex-1 w-full gap-1">
-        @for (slot of equipSlotsOptions; track $index) {
-          @if (getItemAtSlot(slot); as equippedItem) {
-            <div
-              id="equipped-slot-{{slot}}-{{player.playerId}}"
-              class="border border-amber-600/70 bg-amber-900/30 hover:bg-amber-700/40 w-full flex items-center justify-center cursor-pointer transition-colors"
-              (click)="unequip(equippedItem, slot)"
-              [appItemHoverCard]="equippedItem"
-              [hoverPlayer]="player"
-            >
-              <div
-                class="w-full flex items-center justify-center text-xs px-1 truncate"
-                [ngClass]="{'text-blue-400': equippedItem.rarity === ItemRarity.RARE, 'text-purple-400': equippedItem.rarity === ItemRarity.EPIC, 'text-orange-400': equippedItem.rarity === ItemRarity.LEGENDARY, 'text-gray-200': equippedItem.rarity !== ItemRarity.RARE && equippedItem.rarity !== ItemRarity.EPIC && equippedItem.rarity !== ItemRarity.LEGENDARY}"
-              >{{ getEmojiForSlot(slot) }} {{ equippedItem.name | titlecase }} {{ getEmojiForSlot(slot) }}
-              </div>
-            </div>
-          } @else {
-            <div
-              id="equipped-slot-{{slot}}-{{player.playerId}}"
-              class="border border-dashed border-amber-900/60 w-full flex items-center justify-center"
-            >
-              <div class="w-full flex items-center justify-center text-xs text-gray-600">
-                {{ getEmojiForSlot(slot) }} No {{ slot }} {{ getEmojiForSlot(slot) }}
-              </div>
-            </div>
-          }
-        }
-      </div>
-    </div>
-  </div>
-
-  @if (!combat) {
+    @if (!combat) {
     <div class="item-panel-bg-zoomed border border-amber-700/50 p-2">
-      <mat-tab-group
-        (selectedTabChange)="onTabChange($event)"
-        class="mb-2">
+      <mat-tab-group (selectedTabChange)="onTabChange($event)" class="mb-2">
         <mat-tab label="Inventory" class="w-1/6">
-          <mat-tab-group
-            (selectedTabChange)="selectCategory($event)">
+          <mat-tab-group (selectedTabChange)="selectCategory($event)">
             <mat-tab label="All" class="w-1/5"></mat-tab>
             <mat-tab label="Helmets" class="w-1/5"></mat-tab>
             <mat-tab label="Weapons" class="w-1/5"></mat-tab>
@@ -153,47 +154,40 @@
       </mat-tab-group>
       <div class="h-40 sm:h-48 overflow-y-auto">
         @for (item of getEquipmentTypeFromInventory(selectedCategory); track $index) {
-          <div
-            class="flex items-center gap-2 py-1 px-2 border-b border-b-amber-900/30 hover:bg-amber-900/25 transition-colors"
-            [style.border-left]="getRarityBorder(item.rarity)"
-            [appItemHoverCard]="item"
-            [hoverPlayer]="player">
-            <img alt="Item details" [src]="item.image" class="w-6 h-6 object-contain shrink-0">
-            <span
-              class="flex-1 text-xs truncate"
-              [ngClass]="{'text-blue-400': item.rarity === ItemRarity.RARE, 'text-purple-400': item.rarity === ItemRarity.EPIC, 'text-orange-400': item.rarity === ItemRarity.LEGENDARY, 'text-gray-200': item.rarity !== ItemRarity.RARE && item.rarity !== ItemRarity.EPIC && item.rarity !== ItemRarity.LEGENDARY}">
-              {{ item.name | titlecase }} {{item.rarity}}
-            </span>
-            @if(item.type === "weapon"){
-              @for(itemEquipOption of item.equipOptions.values(); track $index){
-                <button mat-button class="!text-xs !min-w-0 !px-2 text-amber-400"
-                        [appInfoHint]="equipHint"
-                        (click)="equip(item, itemEquipOption)">
-                  Equip {{itemEquipOption}}
-                </button>
-              }
-              <button mat-button class="!text-xs !min-w-0 !px-2 text-yellow-500"
-                      [appInfoHint]="sellHint"
-                      (click)="sellSelectedItem(item)">
-                +{{ getItemPriceRounded(item) }}🟡
-              </button>
-            } @else {
-              <button mat-button class="!text-xs !min-w-0 !px-2 text-amber-400"
-                      [appInfoHint]="equipHint"
-                      (click)="equip(item, item.equipOptions.values().next().value ?? '')">
-                Equip
-              </button>
-              <button mat-button class="!text-xs !min-w-0 !px-2 text-yellow-500"
-                      [appInfoHint]="sellHint"
-                      (click)="sellSelectedItem(item)">
-                +{{ getItemPriceRounded(item) }}🟡
-              </button>
-            }
-          </div>
+        <div
+          class="flex items-center gap-2 py-1 px-2 border-b border-b-amber-900/30 hover:bg-amber-900/25 transition-colors"
+          [style.border-left]="getRarityBorder(item.rarity)" [appItemHoverCard]="item" [hoverPlayer]="player">
+          <img alt="Item details" [src]="item.image" class="w-6 h-6 object-contain shrink-0">
+          <span class="flex-1 text-xs truncate"
+            [ngClass]="{'text-blue-400': item.rarity === ItemRarity.RARE, 'text-purple-400': item.rarity === ItemRarity.EPIC, 'text-orange-400': item.rarity === ItemRarity.LEGENDARY, 'text-gray-200': item.rarity !== ItemRarity.RARE && item.rarity !== ItemRarity.EPIC && item.rarity !== ItemRarity.LEGENDARY}">
+            {{ item.name | titlecase }} {{item.rarity}}
+          </span>
+          @if(item.type === "weapon"){
+          @for(itemEquipOption of item.equipOptions.values(); track $index){
+          <button mat-button class="!text-xs !min-w-0 !px-2 text-amber-400" [appInfoHint]="equipHint"
+            (click)="equip(item, itemEquipOption)">
+            Equip {{itemEquipOption}}
+          </button>
+          }
+          <button mat-button class="!text-xs !min-w-0 !px-2 text-yellow-500" [appInfoHint]="sellHint"
+            (click)="sellSelectedItem(item)">
+            +{{ getItemPriceRounded(item) }}🟡
+          </button>
+          } @else {
+          <button mat-button class="!text-xs !min-w-0 !px-2 text-amber-400" [appInfoHint]="equipHint"
+            (click)="equip(item, item.equipOptions.values().next().value ?? '')">
+            Equip
+          </button>
+          <button mat-button class="!text-xs !min-w-0 !px-2 text-yellow-500" [appInfoHint]="sellHint"
+            (click)="sellSelectedItem(item)">
+            +{{ getItemPriceRounded(item) }}🟡
+          </button>
+          }
+        </div>
 
         }
       </div>
     </div>
-  }
-</div>
+    }
+  </div>
 </div>

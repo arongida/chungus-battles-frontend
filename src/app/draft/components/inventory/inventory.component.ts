@@ -47,7 +47,7 @@ export class InventoryComponent {
     this.selectedItemCollection = null;
   }
   getSellPrice(item: Item) {
-    return Math.floor(item.price * 0.7 * item.rarity);
+    return Math.floor(item.sellPrice);
   }
 
   getItemImage(item: Item) {

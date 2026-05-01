@@ -171,7 +171,7 @@
           }
           <button mat-button class="!text-xs !min-w-0 !px-2 text-yellow-500" [appInfoHint]="sellHint"
             (click)="sellSelectedItem(item)">
-            +{{ getItemPriceRounded(item) }}🟡
+            +{{ item.sellPrice }}🟡
           </button>
           } @else {
           <button mat-button class="!text-xs !min-w-0 !px-2 text-amber-400" [appInfoHint]="equipHint"
@@ -180,7 +180,7 @@
           </button>
           <button mat-button class="!text-xs !min-w-0 !px-2 text-yellow-500" [appInfoHint]="sellHint"
             (click)="sellSelectedItem(item)">
-            +{{ getItemPriceRounded(item) }}🟡
+            +{{ item.sellPrice }}🟡
           </button>
           }
         </div>

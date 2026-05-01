@@ -11,6 +11,7 @@ class Item extends Schema {
   @type('string') name: string = '';
   @type('string') description: string = '';
   @type('number') price: number = 0;
+  @type('number') sellPrice: number = 0;
   @type(AffectedStats) affectedStats: AffectedStats = new AffectedStats();
   @type(AffectedStats) setBonusStats: AffectedStats = new AffectedStats();
   @type('boolean') setActive: boolean = false;

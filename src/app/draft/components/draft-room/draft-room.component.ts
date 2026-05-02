@@ -82,6 +82,15 @@ export class DraftRoomComponent implements OnInit {
       this.availableTalents.set([...(state.availableTalents ?? [])] as unknown as Talent[]);
       this.availableCollections.set([...(state.player?.availableItemCollections ?? [])] as unknown as ItemCollection[]);
     });
+
+    // Seed from current state in case the initial onStateChange fired before we subscribed
+    const currentState = this.draftService.room?.state;
+    if (currentState) {
+      this.player.set(new Player().assign(currentState.player));
+      this.shop.set([...(currentState.shop ?? [])] as unknown as Item[]);
+      this.availableTalents.set([...(currentState.availableTalents ?? [])] as unknown as Talent[]);
+      this.availableCollections.set([...(currentState.player?.availableItemCollections ?? [])] as unknown as ItemCollection[]);
+    }
   }
 
 }

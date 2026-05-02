@@ -67,7 +67,9 @@ export class DraftService {
 
   public async reconnect(reconnectionToken: string) {
     try {
+      console.log('[DraftService] reconnecting...');
       const room = await this.client.reconnect(reconnectionToken);
+      console.log('[DraftService] reconnected, room:', room.roomId, 'state player:', room.state?.player?.name);
 
       room.onMessage('*', (type, message) => {
         console.log('message: ', type, message);
@@ -80,10 +82,8 @@ export class DraftService {
       }
 
       this.room.set(room);
-
-      this.router.navigate(['/draft', room.sessionId]);
     } catch (e) {
-      console.error('reconnect error', e);
+      console.error('[DraftService] reconnect error', e);
       this.router.navigate(['/']);
     }
   }

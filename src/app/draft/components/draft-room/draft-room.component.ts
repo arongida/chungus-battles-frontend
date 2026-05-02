@@ -1,5 +1,6 @@
 import {
   Component,
+  NgZone,
   OnInit,
   effect,
   signal,
@@ -54,29 +55,42 @@ export class DraftRoomComponent implements OnInit {
   availableTalents = signal<Talent[]>([]);
   availableCollections = signal<ItemCollection[]>([]);
 
-  constructor(public draftService: DraftService, private snackBar: MatSnackBar, private soundsService: SoundsService) {
+  constructor(
+    public draftService: DraftService,
+    private snackBar: MatSnackBar,
+    private soundsService: SoundsService,
+    private zone: NgZone,
+  ) {
     effect(() => {
       const room = draftService.room();
       if (!room) return;
 
-      if (room.state) {
-        this.player.set(new Player().assign(room.state.player));
-        this.shop.set([...(room.state.shop ?? [])] as unknown as Item[]);
-        this.availableTalents.set([...(room.state.availableTalents ?? [])] as unknown as Talent[]);
-        this.availableCollections.set([...(room.state.player?.availableItemCollections ?? [])] as unknown as ItemCollection[]);
-      }
+      console.log('[DraftRoom] effect fired, room:', room.roomId, 'state player:', room.state?.player?.name);
+
+      const applyState = (state: typeof room.state) => {
+        this.zone.run(() => {
+          this.player.set(new Player().assign(state.player));
+          this.shop.set([...(state.shop ?? [])] as unknown as Item[]);
+          this.availableTalents.set([...(state.availableTalents ?? [])] as unknown as Talent[]);
+          this.availableCollections.set([...(state.player?.availableItemCollections ?? [])] as unknown as ItemCollection[]);
+        });
+      };
 
       room.onStateChange((state) => {
-        this.player.set(new Player().assign(state.player));
-        this.shop.set([...(state.shop ?? [])] as unknown as Item[]);
-        this.availableTalents.set([...(state.availableTalents ?? [])] as unknown as Talent[]);
-        this.availableCollections.set([...(state.player?.availableItemCollections ?? [])] as unknown as ItemCollection[]);
+        console.log('[DraftRoom] onStateChange fired, player:', state.player?.name);
+        applyState(state);
       });
 
       room.onMessage('draft_log', (message: string) => {
         console.log('draft_log', message);
-        this.snackBar.open(message, 'Close', { duration: 5000, panelClass: 'chungus-snackbar' });
+        this.zone.run(() => this.snackBar.open(message, 'Close', { duration: 5000, panelClass: 'chungus-snackbar' }));
       });
+
+      // Seed from current state immediately in case onStateChange already fired
+      if (room.state) {
+        console.log('[DraftRoom] seeding from room.state, player:', room.state.player?.name);
+        applyState(room.state);
+      }
     });
   }
 

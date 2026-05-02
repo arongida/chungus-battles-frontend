@@ -6,6 +6,7 @@ import {
   PLATFORM_ID,
   Renderer2,
   signal,
+  untracked,
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common'; // Import for platform check
 import { FightService } from '../../services/fight.service';
@@ -139,6 +140,11 @@ export class FightRoomComponent implements OnInit{
             triggerItemActivation(message.playerId, message.slot);
           }
         });
+
+        // All handlers registered and initial state applied — safe to restore now.
+        // untracked prevents this.player() read inside restoreBattleEndState from
+        // being tracked by the effect, which would cause an infinite re-run loop.
+        untracked(() => this.restoreBattleEndState());
       }
     });
   }
@@ -156,7 +162,8 @@ export class FightRoomComponent implements OnInit{
     if (!room) {
       await this.fightService.reconnect(localStorage.getItem('reconnectToken') as string);
     }
-    this.restoreBattleEndState();
+    // restoreBattleEndState is called inside the effect() after player state
+    // and all handlers are registered, so this.player() is guaranteed non-null.
   }
 
   private restoreBattleEndState(): void {

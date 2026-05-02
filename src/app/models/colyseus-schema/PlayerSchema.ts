@@ -10,39 +10,44 @@ import { ItemCollection } from './ItemCollectionSchema';
 import { ItemRarity } from '../types/ItemTypes';
 
 export class Player extends Schema {
+  // Fields in the same declaration order as the backend schema (required for skipHandshake compatibility)
   @type('number') playerId: number = 0;
+  @type('number') originalPlayerId: number = 0;
   @type('string') name: string = 'name';
-  @type('number') private _hp: number = 0;
-  @type('number') private _strength: number = 0;
-  @type('number') private _accuracy: number = 0;
-  @type('number') private _gold: number = 0;
   @type('number') xp: number = 0;
-  @type('number') private _level: number = 0;
   @type('string') sessionId: string = 'sessionId';
-  @type('number') private _defense: number = 0;
-  @type('number') private _attackSpeed: number = 0;
+  @type('number') flatDmgReduction: number = 0;
   @type('number') maxXp: number = 0;
   @type('number') round: number = 1;
   @type('number') lives: number = 3;
   @type('number') wins: number = 0;
-  @type('number') private _poisonStack: number = 0;
   @type('string') avatarUrl: string =
     'assets/Portrait_ID_0_Placeholder.png';
+  @type('number') gameVersion: number = 0;
+  @type('number') income: number = 0;
+  @type('number') hpRegen: number = 0;
   @type([Talent]) talents: ArraySchema<Talent> = new ArraySchema<Talent>();
   @type([Item]) inventory: ArraySchema<Item> = new ArraySchema<Item>();
   @type([Item]) lockedShop: ArraySchema<Item> = new ArraySchema<Item>();
   @type({ map: Item }) equippedItems = new MapSchema<Item>();
+  @type('number') dodgeRate: number = 0;
+  @type('number') refreshShopCost: number = 2;
+  @type('number') maxHp: number = 0;
+  @type('number') private _hp: number = 0;
+  @type('number') private _accuracy: number = 0;
+  @type('number') private _strength: number = 0;
+  @type('number') private _gold: number = 0;
+  @type('number') private _level: number = 0;
+  @type('number') private _defense: number = 0;
+  @type('number') private _attackSpeed: number = 0;
+  // Frontend-only fields not present in backend schema (placed last to preserve index alignment)
   @type([ItemCollection]) activeItemCollections: ArraySchema<ItemCollection> =
     new ArraySchema<ItemCollection>();
   @type([ItemCollection])
   availableItemCollections: ArraySchema<ItemCollection> =
     new ArraySchema<ItemCollection>();
-  @type('number') dodgeRate: number = 0;
-  @type('number') income: number = 0;
-  @type('number') hpRegen: number = 0;
-  @type('number') refreshShopCost: number = 2;
-  @type('number') maxHp: number = 0;
-  @type('number') flatDmgReduction: number = 0;
+  // Not synced — server-only computation, no @type
+  private _poisonStack: number = 0;
 
   get gold(): number {
     return this._gold;

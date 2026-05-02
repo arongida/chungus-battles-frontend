@@ -15,11 +15,11 @@ export class FightService {
 
   constructor(private router: Router) {
     this.client = new Colyseus.Client(environment.gameServer);
-    //this.playerId = Math.floor(Math.random() * 1000);
-    console.log('gameserver: ', this.client);
+    console.log(`[FightService] client created server=${environment.gameServer}`);
   }
 
   public async joinOrCreate(playerId: number) {
+    console.log(`[FightService] creating fight_room playerId=${playerId}`);
     try {
       this.room.set(
         await this.client.create('fight_room', {
@@ -27,14 +27,8 @@ export class FightService {
         }),
       );
 
-      //this.roomSignal.set(this.room);
-
-      // this.room.onMessage("*", (type, message) => {
-      //   console.log("message: ", type, message);
-      // });
-
       const room = this.room();
-      console.log('joined', room);
+      console.log(`[FightService] fight_room created roomId=${room?.roomId} sessionId=${room?.sessionId}`);
 
       if (FightService.isLocalStorageAvailable && room) {
         localStorage.setItem('sessionId', room.sessionId);
@@ -44,21 +38,21 @@ export class FightService {
 
       this.router.navigate(['/fight', room!.sessionId]);
     } catch (e) {
-      console.error('join error', e);
+      console.error('[FightService] joinOrCreate error', e);
     }
   }
 
   public async reconnect(reconnectionToken: string) {
+    console.log(`[FightService] reconnect attempt token=${reconnectionToken.slice(0, 8)}…`);
     try {
       this.room.set(await this.client.reconnect(reconnectionToken));
 
       const room = this.room();
+      console.log(`[FightService] reconnect succeeded roomId=${room?.roomId} sessionId=${room?.sessionId}`);
 
-      // this.room.onMessage("*", (type, message) => {
-      //   console.log("message: ", type, message);
-      // });
-
-      console.log('reconnected', room);
+      room?.onLeave((code) => {
+        console.warn(`[FightService] room left after reconnect code=${code}`);
+      });
 
       if (FightService.isLocalStorageAvailable && room) {
         localStorage.setItem('sessionId', room.sessionId);
@@ -68,7 +62,7 @@ export class FightService {
 
       this.router.navigate(['/fight', room!.sessionId]);
     } catch (e) {
-      console.error('reconnect error', e);
+      console.error('[FightService] reconnect error', e);
       this.router.navigate(['/']);
     }
   }

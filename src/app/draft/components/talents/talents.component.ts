@@ -27,14 +27,14 @@ export class TalentsComponent implements OnChanges, OnDestroy {
   private stateCallback: ((state: any) => void) | undefined;
 
   constructor(public draftService: DraftService, private soundsService: SoundsService) {
-    const currentState = this.draftService.room?.state;
+    const currentState = this.draftService.room()?.state;
     if (currentState) {
       this.talentRerollCost.set(currentState.talentRerollCost ?? 0);
     }
     this.stateCallback = (state: any) => {
       this.talentRerollCost.set(state.talentRerollCost ?? 0);
     };
-    this.draftService.room?.onStateChange(this.stateCallback);
+    this.draftService.room()?.onStateChange(this.stateCallback);
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -45,7 +45,7 @@ export class TalentsComponent implements OnChanges, OnDestroy {
 
   ngOnDestroy() {
     if (this.stateCallback) {
-      (this.draftService.room?.onStateChange as any).remove?.(this.stateCallback);
+      (this.draftService.room()?.onStateChange as any).remove?.(this.stateCallback);
     }
   }
 

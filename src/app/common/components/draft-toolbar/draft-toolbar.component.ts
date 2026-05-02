@@ -171,7 +171,7 @@ export class DraftToolbarComponent implements OnChanges, OnInit {
 
 
   isFighting(): boolean {
-    return !this.draftService.room;
+    return !this.draftService.room();
   }
 
   switchMute() {

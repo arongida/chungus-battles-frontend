@@ -1,6 +1,7 @@
 import {
   Component,
   OnInit,
+  effect,
   signal,
   untracked,
 } from '@angular/core';
@@ -33,6 +34,7 @@ import {
   MusicOptions,
   SoundsService,
 } from '../../../common/services/sounds.service';
+import { DraftState } from '../../../models/colyseus-schema/DraftState';
 
 @Component({
   selector: 'app-draft-room',
@@ -54,34 +56,37 @@ export class DraftRoomComponent implements OnInit {
   availableTalents = signal<Talent[]>([]);
   availableCollections = signal<ItemCollection[]>([]);
 
-  constructor(public draftService: DraftService, private snackBar: MatSnackBar, private soundsService: SoundsService) {}
-
-  async ngOnInit(): Promise<void> {
-
-    this.soundsService.playMusic(MusicOptions.DRAFT);
-
-    if (!this.draftService.room) {
-      await this.draftService.reconnect(untracked(() => localStorage.getItem('reconnectToken')) as string);
-    }
-
-    // this.draftService.room?.onMessage('trigger_talent', (message: TriggerTalentMessage) => {
-    //   triggerTalentActivation(message.talentId, message.playerId);
-    //   console.log('trigger_talent', message);
-    // });
-
-
-    this.draftService.room?.onMessage('draft_log', (message: string) => {
-      console.log('draft_log', message);
-      this.snackBar.open(message, 'Close', { duration: 5000, panelClass: 'chungus-snackbar' });
-    });
-
-    // Listen to changes in the room state
-    this.draftService.room?.onStateChange((state) => {
-      this.player.set(new Player().assign(state.player));
-      this.shop.set([...(state.shop ?? [])] as unknown as Item[]);
-      this.availableTalents.set([...(state.availableTalents ?? [])] as unknown as Talent[]);
-      this.availableCollections.set([...(state.player?.availableItemCollections ?? [])] as unknown as ItemCollection[]);
+  constructor(public draftService: DraftService, private snackBar: MatSnackBar, private soundsService: SoundsService) {
+    effect(() => {
+      const room = this.draftService.room();
+      if (room) {
+        // Apply current snapshot immediately — onStateChange does not replay on registration
+        if (room.state?.player) {
+          this.applyState(room.state);
+        }
+        room.onStateChange((state) => {
+          this.applyState(state);
+        });
+        room.onMessage('draft_log', (message: string) => {
+          console.log('draft_log', message);
+          this.snackBar.open(message, 'Close', { duration: 5000, panelClass: 'chungus-snackbar' });
+        });
+      }
     });
   }
 
+  async ngOnInit(): Promise<void> {
+    this.soundsService.playMusic(MusicOptions.DRAFT);
+
+    if (!this.draftService.room()) {
+      await this.draftService.reconnect(untracked(() => localStorage.getItem('reconnectToken')) as string);
+    }
+  }
+
+  private applyState(state: DraftState): void {
+    this.player.set(new Player().assign(state.player));
+    this.shop.set([...(state.shop ?? [])] as unknown as Item[]);
+    this.availableTalents.set([...(state.availableTalents ?? [])] as unknown as Talent[]);
+    this.availableCollections.set([...(state.player?.availableItemCollections ?? [])] as unknown as ItemCollection[]);
+  }
 }

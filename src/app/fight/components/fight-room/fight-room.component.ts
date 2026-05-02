@@ -164,19 +164,28 @@ export class FightRoomComponent implements OnInit{
     if (!raw) return;
     try {
       const state = JSON.parse(raw) as { type: string; message?: string };
-      const player = this.player();
-      if (!player) return;
       if (state.type === 'game_over') {
         this.gameOver = true;
         this.battleOver = true;
+      } else if (state.type === 'end_battle') {
+        this.battleOver = true;
+      }
+      const player = this.player();
+      if (!player) return;
+      if (state.type === 'game_over') {
         this.openSnackBar(state.message ?? 'Game over', 'Exit', player.playerId, player.name, true);
         this.showBattleOverInfo(true);
       } else if (state.type === 'end_battle') {
-        this.battleOver = true;
         this.openSnackBar('The battle has ended', 'Exit', player.playerId, player.name);
         this.showBattleOverInfo(false);
       }
     } catch {}
+  }
+
+  exitBattle() {
+    const player = this.player();
+    const savedState = JSON.parse(localStorage.getItem('battleEndState') ?? '{}');
+    this.endBattle(player?.playerId ?? 0, player?.name ?? '', this.gameOver, savedState.message ?? 'Game over');
   }
 
   private showBattleOverInfo(gameOver: boolean): void {

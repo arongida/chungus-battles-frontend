@@ -12,7 +12,7 @@ import Item from '../../models/colyseus-schema/ItemSchema';
 import {
   Player,
 } from '../../models/colyseus-schema/PlayerSchema';
-import { ItemRarity } from '../../models/types/ItemTypes';
+import { ItemRarity, ItemType } from '../../models/types/ItemTypes';
 
 @Component({
   selector: 'app-item-card',
@@ -30,6 +30,8 @@ export class ItemCardComponent {
   @Output() buyClicked = new EventEmitter<void>();
 
   protected readonly ItemRarity = ItemRarity;
+  protected readonly ItemType = ItemType;
+
 
   get titleColorClass(): string {
     if (this.item.rarity === ItemRarity.COMMON) return 'text-slate-300';

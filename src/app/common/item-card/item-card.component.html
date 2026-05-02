@@ -21,7 +21,7 @@
       <div class="flex flex-col items-center">
         <div class="grid place-content-center text-sm p-1">
 
-          @if (item.type === ItemType.WEAPON) {
+
           @if (item.baseMinDamage > 0 || item.baseMaxDamage > 0) {
           <p>
             Damage:
@@ -53,31 +53,6 @@
             +A.speed:
             <span class="text-blue-500">{{ item.affectedStats.attackSpeed * 100 - 100 | number: '1.0-0' }}% ⏩</span>
           </p>
-          }
-          } @else {
-          @if (item.affectedStats.strength !== 0) {
-          <p>
-            Strength:
-            <span class="text-red-500">{{ item.affectedStats.strength | number: '1.0-1' }}
-              ⚔️</span>
-          </p>
-          }
-
-          @if (item.affectedStats.accuracy !== 0) {
-          <p>
-            Accuracy:
-            <span class="text-red-500">{{ item.affectedStats.accuracy | number: '1.0-1' }}
-              🎯</span>
-          </p>
-          }
-
-          @if (item.affectedStats.attackSpeed !== 0 && item.affectedStats.attackSpeed !== 1) {
-          <p>
-            A.speed:
-            <span class="text-blue-500">{{ item.affectedStats.attackSpeed * 100 - 100 | number: '1.0-0' }}
-              % ⏩</span>
-          </p>
-          }
           }
 
           @if (item.affectedStats.defense !== 0) {

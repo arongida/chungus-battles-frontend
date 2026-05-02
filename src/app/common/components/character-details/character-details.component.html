@@ -162,7 +162,7 @@
             [ngClass]="{'text-blue-400': item.rarity === ItemRarity.RARE, 'text-purple-400': item.rarity === ItemRarity.EPIC, 'text-orange-400': item.rarity === ItemRarity.LEGENDARY, 'text-gray-200': item.rarity !== ItemRarity.RARE && item.rarity !== ItemRarity.EPIC && item.rarity !== ItemRarity.LEGENDARY}">
             {{ item.name | titlecase }} {{item.rarity}}
           </span>
-          @if(item.type === "weapon"){
+
           @for(itemEquipOption of item.equipOptions.values(); track $index){
           <button mat-button class="!text-xs !min-w-0 !px-2 text-amber-400" [appInfoHint]="equipHint"
             (click)="equip(item, itemEquipOption)">
@@ -173,16 +173,7 @@
             (click)="sellSelectedItem(item)">
             +{{ item.sellPrice }}🟡
           </button>
-          } @else {
-          <button mat-button class="!text-xs !min-w-0 !px-2 text-amber-400" [appInfoHint]="equipHint"
-            (click)="equip(item, item.equipOptions.values().next().value ?? '')">
-            Equip
-          </button>
-          <button mat-button class="!text-xs !min-w-0 !px-2 text-yellow-500" [appInfoHint]="sellHint"
-            (click)="sellSelectedItem(item)">
-            +{{ item.sellPrice }}🟡
-          </button>
-          }
+
         </div>
 
         }

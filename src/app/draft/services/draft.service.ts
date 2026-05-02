@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import * as Colyseus from '@colyseus/sdk';
 import {
   environment,
@@ -16,7 +16,7 @@ import {
 })
 export class DraftService {
   client: Colyseus.Client;
-  room: Colyseus.Room<DraftState> | undefined;
+  room = signal<Colyseus.Room<DraftState> | null>(null);
   player: Player | undefined;
 
 
@@ -36,28 +36,28 @@ export class DraftService {
         playerId = result.playerId;
       }
 
-
-      this.room = await this.client.create('draft_room', {
+      const room = await this.client.create('draft_room', {
         name: name,
         playerId: playerId,
         avatarUrl: avatarUrl,
       });
 
+      this.room.set(room);
 
-      this.room.onMessage('*', (type, message) => {
+      room.onMessage('*', (type, message) => {
         console.log('message: ', type, message);
       });
 
-      console.log('joined successfully', this.room);
+      console.log('joined successfully', room);
 
       if (DraftService.isLocalStorageAvailable) {
-        localStorage.setItem('sessionId', this.room.sessionId);
+        localStorage.setItem('sessionId', room.sessionId);
         localStorage.setItem('playerId', playerId!.toString());
-        localStorage.setItem('roomId', this.room.roomId);
-        localStorage.setItem('reconnectToken', this.room.reconnectionToken);
+        localStorage.setItem('roomId', room.roomId);
+        localStorage.setItem('reconnectToken', room.reconnectionToken);
       }
 
-      this.router.navigate(['/draft', this.room.sessionId]);
+      this.router.navigate(['/draft', room.sessionId]);
       return null;
     } catch (e) {
       console.error('join error', e);
@@ -67,19 +67,21 @@ export class DraftService {
 
   public async reconnect(reconnectionToken: string) {
     try {
-      this.room = await this.client.reconnect(reconnectionToken);
+      const room = await this.client.reconnect(reconnectionToken);
 
-      this.room.onMessage('*', (type, message) => {
+      room.onMessage('*', (type, message) => {
         console.log('message: ', type, message);
       });
 
       if (DraftService.isLocalStorageAvailable) {
-        localStorage.setItem('sessionId', this.room.sessionId);
-        localStorage.setItem('roomId', this.room.roomId);
-        localStorage.setItem('reconnectToken', this.room.reconnectionToken);
+        localStorage.setItem('sessionId', room.sessionId);
+        localStorage.setItem('roomId', room.roomId);
+        localStorage.setItem('reconnectToken', room.reconnectionToken);
       }
 
-      this.router.navigate(['/draft', this.room.sessionId]);
+      this.room.set(room);
+
+      this.router.navigate(['/draft', room.sessionId]);
     } catch (e) {
       console.error('reconnect error', e);
       this.router.navigate(['/']);
@@ -87,16 +89,18 @@ export class DraftService {
   }
 
   public async sendMessage(type: string, message: {}) {
-    if (this.room) {
-      this.room.send(type, message);
+    const room = this.room();
+    if (room) {
+      room.send(type, message);
     }
   }
 
   public async leave(redirectToHome = true) {
-    if (this.room) {
-      this.room.leave();
-      this.room.removeAllListeners();
-      this.room = undefined;
+    const room = this.room();
+    if (room) {
+      room.leave();
+      room.removeAllListeners();
+      this.room.set(null);
       if (redirectToHome) this.router.navigate(['/']);
     }
   }

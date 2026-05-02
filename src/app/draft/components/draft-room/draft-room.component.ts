@@ -1,8 +1,8 @@
 import {
   Component,
   OnInit,
+  effect,
   signal,
-  untracked,
 } from '@angular/core';
 import { DraftService } from '../../services/draft.service';
 import {
@@ -54,42 +54,36 @@ export class DraftRoomComponent implements OnInit {
   availableTalents = signal<Talent[]>([]);
   availableCollections = signal<ItemCollection[]>([]);
 
-  constructor(public draftService: DraftService, private snackBar: MatSnackBar, private soundsService: SoundsService) {}
+  constructor(public draftService: DraftService, private snackBar: MatSnackBar, private soundsService: SoundsService) {
+    effect(() => {
+      const room = draftService.room();
+      if (!room) return;
+
+      if (room.state) {
+        this.player.set(new Player().assign(room.state.player));
+        this.shop.set([...(room.state.shop ?? [])] as unknown as Item[]);
+        this.availableTalents.set([...(room.state.availableTalents ?? [])] as unknown as Talent[]);
+        this.availableCollections.set([...(room.state.player?.availableItemCollections ?? [])] as unknown as ItemCollection[]);
+      }
+
+      room.onStateChange((state) => {
+        this.player.set(new Player().assign(state.player));
+        this.shop.set([...(state.shop ?? [])] as unknown as Item[]);
+        this.availableTalents.set([...(state.availableTalents ?? [])] as unknown as Talent[]);
+        this.availableCollections.set([...(state.player?.availableItemCollections ?? [])] as unknown as ItemCollection[]);
+      });
+
+      room.onMessage('draft_log', (message: string) => {
+        console.log('draft_log', message);
+        this.snackBar.open(message, 'Close', { duration: 5000, panelClass: 'chungus-snackbar' });
+      });
+    });
+  }
 
   async ngOnInit(): Promise<void> {
-
     this.soundsService.playMusic(MusicOptions.DRAFT);
-
-    if (!this.draftService.room) {
-      await this.draftService.reconnect(untracked(() => localStorage.getItem('reconnectToken')) as string);
-    }
-
-    // this.draftService.room?.onMessage('trigger_talent', (message: TriggerTalentMessage) => {
-    //   triggerTalentActivation(message.talentId, message.playerId);
-    //   console.log('trigger_talent', message);
-    // });
-
-
-    this.draftService.room?.onMessage('draft_log', (message: string) => {
-      console.log('draft_log', message);
-      this.snackBar.open(message, 'Close', { duration: 5000, panelClass: 'chungus-snackbar' });
-    });
-
-    // Listen to changes in the room state
-    this.draftService.room?.onStateChange((state) => {
-      this.player.set(new Player().assign(state.player));
-      this.shop.set([...(state.shop ?? [])] as unknown as Item[]);
-      this.availableTalents.set([...(state.availableTalents ?? [])] as unknown as Talent[]);
-      this.availableCollections.set([...(state.player?.availableItemCollections ?? [])] as unknown as ItemCollection[]);
-    });
-
-    // Seed from current state in case the initial onStateChange fired before we subscribed
-    const currentState = this.draftService.room?.state;
-    if (currentState) {
-      this.player.set(new Player().assign(currentState.player));
-      this.shop.set([...(currentState.shop ?? [])] as unknown as Item[]);
-      this.availableTalents.set([...(currentState.availableTalents ?? [])] as unknown as Talent[]);
-      this.availableCollections.set([...(currentState.player?.availableItemCollections ?? [])] as unknown as ItemCollection[]);
+    if (!this.draftService.room()) {
+      await this.draftService.reconnect(localStorage.getItem('reconnectToken') as string);
     }
   }
 

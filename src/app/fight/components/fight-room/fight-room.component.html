@@ -35,18 +35,6 @@
   }
 
 
-  @if (battleOver) {
-    <div class="fixed inset-0 flex items-center justify-center z-40 pointer-events-none">
-      <button mat-raised-button
-              class="pointer-events-auto text-lg px-8 py-3"
-              color="warn"
-              (click)="exitBattle()">
-        <mat-icon>exit_to_app</mat-icon>
-        Exit
-      </button>
-    </div>
-  }
-
   <!-- Combat log + toggle button (bottom-right corner) -->
   <div class="lg:fixed lg:bottom-4 lg:right-4 z-20">
     <div class="scale-75 lg:scale-100">

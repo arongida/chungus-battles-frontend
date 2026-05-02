@@ -286,10 +286,17 @@ export class FightRoomComponent implements OnInit{
     }, 3000);
   }
 
+  private lastAttackSoundTime = 0;
+  private readonly ATTACK_SOUND_INTERVAL_MS = 125; // max ~8 sounds/sec
+
   triggerAttack(attackerId: number) {
     if (!isPlatformBrowser(this.platformId)) {
       return;
     }
-    this.soundsService.playSound(SoundOptions.ATTACK);
+    const now = performance.now();
+    if (now - this.lastAttackSoundTime >= this.ATTACK_SOUND_INTERVAL_MS) {
+      this.soundsService.playSound(SoundOptions.ATTACK);
+      this.lastAttackSoundTime = now;
+    }
   }
 }

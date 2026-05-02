@@ -21,7 +21,7 @@
       <div class="flex flex-col items-center">
         <div class="grid place-content-center text-sm p-1">
 
-          @if (item.type === 'weapon') {
+          @if (item.type === ItemType.WEAPON) {
           @if (item.baseMinDamage > 0 || item.baseMaxDamage > 0) {
           <p>
             Damage:

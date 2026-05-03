@@ -45,7 +45,7 @@ export class FightService {
   public async reconnect(reconnectionToken: string) {
     console.log(`[FightService] reconnect attempt token=${reconnectionToken.slice(0, 8)}…`);
     try {
-      this.room.set(await this.client.reconnect(reconnectionToken, FightState) as unknown as Colyseus.Room<FightState>);
+      this.room.set(await this.client.reconnect(reconnectionToken) as Colyseus.Room<FightState>);
 
       const room = this.room();
       console.log(`[FightService] reconnect succeeded roomId=${room?.roomId} sessionId=${room?.sessionId}`);

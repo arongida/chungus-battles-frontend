@@ -38,6 +38,20 @@ import { DraftState } from '../../../models/colyseus-schema/DraftState';
 import { TriggerItemMessage, TriggerTalentMessage } from '../../../models/types/MessageTypes';
 import { triggerItemActivation, triggerTalentActivation } from '../../../common/TriggerAnimations';
 
+// Creates a typed Player from any schema object (typed or reflection-decoded generic).
+// Copies primitive backing fields and collection references; skips `baseStats` because
+// its Colyseus-generated setter calls assertInstanceType which fails with minified class
+// names in production builds.
+function coercePlayer(src: any): Player {
+  if (!src) return new Player();
+  const dest = new Player();
+  Object.keys(src).forEach(key => {
+    if (key === 'baseStats') return;
+    try { (dest as any)[key] = src[key]; } catch {}
+  });
+  return dest;
+}
+
 @Component({
   selector: 'app-draft-room',
   standalone: true,
@@ -96,8 +110,8 @@ export class DraftRoomComponent implements OnInit {
     }
   }
 
-  private applyState(state: DraftState): void {
-    this.player.set(state.player);
+  private applyState(state: any): void {
+    this.player.set(coercePlayer(state.player));
     this.shop.set([...(state.shop ?? [])] as unknown as Item[]);
     this.availableTalents.set([...(state.availableTalents ?? [])] as unknown as Talent[]);
     this.availableCollections.set([...(state.player?.availableItemCollections ?? [])] as unknown as ItemCollection[]);

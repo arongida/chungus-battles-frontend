@@ -34,6 +34,18 @@ import { MusicOptions, SoundOptions, SoundsService } from '../../../common/servi
 import { EquipSlot } from '../../../models/types/ItemTypes';
 import { InfoBoxService } from '../../../common/services/info-box.service';
 
+// Creates a typed Player from any schema object (typed or reflection-decoded generic).
+// Skips `baseStats` to avoid assertInstanceType failures in production minified builds.
+function coercePlayer(src: any): Player {
+  if (!src) return new Player();
+  const dest = new Player();
+  Object.keys(src).forEach(key => {
+    if (key === 'baseStats') return;
+    try { (dest as any)[key] = src[key]; } catch {}
+  });
+  return dest;
+}
+
 @Component({
   selector: 'app-fight-room',
   standalone: true,
@@ -73,13 +85,13 @@ export class FightRoomComponent implements OnInit{
       const room = this.fightService.room();
       if (room) {
         if (room.state?.player) {
-          this.player.set(room.state.player);
-          this.enemy.set(room.state.enemy);
+          this.player.set(coercePlayer(room.state.player));
+          this.enemy.set(coercePlayer(room.state.enemy));
         }
 
         room.onStateChange((state) => {
-          this.player.set(state.player);
-          this.enemy.set(state.enemy);
+          this.player.set(coercePlayer(state.player));
+          this.enemy.set(coercePlayer(state.enemy));
         });
 
         room.onMessage('game_over', (message: string) => {

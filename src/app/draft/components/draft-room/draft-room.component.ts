@@ -1,9 +1,9 @@
 import {
   Component,
+  NgZone,
   OnInit,
   effect,
   signal,
-  untracked,
 } from '@angular/core';
 import { DraftService } from '../../services/draft.service';
 import {
@@ -56,30 +56,49 @@ export class DraftRoomComponent implements OnInit {
   availableTalents = signal<Talent[]>([]);
   availableCollections = signal<ItemCollection[]>([]);
 
-  constructor(public draftService: DraftService, private snackBar: MatSnackBar, private soundsService: SoundsService) {
+  constructor(
+    public draftService: DraftService,
+    private snackBar: MatSnackBar,
+    private soundsService: SoundsService,
+    private zone: NgZone,
+  ) {
     effect(() => {
-      const room = this.draftService.room();
-      if (room) {
-        // Apply current snapshot immediately — onStateChange does not replay on registration
-        if (room.state?.player) {
-          this.applyState(room.state);
-        }
-        room.onStateChange((state) => {
-          this.applyState(state);
+      const room = draftService.room();
+      if (!room) return;
+
+      console.log('[DraftRoom] effect fired, room:', room.roomId, 'state player:', room.state?.player?.name);
+
+      const applyState = (state: typeof room.state) => {
+        this.zone.run(() => {
+          this.player.set(new Player().assign(state.player));
+          this.shop.set([...(state.shop ?? [])] as unknown as Item[]);
+          this.availableTalents.set([...(state.availableTalents ?? [])] as unknown as Talent[]);
+          this.availableCollections.set([...(state.player?.availableItemCollections ?? [])] as unknown as ItemCollection[]);
         });
-        room.onMessage('draft_log', (message: string) => {
-          console.log('draft_log', message);
-          this.snackBar.open(message, 'Close', { duration: 5000, panelClass: 'chungus-snackbar' });
-        });
+      };
+
+      room.onStateChange((state) => {
+        console.log('[DraftRoom] onStateChange fired, player:', state.player?.name);
+        applyState(state);
+      });
+
+      room.onMessage('draft_log', (message: string) => {
+        console.log('draft_log', message);
+        this.zone.run(() => this.snackBar.open(message, 'Close', { duration: 5000, panelClass: 'chungus-snackbar' }));
+      });
+
+      // Seed from current state immediately in case onStateChange already fired
+      if (room.state) {
+        console.log('[DraftRoom] seeding from room.state, player:', room.state.player?.name);
+        applyState(room.state);
       }
     });
   }
 
   async ngOnInit(): Promise<void> {
     this.soundsService.playMusic(MusicOptions.DRAFT);
-
     if (!this.draftService.room()) {
-      await this.draftService.reconnect(untracked(() => localStorage.getItem('reconnectToken')) as string);
+      await this.draftService.reconnect(localStorage.getItem('reconnectToken') as string);
     }
   }
 

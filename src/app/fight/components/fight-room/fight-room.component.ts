@@ -2,6 +2,7 @@ import {
   Component,
   effect,
   Inject,
+  NgZone,
   OnInit,
   PLATFORM_ID,
   Renderer2,
@@ -67,47 +68,53 @@ export class FightRoomComponent implements OnInit{
     private soundsService: SoundsService,
     private infoBoxService: InfoBoxService,
     private renderer: Renderer2,
+    private zone: NgZone,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
     effect(() => {
       const room = this.fightService.room();
       if (room) {
+        const applyPlayers = (state: typeof room.state) => {
+          this.zone.run(() => {
+            const player = new Player();
+            const enemy = new Player();
+            Object.assign(player, state.player);
+            Object.assign(enemy, state.enemy);
+            this.player.set(player);
+            this.enemy.set(enemy);
+          });
+        };
+
         if (room.state?.player) {
-          const player = new Player();
-          const enemy = new Player();
-          Object.assign(player, room.state.player);
-          Object.assign(enemy, room.state.enemy);
-          this.player.set(player);
-          this.enemy.set(enemy);
+          applyPlayers(room.state);
         }
 
         room.onStateChange((state) => {
-          const player = new Player();
-          const enemy = new Player();
-          Object.assign(player, state.player);
-          Object.assign(enemy, state.enemy);
-          this.player.set(player);
-          this.enemy.set(enemy);
+          applyPlayers(state);
         });
 
         room.onMessage('game_over', (message: string) => {
-          this.openSnackBar(message, 'Exit', room.state.player.playerId, room.state.player.name, true);
-          this.gameOver = true;
-          this.battleOver = true;
-          localStorage.setItem('battleEndState', JSON.stringify({ type: 'game_over', message }));
-          this.showBattleOverInfo(true);
+          this.zone.run(() => {
+            this.openSnackBar(message, 'Exit', room.state.player.playerId, room.state.player.name, true);
+            this.gameOver = true;
+            this.battleOver = true;
+            localStorage.setItem('battleEndState', JSON.stringify({ type: 'game_over', message }));
+            this.showBattleOverInfo(true);
+          });
         });
 
         room.onMessage('end_battle', () => {
-          this.openSnackBar('The battle has ended', 'Exit', room.state.player.playerId, room.state.player.name);
-          this.battleOver = true;
-          localStorage.setItem('battleEndState', JSON.stringify({ type: 'end_battle' }));
-          this.showBattleOverInfo(false);
+          this.zone.run(() => {
+            this.openSnackBar('The battle has ended', 'Exit', room.state.player.playerId, room.state.player.name);
+            this.battleOver = true;
+            localStorage.setItem('battleEndState', JSON.stringify({ type: 'end_battle' }));
+            this.showBattleOverInfo(false);
+          });
         });
 
         room.onMessage('combat_log', (message: string) => {
           const formatted = message.replace(/(\d*\.\d+)/g, (match) => parseFloat(match).toFixed(2));
-          this.combatLog.update(log => log + formatted + '\n');
+          this.zone.run(() => this.combatLog.update(log => log + formatted + '\n'));
         });
 
         room.onMessage('attack', (message: number) => {

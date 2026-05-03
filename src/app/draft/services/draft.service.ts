@@ -35,15 +35,19 @@ export class DraftService {
         playerId = result.playerId;
       }
 
-      console.log(`[DraftService] creating draft_room playerId=${playerId}`);
-      this.room.set(await this.client.create('draft_room', {
+      const room = await this.client.create('draft_room', {
         name: name,
         playerId: playerId,
         avatarUrl: avatarUrl,
-      }));
+      });
 
-      const room = this.room()!;
-      console.log(`[DraftService] draft_room created roomId=${room.roomId} sessionId=${room.sessionId}`);
+      this.room.set(room);
+
+      room.onMessage('*', (type, message) => {
+        console.log('message: ', type, message);
+      });
+
+      console.log('joined successfully', room);
 
       if (DraftService.isLocalStorageAvailable) {
         localStorage.setItem('sessionId', room.sessionId);
@@ -63,12 +67,12 @@ export class DraftService {
   public async reconnect(reconnectionToken: string) {
     console.log(`[DraftService] reconnect attempt token=${reconnectionToken.slice(0, 8)}…`);
     try {
-      this.room.set(await this.client.reconnect(reconnectionToken));
-      const room = this.room()!;
-      console.log(`[DraftService] reconnect succeeded roomId=${room.roomId} sessionId=${room.sessionId}`);
+      console.log('[DraftService] reconnecting...');
+      const room = await this.client.reconnect(reconnectionToken);
+      console.log('[DraftService] reconnected, room:', room.roomId, 'state player:', room.state?.player?.name);
 
-      room.onLeave((code) => {
-        console.warn(`[DraftService] room left after reconnect code=${code}`);
+      room.onMessage('*', (type, message) => {
+        console.log('message: ', type, message);
       });
 
       if (DraftService.isLocalStorageAvailable) {
@@ -77,7 +81,7 @@ export class DraftService {
         localStorage.setItem('reconnectToken', room.reconnectionToken);
       }
 
-      this.router.navigate(['/draft', room.sessionId]);
+      this.room.set(room);
     } catch (e) {
       console.error('[DraftService] reconnect error', e);
       this.router.navigate(['/']);

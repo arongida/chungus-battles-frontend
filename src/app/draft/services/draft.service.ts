@@ -63,7 +63,7 @@ export class DraftService {
   public async reconnect(reconnectionToken: string) {
     console.log(`[DraftService] reconnect attempt token=${reconnectionToken.slice(0, 8)}…`);
     try {
-      this.room.set(await this.client.reconnect(reconnectionToken, DraftState) as unknown as Colyseus.Room<DraftState>);
+      this.room.set(await this.client.reconnect(reconnectionToken) as Colyseus.Room<DraftState>);
       const room = this.room()!;
       console.log(`[DraftService] reconnect succeeded roomId=${room.roomId} sessionId=${room.sessionId}`);
 

@@ -7,7 +7,7 @@ import {
 import { Talent } from './TalentSchema';
 import Item from './ItemSchema';
 import { ItemCollection } from './ItemCollectionSchema';
-import { ItemRarity } from '../types/ItemTypes';
+import { AffectedStats } from './AffectedStatsSchema';
 
 export class Player extends Schema {
   // Fields in the same declaration order as the backend schema (required for skipHandshake compatibility)
@@ -34,6 +34,7 @@ export class Player extends Schema {
   @type('number') refreshShopCost: number = 2;
   @type('number') maxHp: number = 0;
   @type('number') private _hp: number = 0;
+  @type(AffectedStats) baseStats: AffectedStats = new AffectedStats();
   @type('number') private _accuracy: number = 0;
   @type('number') private _strength: number = 0;
   @type('number') private _gold: number = 0;

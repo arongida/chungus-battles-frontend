@@ -7,6 +7,7 @@ import {
 import { AffectedStats } from './AffectedStatsSchema';
 
 class Item extends Schema {
+  // Fields in backend declaration order (required for skipHandshake)
   @type('number') itemId: number = 0;
   @type('string') name: string = '';
   @type('string') description: string = '';
@@ -18,10 +19,10 @@ class Item extends Schema {
   @type('number') tier: number = 0;
   @type('number') rarity: number = 1;
   @type('string') image: string = '';
-  @type('string') imageCache?: string = this.image;
-  @type(['string']) tags: string[] = new Array<string>();
+  @type(['string']) tags: ArraySchema<string> = new ArraySchema();
   @type('boolean') sold: boolean = false;
   @type('boolean') equipped: boolean = false;
+  @type(['number']) itemCollections: ArraySchema<number> = new ArraySchema();
   @type('string') type: string = '';
   @type('string') set: string = '';
   @type(['string']) equipOptions: SetSchema<string> = new SetSchema();
@@ -30,6 +31,9 @@ class Item extends Schema {
   @type('number') baseMaxDamage: number = 0;
   @type('number') baseAttackSpeed: number = 0;
   @type(['string']) triggerTypes: ArraySchema<string> = new ArraySchema<string>();
+  @type(AffectedStats) affectedEnemyStats: AffectedStats = new AffectedStats();
+  // Frontend-only display state — not synced, must stay after all backend fields
+  imageCache: string = '';
 }
 
 export default Item;

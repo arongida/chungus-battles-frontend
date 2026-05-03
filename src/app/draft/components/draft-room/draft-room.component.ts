@@ -35,6 +35,8 @@ import {
   SoundsService,
 } from '../../../common/services/sounds.service';
 import { DraftState } from '../../../models/colyseus-schema/DraftState';
+import { TriggerItemMessage, TriggerTalentMessage } from '../../../models/types/MessageTypes';
+import { triggerItemActivation, triggerTalentActivation } from '../../../common/TriggerAnimations';
 
 @Component({
   selector: 'app-draft-room',
@@ -51,7 +53,7 @@ import { DraftState } from '../../../models/colyseus-schema/DraftState';
   styleUrl: './draft-room.component.scss',
 })
 export class DraftRoomComponent implements OnInit {
-  player = signal<Player | undefined>(new Player());
+  player = signal<Player | undefined>(new Player(), { equal: () => false });
   shop = signal<Item[]>([]);
   availableTalents = signal<Talent[]>([]);
   availableCollections = signal<ItemCollection[]>([]);
@@ -75,22 +77,17 @@ export class DraftRoomComponent implements OnInit {
           this.availableTalents.set([...(state.availableTalents ?? [])] as unknown as Talent[]);
           this.availableCollections.set([...(state.player?.availableItemCollections ?? [])] as unknown as ItemCollection[]);
         });
-      };
+        room.onMessage('trigger_talent', (message: TriggerTalentMessage) => {
+          if (this.player()) {
+            //triggerTalentActivation(message.talentId, message.playerId);
+          }
+        });
 
-      room.onStateChange((state) => {
-        console.log('[DraftRoom] onStateChange fired, player:', state.player?.name);
-        applyState(state);
-      });
-
-      room.onMessage('draft_log', (message: string) => {
-        console.log('draft_log', message);
-        this.zone.run(() => this.snackBar.open(message, 'Close', { duration: 5000, panelClass: 'chungus-snackbar' }));
-      });
-
-      // Seed from current state immediately in case onStateChange already fired
-      if (room.state) {
-        console.log('[DraftRoom] seeding from room.state, player:', room.state.player?.name);
-        applyState(room.state);
+        room.onMessage('trigger_item', (message: TriggerItemMessage) => {
+          if (this.player()) {
+            //triggerItemActivation(message.playerId, message.slot);
+          }
+        });
       }
     });
   }
@@ -103,7 +100,7 @@ export class DraftRoomComponent implements OnInit {
   }
 
   private applyState(state: DraftState): void {
-    this.player.set(new Player().assign(state.player));
+    this.player.set(state.player);
     this.shop.set([...(state.shop ?? [])] as unknown as Item[]);
     this.availableTalents.set([...(state.availableTalents ?? [])] as unknown as Talent[]);
     this.availableCollections.set([...(state.player?.availableItemCollections ?? [])] as unknown as ItemCollection[]);

@@ -52,8 +52,8 @@ import { InfoBoxService } from '../../../common/services/info-box.service';
   styleUrl: './fight-room.component.scss',
 })
 export class FightRoomComponent implements OnInit{
-  player = signal<Player | null>(null);
-  enemy = signal<Player | null>(null);
+  player = signal<Player | null>(null, { equal: () => false });
+  enemy = signal<Player | null>(null, { equal: () => false });
   combatLog = signal('');
   gameOver = false;
   battleOver = false;
@@ -86,11 +86,13 @@ export class FightRoomComponent implements OnInit{
         };
 
         if (room.state?.player) {
-          applyPlayers(room.state);
+          this.player.set(room.state.player);
+          this.enemy.set(room.state.enemy);
         }
 
         room.onStateChange((state) => {
-          applyPlayers(state);
+          this.player.set(state.player);
+          this.enemy.set(state.enemy);
         });
 
         room.onMessage('game_over', (message: string) => {

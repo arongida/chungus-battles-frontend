@@ -17,6 +17,7 @@ import {
   TriggerTalentMessage,
   TriggerCollectionMessage,
   TriggerItemMessage,
+  VersionWinMessage,
 } from '../../../models/types/MessageTypes';
 import { CombatLogComponent } from '../combat-log/combat-log.component';
 import { DraftService } from '../../../draft/services/draft.service';
@@ -31,7 +32,6 @@ import { CharacterDetailsComponent } from '../../../common/components/character-
 import { SkillIconsComponent } from '../../../common/components/skill-icons/skill-icons.component';
 import { DraftToolbarComponent } from '../../../common/components/draft-toolbar/draft-toolbar.component';
 import { MusicOptions, SoundOptions, SoundsService } from '../../../common/services/sounds.service';
-import { EquipSlot } from '../../../models/types/ItemTypes';
 import { InfoBoxService } from '../../../common/services/info-box.service';
 
 // Creates a typed Player from any schema object (typed or reflection-decoded generic).
@@ -70,6 +70,8 @@ export class FightRoomComponent implements OnInit{
   battleOver = false;
   playerBeingHit = signal(false);
   enemyBeingHit = signal(false);
+  versionWin = signal(false);
+  versionWins = signal(0);
 
   constructor(
     private fightService: FightService,
@@ -105,8 +107,16 @@ export class FightRoomComponent implements OnInit{
         room.onMessage('end_battle', () => {
           this.openSnackBar('The battle has ended', 'Exit', room.state.player.playerId, room.state.player.name);
           this.battleOver = true;
+          this.versionWin.set(false);
           localStorage.setItem('battleEndState', JSON.stringify({ type: 'end_battle' }));
           this.showBattleOverInfo(false);
+        });
+
+        room.onMessage('version_win', (message: VersionWinMessage) => {
+          this.versionWin.set(true);
+          this.versionWins.set(message.wins);
+          this.battleOver = true;
+          localStorage.setItem('battleEndState', JSON.stringify({ type: 'version_win', wins: message.wins }));
         });
 
         room.onMessage('combat_log', (message: string) => {
@@ -170,11 +180,23 @@ export class FightRoomComponent implements OnInit{
     // and all handlers are registered, so this.player() is guaranteed non-null.
   }
 
+  handleVersionWinContinue(): void {
+    const room = this.fightService.room();
+    if (room) room.send('continue_run');
+    this.versionWin.set(false);
+  }
+
+  handleVersionWinAccept(): void {
+    const room = this.fightService.room();
+    if (room) room.send('accept_win');
+    this.versionWin.set(false);
+  }
+
   private restoreBattleEndState(): void {
     const raw = localStorage.getItem('battleEndState');
     if (!raw) return;
     try {
-      const state = JSON.parse(raw) as { type: string; message?: string };
+      const state = JSON.parse(raw) as { type: string; message?: string; wins?: number };
       const player = this.player();
       if (!player) return;
       if (state.type === 'game_over') {
@@ -186,6 +208,10 @@ export class FightRoomComponent implements OnInit{
         this.battleOver = true;
         this.openSnackBar('The battle has ended', 'Exit', player.playerId, player.name);
         this.showBattleOverInfo(false);
+      } else if (state.type === 'version_win') {
+        this.battleOver = true;
+        this.versionWin.set(true);
+        this.versionWins.set(state.wins ?? 0);
       }
     } catch {}
   }

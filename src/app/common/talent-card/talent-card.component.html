@@ -1,0 +1,45 @@
+<div class="tc-wrap">
+
+  <div class="tc-header">
+    <span class="tc-name">{{ talent.name }}</span>
+  </div>
+
+  <div class="tc-divider"></div>
+
+  <div class="tc-body">
+
+    @if (talent.description) {
+      <p class="tc-description">{{ talent.description }}</p>
+    }
+
+    <p class="tc-trigger">⚡ {{ triggerLabel() }}</p>
+
+    @if (hasSelfStats(talent.affectedStats)) {
+      <div class="tc-divider tc-divider--inner"></div>
+      @let s = talent.affectedStats;
+      @if (s.strength)      { <p class="tc-stat tc-stat--buff">⚔️ {{ fmt(s.strength) }} Strength</p> }
+      @if (s.accuracy)      { <p class="tc-stat tc-stat--buff">🎯 {{ fmt(s.accuracy) }} Accuracy</p> }
+      @if (s.attackSpeed && s.attackSpeed !== 1) {
+                              <p class="tc-stat tc-stat--buff">⏩ {{ speedPct(s.attackSpeed) }} Attack Speed</p> }
+      @if (s.maxHp)         { <p class="tc-stat tc-stat--buff">❤️ {{ fmt(s.maxHp) }} Max HP</p> }
+      @if (s.defense)       { <p class="tc-stat tc-stat--buff">🛡️ {{ fmt(s.defense) }} Defense</p> }
+      @if (s.dodgeRate)     { <p class="tc-stat tc-stat--buff">🦵 {{ fmt(s.dodgeRate) }} Dodge</p> }
+      @if (s.flatDmgReduction) { <p class="tc-stat tc-stat--buff">🔰 {{ fmt(s.flatDmgReduction) }} Flat DR</p> }
+      @if (s.income)        { <p class="tc-stat tc-stat--buff">💰 {{ fmt(s.income) }} Income</p> }
+      @if (s.hpRegen)       { <p class="tc-stat tc-stat--buff">🧪 {{ fmt(s.hpRegen) }} HP Regen</p> }
+    }
+
+    @if (hasEnemyStats(talent.affectedEnemyStats)) {
+      <div class="tc-divider tc-divider--inner"></div>
+      @let e = talent.affectedEnemyStats;
+      @if (e.strength)      { <p class="tc-stat tc-stat--debuff">⚔️ {{ fmt(e.strength) }} Enemy Str</p> }
+      @if (e.accuracy)      { <p class="tc-stat tc-stat--debuff">🎯 {{ fmt(e.accuracy) }} Enemy Acc</p> }
+      @if (e.attackSpeed && e.attackSpeed !== 1) {
+                              <p class="tc-stat tc-stat--debuff">⏩ {{ speedPct(e.attackSpeed) }} Enemy Speed</p> }
+      @if (e.maxHp)         { <p class="tc-stat tc-stat--debuff">❤️ {{ fmt(e.maxHp) }} Enemy HP</p> }
+      @if (e.defense)       { <p class="tc-stat tc-stat--debuff">🛡️ {{ fmt(e.defense) }} Enemy Def</p> }
+    }
+
+  </div>
+
+</div>

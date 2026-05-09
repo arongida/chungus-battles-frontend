@@ -15,22 +15,56 @@
 
   <h2 class="text-xl sm:text-2xl font-semibold text-white mb-4">Top Players:</h2>
 
+  <div class="flex mb-1 rounded-lg overflow-hidden border border-gray-600">
+    <button
+      class="px-5 py-2 text-sm font-semibold transition-colors"
+      [class.bg-amber-600]="activeTab() === 'latest-version'"
+      [class.text-white]="activeTab() === 'latest-version'"
+      [class.bg-gray-700]="activeTab() !== 'latest-version'"
+      [class.text-gray-300]="activeTab() !== 'latest-version'"
+      (click)="setTab('latest-version')">
+      Latest Version
+    </button>
+    <button
+      class="px-5 py-2 text-sm font-semibold transition-colors"
+      [class.bg-amber-600]="activeTab() === 'all-time'"
+      [class.text-white]="activeTab() === 'all-time'"
+      [class.bg-gray-700]="activeTab() !== 'all-time'"
+      [class.text-gray-300]="activeTab() !== 'all-time'"
+      (click)="setTab('all-time')">
+      All Time
+    </button>
+  </div>
+
   <div class="w-full max-w-md bg-gray-800 bg-opacity-50 rounded-lg shadow-lg p-6">
-    @for (Player of topPlayers(); track Player.playerId) {
-      @if (Player.playerId === playerId) {
-        <div class="text-lg text-yellow-600 mb-2 cursor-pointer hover:underline" (click)="viewPlayerBuild(Player.playerId)">
-          {{ $index + 1 }}. {{ Player.name }} - {{ Player.wins }} win
-        </div>
-      } @else {
-        <div class="text-lg text-white mb-2 cursor-pointer hover:underline" (click)="viewPlayerBuild(Player.playerId)">
-          {{ $index + 1 }}. {{ Player.name }} - {{ Player.wins }} win
-        </div>
-      }
+    @for (Player of currentTabPlayers(); track Player.playerId) {
+      <div
+        class="player-row text-lg mb-2 cursor-pointer select-none"
+        [class.text-yellow-400]="Player.playerId === playerId"
+        [class.text-white]="Player.playerId !== playerId"
+        [class.player-row-active]="isActive(Player.playerId)"
+        [class.player-row-pinned]="isPinned(Player.playerId)"
+        (mouseenter)="onPlayerHover(Player.playerId)"
+        (mouseleave)="onPlayerLeave()"
+        (click)="onPlayerClick(Player.playerId)">
+        {{ $index + 1 }}. {{ Player.name }} - {{ Player.wins }} wins
+        @if (isPinned(Player.playerId)) {
+          <span class="text-amber-500 text-sm ml-1">📌</span>
+        }
+      </div>
     }
     @if (!topListContainsPlayer()) {
-      <span>...</span>
-      <div class="text-lg text-yellow-600 mb-2 cursor-pointer hover:underline" (click)="viewPlayerBuild(playerId)">
-        {{ playerRank() }}. {{ playerName() }} - {{ playerWins() }} win
+      <span class="text-gray-500">...</span>
+      <div
+        class="player-row text-lg text-yellow-400 mb-2 cursor-pointer select-none player-row-active"
+        [class.player-row-pinned]="isPinned(playerId)"
+        (mouseenter)="onPlayerHover(playerId)"
+        (mouseleave)="onPlayerLeave()"
+        (click)="onPlayerClick(playerId)">
+        {{ playerRank() }}. {{ playerName() }} - {{ playerWins() }} wins
+        @if (isPinned(playerId)) {
+          <span class="text-amber-500 text-sm ml-1">📌</span>
+        }
       </div>
     }
   </div>
@@ -39,3 +73,53 @@
     RESTART
   </button>
 </div>
+
+@if (isPanelVisible()) {
+  <div class="build-panel"
+       (mouseenter)="onPanelEnter()"
+       (mouseleave)="onPanelLeave()">
+
+    <div class="build-panel-header">
+      <mat-icon class="build-panel-icon">person</mat-icon>
+      <span class="build-panel-title">{{ panelBuild()?.name }} — {{ panelBuild()?.wins }} wins</span>
+      @if (pinnedPlayerId() !== null) {
+        <mat-icon class="build-panel-pin">push_pin</mat-icon>
+      }
+    </div>
+
+    <div class="build-divider"></div>
+
+    <div class="build-panel-body">
+
+      <div class="build-portrait">
+        <img [src]="panelBuild()?.avatarUrl" alt="Portrait" />
+      </div>
+
+      <div class="build-equipment">
+        @for (row of equipmentLayout; track $index) {
+          <div class="equip-row">
+            @for (slot of row; track slot) {
+              @if (getEquippedItem(slot); as item) {
+                <div class="equip-slot" [style.border-color]="rarityBorderColor(item)"
+                     [appItemHoverCard]="item" [hoverPlayer]="panelBuild()!">
+                  <img [src]="item.image" [alt]="item.name" />
+                </div>
+              } @else {
+                <div class="equip-slot equip-slot-empty"></div>
+              }
+            }
+          </div>
+        }
+      </div>
+
+    </div>
+
+    @if (panelBuild()?.talents?.length) {
+      <div class="build-divider"></div>
+      <div class="build-talents">
+        <app-skill-icons [player]="panelBuild()!"></app-skill-icons>
+      </div>
+    }
+
+  </div>
+}

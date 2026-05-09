@@ -23,3 +23,7 @@ export type TriggerItemMessage = {
   itemId: number;
   slot: string;
 };
+
+export type VersionWinMessage = {
+  wins: number;
+};

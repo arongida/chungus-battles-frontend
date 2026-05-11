@@ -236,7 +236,7 @@ export class EndComponent implements OnInit, OnDestroy {
   }
 
   topListContainsPlayer() {
-    return this.topPlayers().some(player => player.playerId === this.playerId);
+    return this.currentTabPlayers().some(player => player.playerId === this.playerId);
   }
 
   ngOnDestroy() {

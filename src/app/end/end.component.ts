@@ -1,4 +1,5 @@
-import { Component, OnDestroy, OnInit, signal } from '@angular/core';
+import { Component, ElementRef, ViewChild, Renderer2, AfterViewInit, OnDestroy, OnInit, signal, PLATFORM_ID, Inject } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Player } from '../models/colyseus-schema/PlayerSchema';
 import Item from '../models/colyseus-schema/ItemSchema';
@@ -12,6 +13,7 @@ import { InfoBoxService } from '../common/services/info-box.service';
 import { EquipSlot, ItemRarity } from '../models/types/ItemTypes';
 import { ItemHoverCardDirective } from '../common/directives/item-hover-card.directive';
 import { SkillIconsComponent } from '../common/components/skill-icons/skill-icons.component';
+import { itemPictures } from '../join-form/item-image-links';
 
 @Component({
   selector: 'app-end',
@@ -20,7 +22,7 @@ import { SkillIconsComponent } from '../common/components/skill-icons/skill-icon
   templateUrl: './end.component.html',
   styleUrl: './end.component.scss',
 })
-export class EndComponent implements OnInit, OnDestroy {
+export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
   message: string = 'Game Over';
   topPlayers = signal<Player[]>([]);
   topPlayersLatestVersion = signal<Player[]>([]);
@@ -42,14 +44,21 @@ export class EndComponent implements OnInit, OnDestroy {
     [EquipSlot.ARMOR],
   ];
 
+  @ViewChild('fallingItemsContainer', { static: false })
+  fallingItemsContainer!: ElementRef<HTMLDivElement>;
+  fallingItems = itemPictures;
+
   private buildCache = new Map<number, Player>();
   private intervalId: any;
+  private fallingItemsIntervalId: any;
   private leaveTimeout: any;
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private infoBoxService: InfoBoxService,
+    private renderer: Renderer2,
+    @Inject(PLATFORM_ID) private platformId: Object,
   ) {}
 
   get infoBoxVisible() {
@@ -236,11 +245,36 @@ export class EndComponent implements OnInit, OnDestroy {
   }
 
   topListContainsPlayer() {
-    return this.topPlayers().some(player => player.playerId === this.playerId);
+    return this.currentTabPlayers().some(player => player.playerId === this.playerId);
+  }
+
+  ngAfterViewInit(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      this.fallingItemsIntervalId = setInterval(() => {
+        this.triggerShowFallingItem(this.fallingItems[Math.floor(Math.random() * this.fallingItems.length)]);
+      }, 1000);
+    }
+  }
+
+  triggerShowFallingItem(itemPicture: string) {
+    if (this.fallingItemsContainer) {
+      const itemImg = this.renderer.createElement('img');
+      this.renderer.setAttribute(itemImg, 'src', itemPicture);
+      this.renderer.setStyle(itemImg, 'scale', '0.5');
+      this.renderer.addClass(itemImg, 'animate-fall');
+      this.renderer.addClass(itemImg, 'fixed');
+      this.renderer.setStyle(itemImg, 'left', `${Math.random() * 100}%`);
+      this.renderer.setStyle(itemImg, 'z-index', '-1');
+      this.renderer.appendChild(this.fallingItemsContainer.nativeElement, itemImg);
+      setTimeout(() => {
+        this.renderer.removeChild(this.fallingItemsContainer.nativeElement, itemImg);
+      }, 6000);
+    }
   }
 
   ngOnDestroy() {
     if (this.intervalId) clearInterval(this.intervalId);
+    if (this.fallingItemsIntervalId) clearInterval(this.fallingItemsIntervalId);
     this.infoBoxService.clearPageDefault();
     this.infoBoxService.clearContent();
   }

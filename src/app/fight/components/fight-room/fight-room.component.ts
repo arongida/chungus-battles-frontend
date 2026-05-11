@@ -72,6 +72,7 @@ export class FightRoomComponent implements OnInit{
   enemyBeingHit = signal(false);
   versionWin = signal(false);
   versionWins = signal(0);
+  topWin = signal(false);
 
   constructor(
     private fightService: FightService,
@@ -97,11 +98,16 @@ export class FightRoomComponent implements OnInit{
         });
 
         room.onMessage('game_over', (message: string) => {
-          this.openSnackBar(message, 'Exit', room.state.player.playerId, room.state.player.name, true);
           this.gameOver = true;
           this.battleOver = true;
-          localStorage.setItem('battleEndState', JSON.stringify({ type: 'game_over', message }));
-          this.showBattleOverInfo(true);
+          if (message.includes('#1')) {
+            this.topWin.set(true);
+            localStorage.setItem('battleEndState', JSON.stringify({ type: 'top_win', message }));
+          } else {
+            this.openSnackBar(message, 'Exit', room.state.player.playerId, room.state.player.name, true);
+            localStorage.setItem('battleEndState', JSON.stringify({ type: 'game_over', message }));
+            this.showBattleOverInfo(true);
+          }
         });
 
         room.onMessage('end_battle', () => {
@@ -192,6 +198,13 @@ export class FightRoomComponent implements OnInit{
     this.versionWin.set(false);
   }
 
+  handleTopWinExit(): void {
+    const player = this.player();
+    if (!player) return;
+    this.topWin.set(false);
+    this.endBattle(player.playerId, player.name, true, 'YOU ARE THE #1 TOP CHUNGERION! CHUNGRATULATIONS!');
+  }
+
   private restoreBattleEndState(): void {
     const raw = localStorage.getItem('battleEndState');
     if (!raw) return;
@@ -212,6 +225,10 @@ export class FightRoomComponent implements OnInit{
         this.battleOver = true;
         this.versionWin.set(true);
         this.versionWins.set(state.wins ?? 0);
+      } else if (state.type === 'top_win') {
+        this.gameOver = true;
+        this.battleOver = true;
+        this.topWin.set(true);
       }
     } catch {}
   }
@@ -230,7 +247,7 @@ export class FightRoomComponent implements OnInit{
     }
   }
 
-  private async endBattle(playerId: number, name: string, gameOver: boolean = false, message: string) {
+  async endBattle(playerId: number, name: string, gameOver: boolean = false, message: string) {
     localStorage.removeItem('battleEndState');
     this.fightService.leave(false);
     this.soundsService.stopMusic();

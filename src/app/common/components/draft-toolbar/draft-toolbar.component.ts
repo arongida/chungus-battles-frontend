@@ -189,6 +189,7 @@ export class DraftToolbarComponent implements OnChanges, OnInit {
   refreshShop() {
     this.characterDetailsService.showCharacterDetails.set(false);
     this.soundsService.playSound(SoundOptions.CLICK);
+    this.isLocked = false;
     this.draftService.sendMessage('refresh_shop', {});
   }
 

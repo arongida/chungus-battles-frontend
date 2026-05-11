@@ -93,4 +93,21 @@
   </div>
 }
 
+@if (topWin()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center top-win-backdrop">
+    <div class="top-win-card text-center">
+      <div class="top-win-crowns">👑</div>
+      <h2 class="top-win-title">ALL-TIME #1 CHUNGERION!</h2>
+      <p class="top-win-subtitle">CHUNGRATULATIONS!</p>
+      <p class="top-win-body">
+        You are the greatest Chungerion to ever live.<br>
+        Your legend is eternal.
+      </p>
+      <button mat-raised-button class="top-win-btn" (click)="handleTopWinExit()">
+        Claim Your Glory
+      </button>
+    </div>
+  </div>
+}
+
 

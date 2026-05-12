@@ -23,6 +23,7 @@ export class SoundsService {
       const pool = Array.from({ length: POOL_SIZE }, () => {
         const audio = new Audio(sound);
         audio.volume = this.volume + 0.05;
+        audio.muted = this.volume === 0;
         audio.load();
         return audio;
       });
@@ -33,20 +34,28 @@ export class SoundsService {
   }
 
   playMusic(music: MusicOptions) {
-    if (!this.music || (this.music.src === music && this.music.played)) return;
+    if (!this.music) return;
     this.music.volume = this.volume;
+    this.music.muted = this.volume === 0;
+    if (this.music.src.endsWith(music) && !this.music.paused) return;
     this.music.src = music;
     this.music.loop = true;
     this.music.load();
-    this.music.play();
+    if (this.volume > 0) {
+      this.music.play();
+    }
   }
 
   setVolume(volume: number) {
     this.volume = volume;
     if (!this.music) return;
     this.music.volume = this.volume;
+    this.music.muted = volume === 0;
     this.soundPools.forEach(pool =>
-      pool.forEach(audio => (audio.volume = this.volume + 0.05))
+      pool.forEach(audio => {
+        audio.volume = this.volume + 0.05;
+        audio.muted = volume === 0;
+      })
     );
     if (volume === 0) {
       this.music.pause();

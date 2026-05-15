@@ -19,5 +19,4 @@ export class Talent extends Schema {
   // Frontend-only display state — not synced, must stay after all backend fields
   levelRequirement: number = 0;
   showDetails: boolean = false;
-  imageCache: string = '';
 }

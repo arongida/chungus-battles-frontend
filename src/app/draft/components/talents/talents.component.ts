@@ -94,19 +94,16 @@ export class TalentsComponent implements OnChanges, OnDestroy {
     return entries;
   }
 
-  getTalentImage(talent: Talent) {
-    return talent.image ? talent.image : 'assets/talent_tablet_01_horizontal.png';
+  getTalentImage() {
+    return 'assets/talent_tablet_01_horizontal.png';
   }
 
   onMouseEnterTalent(talent: Talent) {
     talent.showDetails = true;
-    talent.imageCache = talent.image;
-    talent.image = 'assets/talent_tablet_01_horizontal.png';
   }
 
   onMouseLeaveTalent(talent: Talent) {
     talent.showDetails = false;
-    talent.image = talent.imageCache!;
   }
 
   switchTalentRefreshAnimate() {

@@ -1,14 +1,21 @@
-<div class="cl-panel">
-  <div class="cl-header">⚔️ Combat Log</div>
-  <div class="cl-divider"></div>
-  <div class="cl-scroll" #scroll>
-    @for (entry of entries; track $index) {
-      <div class="cl-row" [class]="'cl-row--' + entry.kind"
-           [appCombatLogHoverCard]="entry"
-           [hoverPlayer]="player"
-           [hoverEnemy]="enemy">
-        {{ entry.text }}
-      </div>
-    }
+<div class="cl-panel" [class.cl-panel--collapsed]="collapsed()">
+  <div class="cl-header">
+    <span>⚔️ Combat Log</span>
+    <button class="cl-toggle" (click)="collapsed.update(v => !v)" [title]="collapsed() ? 'Show log' : 'Hide log'">
+      {{ collapsed() ? '▲' : '▼' }}
+    </button>
   </div>
+  @if (!collapsed()) {
+    <div class="cl-divider"></div>
+    <div class="cl-scroll" #scroll>
+      @for (entry of entries; track $index) {
+        <div class="cl-row" [class]="'cl-row--' + entry.kind"
+             [appCombatLogHoverCard]="entry"
+             [hoverPlayer]="player"
+             [hoverEnemy]="enemy">
+          {{ entry.text }}
+        </div>
+      }
+    </div>
+  }
 </div>

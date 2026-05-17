@@ -1,4 +1,4 @@
-import { AfterViewChecked, Component, ElementRef, Input, ViewChild } from '@angular/core';
+import { AfterViewChecked, Component, ElementRef, Input, ViewChild, signal } from '@angular/core';
 import { CombatLogEntry } from '../../../models/types/CombatLogEntry';
 import { Player } from '../../../models/colyseus-schema/PlayerSchema';
 import { CombatLogHoverCardDirective } from '../../../common/directives/combat-log-hover-card.directive';
@@ -14,6 +14,8 @@ export class CombatLogComponent implements AfterViewChecked {
   @Input({ required: true }) entries: CombatLogEntry[] = [];
   @Input({ required: true }) player!: Player;
   @Input({ required: true }) enemy!: Player;
+
+  collapsed = signal(false);
 
   @ViewChild('scroll') private scrollEl!: ElementRef<HTMLDivElement>;
 

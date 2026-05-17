@@ -109,17 +109,17 @@
     </div>
     <div class="cd-inventory">
       @for (item of getInventoryFiltered(); track $index) {
-        <div class="cd-inv-row"
-             [style.border-left]="getRarityBorder(item.rarity)"
-             [appItemHoverCard]="item"
-             [hoverPlayer]="player">
-          <img alt="" [src]="item.image" class="w-5 h-5 sm:w-7 sm:h-7 object-contain shrink-0" />
-          <span class="flex-1 text-xs sm:text-sm truncate"
-                [ngClass]="{'text-blue-400': item.rarity === ItemRarity.RARE,
-                             'text-purple-400': item.rarity === ItemRarity.EPIC,
-                             'text-orange-400': item.rarity === ItemRarity.LEGENDARY,
-                             'text-gray-300': item.rarity !== ItemRarity.RARE && item.rarity !== ItemRarity.EPIC && item.rarity !== ItemRarity.LEGENDARY}">
-            {{ item.name | titlecase }}
+        <div class="cd-inv-row" [style.border-left]="getRarityBorder(item.rarity)">
+          <span class="flex items-center gap-1.5 flex-1 min-w-0"
+                [appItemHoverCard]="item" [hoverPlayer]="player">
+            <img alt="" [src]="item.image" class="w-5 h-5 sm:w-7 sm:h-7 object-contain shrink-0" />
+            <span class="flex-1 text-xs sm:text-sm truncate"
+                  [ngClass]="{'text-blue-400': item.rarity === ItemRarity.RARE,
+                               'text-purple-400': item.rarity === ItemRarity.EPIC,
+                               'text-orange-400': item.rarity === ItemRarity.LEGENDARY,
+                               'text-gray-300': item.rarity !== ItemRarity.RARE && item.rarity !== ItemRarity.EPIC && item.rarity !== ItemRarity.LEGENDARY}">
+              {{ item.name | titlecase }}
+            </span>
           </span>
           @for (itemEquipOption of item.equipOptions.values(); track $index) {
             <button mat-button class="cd-inv-btn" [appInfoHint]="equipHint"

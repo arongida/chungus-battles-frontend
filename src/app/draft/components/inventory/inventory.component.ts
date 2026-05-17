@@ -14,7 +14,7 @@ import {
 import { DraftService } from '../../services/draft.service';
 import {
   ItemCardComponent,
-} from '../../../common/item-card/item-card.component';
+} from '../../../common/components/item-card/item-card.component';
 import {
   ItemHoverCardDirective,
 } from '../../../common/directives/item-hover-card.directive';

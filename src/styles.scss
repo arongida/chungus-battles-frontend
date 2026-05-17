@@ -1,5 +1,85 @@
 /* You can add global styles to this file, and also import other style files */
 
+/* ── Chungus design tokens ─────────────────────────────────── */
+:root {
+  --cm-bg:          rgba(10, 10, 15, 0.97);
+  --cm-border:      rgba(180, 120, 30, 0.5);
+  --cm-shadow:      0 0 20px rgba(180, 120, 30, 0.15), 0 4px 24px rgba(0, 0, 0, 0.8);
+  --cm-header-bg:   rgba(180, 120, 30, 0.1);
+  --cm-amber:       #f59e0b;
+  --cm-amber-light: #fbbf24;
+  --cm-amber-dark:  #d97706;
+  --cm-text:        #cbd5e1;
+  --cm-text-muted:  #9ca3af;
+  --cm-divider:     rgba(180, 120, 30, 0.5);
+}
+
+/* ── Shared modal/overlay classes ──────────────────────────── */
+.chungus-backdrop {
+  background: radial-gradient(ellipse at center, rgba(40, 28, 0, 0.5) 0%, rgba(0, 0, 0, 0.88) 100%);
+  animation: cm-backdropIn 0.35s ease-out;
+}
+
+@keyframes cm-backdropIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.chungus-card {
+  background: var(--cm-bg);
+  border: 1px solid var(--cm-border);
+  box-shadow: var(--cm-shadow);
+  border-radius: 6px;
+  padding: 2rem;
+  max-width: 28rem;
+  width: calc(100% - 2rem);
+  margin: 1rem;
+  animation: cm-cardIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes cm-cardIn {
+  from { opacity: 0; transform: scale(0.92) translateY(-18px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.chungus-modal-icon {
+  font-size: 2.5rem;
+  line-height: 1;
+  margin-bottom: 0.75rem;
+  display: inline-block;
+}
+
+.chungus-modal-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--cm-amber);
+  letter-spacing: 0.04em;
+  margin-bottom: 0.75rem;
+}
+
+.chungus-modal-body {
+  color: var(--cm-text);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  margin-bottom: 1.75rem;
+}
+
+.chungus-modal-btn {
+  background: linear-gradient(135deg, #78350f, #92400e, #78350f) !important;
+  color: #fff !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.05em !important;
+  padding: 0.5rem 1.75rem !important;
+  border-radius: 4px !important;
+  box-shadow: 0 2px 12px rgba(180, 120, 30, 0.3) !important;
+  transition: box-shadow 0.2s ease, transform 0.1s ease !important;
+
+  &:hover {
+    box-shadow: 0 2px 20px rgba(180, 120, 30, 0.55) !important;
+    transform: translateY(-1px);
+  }
+}
+
 html,
 body {
   height: 100%;

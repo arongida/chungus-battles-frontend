@@ -8,11 +8,11 @@ import {
   TitleCasePipe,
   UpperCasePipe,
 } from '@angular/common';
-import Item from '../../models/colyseus-schema/ItemSchema';
+import Item from '../../../models/colyseus-schema/ItemSchema';
 import {
   Player,
-} from '../../models/colyseus-schema/PlayerSchema';
-import { ItemRarity, ItemType } from '../../models/types/ItemTypes';
+} from '../../../models/colyseus-schema/PlayerSchema';
+import { ItemRarity, ItemType } from '../../../models/types/ItemTypes';
 
 @Component({
   selector: 'app-item-card',

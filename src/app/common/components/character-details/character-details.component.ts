@@ -103,7 +103,6 @@ export class CharacterDetailsComponent {
     } else {
       this.selectedCategory = categoryName;
     }
-    console.log(this.selectedCategory);
   }
 
   onTabChange(event: MatTabChangeEvent) {

@@ -20,6 +20,7 @@ import { CharacterDetailsService } from '../../services/character-details.servic
 import { InfoBoxService } from '../../services/info-box.service';
 import { InfoHintDirective } from '../../directives/info-hint.directive';
 import { InfoContent } from '../../models/info-content';
+import { goldHint, buyXpHint, lockShopHint, talentHint, draftReadyHint, fightingHint } from './draft-toolbar.hints';
 
 @Component({
   selector: 'app-draft-toolbar',
@@ -51,20 +52,12 @@ export class DraftToolbarComponent implements OnChanges, OnInit {
   showTalentPicker = this.characterDetailsService.showTalentPicker;
   showCharacterDetails = computed(() => this.characterDetailsService.showCharacterDetails());
 
-  readonly goldHint: InfoContent = {
-    title: 'Gold & Income',
-    entries: [
-      { icon: '🟡', label: 'Gold', text: 'Your current gold. Spend it to buy and upgrade items in the shop.' },
-      { icon: '💰', label: 'Income', text: 'You earn bonus gold at the end of each fight based on your income stat.' },
-    ],
-  };
-
-  readonly buyXpHint: InfoContent = {
-    title: 'Buy XP',
-    entries: [
-      { icon: '⬆️', label: 'Buy XP', text: 'Spend 4 gold to gain 4 XP. Leveling up gives you more item slots and unlocks new talents.' },
-    ],
-  };
+  readonly goldHint = goldHint;
+  readonly buyXpHint = buyXpHint;
+  readonly lockShopHint = lockShopHint;
+  readonly talentHint = talentHint;
+  readonly draftReadyHint = draftReadyHint;
+  readonly fightingHint = fightingHint;
 
   get refreshShopHint(): InfoContent {
     return {
@@ -74,34 +67,6 @@ export class DraftToolbarComponent implements OnChanges, OnInit {
       ],
     };
   }
-
-  readonly lockShopHint: InfoContent = {
-    title: 'Lock Shop',
-    entries: [
-      { icon: '🔒', label: 'Lock', text: 'Lock your current shop items so they persist into the next round — useful when you cannot afford something right now.' },
-    ],
-  };
-
-  readonly talentHint: InfoContent = {
-    title: 'New Talent Available!',
-    entries: [
-      { icon: '🌟', label: 'Talent', text: 'You have unlocked a new talent! Click to choose a permanent passive ability that enhances your build.' },
-    ],
-  };
-
-  readonly draftReadyHint: InfoContent = {
-    title: 'Ready to Fight?',
-    entries: [
-      { icon: '⚔️', label: 'Start Battle', text: 'When you\'re happy with your build, click the Fight button at the bottom to start the round.' },
-    ],
-  };
-
-  readonly fightingHint: InfoContent = {
-    title: 'Battle in Progress',
-    entries: [
-      { icon: '⏳', label: 'Please Wait', text: 'The fight is underway — sit back and watch! The next draft round will begin when it\'s over.' },
-    ],
-  };
 
   constructor(
     public draftService: DraftService,

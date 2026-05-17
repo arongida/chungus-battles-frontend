@@ -19,7 +19,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { isPlatformBrowser } from '@angular/common';
-import { itemPictures } from './item-image-links';
+import { itemPictures } from '../common/item-image-links';
 import { ItemTrackingService } from '../common/services/item-tracking.service';
 import { MusicOptions, SoundOptions, SoundsService } from '../common/services/sounds.service';
 import { InfoBoxService } from '../common/services/info-box.service';

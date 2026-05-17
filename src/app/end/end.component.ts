@@ -3,17 +3,15 @@ import { isPlatformBrowser } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Player } from '../models/colyseus-schema/PlayerSchema';
 import Item from '../models/colyseus-schema/ItemSchema';
-import { AffectedStats } from '../models/colyseus-schema/AffectedStatsSchema';
 import { environment } from '../../environments/environment';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { ArraySchema, MapSchema } from '@colyseus/schema';
-import { Talent } from '../models/colyseus-schema/TalentSchema';
 import { InfoBoxService } from '../common/services/info-box.service';
 import { EquipSlot, ItemRarity } from '../models/types/ItemTypes';
 import { ItemHoverCardDirective } from '../common/directives/item-hover-card.directive';
 import { SkillIconsComponent } from '../common/components/skill-icons/skill-icons.component';
-import { itemPictures } from '../join-form/item-image-links';
+import { itemPictures } from '../common/item-image-links';
+import { buildPlayerFromData } from '../common/utils/player-schema-builder';
 
 @Component({
   selector: 'app-end',
@@ -135,7 +133,7 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
     this.panelLoading.set(true);
     try {
       const data = await fetch(`${environment.gameServer}/playerBuild?playerId=${playerId}`).then(r => r.json());
-      const player = this.buildPlayerFromData(data);
+      const player = buildPlayerFromData(data);
       this.buildCache.set(playerId, player);
       this.panelBuild.set(player);
     } catch (e) {
@@ -186,54 +184,6 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
     } catch (error) {
       console.error('Error fetching player data:', error);
     }
-  }
-
-  private buildItemFromData(itemData: any): Item {
-    const { affectedStats, setBonusStats, affectedEnemyStats, triggerTypes, tags, ...primitives } = itemData;
-    const item = new Item();
-    const primitiveFields = ['itemId', 'name', 'description', 'price', 'sellPrice', 'setActive',
-      'tier', 'rarity', 'image', 'sold', 'equipped', 'type', 'set', 'showDetails',
-      'baseMinDamage', 'baseMaxDamage', 'baseAttackSpeed'];
-    primitiveFields.forEach(f => { if (primitives[f] !== undefined) try { (item as any)[f] = primitives[f]; } catch {} });
-    if (affectedStats) { const s = new AffectedStats(); Object.assign(s, affectedStats); item.affectedStats = s; }
-    if (setBonusStats) { const s = new AffectedStats(); Object.assign(s, setBonusStats); item.setBonusStats = s; }
-    if (affectedEnemyStats) { const s = new AffectedStats(); Object.assign(s, affectedEnemyStats); item.affectedEnemyStats = s; }
-    if (triggerTypes?.length) item.triggerTypes = new ArraySchema<string>(...triggerTypes);
-    if (tags?.length) item.tags = new ArraySchema<string>(...tags);
-    return item;
-  }
-
-  private buildPlayerFromData(data: any): Player {
-    const player = new Player();
-    const primitiveFields = ['playerId', 'originalPlayerId', 'name', 'gold', 'xp', 'level',
-      'sessionId', 'maxXp', 'round', 'lives', 'wins', 'avatarUrl', 'gameVersion',
-      'income', 'hpRegen', 'dodgeRate', 'refreshShopCost', 'maxHp', 'hp',
-      'strength', 'accuracy', 'defense', 'attackSpeed', 'flatDmgReduction'];
-    primitiveFields.forEach(f => { if (data[f] !== undefined) try { (player as any)[f] = data[f]; } catch {} });
-    if (data.baseStats) Object.assign(player.baseStats, data.baseStats);
-    const equippedMap = new MapSchema<Item>();
-    if (data.equippedItems) {
-      Object.entries(data.equippedItems).forEach(([slot, itemData]) => {
-        equippedMap.set(slot, this.buildItemFromData(itemData as any));
-      });
-    }
-    player.equippedItems = equippedMap;
-    const talentsSchema = new ArraySchema<Talent>();
-    (data.talents || []).forEach((t: any) => {
-      const { affectedStats, affectedEnemyStats, triggerTypes, tags, ...primitives } = t;
-      const talent = new Talent();
-      Object.keys(primitives).forEach(f => { try { (talent as any)[f] = primitives[f]; } catch {} });
-      if (affectedStats) Object.assign(talent.affectedStats, affectedStats);
-      if (affectedEnemyStats) Object.assign(talent.affectedEnemyStats, affectedEnemyStats);
-      if (triggerTypes?.length) talent.triggerTypes = new ArraySchema<string>(...triggerTypes);
-      if (tags?.length) talent.tags = new ArraySchema<string>(...tags);
-      talentsSchema.push(talent);
-    });
-    player.talents = talentsSchema;
-    const inventorySchema = new ArraySchema<Item>();
-    (data.inventory || []).forEach((itemData: any) => inventorySchema.push(this.buildItemFromData(itemData)));
-    player.inventory = inventorySchema;
-    return player;
   }
 
   goToHome() {

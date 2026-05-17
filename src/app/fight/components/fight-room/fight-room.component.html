@@ -49,23 +49,61 @@
 <app-round-info [player]="player()!"></app-round-info>
 }
 
+<!-- Battle result (win / loss / draw) -->
+@if (battleResultVisible()) {
+<div class="fixed inset-0 z-50 flex items-center justify-center chungus-backdrop">
+  <div class="chungus-card text-center">
+    <div class="chungus-modal-icon">
+      @if (battleResult() === 'win') { ⚔️ }
+      @if (battleResult() === 'lose') { 🛡️ }
+      @if (battleResult() === 'draw') { ⚡ }
+    </div>
+    <h2 class="chungus-modal-title">
+      @if (battleResult() === 'win') { Round Won }
+      @if (battleResult() === 'lose') { Round Lost }
+      @if (battleResult() === 'draw') { Draw }
+    </h2>
+    <p class="chungus-modal-body">
+      @if (battleResult() === 'win') { You defeated your opponent. Return to the draft to prepare for the next fight. }
+      @if (battleResult() === 'lose') { You lost this round, but your run continues. Regroup in the draft. }
+      @if (battleResult() === 'draw') { Both fighters fell at the same moment. Head back to the draft. }
+    </p>
+    <button mat-raised-button class="chungus-modal-btn" (click)="handleBattleResultExit()">
+      Back to Draft
+    </button>
+  </div>
+</div>
+}
+
+<!-- Run over (game_over) -->
+@if (gameOverVisible()) {
+<div class="fixed inset-0 z-50 flex items-center justify-center chungus-backdrop">
+  <div class="chungus-card text-center">
+    <div class="chungus-modal-icon game-over-icon">💀</div>
+    <h2 class="chungus-modal-title">Run Over</h2>
+    <p class="chungus-modal-body">{{ gameOverMessage() }}</p>
+    <button mat-raised-button class="chungus-modal-btn" (click)="handleGameOverExit()">
+      View Your Results
+    </button>
+  </div>
+</div>
+}
+
+<!-- Version record -->
 @if (versionWin()) {
-<div class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
-  <div class="bg-gray-900 border border-amber-500 rounded-xl p-8 max-w-md w-full mx-4 text-center shadow-2xl">
-    <div class="text-4xl mb-4">🏆</div>
-    <h2 class="text-2xl font-bold text-amber-400 mb-2">Version Record Beaten!</h2>
-    <p class="text-white text-lg mb-2">
-      You reached <span class="text-amber-300 font-bold">{{ versionWins() }} wins</span> — the best of the current
-      version!
+<div class="fixed inset-0 z-50 flex items-center justify-center chungus-backdrop">
+  <div class="chungus-card text-center">
+    <div class="chungus-modal-icon">🏆</div>
+    <h2 class="chungus-modal-title">Version Record!</h2>
+    <p class="chungus-modal-body">
+      You reached <span style="color: var(--cm-amber-light); font-weight: 700">{{ versionWins() }} wins</span> — the best of the current version!<br>
+      Keep going to challenge the all-time record, or end your run here.
     </p>
-    <p class="text-gray-300 text-sm mb-8">
-      Do you want to keep going and challenge the all-time record, or end your run here?
-    </p>
-    <div class="flex flex-col sm:flex-row gap-4 justify-center">
-      <button mat-raised-button color="primary" (click)="handleVersionWinContinue()">
+    <div class="flex flex-col sm:flex-row gap-3 justify-center">
+      <button mat-raised-button class="chungus-modal-btn" (click)="handleVersionWinContinue()">
         Continue for All-Time
       </button>
-      <button mat-raised-button color="warn" (click)="handleVersionWinAccept()">
+      <button mat-stroked-button class="version-win-secondary-btn" (click)="handleVersionWinAccept()">
         End Run Here
       </button>
     </div>
@@ -73,17 +111,18 @@
 </div>
 }
 
+<!-- All-time #1 -->
 @if (topWin()) {
-<div class="fixed inset-0 z-50 flex items-center justify-center top-win-backdrop">
-  <div class="top-win-card text-center">
-    <div class="top-win-crowns">👑</div>
-    <h2 class="top-win-title">ALL-TIME #1 CHUNGERION!</h2>
+<div class="fixed inset-0 z-50 flex items-center justify-center chungus-backdrop">
+  <div class="chungus-card text-center">
+    <div class="chungus-modal-icon top-win-icon">👑</div>
+    <h2 class="chungus-modal-title top-win-shimmer">ALL-TIME #1 CHUNGERION!</h2>
     <p class="top-win-subtitle">CHUNGRATULATIONS!</p>
-    <p class="top-win-body">
+    <p class="chungus-modal-body">
       You are the greatest Chungerion to ever live.<br>
       Your legend is eternal.
     </p>
-    <button mat-raised-button class="top-win-btn" (click)="handleTopWinExit()">
+    <button mat-raised-button class="chungus-modal-btn" (click)="handleTopWinExit()">
       Claim Your Glory
     </button>
   </div>

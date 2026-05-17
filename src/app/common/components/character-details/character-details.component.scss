@@ -4,7 +4,7 @@
   border-radius: 6px;
   box-shadow: var(--cm-shadow);
   animation: slideDown 0.18s ease-out;
-  min-width: 340px;
+  width: 460px;
 }
 
 @keyframes slideDown {
@@ -220,7 +220,7 @@
 /* ── Mobile: shrink combat panels ── */
 @media (max-width: 639px) {
   .details-panel {
-    min-width: 280px;
+    width: 340px;
   }
 
   .cd-slot {

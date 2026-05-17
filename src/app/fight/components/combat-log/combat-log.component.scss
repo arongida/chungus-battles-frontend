@@ -18,6 +18,28 @@
   text-transform: uppercase;
   letter-spacing: 0.08em;
   flex-shrink: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cl-toggle {
+  background: none;
+  border: none;
+  color: var(--cm-amber);
+  cursor: pointer;
+  padding: 0 2px;
+  font-size: 0.6rem;
+  opacity: 0.6;
+  line-height: 1;
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
+.cl-panel--collapsed {
+  height: auto;
 }
 
 .cl-divider {

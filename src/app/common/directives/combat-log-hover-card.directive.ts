@@ -1,15 +1,20 @@
 import { Directive, ElementRef, HostListener, Input, OnDestroy, ViewContainerRef } from '@angular/core';
 import { Overlay, OverlayRef } from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
-import { Talent } from '../../models/colyseus-schema/TalentSchema';
-import { TalentCardComponent } from '../components/talent-card/talent-card.component';
+import { CombatLogEntry } from '../../models/types/CombatLogEntry';
+import { CombatLogCardComponent } from '../components/combat-log-card/combat-log-card.component';
+import { Player } from '../../models/colyseus-schema/PlayerSchema';
+
+const NARRATION_KINDS = new Set(['countdown', 'fight_start', 'fight_end']);
 
 @Directive({
-  selector: '[appTalentHoverCard]',
+  selector: '[appCombatLogHoverCard]',
   standalone: true,
 })
-export class TalentHoverCardDirective implements OnDestroy {
-  @Input({ alias: 'appTalentHoverCard', required: true }) talent!: Talent;
+export class CombatLogHoverCardDirective implements OnDestroy {
+  @Input({ alias: 'appCombatLogHoverCard', required: true }) entry!: CombatLogEntry;
+  @Input({ required: true }) hoverPlayer!: Player;
+  @Input({ required: true }) hoverEnemy!: Player;
 
   private overlayRef: OverlayRef | null = null;
   private closeTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -32,6 +37,7 @@ export class TalentHoverCardDirective implements OnDestroy {
   }
 
   private openOverlay() {
+    if (!this.entry?.kind || NARRATION_KINDS.has(this.entry.kind)) return;
     if (this.overlayRef?.hasAttached()) return;
 
     this.overlayRef = this.overlay.create({
@@ -42,19 +48,21 @@ export class TalentHoverCardDirective implements OnDestroy {
         .withPositions([
           { originX: 'end',    originY: 'center', overlayX: 'start',  overlayY: 'center', offsetX: 8  },
           { originX: 'start',  originY: 'center', overlayX: 'end',    overlayY: 'center', offsetX: -8 },
-          { originX: 'center', originY: 'bottom', overlayX: 'center', overlayY: 'top',    offsetY: 8  },
           { originX: 'center', originY: 'top',    overlayX: 'center', overlayY: 'bottom', offsetY: -8 },
+          { originX: 'center', originY: 'bottom', overlayX: 'center', overlayY: 'top',    offsetY: 8  },
         ]),
       scrollStrategy: this.overlay.scrollStrategies.reposition(),
-      width: '220px',
+      width: '210px',
     });
 
     const pane = this.overlayRef.overlayElement;
     pane.style.zIndex = '1200';
 
-    const portal = new ComponentPortal(TalentCardComponent, this.viewContainerRef);
+    const portal = new ComponentPortal(CombatLogCardComponent, this.viewContainerRef);
     const ref = this.overlayRef.attach(portal);
-    ref.setInput('talent', this.talent);
+    ref.setInput('entry', this.entry);
+    ref.setInput('player', this.hoverPlayer);
+    ref.setInput('enemy', this.hoverEnemy);
 
     pane.addEventListener('mouseenter', () => this.cancelClose());
     pane.addEventListener('mouseleave', () => this.scheduleClose());

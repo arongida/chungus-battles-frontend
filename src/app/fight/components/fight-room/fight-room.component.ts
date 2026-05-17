@@ -20,6 +20,7 @@ import {
   VersionWinMessage,
   EndBattleMessage,
 } from '../../../models/types/MessageTypes';
+import { CombatLogEntry } from '../../../models/types/CombatLogEntry';
 import { CombatLogComponent } from '../combat-log/combat-log.component';
 import { DraftService } from '../../../draft/services/draft.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -57,7 +58,6 @@ function coercePlayer(src: any): Player {
     MatIconModule,
     RoundInfoComponent,
     CharacterDetailsComponent,
-    SkillIconsComponent,
   ],
   templateUrl: './fight-room.component.html',
   styleUrl: './fight-room.component.scss',
@@ -65,7 +65,7 @@ function coercePlayer(src: any): Player {
 export class FightRoomComponent implements OnInit {
   player = signal<Player | null>(null, { equal: () => false });
   enemy = signal<Player | null>(null, { equal: () => false });
-  combatLog = signal('');
+  entries = signal<CombatLogEntry[]>([]);
   gameOver = false;
   battleOver = false;
   playerBeingHit = signal(false);
@@ -75,8 +75,10 @@ export class FightRoomComponent implements OnInit {
   topWin = signal(false);
   battleResultVisible = signal(false);
   battleResult = signal<'win' | 'lose' | 'draw'>('win');
+  battleResultMinimized = signal(false);
   gameOverVisible = signal(false);
   gameOverMessage = signal('');
+  gameOverMinimized = signal(false);
 
   // Set true by handleVersionWinContinue so the server's follow-up end_battle
   // navigates directly to draft without showing the battle result modal.
@@ -112,6 +114,7 @@ export class FightRoomComponent implements OnInit {
             localStorage.setItem('battleEndState', JSON.stringify({ type: 'top_win', message }));
           } else {
             this.gameOverMessage.set(message);
+            this.gameOverMinimized.set(false);
             this.gameOverVisible.set(true);
             localStorage.setItem('battleEndState', JSON.stringify({ type: 'game_over', message }));
           }
@@ -132,6 +135,7 @@ export class FightRoomComponent implements OnInit {
           }
 
           this.battleResult.set(result);
+          this.battleResultMinimized.set(false);
           this.battleResultVisible.set(true);
         });
 
@@ -142,9 +146,11 @@ export class FightRoomComponent implements OnInit {
           localStorage.setItem('battleEndState', JSON.stringify({ type: 'version_win', wins: message.wins }));
         });
 
-        room.onMessage('combat_log', (message: string) => {
-          const formatted = message.replace(/(\d*\.\d+)/g, (match) => parseFloat(match).toFixed(2));
-          this.combatLog.update(log => log + formatted + '\n');
+        room.onMessage('combat_log', (msg: CombatLogEntry) => {
+          this.entries.update(prev => {
+            const next = [...prev, msg];
+            return next.length > 200 ? next.slice(-200) : next;
+          });
         });
 
         room.onMessage('attack', (message: number) => {
@@ -241,10 +247,12 @@ export class FightRoomComponent implements OnInit {
         this.gameOver = true;
         this.battleOver = true;
         this.gameOverMessage.set(state.message ?? 'Game over');
+        this.gameOverMinimized.set(false);
         this.gameOverVisible.set(true);
       } else if (state.type === 'end_battle') {
         this.battleOver = true;
         this.battleResult.set((state.result as 'win' | 'lose' | 'draw') ?? 'win');
+        this.battleResultMinimized.set(false);
         this.battleResultVisible.set(true);
       } else if (state.type === 'version_win') {
         this.battleOver = true;

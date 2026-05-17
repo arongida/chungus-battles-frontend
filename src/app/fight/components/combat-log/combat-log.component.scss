@@ -1,0 +1,62 @@
+.cl-panel {
+  background: var(--cm-bg);
+  border: 1px solid var(--cm-border);
+  border-radius: 6px;
+  box-shadow: var(--cm-shadow);
+  display: flex;
+  flex-direction: column;
+  width: 22rem;
+  height: 16rem;
+}
+
+.cl-header {
+  padding: 5px 12px;
+  background: var(--cm-header-bg);
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--cm-amber);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  flex-shrink: 0;
+}
+
+.cl-divider {
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--cm-divider), transparent);
+  flex-shrink: 0;
+}
+
+.cl-scroll {
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--cm-amber-dark) transparent;
+}
+
+.cl-row {
+  padding: 3px 10px;
+  font-size: 0.7rem;
+  color: var(--cm-text);
+  border-bottom: 1px solid rgba(180, 120, 30, 0.08);
+  border-left: 2px solid transparent;
+  cursor: default;
+  transition: background 80ms;
+  line-height: 1.5;
+
+  &:hover {
+    background: rgba(245, 158, 11, 0.06);
+  }
+
+  &--attack       { border-left-color: #ef4444; }
+  &--dodge        { border-left-color: #60a5fa; }
+  &--talent       { border-left-color: #a78bfa; }
+  &--item         { border-left-color: #f59e0b; }
+  &--heal         { border-left-color: #4ade80; }
+  &--leech        { border-left-color: #f97316; }
+  &--regen        { border-left-color: #fb923c; }
+  &--poison_tick,
+  &--poison_apply { border-left-color: #86efac; }
+  &--reward       { border-left-color: #fde047; }
+  &--end_burn     { border-left-color: #dc2626; }
+  &--result       { border-left-color: #f59e0b; font-weight: 600; color: var(--cm-amber-light); }
+}

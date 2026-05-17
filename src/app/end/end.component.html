@@ -91,37 +91,52 @@
 
     <div class="build-divider"></div>
 
+    <!-- Row 1: Avatar + Stats -->
     <div class="build-panel-body">
-
       <div class="build-portrait">
         <img [src]="panelBuild()?.avatarUrl" alt="Portrait" />
       </div>
-
-      <div class="build-equipment">
-        @for (row of equipmentLayout; track $index) {
-          <div class="equip-row">
-            @for (slot of row; track slot) {
-              @if (getEquippedItem(slot); as item) {
-                <div class="equip-slot" [style.border-color]="rarityBorderColor(item)"
-                     [appItemHoverCard]="item" [hoverPlayer]="panelBuild()!">
-                  <img [src]="item.image" [alt]="item.name" />
-                </div>
-              } @else {
-                <div class="equip-slot equip-slot-empty"></div>
-              }
-            }
-          </div>
-        }
+      <div class="bp-stats" [appInfoHint]="panelStatsHint">
+        <div class="col-span-2">
+          <div class="bp-stat"><span class="text-pink-500">❤️ {{ panelBuild()!.maxHp | number:'1.0-0' }}</span></div>
+        </div>
+        <div class="bp-stat"><span class="text-red-400">🎯 +{{ panelBuild()!.accuracy | number:'1.0-1' }}</span></div>
+        <div class="bp-stat"><span class="text-red-400">⚔️ +{{ panelBuild()!.strength | number:'1.0-1' }}</span></div>
+        <div class="bp-stat">
+          <span class="text-blue-400">⏩ {{ (panelBuild()!.attackSpeed - 1) >= 0 ? '+' : '' }}{{ (panelBuild()!.attackSpeed - 1) * 100 | number:'1.0-0' }}%</span>
+        </div>
+        <div class="bp-stat"><span class="text-yellow-400">💰 +{{ panelBuild()!.income }}</span></div>
+        <div class="bp-stat"><span class="text-orange-400">🧪 {{ panelBuild()!.hpRegen | number:'1.0-3' }}</span></div>
+        <div class="bp-stat"><span class="text-green-400">🔰 {{ panelBuild()!.flatDmgReduction | number:'1.3-3' }}</span></div>
+        <div class="bp-stat"><span class="text-green-600">🛡️ {{ panelBuild()!.defense | number:'1.0-2' }}</span></div>
+        <div class="bp-stat"><span class="text-green-400">🦵 {{ panelBuild()!.dodgeRate | number:'1.0-2' }}</span></div>
       </div>
-
     </div>
 
+    <!-- Row 2: Talents -->
     @if (panelBuild()?.talents?.length) {
       <div class="build-divider"></div>
       <div class="build-talents">
-        <app-skill-icons [player]="panelBuild()!" [row]="true"></app-skill-icons>
+        <app-skill-icons [player]="panelBuild()!" [row]="true" [iconSizePx]="80"></app-skill-icons>
       </div>
     }
+
+    <!-- Row 3: Equipped items -->
+    <div class="build-divider"></div>
+    <div class="build-equipment-row">
+      @for (slot of equipmentLayout[0]; track slot) {
+        @if (getEquippedItem(slot); as item) {
+          <div class="equip-slot" [style.border-color]="rarityBorderColor(item)"
+               [appItemHoverCard]="item" [hoverPlayer]="panelBuild()!">
+            <img [src]="item.image" [alt]="item.name" />
+          </div>
+        } @else {
+          <div class="equip-slot equip-slot-empty">
+            <span class="equip-slot-icon">{{ slotIcons[slot] }}</span>
+          </div>
+        }
+      }
+    </div>
 
   </div>
 }

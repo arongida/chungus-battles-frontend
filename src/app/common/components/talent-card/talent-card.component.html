@@ -42,4 +42,25 @@
 
   </div>
 
+  @if (hasCombatStats()) {
+    <div class="tc-divider tc-divider--inner"></div>
+    <div class="tc-body tc-stats-section">
+      <p class="tc-stats-header">This fight</p>
+      @if (talent.statActivations) { <p class="tc-stat tc-stat--neutral">⚡ {{ talent.statActivations }}× activated</p> }
+      @if (talent.statDamageDealt)  { <p class="tc-stat tc-stat--debuff">⚔️ {{ fmt2(talent.statDamageDealt) }} dmg dealt</p> }
+      @if (talent.statHealingDone)  { <p class="tc-stat tc-stat--buff">💚 {{ fmt2(talent.statHealingDone) }} healed</p> }
+      @if (talent.statGoldGained)   { <p class="tc-stat tc-stat--gold">🟡 {{ fmt2(talent.statGoldGained) }} gold</p> }
+    </div>
+  }
+  @if (hasTotalStats()) {
+    <div class="tc-divider tc-divider--inner"></div>
+    <div class="tc-body tc-stats-section">
+      <p class="tc-stats-header">All time</p>
+      @if (talent.totalActivations) { <p class="tc-stat tc-stat--neutral">⚡ {{ talent.totalActivations }}× activated</p> }
+      @if (talent.totalDamageDealt)  { <p class="tc-stat tc-stat--debuff">⚔️ {{ fmt2(talent.totalDamageDealt) }} dmg dealt</p> }
+      @if (talent.totalHealingDone)  { <p class="tc-stat tc-stat--buff">💚 {{ fmt2(talent.totalHealingDone) }} healed</p> }
+      @if (talent.totalGoldGained)   { <p class="tc-stat tc-stat--gold">🟡 {{ fmt2(talent.totalGoldGained) }} gold</p> }
+    </div>
+  }
+
 </div>

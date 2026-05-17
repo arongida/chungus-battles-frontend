@@ -1,0 +1,82 @@
+<div class="clc-wrap">
+  <div class="clc-header">
+    <span class="clc-title">{{ kindLabel.icon }} {{ kindLabel.label }}</span>
+  </div>
+  <div class="clc-divider"></div>
+  <div class="clc-body">
+
+    @if (entry.attackerId !== undefined) {
+      <div class="clc-row">
+        <span class="clc-label">From</span>
+        <span class="clc-val">{{ getName(entry.attackerId) }}</span>
+      </div>
+    }
+    @if (entry.defenderId !== undefined) {
+      <div class="clc-row">
+        <span class="clc-label">To</span>
+        <span class="clc-val">{{ getName(entry.defenderId) }}</span>
+      </div>
+    }
+    @if (entry.weaponItemId !== undefined) {
+      <div class="clc-row">
+        <span class="clc-label">Weapon</span>
+        <span class="clc-val">{{ getWeaponName() }}</span>
+      </div>
+    }
+    @if (entry.talentId !== undefined) {
+      <div class="clc-row">
+        <span class="clc-label">Talent</span>
+        <span class="clc-val">{{ getTalentName() }}</span>
+      </div>
+    }
+    @if (entry.itemId !== undefined && entry.weaponItemId === undefined) {
+      <div class="clc-row">
+        <span class="clc-label">Item</span>
+        <span class="clc-val">{{ getItemName() }}</span>
+      </div>
+    }
+    @if (entry.rolledDamage !== undefined) {
+      <div class="clc-row">
+        <span class="clc-label">Roll</span>
+        <span class="clc-val text-orange-300">{{ fmt(entry.rolledDamage) }}</span>
+      </div>
+    }
+    @if (entry.mitigatedDamage !== undefined) {
+      <div class="clc-row">
+        <span class="clc-label">Blocked</span>
+        <span class="clc-val text-green-400">-{{ fmt(entry.mitigatedDamage) }}</span>
+      </div>
+    }
+    @if (entry.damage !== undefined) {
+      <div class="clc-row">
+        <span class="clc-label">Damage</span>
+        <span class="clc-val text-red-400">{{ fmt(entry.damage) }}</span>
+      </div>
+    }
+    @if (entry.healing !== undefined) {
+      <div class="clc-row">
+        <span class="clc-label">Healing</span>
+        <span class="clc-val text-green-400">+{{ fmt(entry.healing) }}</span>
+      </div>
+    }
+    @if (entry.defenderHpAfter !== undefined) {
+      <div class="clc-row">
+        <span class="clc-label">HP after</span>
+        <span class="clc-val text-pink-400">{{ fmt(entry.defenderHpAfter) }}</span>
+      </div>
+    }
+    @if (entry.poisonStacks !== undefined) {
+      <div class="clc-row">
+        <span class="clc-label">Stacks</span>
+        <span class="clc-val text-lime-400">{{ entry.poisonStacks }}</span>
+      </div>
+    }
+    @if (entry.goldDelta !== undefined) {
+      <div class="clc-row">
+        <span class="clc-label">Gold</span>
+        <span class="clc-val text-yellow-400">+{{ entry.goldDelta }} 🟡</span>
+      </div>
+    }
+
+  </div>
+</div>

@@ -5,11 +5,16 @@
 .tc-wrap {
   font-family: inherit;
   color: #cbd5e1;
+  background: rgba(10, 10, 15, 0.97);
+  border: 1px solid rgba(180, 120, 30, 0.5);
+  border-radius: 6px;
+  box-shadow: 0 0 20px rgba(180, 120, 30, 0.15), 0 4px 24px rgba(0, 0, 0, 0.8);
+  overflow: hidden;
 }
 
 .tc-header {
   padding: 8px 12px 6px;
-  background: rgba(180, 120, 30, 0.1);
+  background: rgba(180, 120, 30, 0.12);
 }
 
 .tc-name {
@@ -55,6 +60,20 @@
   font-size: 12px;
   line-height: 1.4;
 
-  &--buff   { color: #86efac; }
-  &--debuff { color: #94a3b8; }
+  &--buff    { color: #86efac; }
+  &--debuff  { color: #94a3b8; }
+  &--neutral { color: #cbd5e1; }
+  &--gold    { color: #fde047; }
+}
+
+.tc-stats-section {
+  padding-top: 4px;
+}
+
+.tc-stats-header {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #6b7280;
+  margin-bottom: 2px;
 }

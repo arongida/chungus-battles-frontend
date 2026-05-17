@@ -1,5 +1,7 @@
 import { Component, ElementRef, ViewChild, Renderer2, AfterViewInit, OnDestroy, OnInit, signal, PLATFORM_ID, Inject } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import { DecimalPipe, isPlatformBrowser } from '@angular/common';
+import { InfoHintDirective } from '../common/directives/info-hint.directive';
+import { InfoContent } from '../common/models/info-content';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Player } from '../models/colyseus-schema/PlayerSchema';
 import Item from '../models/colyseus-schema/ItemSchema';
@@ -16,7 +18,7 @@ import { buildPlayerFromData } from '../common/utils/player-schema-builder';
 @Component({
   selector: 'app-end',
   standalone: true,
-  imports: [MatButtonModule, MatIconModule, ItemHoverCardDirective, SkillIconsComponent],
+  imports: [MatButtonModule, MatIconModule, ItemHoverCardDirective, SkillIconsComponent, DecimalPipe, InfoHintDirective],
   templateUrl: './end.component.html',
   styleUrl: './end.component.scss',
 })
@@ -37,10 +39,15 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
   panelHovered = signal(false);
 
   readonly equipmentLayout = [
-    [EquipSlot.HELMET],
-    [EquipSlot.MAIN_HAND, EquipSlot.OFF_HAND],
-    [EquipSlot.ARMOR],
+    [EquipSlot.HELMET, EquipSlot.MAIN_HAND, EquipSlot.OFF_HAND, EquipSlot.ARMOR],
   ];
+
+  readonly slotIcons: Record<string, string> = {
+    [EquipSlot.HELMET]:    '🪖',
+    [EquipSlot.MAIN_HAND]: '⚔️',
+    [EquipSlot.OFF_HAND]:  '🛡️',
+    [EquipSlot.ARMOR]:     '🧥',
+  };
 
   @ViewChild('fallingItemsContainer', { static: false })
   fallingItemsContainer!: ElementRef<HTMLDivElement>;
@@ -141,6 +148,27 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
     } finally {
       this.panelLoading.set(false);
     }
+  }
+
+  get panelStatsHint(): InfoContent {
+    const p = this.panelBuild();
+    if (!p) return { title: 'Stats', entries: [] };
+    const dodgeChance = Math.round(100 * (1 - 100 / (100 + p.dodgeRate)));
+    const defenseReduction = Math.round(100 * (1 - 100 / (100 + p.defense)));
+    return {
+      title: `${p.name}'s Stats`,
+      entries: [
+        { icon: '❤️', label: 'Health',              text: `${Math.round(p.maxHp)} HP total.`,                                                              color: 'text-pink-500' },
+        { icon: '🎯', label: 'Accuracy',             text: `+${p.accuracy?.toFixed(1)} added to weapon's minimum damage roll.`,                             color: 'text-red-400' },
+        { icon: '⚔️', label: 'Strength',             text: `+${p.strength?.toFixed(1)} added to weapon's maximum damage roll.`,                             color: 'text-red-400' },
+        { icon: '⏩', label: 'Speed Bonus',           text: `${((p.attackSpeed - 1) * 100)?.toFixed(0)}% multiplier applied to all weapon attack speeds.`,   color: 'text-blue-400' },
+        { icon: '💰', label: 'Income',               text: `+${p.income} bonus gold earned at the end of each fight.`,                                      color: 'text-yellow-400' },
+        { icon: '🧪', label: 'HP Regen',             text: `Recover ${p.hpRegen?.toFixed(3)} HP every second during battle.`,                               color: 'text-orange-400' },
+        { icon: '🔰', label: 'Flat Damage Reduction',text: `Reduces all incoming damage by ${p.flatDmgReduction?.toFixed(3)} flat.`,                        color: 'text-green-400' },
+        { icon: '🛡️', label: 'Defense',              text: `Reduces incoming damage by ${defenseReduction}% (DR formula, ${p.defense?.toFixed(2)} defense).`, color: 'text-green-400' },
+        { icon: '🦵', label: 'Dodge',                text: `${dodgeChance}% chance to completely dodge an incoming attack.`,                                 color: 'text-green-400' },
+      ],
+    };
   }
 
   ngOnInit() {

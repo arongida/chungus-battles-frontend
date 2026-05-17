@@ -23,6 +23,7 @@ import {
 } from '../../../models/types/ItemTypes';
 import { InfoHintDirective } from '../../directives/info-hint.directive';
 import { InfoContent } from '../../models/info-content';
+import { SkillIconsComponent } from '../skill-icons/skill-icons.component';
 
 
 @Component({
@@ -36,6 +37,7 @@ import { InfoContent } from '../../models/info-content';
     ItemHoverCardDirective,
     TitleCasePipe,
     InfoHintDirective,
+    SkillIconsComponent,
   ],
   templateUrl: './character-details.component.html',
   styleUrl: './character-details.component.scss',

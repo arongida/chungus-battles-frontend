@@ -27,7 +27,7 @@ import { Router } from '@angular/router';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { triggerTalentActivation, triggerAvatarHit, triggerItemActivation, triggerShowDamageNumber, triggerShowHealingNumber } from '../../../common/TriggerAnimations';
+import { triggerTalentActivation, triggerAvatarHit, triggerItemActivation, triggerShowDamageNumber, triggerShowHealingNumber, triggerHpDamageFlash, triggerHpHealFlash } from '../../../common/TriggerAnimations';
 import { RoundInfoComponent } from '../../../common/components/round-info/round-info.component';
 import { CharacterDetailsComponent } from '../../../common/components/character-details/character-details.component';
 import { SkillIconsComponent } from '../../../common/components/skill-icons/skill-icons.component';
@@ -156,6 +156,7 @@ export class FightRoomComponent implements OnInit {
         room.onMessage('damage', (message: DamageMessage) => {
           if (this.player() && this.enemy()) {
             triggerShowDamageNumber(this.renderer, this.platformId, Math.round(message.damage), message.playerId);
+            triggerHpDamageFlash(message.playerId);
             this.triggerDamagedAvatarImage(message.playerId);
           }
         });
@@ -163,6 +164,7 @@ export class FightRoomComponent implements OnInit {
         room.onMessage('healing', (message: HealingMessage) => {
           if (this.player() && this.enemy()) {
             triggerShowHealingNumber(this.renderer, this.platformId, Math.round(message.healing), message.playerId);
+            triggerHpHealFlash(message.playerId);
           }
         });
 

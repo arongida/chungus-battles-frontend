@@ -3,16 +3,10 @@ import {
   Player,
 } from '../../../models/colyseus-schema/PlayerSchema';
 import {
-  MatTooltipModule,
-} from '@angular/material/tooltip';
-import {
   DecimalPipe,
   NgClass,
   TitleCasePipe,
 } from '@angular/common';
-import {
-  MatDividerModule,
-} from '@angular/material/divider';
 import {
   MatProgressBarModule,
 } from '@angular/material/progress-bar';
@@ -25,10 +19,6 @@ import {
 } from '../../../draft/services/draft.service';
 import { MatButtonModule } from '@angular/material/button';
 import {
-  MatTabChangeEvent,
-  MatTabsModule,
-} from '@angular/material/tabs';
-import {
   EquipSlot, ItemRarity,
 } from '../../../models/types/ItemTypes';
 import { InfoHintDirective } from '../../directives/info-hint.directive';
@@ -40,14 +30,11 @@ import { InfoContent } from '../../models/info-content';
   standalone: true,
   imports: [
     MatProgressBarModule,
-    MatTooltipModule,
     DecimalPipe,
-    MatDividerModule,
     NgClass,
     MatButtonModule,
     ItemHoverCardDirective,
     TitleCasePipe,
-    MatTabsModule,
     InfoHintDirective,
   ],
   templateUrl: './character-details.component.html',
@@ -60,14 +47,27 @@ export class CharacterDetailsComponent {
   @Input() showStats: boolean = true;
   playerBeingHit = input(false);
   enemyBeingHit = input(false);
-  selectedCategory: string = 'inventory';
-  equipSlotsOptions = Object.values(EquipSlot) as EquipSlot[];
-  equipSlot = EquipSlot;
+
   equipmentLayout = [
-    [EquipSlot.HELMET],
-    [EquipSlot.MAIN_HAND, EquipSlot.OFF_HAND],
-    [EquipSlot.ARMOR]
+    [EquipSlot.HELMET, EquipSlot.MAIN_HAND, EquipSlot.OFF_HAND, EquipSlot.ARMOR],
   ];
+
+  readonly slotIcons: Record<string, string> = {
+    [EquipSlot.HELMET]:    '🪖',
+    [EquipSlot.MAIN_HAND]: '⚔️',
+    [EquipSlot.OFF_HAND]:  '🛡️',
+    [EquipSlot.ARMOR]:     '🧥',
+  };
+
+  readonly inventoryCategories = [
+    { label: 'All',     value: 'all' },
+    { label: 'Helmets', value: 'helmet' },
+    { label: 'Weapons', value: 'weapon' },
+    { label: 'Armors',  value: 'armor' },
+    { label: 'Shields', value: 'shield' },
+  ];
+
+  selectedCategory = 'all';
 
   constructor(public draftService: DraftService) { }
 
@@ -96,29 +96,11 @@ export class CharacterDetailsComponent {
     return this.player.hp > 0 && this.player.hp < 1 ? 1 : this.player.hp;
   }
 
-  selectCategory(event: MatTabChangeEvent) {
-    const categoryName = event.tab.textLabel.toLocaleLowerCase().substring(0, event.tab.textLabel.length - 1);
-    if (categoryName === 'al') {
-      this.selectedCategory = 'inventory';
-    } else {
-      this.selectedCategory = categoryName;
-    }
-  }
-
-  onTabChange(event: MatTabChangeEvent) {
-    this.selectedCategory = event.tab.textLabel.toLocaleLowerCase();
-  }
-
-  getEquipmentTypeFromInventory(itemType: string) {
-    if (itemType === 'inventory') {
+  getInventoryFiltered() {
+    if (this.selectedCategory === 'all') {
       return this.player.inventory;
     }
-    //else if (itemType === "equipped") {
-    //   return Array.from(this.player.equippedItems.values());
-    // }
-    else {
-      return this.player.inventory.filter(item => item.type === itemType);
-    }
+    return this.player.inventory.filter(item => item.type === this.selectedCategory);
   }
 
   sellSelectedItem(item: Item) {
@@ -142,21 +124,13 @@ export class CharacterDetailsComponent {
     });
   }
 
-  getItemPriceRounded(item: Item) {
-    return Math.floor(item.price * 0.7 * item.rarity);
-  }
-
   getRarityBorder(rarity: ItemRarity | string): string {
     switch (rarity) {
-      case ItemRarity.RARE: return '2px solid #60a5fa';
-      case ItemRarity.EPIC: return '2px solid #c084fc';
-      case ItemRarity.LEGENDARY: return '2px solid #fb923c';
-      default: return '2px solid #92400e';
+      case ItemRarity.RARE: return '3px solid #60a5fa';
+      case ItemRarity.EPIC: return '3px solid #c084fc';
+      case ItemRarity.LEGENDARY: return '3px solid #fb923c';
+      default: return '3px solid #92400e';
     }
-  }
-
-  getItemBackground(item?: Item) {
-    return item ? `assets/level_${item.tier < 10 ? item.tier : item.tier - 90}_glow.png` : `assets/level_1_glow.png`;
   }
 
   getItemAtSlot(slot: EquipSlot) {
@@ -169,7 +143,7 @@ export class CharacterDetailsComponent {
 
     el.classList.add('slot-activated');
     el.classList.remove('slot-pulse');
-    void el.offsetWidth; // force reflow to re-trigger animation
+    void el.offsetWidth;
     el.classList.add('slot-pulse');
 
     setTimeout(() => el.classList.remove('slot-pulse'), 350);

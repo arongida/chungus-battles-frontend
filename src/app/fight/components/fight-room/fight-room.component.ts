@@ -26,7 +26,7 @@ import { Router } from '@angular/router';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { triggerTalentActivation, triggerAvatarHit, triggerItemActivation } from '../../../common/TriggerAnimations';
+import { triggerTalentActivation, triggerAvatarHit, triggerItemActivation, triggerShowDamageNumber, triggerShowHealingNumber } from '../../../common/TriggerAnimations';
 import { RoundInfoComponent } from '../../../common/components/round-info/round-info.component';
 import { CharacterDetailsComponent } from '../../../common/components/character-details/character-details.component';
 import { SkillIconsComponent } from '../../../common/components/skill-icons/skill-icons.component';
@@ -138,14 +138,14 @@ export class FightRoomComponent implements OnInit{
 
         room.onMessage('damage', (message: DamageMessage) => {
           if (this.player() && this.enemy()) {
-            this.triggerShowDamageNumber(Math.round(message.damage), message.playerId);
+            triggerShowDamageNumber(this.renderer, this.platformId, Math.round(message.damage), message.playerId);
             this.triggerDamagedAvatarImage(message.playerId);
           }
         });
 
         room.onMessage('healing', (message: HealingMessage) => {
           if (this.player() && this.enemy()) {
-            this.triggerShowHealingNumber(Math.round(message.healing), message.playerId);
+            triggerShowHealingNumber(this.renderer, this.platformId, Math.round(message.healing), message.playerId);
           }
         });
 
@@ -269,34 +269,6 @@ export class FightRoomComponent implements OnInit{
     }
   }
 
-  triggerShowHealingNumber(healing: number, playerId: number) {
-    if (!isPlatformBrowser(this.platformId)) {
-      return;
-    }
-
-    const healingNumbersContainer = document.getElementById(`damage-numbers-${playerId}`);
-    if (!healingNumbersContainer) {
-      console.warn(`Healing container not found for playerId: ${playerId}`);
-      return;
-    }
-
-    const healingNumber = this.renderer.createElement('div');
-    this.renderer.addClass(healingNumber, 'healing-number');
-
-    const textNode = this.renderer.createText(`+${healing}`);
-    this.renderer.appendChild(healingNumber, textNode);
-
-    this.renderer.setStyle(healingNumber, 'left', `${Math.random() * 100}%`);
-
-    this.renderer.appendChild(healingNumbersContainer, healingNumber);
-
-    setTimeout(() => {
-      if (healingNumber.parentNode === healingNumbersContainer) {
-        this.renderer.removeChild(healingNumbersContainer, healingNumber);
-      }
-    }, 3000);
-  }
-
   triggerDamagedAvatarImage(damagedPlayerId: number) {
     triggerAvatarHit(damagedPlayerId);
     if (damagedPlayerId === Number(localStorage.getItem("playerId"))) {
@@ -308,42 +280,10 @@ export class FightRoomComponent implements OnInit{
     }
   }
 
-  triggerShowDamageNumber(damage: number, defenderId: number) {
-    if (!isPlatformBrowser(this.platformId)) {
-      return;
-    }
-
-    const damageNumbersContainer = document.getElementById(`damage-numbers-${defenderId}`);
-    if (!damageNumbersContainer) {
-      console.warn(`Damage container not found for defenderId: ${defenderId}`);
-      return;
-    }
-
-    const damageNumber = this.renderer.createElement('div');
-    this.renderer.addClass(damageNumber, 'damage-number');
-
-    const textNode = this.renderer.createText(`-${damage}`);
-    this.renderer.appendChild(damageNumber, textNode);
-
-    this.renderer.setStyle(damageNumber, 'left', `${Math.random() * 100}%`);
-
-    const minSize = 16;
-    const scaleFactor = 0.5;
-    this.renderer.setStyle(damageNumber, 'fontSize', `${minSize + damage * scaleFactor}px`);
-
-    this.renderer.appendChild(damageNumbersContainer, damageNumber);
-
-    setTimeout(() => {
-      if (damageNumber.parentNode === damageNumbersContainer) { // Ensure it's still parented correctly
-        this.renderer.removeChild(damageNumbersContainer, damageNumber);
-      }
-    }, 3000);
-  }
-
   private lastAttackSoundTime = 0;
   private readonly ATTACK_SOUND_INTERVAL_MS = 125; // max ~8 sounds/sec
 
-  triggerAttack(attackerId: number) {
+  triggerAttack(_attackerId: number) {
     if (!isPlatformBrowser(this.platformId)) {
       return;
     }

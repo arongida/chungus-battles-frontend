@@ -2,7 +2,7 @@ import { Directive, ElementRef, HostListener, Input, OnDestroy, ViewContainerRef
 import { Overlay, OverlayRef } from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
 import { Talent } from '../../models/colyseus-schema/TalentSchema';
-import { TalentCardComponent } from '../talent-card/talent-card.component';
+import { TalentCardComponent } from '../components/talent-card/talent-card.component';
 
 @Directive({
   selector: '[appTalentHoverCard]',

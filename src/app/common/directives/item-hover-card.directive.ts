@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { Overlay, OverlayRef } from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
-import { ItemCardComponent } from '../item-card/item-card.component';
+import { ItemCardComponent } from '../components/item-card/item-card.component';
 import Item from '../../models/colyseus-schema/ItemSchema';
 import { Player } from '../../models/colyseus-schema/PlayerSchema';
 

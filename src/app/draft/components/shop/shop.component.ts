@@ -24,7 +24,7 @@ import {
 } from '../../../common/services/sounds.service';
 import {
   ItemCardComponent,
-} from '../../../common/item-card/item-card.component';
+} from '../../../common/components/item-card/item-card.component';
 import {
   CharacterDetailsService,
 } from '../../../common/services/character-details.service';

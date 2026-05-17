@@ -17,7 +17,7 @@
           [ngClass]="{'opacity-0':item.sold,'pointer-events-none':item.sold}"
           [style.background-image]="'url(' + getItemImage(item) + ')'"
           id="item-{{ $index }}"
-          class="w-40 h-56 sm:w-44 sm:h-60 md:w-52 md:h-72 lg:w-60 lg:h-80 items-center bg-cover bg-center shadow-amber-700"
+          class="w-28 h-40 sm:w-44 sm:h-60 md:w-52 md:h-72 lg:w-60 lg:h-80 items-center bg-cover bg-center shadow-amber-700"
           (mouseenter)="onMouseEnterItem(item)"
           (mouseleave)="onMouseLeaveItem(item)"
           [appInfoHint]="getItemInfoHint(item)"

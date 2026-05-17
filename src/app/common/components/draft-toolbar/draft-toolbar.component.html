@@ -1,7 +1,8 @@
 <mat-toolbar class="w-screen fixed top-0 z-10">
   <div class="flex justify-between gap-1 sm:gap-4 items-center">
     <img class="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover hover:border-white hover:border shrink-0"
-      [ngClass]="{'border': showCharacterDetails()}" src="{{player.avatarUrl.replace('01','transparent')}}" alt="player"
+      [ngClass]="{'border': showCharacterDetails(), 'pointer-events-none': isFighting()}"
+      src="{{player.avatarUrl.replace('01','transparent')}}" alt="player"
       (click)="switchCharacterDetails()">
     <span class="text-center text-sm max-w-16 truncate sm:max-w-none sm:text-base">{{player.name}}</span>
     <span class="text-xs sm:text-sm text-center shrink-0 cursor-default" [appInfoHint]="goldHint">

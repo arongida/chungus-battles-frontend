@@ -3,7 +3,8 @@
     @for (talent of player.talents; track $index) {
     <div class="p-1 rounded-sm cursor-default" [appTalentHoverCard]="talent"
       id="talent-{{talent.talentId}}-{{player.playerId}}">
-      <img [src]="talent.image" class="w-7 h-7 sm:w-14 sm:h-14 object-contain" />
+      <img [src]="talent.image" class="object-contain"
+           [style.width.px]="iconSizePx" [style.height.px]="iconSizePx" />
     </div>
     }
   </div>

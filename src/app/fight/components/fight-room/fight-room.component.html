@@ -12,36 +12,30 @@
   </div>
   }
 
-  @if (enemy()) {
-  <div class="fixed top-16 flex items-start justify-center w-screen py-2">
-
-    <app-character-details [combat]="true" [player]="enemy()!" [enemy]="true" [playerBeingHit]="playerBeingHit()"
-      [enemyBeingHit]="enemyBeingHit()" class="min-w-fit max-w-fit"></app-character-details>
-
-    <app-skill-icons class="px-2 z-10" [player]="enemy()!"></app-skill-icons>
-
+  <!-- Both character panels centered vertically, close together -->
+  <div class="fixed top-16 bottom-0 left-0 right-0 flex flex-col items-center justify-center gap-4 pointer-events-none z-10">
+    @if (enemy()) {
+      <div class="pointer-events-auto">
+        <app-character-details [combat]="true" [player]="enemy()!" [enemy]="true"
+          [playerBeingHit]="playerBeingHit()" [enemyBeingHit]="enemyBeingHit()">
+        </app-character-details>
+      </div>
+    }
+    @if (player()) {
+      <div class="pointer-events-auto">
+        <app-character-details [combat]="true" [player]="player()!" [playerBeingHit]="playerBeingHit()"
+          [enemyBeingHit]="enemyBeingHit()">
+        </app-character-details>
+      </div>
+    }
   </div>
-  }
-
 
   <!-- Combat log + toggle button (bottom-right corner) -->
   <div class="lg:fixed lg:bottom-4 lg:right-4 z-20">
     <div class="scale-75 lg:scale-100">
-      <app-combat-log [combatLog]="combatLog()"></app-combat-log>
+      <app-combat-log [entries]="entries()" [player]="player()!" [enemy]="enemy()!"></app-combat-log>
     </div>
   </div>
-
-
-  @if (player()) {
-  <div class="fixed bottom-2 flex items-end justify-center w-screen py-2">
-    <app-skill-icons class="px-2 z-10" [player]="player()!"></app-skill-icons>
-    <app-character-details [combat]="true" [player]="player()!" [playerBeingHit]="playerBeingHit()"
-      [enemyBeingHit]="enemyBeingHit()" class="min-w-fit max-w-fit"></app-character-details>
-  </div>
-
-  }
-
-
 </div>
 
 
@@ -50,9 +44,10 @@
 }
 
 <!-- Battle result (win / loss / draw) -->
-@if (battleResultVisible()) {
+@if (battleResultVisible() && !battleResultMinimized()) {
 <div class="fixed inset-0 z-50 flex items-center justify-center chungus-backdrop">
-  <div class="chungus-card text-center">
+  <div class="chungus-card text-center relative">
+    <button class="end-modal-dismiss" (click)="battleResultMinimized.set(true)" title="Dismiss to review combat log">×</button>
     <div class="chungus-modal-icon">
       @if (battleResult() === 'win') { ⚔️ }
       @if (battleResult() === 'lose') { 🛡️ }
@@ -74,11 +69,22 @@
   </div>
 </div>
 }
+@if (battleResultVisible() && battleResultMinimized()) {
+<div class="fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
+  <button class="end-pill" (click)="battleResultMinimized.set(false)">
+    @if (battleResult() === 'win') { ⚔️ Round Won }
+    @if (battleResult() === 'lose') { 🛡️ Round Lost }
+    @if (battleResult() === 'draw') { ⚡ Draw }
+    — tap to continue
+  </button>
+</div>
+}
 
 <!-- Run over (game_over) -->
-@if (gameOverVisible()) {
+@if (gameOverVisible() && !gameOverMinimized()) {
 <div class="fixed inset-0 z-50 flex items-center justify-center chungus-backdrop">
-  <div class="chungus-card text-center">
+  <div class="chungus-card text-center relative">
+    <button class="end-modal-dismiss" (click)="gameOverMinimized.set(true)" title="Dismiss to review combat log">×</button>
     <div class="chungus-modal-icon game-over-icon">💀</div>
     <h2 class="chungus-modal-title">Run Over</h2>
     <p class="chungus-modal-body">{{ gameOverMessage() }}</p>
@@ -86,6 +92,13 @@
       View Your Results
     </button>
   </div>
+</div>
+}
+@if (gameOverVisible() && gameOverMinimized()) {
+<div class="fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
+  <button class="end-pill" (click)="gameOverMinimized.set(false)">
+    💀 Run Over — tap to continue
+  </button>
 </div>
 }
 

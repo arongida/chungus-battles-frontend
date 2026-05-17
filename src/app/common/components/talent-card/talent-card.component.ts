@@ -34,6 +34,18 @@ export class TalentCardComponent {
     return pct > 0 ? `+${pct}%` : `${pct}%`;
   }
 
+  hasCombatStats(): boolean {
+    return !!(this.talent.statActivations || this.talent.statDamageDealt || this.talent.statHealingDone || this.talent.statGoldGained);
+  }
+
+  hasTotalStats(): boolean {
+    return !!(this.talent.totalActivations || this.talent.totalDamageDealt || this.talent.totalHealingDone || this.talent.totalGoldGained);
+  }
+
+  fmt2(v: number): string {
+    return parseFloat(v.toFixed(2)).toString();
+  }
+
   triggerLabel(): string {
     const arr = this.talent?.triggerTypes;
     if (!arr) return '—';

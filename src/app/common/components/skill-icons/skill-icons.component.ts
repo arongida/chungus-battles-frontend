@@ -13,4 +13,5 @@ import { TalentHoverCardDirective } from '../../directives/talent-hover-card.dir
 export class SkillIconsComponent {
   @Input({ required: true }) player: Player = new Player();
   @Input() row = false;
+  @Input() iconSizePx: number = 56;
 }

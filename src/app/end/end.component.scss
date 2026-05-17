@@ -100,9 +100,32 @@
 
 .build-panel-body {
   display: flex;
-  gap: 12px;
-  padding: 12px;
+  gap: 10px;
+  padding: 10px 12px;
+  align-items: flex-start;
+}
+
+.bp-stats {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  align-content: start;
+  cursor: default;
+}
+
+.bp-stat {
+  display: flex;
   align-items: center;
+  padding: 2px 3px;
+  border-radius: 3px;
+  font-size: 0.65rem;
+  white-space: nowrap;
+  overflow: hidden;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.04);
+  }
 }
 
 .build-portrait {
@@ -121,24 +144,16 @@
   }
 }
 
-.build-equipment {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  justify-content: center;
-  align-items: center;
-}
-
-.equip-row {
+.build-equipment-row {
   display: flex;
   gap: 6px;
   justify-content: center;
+  padding: 8px 12px;
 }
 
 .equip-slot {
-  width: 44px;
-  height: 44px;
+  width: 80px;
+  height: 80px;
   border: 1px solid;
   border-radius: 4px;
   display: flex;
@@ -148,8 +163,8 @@
   flex-shrink: 0;
 
   img {
-    width: 36px;
-    height: 36px;
+    width: 72px;
+    height: 72px;
     object-fit: contain;
   }
 
@@ -157,6 +172,12 @@
     border-color: rgba(180, 120, 30, 0.2);
     border-style: dashed;
   }
+}
+
+.equip-slot-icon {
+  font-size: 1.3rem;
+  opacity: 0.2;
+  user-select: none;
 }
 
 .build-talents {

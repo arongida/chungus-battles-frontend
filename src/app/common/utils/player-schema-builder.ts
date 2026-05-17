@@ -49,5 +49,44 @@ export function buildPlayerFromData(data: any): Player {
   const inventorySchema = new ArraySchema<Item>();
   (data.inventory || []).forEach((itemData: any) => inventorySchema.push(buildItemFromData(itemData)));
   player.inventory = inventorySchema;
+  calculatePlayerStats(player);
   return player;
+}
+
+function calculatePlayerStats(player: Player): void {
+  const b = player.baseStats;
+  player.strength        = b.strength        ?? 0;
+  player.accuracy        = b.accuracy        ?? 0;
+  player.maxHp           = b.maxHp           ?? 100;
+  player.defense         = b.defense         ?? 0;
+  player.dodgeRate       = b.dodgeRate       ?? 0;
+  player.flatDmgReduction = b.flatDmgReduction ?? 0;
+  player.income          = b.income          ?? 0;
+  player.hpRegen         = b.hpRegen         ?? 0;
+  let speedMult          = b.attackSpeed      ?? 1;
+
+  const addStats = (src: AffectedStats) => {
+    player.strength         += src.strength         ?? 0;
+    player.accuracy         += src.accuracy         ?? 0;
+    player.maxHp            += src.maxHp            ?? 0;
+    player.defense          += src.defense          ?? 0;
+    player.dodgeRate        += src.dodgeRate        ?? 0;
+    player.flatDmgReduction += src.flatDmgReduction ?? 0;
+    player.income           += src.income           ?? 0;
+    player.hpRegen          += src.hpRegen          ?? 0;
+    const spd = src.attackSpeed;
+    if (spd && spd !== 0 && spd !== 1) speedMult *= spd;
+  };
+
+  player.equippedItems.forEach(item => {
+    if (item.affectedStats) addStats(item.affectedStats);
+    if (item.setActive && item.setBonusStats) addStats(item.setBonusStats);
+  });
+
+  player.talents.forEach(talent => {
+    if (talent.affectedStats) addStats(talent.affectedStats);
+  });
+
+  player.attackSpeed = speedMult;
+  player.hp = player.maxHp;
 }

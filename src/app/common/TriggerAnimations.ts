@@ -46,6 +46,24 @@ export function triggerShowDamageNumber(renderer: Renderer2, platformId: Object,
   setTimeout(() => { if (el.parentNode === container) renderer.removeChild(container, el); }, 3000);
 }
 
+export function triggerHpDamageFlash(playerId: number): void {
+  const el = document.getElementById(`hp-${playerId}`);
+  if (!el) return;
+  el.classList.remove('hp-damage', 'hp-heal');
+  void el.offsetWidth;
+  el.classList.add('hp-damage');
+  setTimeout(() => el.classList.remove('hp-damage'), 450);
+}
+
+export function triggerHpHealFlash(playerId: number): void {
+  const el = document.getElementById(`hp-${playerId}`);
+  if (!el) return;
+  el.classList.remove('hp-damage', 'hp-heal');
+  void el.offsetWidth;
+  el.classList.add('hp-heal');
+  setTimeout(() => el.classList.remove('hp-heal'), 450);
+}
+
 export function triggerShowHealingNumber(renderer: Renderer2, platformId: Object, healing: number, playerId: number): void {
   if (!isPlatformBrowser(platformId)) return;
   const container = document.getElementById(`damage-numbers-${playerId}`);

@@ -131,6 +131,7 @@ export class CharacterDetailsComponent {
       case ItemRarity.RARE: return '3px solid #60a5fa';
       case ItemRarity.EPIC: return '3px solid #c084fc';
       case ItemRarity.LEGENDARY: return '3px solid #fb923c';
+      case ItemRarity.MYTHIC: return '3px solid #d11512ff';
       default: return '3px solid #92400e';
     }
   }
@@ -184,7 +185,7 @@ export class CharacterDetailsComponent {
         { icon: '🎯', label: 'Accuracy', text: `+${this.player.accuracy?.toFixed(1)} added to your weapon's minimum damage roll.`, color: 'text-red-400' },
         { icon: '⚔️', label: 'Strength', text: `+${this.player.strength?.toFixed(1)} added to your weapon's maximum damage roll.`, color: 'text-red-400' },
         { icon: '⏩', label: 'Speed Bonus', text: `${((this.player.attackSpeed - 1) * 100)?.toFixed(0)}% multiplier applied to all weapon attack speeds.`, color: 'text-blue-400' },
-        { icon: '💰', label: 'Income', text: `+${this.player.income} bonus gold earned at the end of each fight.`, color: 'text-yellow-400' },
+        { icon: '💰', label: 'Income', text: `${this.player.income} gold earned at the end of this fight. Grows by 1 automatically each fight.`, color: 'text-yellow-400' },
         { icon: '🧪', label: 'HP Regen', text: `Recover ${this.player.hpRegen?.toFixed(3)} HP every second during battle.`, color: 'text-orange-400' },
         { icon: '🔰', label: 'Flat Damage Reduction', text: `Reduces all incoming damage by ${this.player.flatDmgReduction?.toFixed(3)} flat.`, color: 'text-green-400' },
         { icon: '🛡️', label: 'Defense', text: `Reduces incoming damage by ${defenseReduction}% (DR formula applied to ${this.player.defense?.toFixed(2)} defense).`, color: 'text-green-400' },

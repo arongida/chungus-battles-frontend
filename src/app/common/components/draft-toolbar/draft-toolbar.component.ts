@@ -20,7 +20,7 @@ import { CharacterDetailsService } from '../../services/character-details.servic
 import { InfoBoxService } from '../../services/info-box.service';
 import { InfoHintDirective } from '../../directives/info-hint.directive';
 import { InfoContent } from '../../models/info-content';
-import { goldHint, buyXpHint, lockShopHint, talentHint, draftReadyHint, fightingHint } from './draft-toolbar.hints';
+import { goldHint, buyXpHint, xpBarHint, lockShopHint, talentHint, draftReadyHint, fightingHint } from './draft-toolbar.hints';
 
 @Component({
   selector: 'app-draft-toolbar',
@@ -54,6 +54,7 @@ export class DraftToolbarComponent implements OnChanges, OnInit {
 
   readonly goldHint = goldHint;
   readonly buyXpHint = buyXpHint;
+  readonly xpBarHint = xpBarHint;
   readonly lockShopHint = lockShopHint;
   readonly talentHint = talentHint;
   readonly draftReadyHint = draftReadyHint;

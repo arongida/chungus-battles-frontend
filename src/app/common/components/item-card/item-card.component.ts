@@ -39,6 +39,7 @@ export class ItemCardComponent {
     if (r === ItemRarity.RARE) return 'text-blue-500';
     if (r === ItemRarity.EPIC) return 'text-purple-500';
     if (r === ItemRarity.LEGENDARY) return 'text-orange-500';
+    if (r === ItemRarity.MYTHIC) return 'text-red-500';
     return '';
   }
 }

@@ -6,7 +6,6 @@ import { CombatLogEntry } from '../../../models/types/CombatLogEntry';
 @Component({
   selector: 'app-combat-log-card',
   standalone: true,
-  imports: [NgIf],
   templateUrl: './combat-log-card.component.html',
   styleUrl: './combat-log-card.component.scss',
 })

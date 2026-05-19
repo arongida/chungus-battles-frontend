@@ -1,36 +1,33 @@
-<div class="talent-panel">
-  <div id="talents" class="px-3 py-6 lg:px-6 lg:py-10 max-w-fit overflow-hidden relative"
-    [style.background-image]="'url(assets/talent_scroll_01.png)'"
-    [style.background-size]="'100% 100%'"
-    [style.background-position]="'center'">
+<div class="tp-panel">
 
-    <div class="grid grid-cols-1 scale-75 lg:scale-90 origin-top">
-      @for (talent of talents(); track $index) {
-        <div
-          class="mx-3 px-3 py-3 flex flex-col align-middle justify-center w-80 h-60 items-center transform transition-transform scale-75 hover:scale-90"
-          [style.background-image]="'url(' + getTalentImage() + ')'"
-          [style.background-size]="'100% 100%'"
-          [style.background-position]="'center'"
-          (mouseenter)="onMouseEnterTalent(talent)"
-          (mouseleave)="onMouseLeaveTalent(talent)"
-          (click)="selectTalent(talent.talentId)"
-          [appInfoHint]="getTalentHint(talent)">
-          <h1 class="mb-5 mt-2 text-2xl text-center">{{ talent.name }}</h1>
-          <div class="mx-3 text-center">
-            <p class="mt-3">{{ talent.description }}</p>
-            <p class="py-1 italic text-gray-300">Triggers: {{ talent.triggerTypes.join(', ') }}</p>
-          </div>
-        </div>
-      }
-
-      <div class="flex min-w-full justify-center items-center">
-        <button class="sm:scale-75 scale-100 ml-5"
-          mat-fab extended color="text-white" (click)="refreshTalents()"
-          (mouseenter)="switchTalentRefreshAnimate()" (mouseleave)="switchTalentRefreshAnimate()">
-          <mat-icon [ngClass]="{'animate-spin': hoverTelentRefresh}">refresh</mat-icon>
-          {{ talentRerollCost() === 0 ? 'Free!' : talentRerollCost() + ' 🟡' }}
-        </button>
-      </div>
-    </div>
+  <div class="tp-header">
+    <span class="tp-title">✦ Choose a Talent</span>
   </div>
+  <div class="tp-divider"></div>
+
+  <div class="tp-list">
+    @for (talent of talents(); track $index) {
+      <div class="tp-card" (click)="selectTalent(talent.talentId)" [appInfoHint]="getTalentHint(talent)">
+        <img class="tp-icon" [src]="talent.image" [alt]="talent.name" />
+        <div class="tp-card-body">
+          <div class="tp-card-name">{{ talent.name }}</div>
+          <div class="tp-card-desc">{{ talent.description }}</div>
+          <div class="tp-card-trigger">⚡ {{ talent.triggerTypes.join(', ') }}</div>
+        </div>
+      </div>
+    }
+  </div>
+
+  <div class="tp-divider"></div>
+
+  <div class="tp-footer">
+    <button mat-button class="tp-reroll-btn"
+      (click)="refreshTalents()"
+      (mouseenter)="switchTalentRefreshAnimate()"
+      (mouseleave)="switchTalentRefreshAnimate()">
+      <mat-icon [ngClass]="{'animate-spin': hoverTelentRefresh}">refresh</mat-icon>
+      {{ talentRerollCost() === 0 ? 'Free!' : talentRerollCost() + ' 🟡' }}
+    </button>
+  </div>
+
 </div>

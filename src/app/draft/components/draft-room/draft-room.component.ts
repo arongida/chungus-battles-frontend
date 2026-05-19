@@ -34,9 +34,7 @@ import {
   MusicOptions,
   SoundsService,
 } from '../../../common/services/sounds.service';
-import { DraftState } from '../../../models/colyseus-schema/DraftState';
 import { TriggerItemMessage, TriggerTalentMessage } from '../../../models/types/MessageTypes';
-import { triggerItemActivation, triggerTalentActivation } from '../../../common/TriggerAnimations';
 
 // Creates a typed Player from any schema object (typed or reflection-decoded generic).
 // Copies primitive backing fields and collection references; skips `baseStats` because
@@ -49,6 +47,13 @@ function coercePlayer(src: any): Player {
     if (key === 'baseStats') return;
     try { (dest as any)[key] = src[key]; } catch {}
   });
+  // Plain @type('number') fields without user-defined backing properties are stored via
+  // Colyseus prototype getters/setters and won't appear in Object.keys — copy them explicitly.
+  const plainFields: (keyof Player)[] = ['lives', 'playerId', 'originalPlayerId', 'xp', 'maxXp', 'round', 'wins', 'maxHp', 'income', 'hpRegen', 'dodgeRate', 'flatDmgReduction', 'refreshShopCost', 'gameVersion'];
+  for (const field of plainFields) {
+    const val = (src as any)[field];
+    if (val !== undefined) (dest as any)[field] = val;
+  }
   return dest;
 }
 
@@ -61,7 +66,6 @@ function coercePlayer(src: any): Player {
     RoundInfoComponent,
     ReadyButtonComponent,
     DraftToolbarComponent,
-    SkillIconsComponent,
   ],
   templateUrl: './draft-room.component.html',
   styleUrl: './draft-room.component.scss',

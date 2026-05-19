@@ -1,12 +1,10 @@
 import { Component, Input } from '@angular/core';
-import { DecimalPipe } from '@angular/common';
 import { Talent } from '../../../models/colyseus-schema/TalentSchema';
 import { AffectedStats } from '../../../models/colyseus-schema/AffectedStatsSchema';
 
 @Component({
   selector: 'app-talent-card',
   standalone: true,
-  imports: [DecimalPipe],
   templateUrl: './talent-card.component.html',
   styleUrl: './talent-card.component.scss',
 })

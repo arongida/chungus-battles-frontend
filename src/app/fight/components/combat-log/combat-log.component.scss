@@ -5,8 +5,13 @@
   box-shadow: var(--cm-shadow);
   display: flex;
   flex-direction: column;
-  width: 22rem;
-  height: 16rem;
+  width: 20rem;
+  height: 14rem;
+
+  @media (min-width: 1024px) {
+    width: 30rem;
+    height: 22rem;
+  }
 }
 
 .cl-header {
@@ -21,6 +26,11 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+
+  @media (min-width: 1024px) {
+    padding: 7px 14px;
+    font-size: 0.75rem;
+  }
 }
 
 .cl-toggle {
@@ -64,6 +74,11 @@
   cursor: default;
   transition: background 80ms;
   line-height: 1.5;
+
+  @media (min-width: 1024px) {
+    padding: 4px 12px;
+    font-size: 0.78rem;
+  }
 
   &:hover {
     background: rgba(245, 158, 11, 0.06);

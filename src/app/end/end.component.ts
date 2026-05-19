@@ -96,7 +96,8 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
     switch (item.rarity) {
       case ItemRarity.RARE: return '#60a5fa';
       case ItemRarity.EPIC: return '#c084fc';
-      case ItemRarity.LEGENDARY: return '#fb923c';
+      case ItemRarity.LEGENDARY: return '#f88528ff';
+      case ItemRarity.MYTHIC: return '#d11512ff';
       default: return '#92400e';
     }
   }
@@ -162,7 +163,7 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
         { icon: '🎯', label: 'Accuracy',             text: `+${p.accuracy?.toFixed(1)} added to weapon's minimum damage roll.`,                             color: 'text-red-400' },
         { icon: '⚔️', label: 'Strength',             text: `+${p.strength?.toFixed(1)} added to weapon's maximum damage roll.`,                             color: 'text-red-400' },
         { icon: '⏩', label: 'Speed Bonus',           text: `${((p.attackSpeed - 1) * 100)?.toFixed(0)}% multiplier applied to all weapon attack speeds.`,   color: 'text-blue-400' },
-        { icon: '💰', label: 'Income',               text: `+${p.income} bonus gold earned at the end of each fight.`,                                      color: 'text-yellow-400' },
+        { icon: '💰', label: 'Income',               text: `${p.income} gold earned per fight. Grows by 1 automatically each fight.`,                    color: 'text-yellow-400' },
         { icon: '🧪', label: 'HP Regen',             text: `Recover ${p.hpRegen?.toFixed(3)} HP every second during battle.`,                               color: 'text-orange-400' },
         { icon: '🔰', label: 'Flat Damage Reduction',text: `Reduces all incoming damage by ${p.flatDmgReduction?.toFixed(3)} flat.`,                        color: 'text-green-400' },
         { icon: '🛡️', label: 'Defense',              text: `Reduces incoming damage by ${defenseReduction}% (DR formula, ${p.defense?.toFixed(2)} defense).`, color: 'text-green-400' },

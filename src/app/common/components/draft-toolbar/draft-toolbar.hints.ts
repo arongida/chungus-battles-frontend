@@ -4,14 +4,21 @@ export const goldHint: InfoContent = {
   title: 'Gold & Income',
   entries: [
     { icon: '🟡', label: 'Gold', text: 'Your current gold. Spend it to buy and upgrade items in the shop.' },
-    { icon: '💰', label: 'Income', text: 'You earn bonus gold at the end of each fight based on your income stat.' },
+    { icon: '💰', label: 'Income', text: 'Your income is the gold you earn at the end of each fight. It grows automatically by 1 after every fight, and items or talents can raise it further.' },
   ],
 };
 
 export const buyXpHint: InfoContent = {
   title: 'Buy XP',
   entries: [
-    { icon: '⬆️', label: 'Buy XP', text: 'Spend 4 gold to gain 4 XP. Leveling up gives you more item slots and unlocks new talents.' },
+    { icon: '⬆️', label: 'Buy XP', text: 'Spend 4 gold to gain 4 XP. Each level up to 5 unlocks a new talent and higher-tier items. Past level 5 there is no cap — each extra level grants increasingly powerful stat bonuses (strength, accuracy, HP, and defense all grow stronger the higher you go).' },
+  ],
+};
+
+export const xpBarHint: InfoContent = {
+  title: 'Level & XP',
+  entries: [
+    { icon: '📊', label: 'Level', text: 'Your current level and XP progress. You gain XP automatically after each fight and can buy more with gold. Reaching level 5 unlocks all talent tiers and the strongest shop items. There is no level cap — beyond level 5, every level grants increasingly powerful stat bonuses. The further past 5 you are, the bigger each level\'s bonus becomes.' },
   ],
 };
 

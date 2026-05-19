@@ -34,6 +34,7 @@ import { CharacterDetailsComponent } from '../../../common/components/character-
 import { SkillIconsComponent } from '../../../common/components/skill-icons/skill-icons.component';
 import { DraftToolbarComponent } from '../../../common/components/draft-toolbar/draft-toolbar.component';
 import { MusicOptions, SoundOptions, SoundsService } from '../../../common/services/sounds.service';
+import { DraggablePanelDirective } from '../../../common/directives/draggable-panel.directive';
 
 // Creates a typed Player from any schema object (typed or reflection-decoded generic).
 // Skips `baseStats` to avoid assertInstanceType failures in production minified builds.
@@ -58,6 +59,7 @@ function coercePlayer(src: any): Player {
     MatIconModule,
     RoundInfoComponent,
     CharacterDetailsComponent,
+    DraggablePanelDirective,
   ],
   templateUrl: './fight-room.component.html',
   styleUrl: './fight-room.component.scss',

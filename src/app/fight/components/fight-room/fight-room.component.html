@@ -12,31 +12,35 @@
   </div>
   }
 
-  <!-- Both character panels centered vertically, close together -->
-  <div class="fixed top-16 bottom-0 left-0 right-0 flex flex-col items-center justify-around pointer-events-none z-10">
-    @if (enemy()) {
-      <div class="pointer-events-auto">
-        <app-character-details [combat]="true" [player]="enemy()!" [enemy]="true"
-          [playerBeingHit]="playerBeingHit()" [enemyBeingHit]="enemyBeingHit()">
-        </app-character-details>
-      </div>
-    }
-    @if (player()) {
-      <div class="pointer-events-auto">
-        <app-character-details [combat]="true" [player]="player()!" [playerBeingHit]="playerBeingHit()"
-          [enemyBeingHit]="enemyBeingHit()">
-        </app-character-details>
-      </div>
-    }
-  </div>
-
-  <!-- Combat log + toggle button (bottom-right corner) -->
-  <div class="lg:fixed lg:bottom-4 lg:right-4 z-20">
-    <div class="scale-75 lg:scale-100">
-      <app-combat-log [entries]="entries()" [player]="player()!" [enemy]="enemy()!"></app-combat-log>
-    </div>
-  </div>
 </div>
+
+<!-- Enemy panel — draggable, starts top-center -->
+@if (enemy()) {
+  <div appDraggablePanel [dragHandleSelector]="'.cd-header'"
+       class="fixed z-10" style="top: 72px; left: 50%; transform: translateX(-50%)">
+    <app-character-details [combat]="true" [player]="enemy()!" [enemy]="true"
+      [playerBeingHit]="playerBeingHit()" [enemyBeingHit]="enemyBeingHit()">
+    </app-character-details>
+  </div>
+}
+
+<!-- Player panel — draggable, starts bottom-center -->
+@if (player()) {
+  <div appDraggablePanel [dragHandleSelector]="'.cd-header'"
+       class="fixed z-10" style="bottom: 72px; left: 50%; transform: translateX(-50%)">
+    <app-character-details [combat]="true" [player]="player()!" [playerBeingHit]="playerBeingHit()"
+      [enemyBeingHit]="enemyBeingHit()">
+    </app-character-details>
+  </div>
+}
+
+<!-- Combat log — draggable, starts bottom-right -->
+@if (player()) {
+  <div appDraggablePanel [dragHandleSelector]="'.cl-header'"
+       class="fixed z-20" style="bottom: 16px; right: 16px">
+    <app-combat-log [entries]="entries()" [player]="player()!" [enemy]="enemy()!"></app-combat-log>
+  </div>
+}
 
 
 @if (player()) {

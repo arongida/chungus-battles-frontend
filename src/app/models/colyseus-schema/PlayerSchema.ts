@@ -63,7 +63,7 @@ export class Player extends Schema {
   }
 
   set level(value: number) {
-    this._level = value > 5 ? 5 : value;
+    this._level = value < 1 ? 1 : value;
   }
 
   get attackSpeed(): number {

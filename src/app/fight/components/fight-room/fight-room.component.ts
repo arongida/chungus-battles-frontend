@@ -74,7 +74,9 @@ export class FightRoomComponent implements OnInit {
   enemyBeingHit = signal(false);
   versionWin = signal(false);
   versionWins = signal(0);
+  versionWinMinimized = signal(false);
   topWin = signal(false);
+  topWinMinimized = signal(false);
   battleResultVisible = signal(false);
   battleResult = signal<'win' | 'lose' | 'draw'>('win');
   battleResultMinimized = signal(false);
@@ -113,6 +115,7 @@ export class FightRoomComponent implements OnInit {
           this.battleOver = true;
           if (message.includes('#1')) {
             this.topWin.set(true);
+            this.topWinMinimized.set(false);
             localStorage.setItem('battleEndState', JSON.stringify({ type: 'top_win', message }));
           } else {
             this.gameOverMessage.set(message);
@@ -143,6 +146,7 @@ export class FightRoomComponent implements OnInit {
 
         room.onMessage('version_win', (message: VersionWinMessage) => {
           this.versionWin.set(true);
+          this.versionWinMinimized.set(false);
           this.versionWins.set(message.wins);
           this.battleOver = true;
           localStorage.setItem('battleEndState', JSON.stringify({ type: 'version_win', wins: message.wins }));

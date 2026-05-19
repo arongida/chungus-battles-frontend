@@ -107,9 +107,10 @@
 }
 
 <!-- Version record -->
-@if (versionWin()) {
+@if (versionWin() && !versionWinMinimized()) {
 <div class="fixed inset-0 z-50 flex items-center justify-center chungus-backdrop">
-  <div class="chungus-card text-center">
+  <div class="chungus-card text-center relative">
+    <button class="end-modal-dismiss" (click)="versionWinMinimized.set(true)" title="Dismiss to review combat log">×</button>
     <div class="chungus-modal-icon">🏆</div>
     <h2 class="chungus-modal-title">Version Record!</h2>
     <p class="chungus-modal-body">
@@ -127,11 +128,19 @@
   </div>
 </div>
 }
+@if (versionWin() && versionWinMinimized()) {
+<div class="fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
+  <button class="end-pill" (click)="versionWinMinimized.set(false)">
+    🏆 Version Record — tap to continue
+  </button>
+</div>
+}
 
 <!-- All-time #1 -->
-@if (topWin()) {
+@if (topWin() && !topWinMinimized()) {
 <div class="fixed inset-0 z-50 flex items-center justify-center chungus-backdrop">
-  <div class="chungus-card text-center">
+  <div class="chungus-card text-center relative">
+    <button class="end-modal-dismiss" (click)="topWinMinimized.set(true)" title="Dismiss to review combat log">×</button>
     <div class="chungus-modal-icon top-win-icon">👑</div>
     <h2 class="chungus-modal-title top-win-shimmer">ALL-TIME #1 CHUNGERION!</h2>
     <p class="top-win-subtitle">CHUNGRATULATIONS!</p>
@@ -143,5 +152,12 @@
       Claim Your Glory
     </button>
   </div>
+</div>
+}
+@if (topWin() && topWinMinimized()) {
+<div class="fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
+  <button class="end-pill" (click)="topWinMinimized.set(false)">
+    👑 All-Time #1 — tap to continue
+  </button>
 </div>
 }

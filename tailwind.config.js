@@ -2,7 +2,11 @@
 module.exports = {
   content: ['./src/**/*.{html,ts}'],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        pixel: ['Darinia', 'Roboto', 'sans-serif'],
+      },
+    },
   },
   plugins: [],
 };

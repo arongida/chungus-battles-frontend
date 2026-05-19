@@ -1,5 +1,5 @@
 import { Component, ElementRef, ViewChild, Renderer2, AfterViewInit, OnDestroy, OnInit, signal, PLATFORM_ID, Inject } from '@angular/core';
-import { DecimalPipe, isPlatformBrowser } from '@angular/common';
+import { DecimalPipe, isPlatformBrowser, NgTemplateOutlet } from '@angular/common';
 import { InfoHintDirective } from '../common/directives/info-hint.directive';
 import { InfoContent } from '../common/models/info-content';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -14,11 +14,12 @@ import { ItemHoverCardDirective } from '../common/directives/item-hover-card.dir
 import { SkillIconsComponent } from '../common/components/skill-icons/skill-icons.component';
 import { itemPictures } from '../common/item-image-links';
 import { buildPlayerFromData } from '../common/utils/player-schema-builder';
+import { DraggablePanelDirective } from '../common/directives/draggable-panel.directive';
 
 @Component({
   selector: 'app-end',
   standalone: true,
-  imports: [MatButtonModule, MatIconModule, ItemHoverCardDirective, SkillIconsComponent, DecimalPipe, InfoHintDirective],
+  imports: [MatButtonModule, MatIconModule, ItemHoverCardDirective, SkillIconsComponent, DecimalPipe, InfoHintDirective, NgTemplateOutlet, DraggablePanelDirective],
   templateUrl: './end.component.html',
   styleUrl: './end.component.scss',
 })
@@ -33,7 +34,8 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
   playerWins = signal<number>(0);
 
   hoveredPlayerId = signal<number | null>(null);
-  pinnedPlayerId = signal<number | null>(null);
+  pinnedPlayerIds = signal<number[]>([]);
+  pinnedBuilds = signal<Map<number, Player>>(new Map());
   panelBuild = signal<Player | null>(null);
   panelLoading = signal(false);
   panelHovered = signal(false);
@@ -75,20 +77,33 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   isPanelVisible(): boolean {
+    const hovered = this.hoveredPlayerId();
     return this.panelBuild() !== null &&
-      (this.pinnedPlayerId() !== null || this.hoveredPlayerId() !== null || this.panelHovered());
+      ((hovered !== null && !this.isPinned(hovered)) || this.panelHovered());
   }
 
   isPinned(playerId: number): boolean {
-    return this.pinnedPlayerId() === playerId;
+    return this.pinnedPlayerIds().includes(playerId);
   }
 
   isActive(playerId: number): boolean {
-    return this.pinnedPlayerId() === playerId || this.hoveredPlayerId() === playerId;
+    return this.isPinned(playerId) || this.hoveredPlayerId() === playerId;
+  }
+
+  getPinnedBuild(playerId: number): Player | null {
+    return this.pinnedBuilds().get(playerId) ?? null;
+  }
+
+  pinnedPanelLeft(i: number): number {
+    return 16 + i * 356;
   }
 
   getEquippedItem(slot: EquipSlot): Item | null {
     return this.panelBuild()?.equippedItems.get(slot) ?? null;
+  }
+
+  getEquippedItemForBuild(build: Player, slot: EquipSlot): Item | null {
+    return build?.equippedItems.get(slot) ?? null;
   }
 
   rarityBorderColor(item: Item | null): string {
@@ -105,7 +120,7 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
   async onPlayerHover(playerId: number) {
     clearTimeout(this.leaveTimeout);
     this.hoveredPlayerId.set(playerId);
-    if (this.pinnedPlayerId() === null) {
+    if (!this.isPinned(playerId)) {
       await this.loadPanelBuild(playerId);
     }
   }
@@ -125,12 +140,17 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async onPlayerClick(playerId: number) {
-    if (this.pinnedPlayerId() === playerId) {
-      this.pinnedPlayerId.set(null);
+    if (this.isPinned(playerId)) {
+      this.unpinPlayer(playerId);
     } else {
-      this.pinnedPlayerId.set(playerId);
-      await this.loadPanelBuild(playerId);
+      this.pinnedPlayerIds.update(ids => [...ids, playerId]);
+      await this.loadPinnedBuild(playerId);
     }
+  }
+
+  unpinPlayer(playerId: number) {
+    this.pinnedPlayerIds.update(ids => ids.filter(id => id !== playerId));
+    this.pinnedBuilds.update(m => { const next = new Map(m); next.delete(playerId); return next; });
   }
 
   private async loadPanelBuild(playerId: number) {
@@ -151,8 +171,23 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  get panelStatsHint(): InfoContent {
-    const p = this.panelBuild();
+  private async loadPinnedBuild(playerId: number) {
+    if (this.pinnedBuilds().has(playerId)) return;
+    let player: Player | undefined = this.buildCache.get(playerId);
+    if (!player) {
+      try {
+        const data = await fetch(`${environment.gameServer}/playerBuild?playerId=${playerId}`).then(r => r.json());
+        player = buildPlayerFromData(data);
+        this.buildCache.set(playerId, player);
+      } catch (e) {
+        console.error('Error loading build:', e);
+        return;
+      }
+    }
+    this.pinnedBuilds.update(m => new Map(m).set(playerId, player!));
+  }
+
+  buildStatsHint(p: Player | null): InfoContent {
     if (!p) return { title: 'Stats', entries: [] };
     const dodgeChance = Math.round(100 * (1 - 100 / (100 + p.dodgeRate)));
     const defenseReduction = Math.round(100 * (1 - 100 / (100 + p.defense)));

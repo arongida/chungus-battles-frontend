@@ -85,7 +85,7 @@ export class DraggablePanelDirective implements AfterViewInit, OnDestroy {
     panel.style.position = 'fixed';
     panel.style.left = `${rect.left}px`;
     panel.style.top = `${rect.top}px`;
-    panel.style.transform = '';
+    panel.style.transform = 'none'; // override any class-based transforms (e.g. translateY(-50%))
     panel.style.bottom = '';
     panel.style.right = '';
 

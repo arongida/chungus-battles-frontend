@@ -76,67 +76,91 @@
   </button>
 </div>
 
+<!-- Shared panel content template -->
+<ng-template #panelContent let-build="build" let-pinnedId="pinnedId">
+  <div class="build-panel-header">
+    <mat-icon class="build-panel-icon">person</mat-icon>
+    <span class="build-panel-title">{{ build.name }} — {{ build.wins }} wins</span>
+    @if (pinnedId !== undefined) {
+      <button class="build-panel-close" (mousedown)="$event.stopPropagation()" (click)="unpinPlayer(pinnedId)" title="Unpin">×</button>
+    } @else {
+      <mat-icon class="build-panel-pin">push_pin</mat-icon>
+    }
+  </div>
+
+  <div class="build-divider"></div>
+
+  <!-- Row 1: Avatar + Stats -->
+  <div class="build-panel-body">
+    <div class="build-portrait">
+      <img [src]="build.avatarUrl" alt="Portrait" />
+    </div>
+    <div class="bp-stats" [appInfoHint]="buildStatsHint(build)">
+      <div class="col-span-2">
+        <div class="bp-stat"><span class="text-pink-500">❤️ {{ build.maxHp | number:'1.0-0' }}</span></div>
+      </div>
+      <div class="bp-stat"><span class="text-red-400">🎯 +{{ build.accuracy | number:'1.0-1' }}</span></div>
+      <div class="bp-stat"><span class="text-red-400">⚔️ +{{ build.strength | number:'1.0-1' }}</span></div>
+      <div class="bp-stat">
+        <span class="text-blue-400">⏩ {{ (build.attackSpeed - 1) >= 0 ? '+' : '' }}{{ (build.attackSpeed - 1) * 100 | number:'1.0-0' }}%</span>
+      </div>
+      <div class="bp-stat"><span class="text-yellow-400">💰 +{{ build.income }}</span></div>
+      <div class="bp-stat"><span class="text-orange-400">🧪 {{ build.hpRegen | number:'1.0-3' }}</span></div>
+      <div class="bp-stat"><span class="text-green-400">🔰 {{ build.flatDmgReduction | number:'1.3-3' }}</span></div>
+      <div class="bp-stat"><span class="text-green-600">🛡️ {{ build.defense | number:'1.0-2' }}</span></div>
+      <div class="bp-stat"><span class="text-green-400">🦵 {{ build.dodgeRate | number:'1.0-2' }}</span></div>
+    </div>
+  </div>
+
+  <!-- Row 2: Talents -->
+  @if (build.talents?.length) {
+    <div class="build-divider"></div>
+    <div class="build-talents">
+      <app-skill-icons [player]="build" [row]="true" [iconSizePx]="80"></app-skill-icons>
+    </div>
+  }
+
+  <!-- Row 3: Equipped items -->
+  <div class="build-divider"></div>
+  <div class="build-equipment-row">
+    @for (slot of equipmentLayout[0]; track slot) {
+      @if (getEquippedItemForBuild(build, slot); as item) {
+        <div class="equip-slot" [style.border-color]="rarityBorderColor(item)"
+             [appItemHoverCard]="item" [hoverPlayer]="build">
+          <img [src]="item.image" [alt]="item.name" />
+        </div>
+      } @else {
+        <div class="equip-slot equip-slot-empty">
+          <span class="equip-slot-icon">{{ slotIcons[slot] }}</span>
+        </div>
+      }
+    }
+  </div>
+</ng-template>
+
+<!-- Hover panel (single, hides when hovered player is already pinned) -->
 @if (isPanelVisible()) {
-  <div class="build-panel"
+  <div appDraggablePanel [dragHandleSelector]="'.build-panel-header'"
+       class="build-panel"
        (mouseenter)="onPanelEnter()"
        (mouseleave)="onPanelLeave()">
-
-    <div class="build-panel-header">
-      <mat-icon class="build-panel-icon">person</mat-icon>
-      <span class="build-panel-title">{{ panelBuild()?.name }} — {{ panelBuild()?.wins }} wins</span>
-      @if (pinnedPlayerId() !== null) {
-        <mat-icon class="build-panel-pin">push_pin</mat-icon>
-      }
-    </div>
-
-    <div class="build-divider"></div>
-
-    <!-- Row 1: Avatar + Stats -->
-    <div class="build-panel-body">
-      <div class="build-portrait">
-        <img [src]="panelBuild()?.avatarUrl" alt="Portrait" />
-      </div>
-      <div class="bp-stats" [appInfoHint]="panelStatsHint">
-        <div class="col-span-2">
-          <div class="bp-stat"><span class="text-pink-500">❤️ {{ panelBuild()!.maxHp | number:'1.0-0' }}</span></div>
-        </div>
-        <div class="bp-stat"><span class="text-red-400">🎯 +{{ panelBuild()!.accuracy | number:'1.0-1' }}</span></div>
-        <div class="bp-stat"><span class="text-red-400">⚔️ +{{ panelBuild()!.strength | number:'1.0-1' }}</span></div>
-        <div class="bp-stat">
-          <span class="text-blue-400">⏩ {{ (panelBuild()!.attackSpeed - 1) >= 0 ? '+' : '' }}{{ (panelBuild()!.attackSpeed - 1) * 100 | number:'1.0-0' }}%</span>
-        </div>
-        <div class="bp-stat"><span class="text-yellow-400">💰 +{{ panelBuild()!.income }}</span></div>
-        <div class="bp-stat"><span class="text-orange-400">🧪 {{ panelBuild()!.hpRegen | number:'1.0-3' }}</span></div>
-        <div class="bp-stat"><span class="text-green-400">🔰 {{ panelBuild()!.flatDmgReduction | number:'1.3-3' }}</span></div>
-        <div class="bp-stat"><span class="text-green-600">🛡️ {{ panelBuild()!.defense | number:'1.0-2' }}</span></div>
-        <div class="bp-stat"><span class="text-green-400">🦵 {{ panelBuild()!.dodgeRate | number:'1.0-2' }}</span></div>
-      </div>
-    </div>
-
-    <!-- Row 2: Talents -->
-    @if (panelBuild()?.talents?.length) {
-      <div class="build-divider"></div>
-      <div class="build-talents">
-        <app-skill-icons [player]="panelBuild()!" [row]="true" [iconSizePx]="80"></app-skill-icons>
-      </div>
-    }
-
-    <!-- Row 3: Equipped items -->
-    <div class="build-divider"></div>
-    <div class="build-equipment-row">
-      @for (slot of equipmentLayout[0]; track slot) {
-        @if (getEquippedItem(slot); as item) {
-          <div class="equip-slot" [style.border-color]="rarityBorderColor(item)"
-               [appItemHoverCard]="item" [hoverPlayer]="panelBuild()!">
-            <img [src]="item.image" [alt]="item.name" />
-          </div>
-        } @else {
-          <div class="equip-slot equip-slot-empty">
-            <span class="equip-slot-icon">{{ slotIcons[slot] }}</span>
-          </div>
-        }
-      }
-    </div>
-
+    <ng-container [ngTemplateOutlet]="panelContent"
+                  [ngTemplateOutletContext]="{ build: panelBuild() }">
+    </ng-container>
   </div>
+}
+
+<!-- Pinned panels — one per pinned player, each draggable -->
+@for (pinnedId of pinnedPlayerIds(); track pinnedId; let i = $index) {
+  @let pinnedBuild = getPinnedBuild(pinnedId);
+  @if (pinnedBuild) {
+    <div appDraggablePanel [dragHandleSelector]="'.build-panel-header'"
+         class="build-panel"
+         [style.left.px]="pinnedPanelLeft(i)"
+         style="top: 50%; transform: translateY(-50%)">
+      <ng-container [ngTemplateOutlet]="panelContent"
+                    [ngTemplateOutletContext]="{ build: pinnedBuild, pinnedId: pinnedId }">
+      </ng-container>
+    </div>
+  }
 }

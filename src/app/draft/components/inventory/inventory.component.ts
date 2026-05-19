@@ -1,100 +1,140 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import {
-  Player,
-} from '../../../models/colyseus-schema/PlayerSchema';
 import Item from '../../../models/colyseus-schema/ItemSchema';
-import { NgClass } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
-import {
-  ItemCollection,
-} from '../../../models/colyseus-schema/ItemCollectionSchema';
 import { DraftService } from '../../services/draft.service';
+import { environment } from '../../../../environments/environment';
+import { buildItemFromData } from '../../../common/utils/player-schema-builder';
 import {
-  ItemCardComponent,
-} from '../../../common/components/item-card/item-card.component';
-import {
-  ItemHoverCardDirective,
-} from '../../../common/directives/item-hover-card.directive';
+  DecimalPipe,
+  NgClass,
+  SlicePipe,
+  TitleCasePipe,
+  UpperCasePipe,
+} from '@angular/common';
+
 
 @Component({
   selector: 'app-inventory',
   standalone: true,
-  imports: [NgClass, MatCardModule, MatButtonModule, MatMenuModule, ItemCardComponent, ItemHoverCardDirective],
+  imports: [MatCardModule, MatButtonModule, MatMenuModule,TitleCasePipe, DecimalPipe, NgClass, SlicePipe, UpperCasePipe],
   templateUrl: './inventory.component.html',
   styleUrl: './inventory.component.scss',
 })
-export class InventoryComponent {
-  player: Player;
-  displayedInventory: Item[];
-  isDescending: boolean;
-  isCollectionsVisible: boolean;
-  isDisplayingSets: boolean;
-  selectedItemCollection: ItemCollection | null = null;
+export class InventoryComponent implements OnInit {
+
+  displayedItems: Item[];
+  dispalyedTalents: TalentPreview[];
+  isItemsView: boolean;
 
   constructor(
     @Inject(MAT_DIALOG_DATA)
-    public data: { player: Player },
     public draftService: DraftService
   ) {
-    this.player = data.player;
-    this.displayedInventory = Array.from(this.player.inventory);
-    this.isDescending = false;
-    this.isCollectionsVisible = false;
-    this.isDisplayingSets = false;
-    this.selectedItemCollection = null;
+
+    this.displayedItems = [];
+    this.dispalyedTalents = [];
+    this.isItemsView = true;
   }
-  getSellPrice(item: Item) {
-    return Math.floor(item.sellPrice);
+
+  async ngOnInit(): Promise<void> {
+    this.displayedItems = await this.fetchItems();
+    this.dispalyedTalents = await this.fetchTalents();
+  }
+
+  async fetchItems(): Promise<Item[]> {
+    try {
+      const data: any[] = await fetch(`${environment.gameServer}/items`).then(r => r.json());
+      const itemsArray = data.map((e) => buildItemFromData(e))
+      return itemsArray;
+
+    } catch (e) {
+      console.error('Error loading items:', e);
+      return [];
+    }
+
+  }
+
+  async fetchTalents(): Promise<TalentPreview[]> {
+    try {
+      const data: any[] = await fetch(`${environment.gameServer}/talents`).then(r => r.json());
+      return data.map(e => ({
+        name: e.name,
+        description: e.description,
+      }));
+    } catch (e) {
+      console.error('Error loading items:', e);
+      return [];
+    }
   }
 
   getItemImage(item: Item) {
     return item.image ? item.image : 'assets/Item_ID_0_Empty.png';
   }
 
-  backToDefault() {
-    this.isDisplayingSets = false;
-    this.displayedInventory = [...this.player.inventory];
+  getTalentImage() {
+    return 'assets/talent_tablet_01_horizontal.png';
   }
 
-  sortByName() {
-    this.isDisplayingSets = false;
-    let itemsArray = [...this.player.inventory];
-    if (this.isDescending) {
-      this.displayedInventory = itemsArray.sort((a, b) => a.name.localeCompare(b.name));
-      this.isDescending = !this.isDescending;
-    } else {
-      this.displayedInventory = itemsArray.sort((a, b) => b.name.localeCompare(a.name));
-      this.isDescending = !this.isDescending;
+  onMouseEnterItem(item: Item) {
+    item.showDetails = true;
+    item.imageCache = item.image;
+    item.image = `assets/level_${item.tier}_glow.png`;
+  }
+
+  onMouseLeaveItem(item: Item) {
+    item.showDetails = false;
+    item.image = item.imageCache ? item.imageCache : item.image;
+  }
+
+  getItemStats(item: Item): StatLine[] {
+    const s = item.affectedStats ?? {};
+    const e = item.setBonusStats ?? {};
+
+    const fmtPercent = (v: number) => `${v > 0 ? '+' : ''}${Math.round((v - 1) * 100)}%`;
+
+    const stats: StatLine[] = [];
+
+    if (item.baseMinDamage || item.baseMaxDamage) {
+      stats.push({
+        label: 'Damage',
+        value: item.baseMinDamage,
+        icon: '⚔️',
+        color: 'text-red-500'
+      });
     }
-  }
 
-  sortByLevel() {
-    this.isDisplayingSets = false;
-    let itemsArray = [...this.player.inventory];
-    if (this.isDescending) {
-      this.displayedInventory = itemsArray.sort((a, b) => b.tier - a.tier);
-      this.isDescending = !this.isDescending;
-    } else {
-      this.displayedInventory = itemsArray.sort((a, b) => a.tier - b.tier);
-      this.isDescending = !this.isDescending;
+    if (item.baseAttackSpeed) {
+      stats.push({
+        label: 'Speed',
+        value: item.baseAttackSpeed,
+        icon: '⏩',
+        color: 'text-blue-500'
+      });
     }
-  }
 
+    if (s.strength) stats.push({ label: 'Strength', value: s.strength, icon: '⚔️', color: 'text-red-500' });
+    if (s.accuracy) stats.push({ label: 'Accuracy', value: s.accuracy, icon: '🎯', color: 'text-red-500' });
+    if (s.defense) stats.push({ label: 'Defense', value: s.defense, icon: '🛡️', color: 'text-green-500' });
+    if (s.maxHp) stats.push({ label: 'Health', value: s.maxHp, icon: '❤️', color: 'text-pink-500' });
+    if (s.income) stats.push({ label: 'Income', value: s.income, icon: '💰', color: 'text-yellow-300' });
+    if (s.hpRegen) stats.push({ label: 'Regen', value: s.hpRegen, icon: '🧪', color: 'text-orange-500' });
 
+    return stats;
+  }
+}
 
-  sellSelectedItem(item: Item) {
-    this.draftService.sendMessage('sell', {
-      itemId: item.itemId,
-    });
-    this.displayedInventory = this.player.inventory.filter((soldItem) => soldItem.itemId !== item.itemId);
-  }
+export type TalentPreview = {
+  name: string;
+  description: string;
+};
 
-  equip(item: Item) {
-    this.draftService.sendMessage('equip', {
-      itemId: item.itemId,
-    });
-  }
-  }
+type StatLine = {
+  label: string;
+  value: number;
+  icon: string;
+  color: string;
+  format?: 'percent' | 'number';
+};

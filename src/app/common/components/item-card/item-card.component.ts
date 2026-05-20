@@ -23,7 +23,7 @@ import { ItemRarity, ItemType } from '../../../models/types/ItemTypes';
 })
 export class ItemCardComponent {
   @Input({ required: true }) item: Item = new Item();
-  @Input({ required: true }) player: Player = new Player();
+  @Input({ required: false }) player: Player = new Player();
   @Input({ required: false }) setTooltipBasedOnInventory: boolean = false;
   @Input({ required: false }) showDetails = false;
   @Input({ required: false }) showBuyButton = false;

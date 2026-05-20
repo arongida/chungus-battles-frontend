@@ -1,5 +1,5 @@
 <div class="flex flex-col h-full w-full overflow-hidden">
-  <div class="mb-2 mt-2 pt-5 text-center text-xl text-white flex-none">
+  <div class="mb-2 mt-2 pt-5 px-1 text-center text-xl text-white flex-none">
     <mat-card-title [ngClass]="titleColorClass" [class.animate-pulse]="item.rarity > 1">{{ item.name | titlecase }}
     </mat-card-title>
   </div>
@@ -11,7 +11,7 @@
       uppercase) + (item.description | slice:1) }}</p>
     }
     <div class="flex flex-col items-center justify-start p-1">
-      @if (showBuyButton) {
+      @if (!showBuyButton) {
       <div class="p-1">
         <p class="font-semibold">
           Price: <span class="text-yellow-300">{{ item.price }} 🟡</span>

@@ -44,6 +44,7 @@
   z-index: 1100;
   overflow: hidden;
   animation: panelSlideIn 0.18s ease-out;
+  text-shadow: 0 1px 3px rgba(255, 255, 255, 0.2);
 
   @media (max-width: 900px) {
     left: 8px;
@@ -74,7 +75,7 @@
 }
 
 .build-panel-title {
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -136,7 +137,7 @@
   align-items: center;
   padding: 2px 3px;
   border-radius: 3px;
-  font-size: 0.65rem;
+  font-size: 0.78rem;
   white-space: nowrap;
   overflow: hidden;
 

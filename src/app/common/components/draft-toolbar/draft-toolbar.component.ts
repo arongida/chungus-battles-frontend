@@ -7,7 +7,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { TalentsComponent } from '../../../draft/components/talents/talents.component';
 import { Talent } from '../../../models/colyseus-schema/TalentSchema';
-import { InventoryComponent } from '../../../draft/components/inventory/inventory.component';
+import { EncyclopediaComponent } from '../../../draft/components/encyclopedia/encyclopedia.component';
 import { MatTooltip, MatTooltipModule } from '@angular/material/tooltip';
 import { NgClass } from '@angular/common';
 import { MatMenuModule } from '@angular/material/menu';
@@ -112,7 +112,7 @@ export class DraftToolbarComponent implements OnChanges, OnInit {
 
   openInventory(): void {
     this.characterDetailsService.showCharacterDetails.set(false);
-    this.dialog.open(InventoryComponent, {
+    this.dialog.open(EncyclopediaComponent, {
       data: {
         player: this.player,
       },

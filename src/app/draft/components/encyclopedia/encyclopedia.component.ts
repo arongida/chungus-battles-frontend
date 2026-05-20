@@ -12,7 +12,7 @@ import { ItemHoverCardDirective } from '../../../common/directives/item-hover-ca
 @Component({
   selector: 'app-encyclopedia',
   standalone: true,
-  imports: [MatButtonModule, NgClass, ItemCardComponent, ItemHoverCardDirective],
+  imports: [MatButtonModule, ItemCardComponent, ItemHoverCardDirective],
   templateUrl: './encyclopedia.component.html',
   styleUrl: './encyclopedia.component.scss',
 })

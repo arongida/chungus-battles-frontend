@@ -188,6 +188,10 @@ body {
   z-index: 800 !important;
 }
 
+.cdk-drag-preview {
+  z-index: 9999 !important;
+}
+
 .cdk-overlay-backdrop{
   background: #00000080 !important;
 }

@@ -56,6 +56,7 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
   fallingItems = itemPictures;
 
   private buildCache = new Map<number, Player>();
+  private pinnedPanelLeftMap = new Map<number, number>();
   private intervalId: any;
   private fallingItemsIntervalId: any;
   private leaveTimeout: any;
@@ -94,8 +95,8 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
     return this.pinnedBuilds().get(playerId) ?? null;
   }
 
-  pinnedPanelLeft(i: number): number {
-    return 16 + i * 356;
+  pinnedPanelInitialLeft(pinnedId: number): number {
+    return this.pinnedPanelLeftMap.get(pinnedId) ?? 16;
   }
 
   getEquippedItem(slot: EquipSlot): Item | null {
@@ -143,6 +144,7 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.isPinned(playerId)) {
       this.unpinPlayer(playerId);
     } else {
+      this.pinnedPanelLeftMap.set(playerId, 16 + this.pinnedPlayerIds().length * 356);
       this.pinnedPlayerIds.update(ids => [...ids, playerId]);
       await this.loadPinnedBuild(playerId);
     }
@@ -151,6 +153,7 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
   unpinPlayer(playerId: number) {
     this.pinnedPlayerIds.update(ids => ids.filter(id => id !== playerId));
     this.pinnedBuilds.update(m => { const next = new Map(m); next.delete(playerId); return next; });
+    this.pinnedPanelLeftMap.delete(playerId);
   }
 
   private async loadPanelBuild(playerId: number) {

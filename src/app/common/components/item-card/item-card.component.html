@@ -105,7 +105,7 @@
 
         </div>
         @if (item.set) {
-        <div class="p-1 m-1" [ngClass]="{'text-green-500': item.setActive, 'text-slate-300': !item.setActive}">
+        <div class="set-bonus p-1 m-1" [ngClass]="{'text-green-500': item.setActive, 'text-slate-300': !item.setActive}">
           <div>{{item.set | titlecase}} set bonus:</div>
           <div>{{item.setActive ? '(active)': '(inactive)'}}</div>
           <div class="whitespace-pre-line">
@@ -188,13 +188,13 @@
       </div>
     </div>
   </div>
+  }
   @if (showBuyButton) {
-  <div class="flex-none pb-4 pt-1 flex justify-center">
+  <div class="mt-auto flex-none pb-4 pt-1 flex justify-center">
     <button mat-fab extended [disabled]="player.gold < item.price" color="primary"
       (click)="$event.stopPropagation(); buyClicked.emit()">
       {{ item.rarity > 1 ? 'Upgrade' : 'Buy' }} {{ item.price }} 🟡
     </button>
   </div>
-  }
   }
 </div>

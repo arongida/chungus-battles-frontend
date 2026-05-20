@@ -18,14 +18,16 @@
           [style.background-image]="'url(' + getItemImage(item) + ')'"
           id="item-{{ $index }}"
           class="w-28 h-40 sm:w-44 sm:h-60 md:w-52 md:h-72 lg:w-60 lg:h-80 items-center bg-cover bg-center shadow-amber-700"
-          (mouseenter)="onMouseEnterItem(item)"
-          (mouseleave)="onMouseLeaveItem(item)"
+          [appItemHoverCard]="item" [hoverPlayer]="player"
+          [hoverCardDisabled]="draggingCard || buyingItem === item"
+          (buyFromPopup)="buyItem(item)"
           [appInfoHint]="getItemInfoHint(item)"
+          (mouseenter)="hoveredItem = item" (mouseleave)="hoveredItem = null"
           (click)="characterDetailsService.closeCharacterDetails()">
 
 <app-item-card [item]="item" [player]="player"
                          [setTooltipBasedOnInventory]="true"
-                         [showBuyButton]="true"
+                         [showBuyButton]="hoveredItem === item && !draggingCard"
                          (buyClicked)="buyItem(item)"></app-item-card>
 
 

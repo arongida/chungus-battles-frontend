@@ -44,6 +44,7 @@ export class DraggablePanelDirective implements AfterViewInit, OnDestroy {
 
   private onMouseDown = (e: MouseEvent): void => {
     if (e.button !== 0) return;
+    if ((e.target as HTMLElement).closest('button, a, input, select, textarea')) return;
     e.preventDefault();
     this.beginDrag(e.clientX, e.clientY);
     document.addEventListener('mousemove', this.onMouseMove);
@@ -59,6 +60,7 @@ export class DraggablePanelDirective implements AfterViewInit, OnDestroy {
   };
 
   private onTouchStart = (e: TouchEvent): void => {
+    if ((e.target as HTMLElement).closest('button, a, input, select, textarea')) return;
     e.preventDefault();
     const t = e.touches[0];
     this.beginDrag(t.clientX, t.clientY);

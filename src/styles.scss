@@ -1,5 +1,19 @@
 /* You can add global styles to this file, and also import other style files */
 
+@font-face {
+  font-family: 'PixelParchment';
+  src: url('assets/PixelParchment.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Darinia';
+  src: url('assets/Darinia.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 /* ── Chungus design tokens ─────────────────────────────────── */
 :root {
   --cm-bg:          rgba(10, 10, 15, 0.97);
@@ -86,7 +100,12 @@ body {
 }
 body {
   margin: 0;
-  font-family: Roboto, 'Helvetica Neue', sans-serif;
+  font-family: 'Darinia', Roboto, 'Helvetica Neue', sans-serif;
+  font-size: 18px;
+  -webkit-font-smoothing: none;
+  font-smooth: never;
+  letter-spacing: 0.04 rem;
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.8);
 }
 
 @tailwind base;
@@ -99,13 +118,13 @@ body {
 }
 
 .damage-number {
-  @apply absolute text-red-500 text-lg font-thin font-sans transition-all;
+  @apply absolute text-red-500 text-lg font-thin transition-all;
   animation: floatUp 3s ease-in forwards;
   -webkit-text-stroke: 1px red;
 }
 
 .healing-number {
-  @apply absolute text-green-400 text-lg font-thin font-sans transition-all;
+  @apply absolute text-green-400 text-lg font-thin transition-all;
   animation: floatUp 3s ease-in forwards;
   -webkit-text-stroke: 1px rgb(8, 238, 96);
 }
@@ -148,6 +167,17 @@ body {
   100% { transform: translateX(0); }
 }
 
+.mat-toolbar, .mat-toolbar *,
+.mat-mdc-button, .mat-mdc-fab, .mat-mdc-extended-fab,
+.mdc-button, .mdc-fab,
+.mat-mdc-form-field, .mat-mdc-input-element,
+.mat-mdc-floating-label, .mdc-text-field {
+  font-family: 'Darinia', Roboto, 'Helvetica Neue', sans-serif !important;
+}
+
+.mat-icon, .material-icons {
+  font-family: 'Material Icons' !important;
+}
 
 .mat-mdc-dialog-surface{
   background-color: transparent !important;

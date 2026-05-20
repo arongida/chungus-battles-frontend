@@ -188,13 +188,13 @@
       </div>
     </div>
   </div>
+  }
   @if (showBuyButton) {
-  <div class="flex-none pb-4 pt-1 flex justify-center">
+  <div class="mt-auto flex-none pb-4 pt-1 flex justify-center">
     <button mat-fab extended [disabled]="player.gold < item.price" color="primary"
       (click)="$event.stopPropagation(); buyClicked.emit()">
       {{ item.rarity > 1 ? 'Upgrade' : 'Buy' }} {{ item.price }} 🟡
     </button>
   </div>
-  }
   }
 </div>

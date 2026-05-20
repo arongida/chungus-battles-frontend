@@ -31,6 +31,7 @@ import {
 import { InfoHintDirective } from '../../../common/directives/info-hint.directive';
 import { InfoContent } from '../../../common/models/info-content';
 import { ItemRarity } from '../../../models/types/ItemTypes';
+import { ItemHoverCardDirective } from '../../../common/directives/item-hover-card.directive';
 @Component({
   selector: 'app-shop',
   standalone: true,
@@ -45,6 +46,7 @@ import { ItemRarity } from '../../../models/types/ItemTypes';
     DragDropModule,
     ItemCardComponent,
     InfoHintDirective,
+    ItemHoverCardDirective,
   ],
   templateUrl: './shop.component.html',
   styleUrl: './shop.component.scss',
@@ -56,6 +58,8 @@ export class ShopComponent {
   dragIndex = 0;
   previewBuyItem = false;
   tempCard: HTMLElement | null = null;
+  hoveredItem: Item | null = null;
+  buyingItem: Item | null = null;
 
   constructor(
     public draftService: DraftService,
@@ -70,25 +74,13 @@ export class ShopComponent {
   @Input({ required: true }) player: Player;
   @Input({ required: false }) showCharacterDetails: boolean = false;
 
-  onMouseEnterItem(item: Item) {
-    if (this.draggingCard) return;
-    item.showDetails = true;
-    item.imageCache = item.image;
-    item.image = `assets/level_${item.tier}_glow.png`;
-  }
-
-  onMouseLeaveItem(item: Item) {
-    if (this.draggingCard) return;
-    item.showDetails = false;
-    item.image = item.imageCache ? item.imageCache : item.image;
-  }
-
   getItemImage(item: Item) {
     return item.image ? item.image : 'assets/Item_ID_0_Empty.png';
   }
 
   cardDragStarted(item: Item) {
     this.draggingCard = true;
+    this.hoveredItem = null;
     this.dragIndex = this.shop.indexOf(item);
     this.draggedCard = item;
   }
@@ -138,6 +130,8 @@ export class ShopComponent {
 
 
   buyItem(item: Item) {
+    this.buyingItem = item;
+    setTimeout(() => this.buyingItem = null, 0);
     this.draftService.sendMessage('buy', {
       itemId: item.itemId,
     });
@@ -149,10 +143,9 @@ export class ShopComponent {
     this.characterDetailsService.showCharacterDetails.set(true);
   }
 
-  resetDrag(item: Item) {
+  resetDrag(_item: Item) {
     this.draggingCard = false;
     this.dragPosition = { x: 0, y: 0 };
-    this.onMouseLeaveItem(item);
     this.tempCard?.remove();
     this.tempCard = null;
   }

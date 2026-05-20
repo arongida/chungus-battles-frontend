@@ -1,3 +1,7 @@
 ::ng-deep .item-tooltip {
   white-space: pre-line;
 }
+
+::ng-deep .cdk-drag-preview button {
+  display: none;
+}

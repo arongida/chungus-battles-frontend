@@ -1,11 +1,18 @@
 import {
   Directive,
   ElementRef,
+  EventEmitter,
   HostListener,
+  Inject,
   Input,
+  OnChanges,
   OnDestroy,
+  Output,
+  PLATFORM_ID,
+  SimpleChanges,
   ViewContainerRef,
 } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { Overlay, OverlayRef } from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
 import { ItemCardComponent } from '../components/item-card/item-card.component';
@@ -16,25 +23,37 @@ import { Player } from '../../models/colyseus-schema/PlayerSchema';
   selector: '[appItemHoverCard]',
   standalone: true,
 })
-export class ItemHoverCardDirective implements OnDestroy {
+export class ItemHoverCardDirective implements OnChanges, OnDestroy {
   @Input({ alias: 'appItemHoverCard', required: true }) item!: Item;
   @Input({ required: true }) hoverPlayer!: Player;
   @Input({ required: false }) hoverCardDisabled = false;
   @Input({ required: false }) showGlow = false;
+  @Output() buyFromPopup = new EventEmitter<void>();
 
   private overlayRef: OverlayRef | null = null;
   private closeTimeout: ReturnType<typeof setTimeout> | null = null;
   private originalImage: string | null = null;
+  private readonly isTouch: boolean;
 
   constructor(
     private overlay: Overlay,
     private elementRef: ElementRef,
     private viewContainerRef: ViewContainerRef,
-  ) {}
+    @Inject(PLATFORM_ID) private platformId: object,
+  ) {
+    this.isTouch = isPlatformBrowser(this.platformId) && window.matchMedia('(hover: none)').matches;
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['hoverCardDisabled']?.currentValue === true) {
+      if (this.showGlow) this.restoreImage();
+      this.closeOverlay();
+    }
+  }
 
   @HostListener('mouseenter')
   onMouseEnter() {
-    if (this.hoverCardDisabled) return;
+    if (this.isTouch || this.hoverCardDisabled) return;
     this.cancelClose();
     if (this.showGlow) this.applyGlow();
     this.openOverlay();
@@ -42,8 +61,56 @@ export class ItemHoverCardDirective implements OnDestroy {
 
   @HostListener('mouseleave')
   onMouseLeave() {
+    if (this.isTouch) return;
     if (this.showGlow) this.restoreImage();
     this.scheduleClose();
+  }
+
+  @HostListener('click')
+  onClick() {
+    if (!this.isTouch || this.hoverCardDisabled) return;
+    if (this.overlayRef?.hasAttached()) {
+      if (this.showGlow) this.restoreImage();
+      this.closeOverlay();
+    } else {
+      if (this.showGlow) this.applyGlow();
+      this.openTouchOverlay();
+    }
+  }
+
+  private openTouchOverlay() {
+    if (this.overlayRef?.hasAttached()) return;
+
+    const tier = this.item.tier < 10 ? this.item.tier : this.item.tier - 90;
+
+    this.overlayRef = this.overlay.create({
+      positionStrategy: this.overlay.position().global().centerHorizontally().centerVertically(),
+      scrollStrategy: this.overlay.scrollStrategies.reposition(),
+      hasBackdrop: true,
+      backdropClass: 'cdk-overlay-transparent-backdrop',
+      width: '260px',
+      height: '340px',
+    });
+
+    this.overlayRef.backdropClick().subscribe(() => {
+      if (this.showGlow) this.restoreImage();
+      this.closeOverlay();
+    });
+
+    const pane = this.overlayRef.overlayElement;
+    this.applyPaneStyles(pane, tier);
+
+    const portal = new ComponentPortal(ItemCardComponent, this.viewContainerRef);
+    const componentRef = this.overlayRef.attach(portal);
+    componentRef.setInput('item', this.item);
+    componentRef.setInput('player', this.hoverPlayer);
+    componentRef.setInput('showDetails', true);
+    componentRef.setInput('showBuyButton', true);
+    const buySub = componentRef.instance.buyClicked.subscribe(() => {
+      this.buyFromPopup.emit();
+      this.closeOverlay();
+    });
+    this.overlayRef.detachments().subscribe(() => buySub.unsubscribe());
   }
 
   private openOverlay() {
@@ -67,13 +134,7 @@ export class ItemHoverCardDirective implements OnDestroy {
     });
 
     const pane = this.overlayRef.overlayElement;
-    pane.style.backgroundImage = `url(assets/level_${tier}_glow.png)`;
-    pane.style.backgroundSize = 'cover';
-    pane.style.backgroundPosition = 'center';
-    pane.style.borderRadius = '8px';
-    pane.style.overflow = 'hidden';
-    pane.style.boxShadow = '0 4px 24px rgba(0,0,0,0.7)';
-    pane.style.zIndex = '1000';
+    this.applyPaneStyles(pane, tier);
 
     const portal = new ComponentPortal(ItemCardComponent, this.viewContainerRef);
     const componentRef = this.overlayRef.attach(portal);
@@ -83,6 +144,16 @@ export class ItemHoverCardDirective implements OnDestroy {
 
     pane.addEventListener('mouseenter', () => this.cancelClose());
     pane.addEventListener('mouseleave', () => this.scheduleClose());
+  }
+
+  private applyPaneStyles(pane: HTMLElement, tier: number) {
+    pane.style.backgroundImage = `url(assets/level_${tier}_glow.png)`;
+    pane.style.backgroundSize = 'cover';
+    pane.style.backgroundPosition = 'center';
+    pane.style.borderRadius = '8px';
+    pane.style.overflow = 'hidden';
+    pane.style.boxShadow = '0 4px 24px rgba(0,0,0,0.7)';
+    pane.style.zIndex = '1000';
   }
 
   private applyGlow() {

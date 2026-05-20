@@ -44,7 +44,7 @@
   z-index: 1100;
   overflow: hidden;
   animation: panelSlideIn 0.18s ease-out;
-  text-shadow: 0 1px 3px rgba(255, 255, 255, 0.2);
+  text-shadow: 0 2px 3px rgba(100, 100, 100, 0.9);
 
   @media (max-width: 900px) {
     left: 8px;
@@ -84,6 +84,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  text-shadow: 0 1px 1px rgba(100, 100, 100, 0.9);
 }
 
 .build-panel-pin {

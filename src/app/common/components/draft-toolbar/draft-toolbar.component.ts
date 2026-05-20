@@ -1,14 +1,13 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild, computed, inject } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges, computed, inject } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { Player } from '../../../models/colyseus-schema/PlayerSchema';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { TalentsComponent } from '../../../draft/components/talents/talents.component';
 import { Talent } from '../../../models/colyseus-schema/TalentSchema';
 import { EncyclopediaComponent } from '../../../draft/components/encyclopedia/encyclopedia.component';
-import { MatTooltip, MatTooltipModule } from '@angular/material/tooltip';
 import { NgClass } from '@angular/common';
 import { MatMenuModule } from '@angular/material/menu';
 import { DraftService } from '../../../draft/services/draft.service';
@@ -30,7 +29,6 @@ import { goldHint, buyXpHint, xpBarHint, lockShopHint, talentHint, draftReadyHin
     MatButtonModule,
     MatIconModule,
     MatProgressBarModule,
-    MatTooltipModule,
     NgClass,
     MatMenuModule,
     MatCardModule,
@@ -110,7 +108,7 @@ export class DraftToolbarComponent implements OnChanges, OnInit {
     this.characterDetailsService.toggleCharacterDetails();
   }
 
-  openInventory(): void {
+  openEncyclopedia(): void {
     this.characterDetailsService.showCharacterDetails.set(false);
     this.dialog.open(EncyclopediaComponent, {
       data: {

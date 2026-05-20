@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, NgModule, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import Item from '../../../models/colyseus-schema/ItemSchema';
 import { MatCardModule } from '@angular/material/card';
@@ -15,34 +15,49 @@ import {
   UpperCasePipe,
 } from '@angular/common';
 import { AffectedStats } from '../../../models/colyseus-schema/AffectedStatsSchema';
+import { CdkDragHandle } from "@angular/cdk/drag-drop";
+import { ChangeDetectorRef } from '@angular/core';
 
 
 @Component({
   selector: 'app-inventory',
   standalone: true,
-  imports: [MatCardModule, MatButtonModule, MatMenuModule,TitleCasePipe, DecimalPipe, NgClass, SlicePipe, UpperCasePipe],
+  imports: [MatCardModule, MatButtonModule, MatMenuModule, TitleCasePipe, DecimalPipe, NgClass, SlicePipe, UpperCasePipe, CdkDragHandle],
   templateUrl: './inventory.component.html',
   styleUrl: './inventory.component.scss',
 })
 export class InventoryComponent implements OnInit {
 
+  itemsData: Item[];
+  talentsData: TalentPreview[];
   displayedItems: Item[];
-  dispalyedTalents: TalentPreview[];
+  displayedTalents: TalentPreview[];
   isItemsView: boolean;
+  selectedClass: string | null = null;
+  selectedTier: string | null = null;
 
   constructor(
     @Inject(MAT_DIALOG_DATA)
-    public draftService: DraftService
+    public draftService: DraftService,
+    private cdr: ChangeDetectorRef
   ) {
-
+    this.itemsData = [];
+    this.talentsData = [];
     this.displayedItems = [];
-    this.dispalyedTalents = [];
+    this.displayedTalents = [];
     this.isItemsView = true;
   }
 
   async ngOnInit(): Promise<void> {
-    this.displayedItems = await this.fetchItems();
-    this.dispalyedTalents = await this.fetchTalents();
+    const [items, talents] = await Promise.all([
+      this.fetchItems(),
+      this.fetchTalents()
+    ]);
+    this.itemsData = items;
+    this.displayedItems = [...items];
+    this.talentsData = talents;
+    this.displayedTalents = [...talents];
+    this.cdr.detectChanges();
   }
 
   async fetchItems(): Promise<Item[]> {
@@ -64,6 +79,8 @@ export class InventoryComponent implements OnInit {
       return data.map(e => ({
         name: e.name,
         description: e.description,
+        tier: e.tier.toString(),
+        tags: e.tags,
       }));
     } catch (e) {
       console.error('Error loading items:', e);
@@ -120,11 +137,50 @@ export class InventoryComponent implements OnInit {
 
     return stats;
   }
+
+  filterItemsByClass(type: string): void {
+    this.selectedClass = type || null;
+    this.applyFilters('items');
+  }
+
+  filterItemsByTier(tier: string): void {
+    this.selectedTier = tier || null;
+    this.applyFilters('items');
+  }
+
+  filterTalentsByClass(type: string): void {
+    this.selectedClass = type || null;
+    this.applyFilters('talents');
+  }
+
+    filterTalentsByTier(type: string): void {
+    this.selectedTier = type || null;
+    this.applyFilters('talents');
+  }
+
+  private applyFilters(mode: string): void {
+    if (mode === 'items') {
+      this.displayedItems = this.itemsData.filter(item => {
+        const matchesClass = !this.selectedClass ||
+          item.tags.map(t => t.toLowerCase()).includes(this.selectedClass.toLowerCase());
+        const matchesTier = !this.selectedTier || item.tier.toString() === this.selectedTier;
+        return matchesClass && matchesTier;
+      });
+    } else if (mode === 'talents') {
+      this.displayedTalents = this.talentsData.filter(talent => {
+        const matchesClass = !this.selectedClass || talent.tags.map(t => t.toLowerCase()).includes(this.selectedClass.toLowerCase());
+        const matchesTier = !this.selectedTier || talent.tier === this.selectedTier;
+        return matchesClass && matchesTier;
+      });
+    }
+  }
 }
 
 export type TalentPreview = {
   name: string;
   description: string;
+  tier: string;
+  tags: [string];
 };
 
 type StatLine = {

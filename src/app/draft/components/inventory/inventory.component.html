@@ -4,6 +4,22 @@
     <button mat-button (click)="isItemsView = true" class="px-4 py-2 bg-[#654321] text-white rounded-md">Items</button>
     <button mat-button (click)="isItemsView = false"
       class="px-4 py-2 bg-[#654321] text-white rounded-md">Talents</button>
+    <div id="inventory-search-bar" class="flex rounded-lg justify-evenly items-center bg-stone-800 mt-8">
+      <select #classSelect (change)="isItemsView ?  filterItemsByClass(classSelect.value) : filterTalentsByClass(classSelect.value)" class="flex rounded-lg justify-evenly items-center bg-stone-800 mt-8">
+        <option value="">all</option>
+        <option value="warrior">warrior</option>
+        <option value="rogue">rogue</option>
+        <option value="merchant">merchant</option>
+      </select>
+      <select #tierSelect (change)="isItemsView ? filterItemsByTier(tierSelect.value) : filterTalentsByTier(tierSelect.value)" class="flex rounded-lg justify-evenly items-center bg-stone-800 mt-8">
+        <option value="">all</option>
+        <option value="1">tier 1</option>
+        <option value="2">tier 2</option>
+        <option value="3">tier 3</option>
+        <option value="4">tier 4</option>
+        <option value="5">tier 5</option>
+      </select>
+    </div>
   </div>
 
   <div class="flex-1 overflow-y-auto">
@@ -47,7 +63,7 @@
       </mat-card>
       }
       }@else {
-      @for (talent of dispalyedTalents; track $index) {
+      @for (talent of displayedTalents; track $index) {
       <div id="inventory-grid" class="grid-cols-3 gap-4 place-items-center">
         <mat-card [style.background-image]="'url(' + getTalentImage() + ')'" id="item-{{ $index }}"
           [style.background-size]="'100% 100%'" [style.background-position]="'center'"

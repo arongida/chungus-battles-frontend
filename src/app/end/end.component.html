@@ -151,12 +151,12 @@
 }
 
 <!-- Pinned panels — one per pinned player, each draggable -->
-@for (pinnedId of pinnedPlayerIds(); track pinnedId; let i = $index) {
+@for (pinnedId of pinnedPlayerIds(); track pinnedId) {
   @let pinnedBuild = getPinnedBuild(pinnedId);
   @if (pinnedBuild) {
     <div appDraggablePanel [dragHandleSelector]="'.build-panel-header'"
+         [initialLeft]="pinnedPanelInitialLeft(pinnedId)"
          class="build-panel"
-         [style.left.px]="pinnedPanelLeft(i)"
          style="top: 50%; transform: translateY(-50%)">
       <ng-container [ngTemplateOutlet]="panelContent"
                     [ngTemplateOutletContext]="{ build: pinnedBuild, pinnedId: pinnedId }">

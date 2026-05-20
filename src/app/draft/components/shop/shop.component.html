@@ -15,10 +15,11 @@
 
         <div
           [ngClass]="{'opacity-0':item.sold,'pointer-events-none':item.sold}"
-          [style.background-image]="'url(' + getItemImage(item) + ')'"
+          [style.background-image]="'url(' + (hoveredItem === item && !draggingCard ? getGlowImage(item) : getItemImage(item)) + ')'"
           id="item-{{ $index }}"
           class="w-28 h-40 sm:w-44 sm:h-60 md:w-52 md:h-72 lg:w-60 lg:h-80 items-center bg-cover bg-center shadow-amber-700"
           [appItemHoverCard]="item" [hoverPlayer]="player"
+          [touchOnly]="true"
           [hoverCardDisabled]="draggingCard || buyingItem === item"
           (buyFromPopup)="buyItem(item)"
           [appInfoHint]="getItemInfoHint(item)"
@@ -27,6 +28,7 @@
 
 <app-item-card [item]="item" [player]="player"
                          [setTooltipBasedOnInventory]="true"
+                         [showDetails]="hoveredItem === item && !draggingCard"
                          [showBuyButton]="hoveredItem === item && !draggingCard"
                          (buyClicked)="buyItem(item)"></app-item-card>
 

@@ -1,0 +1,73 @@
+<div class="enc-panel">
+
+  <div class="enc-header">
+    <span class="enc-title">✦ Encyclopedia</span>
+  </div>
+  <div class="enc-divider"></div>
+
+  <div class="enc-tabs">
+    <button class="enc-tab" [class.active]="isItemsView"
+      (click)="switchTab(true, classSelect, tierSelect)">Items</button>
+    <button class="enc-tab" [class.active]="!isItemsView"
+      (click)="switchTab(false, classSelect, tierSelect)">Talents</button>
+  </div>
+  <div class="enc-divider"></div>
+
+  <div class="enc-filters">
+    <select #classSelect class="enc-select"
+      (change)="filterByClass(classSelect.value)">
+      <option value="">All classes</option>
+      <option value="warrior">Warrior</option>
+      <option value="rogue">Rogue</option>
+      <option value="merchant">Merchant</option>
+    </select>
+    <select #tierSelect class="enc-select"
+      (change)="filterByTier(tierSelect.value)">
+      <option value="">All tiers</option>
+      <option value="1">Tier 1</option>
+      <option value="2">Tier 2</option>
+      <option value="3">Tier 3</option>
+      <option value="4">Tier 4</option>
+      <option value="5">Tier 5</option>
+    </select>
+  </div>
+  <div class="enc-divider"></div>
+
+  <div class="enc-content">
+
+    @if (isItemsView) {
+      <div class="enc-items-grid">
+        @for (item of displayedItems; track $index) {
+          <div class="enc-item-wrapper"
+               [style.background-image]="'url(' + (hoveredItem === item ? getGlowImage(item) : getItemImage(item)) + ')'"
+               [appItemHoverCard]="item" [hoverPlayer]="dummyPlayer"
+               [touchOnly]="true" [showBuyInOverlay]="false"
+               (mouseenter)="hoveredItem = item" (mouseleave)="hoveredItem = null">
+            <app-item-card [item]="item" [showDetails]="hoveredItem === item"></app-item-card>
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="enc-talents-list">
+        @for (talent of displayedTalents; track $index) {
+          <div class="enc-talent-card">
+            @if (talent.image) {
+              <img class="enc-talent-icon" [src]="talent.image" [alt]="talent.name" />
+            } @else {
+              <div class="enc-talent-icon-placeholder"></div>
+            }
+            <div class="enc-talent-body">
+              <div class="enc-talent-name">{{ talent.name }}</div>
+              <div class="enc-talent-desc">{{ talent.description }}</div>
+              @if (talent.triggerTypes.length > 0) {
+                <div class="enc-talent-trigger">⚡ {{ talent.triggerTypes.join(', ') }}</div>
+              }
+              <div class="enc-talent-tier">Tier {{ talent.tier }}</div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+  </div>
+</div>

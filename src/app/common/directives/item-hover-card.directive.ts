@@ -28,12 +28,18 @@ export class ItemHoverCardDirective implements OnChanges, OnDestroy {
   @Input({ required: true }) hoverPlayer!: Player;
   @Input({ required: false }) hoverCardDisabled = false;
   @Input({ required: false }) showGlow = false;
+  @Input({ required: false }) touchOnly = false;
+  @Input({ required: false }) showBuyInOverlay = true;
   @Output() buyFromPopup = new EventEmitter<void>();
 
   private overlayRef: OverlayRef | null = null;
   private closeTimeout: ReturnType<typeof setTimeout> | null = null;
   private originalImage: string | null = null;
   private readonly isTouch: boolean;
+
+  private get touchMode(): boolean {
+    return this.isTouch || this.touchOnly;
+  }
 
   constructor(
     private overlay: Overlay,
@@ -53,7 +59,7 @@ export class ItemHoverCardDirective implements OnChanges, OnDestroy {
 
   @HostListener('mouseenter')
   onMouseEnter() {
-    if (this.isTouch || this.hoverCardDisabled) return;
+    if (this.touchMode || this.hoverCardDisabled) return;
     this.cancelClose();
     if (this.showGlow) this.applyGlow();
     this.openOverlay();
@@ -61,14 +67,14 @@ export class ItemHoverCardDirective implements OnChanges, OnDestroy {
 
   @HostListener('mouseleave')
   onMouseLeave() {
-    if (this.isTouch) return;
+    if (this.touchMode) return;
     if (this.showGlow) this.restoreImage();
     this.scheduleClose();
   }
 
   @HostListener('click')
   onClick() {
-    if (!this.isTouch || this.hoverCardDisabled) return;
+    if (!this.touchMode || this.hoverCardDisabled) return;
     if (this.overlayRef?.hasAttached()) {
       if (this.showGlow) this.restoreImage();
       this.closeOverlay();
@@ -105,7 +111,7 @@ export class ItemHoverCardDirective implements OnChanges, OnDestroy {
     componentRef.setInput('item', this.item);
     componentRef.setInput('player', this.hoverPlayer);
     componentRef.setInput('showDetails', true);
-    componentRef.setInput('showBuyButton', true);
+    componentRef.setInput('showBuyButton', this.showBuyInOverlay);
     const buySub = componentRef.instance.buyClicked.subscribe(() => {
       this.buyFromPopup.emit();
       this.closeOverlay();

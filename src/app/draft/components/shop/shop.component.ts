@@ -78,6 +78,11 @@ export class ShopComponent {
     return item.image ? item.image : 'assets/Item_ID_0_Empty.png';
   }
 
+  getGlowImage(item: Item): string {
+    const tier = item.tier < 10 ? item.tier : item.tier - 90;
+    return `assets/level_${tier}_glow.png`;
+  }
+
   cardDragStarted(item: Item) {
     this.draggingCard = true;
     this.hoveredItem = null;

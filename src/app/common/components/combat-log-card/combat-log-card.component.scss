@@ -11,6 +11,7 @@
   border-radius: 6px;
   box-shadow: 0 0 20px rgba(180, 120, 30, 0.15), 0 4px 24px rgba(0, 0, 0, 0.8);
   overflow: hidden;
+  text-shadow: 0 1px 3px rgba(255, 255, 255, 0.2);
 }
 
 .clc-header {
@@ -19,7 +20,7 @@
 }
 
 .clc-title {
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -44,7 +45,7 @@
   justify-content: space-between;
   align-items: center;
   gap: 16px;
-  font-size: 11px;
+  font-size: 13px;
 }
 
 .clc-label {

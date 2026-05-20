@@ -1,12 +1,15 @@
 import { AfterViewInit, Directive, ElementRef, inject, Input, OnDestroy, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 
+let topZIndex = 1200;
+
 @Directive({
   selector: '[appDraggablePanel]',
   standalone: true,
 })
 export class DraggablePanelDirective implements AfterViewInit, OnDestroy {
   @Input() dragHandleSelector?: string;
+  @Input() initialLeft?: number;
 
   private readonly el = inject(ElementRef);
   private readonly platformId = inject(PLATFORM_ID);
@@ -22,6 +25,9 @@ export class DraggablePanelDirective implements AfterViewInit, OnDestroy {
     if (!isPlatformBrowser(this.platformId)) return;
 
     const panel = this.el.nativeElement as HTMLElement;
+    if (this.initialLeft !== undefined) {
+      panel.style.left = `${this.initialLeft}px`;
+    }
     this.handle = (this.dragHandleSelector
       ? panel.querySelector<HTMLElement>(this.dragHandleSelector)
       : panel) ?? panel;
@@ -97,6 +103,7 @@ export class DraggablePanelDirective implements AfterViewInit, OnDestroy {
     this.startLeft = rect.left;
     this.startTop = rect.top;
 
+    panel.style.zIndex = String(++topZIndex);
     document.body.style.userSelect = 'none';
     if (this.handle) this.handle.style.cursor = 'grabbing';
   }

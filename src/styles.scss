@@ -104,7 +104,7 @@ body {
   font-size: 18px;
   -webkit-font-smoothing: none;
   font-smooth: never;
-  letter-spacing: 0.04 rem;
+  letter-spacing: 0.02 rem;
   text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.8);
 }
 
@@ -186,6 +186,10 @@ body {
 
 .cdk-overlay-container {
   z-index: 800 !important;
+}
+
+.cdk-drag-preview {
+  z-index: 9999 !important;
 }
 
 .cdk-overlay-backdrop{

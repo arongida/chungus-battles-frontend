@@ -13,7 +13,7 @@
   border-radius: 6px;
   box-shadow: var(--cm-shadow);
   animation: tp-in 0.2s ease-out;
-  text-shadow: 0 1px 3px rgba(255, 255, 255, 0.2);
+  text-shadow: 0 2px 3px rgba(100, 100, 100, 0.9);
 
   @media (min-width: 640px) {
     top: 64px;
@@ -37,6 +37,7 @@
   letter-spacing: 0.08em;
   font-size: 0.82rem;
   font-weight: 600;
+  text-shadow: 0 1px 1px rgba(100, 100, 100, 0.9);
 }
 
 .tp-divider {
@@ -85,7 +86,7 @@
 
 .tp-card-name {
   color: var(--cm-amber);
-  font-size: 0.82rem;
+  font-size: 0.9rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -94,7 +95,7 @@
 
 .tp-card-desc {
   color: var(--cm-text);
-  font-size: 0.78rem;
+  font-size: 0.82rem;
   line-height: 1.45;
   margin-bottom: 3px;
 }

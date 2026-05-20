@@ -50,6 +50,7 @@
   gap: 2px;
   align-content: start;
   cursor: default;
+  text-shadow: 0 2px 3px rgba(100, 100, 100, 0.9);
 }
 
 .cd-stat {
@@ -57,7 +58,8 @@
   align-items: center;
   padding: 3px 4px;
   border-radius: 3px;
-  font-size: 0.7rem;
+  font-size: 0.9rem;
+  letter-spacing: 0.04rem;
   white-space: nowrap;
   overflow: hidden;
 

@@ -4,7 +4,6 @@ import Item from '../../../models/colyseus-schema/ItemSchema';
 import { MatButtonModule } from '@angular/material/button';
 import { environment } from '../../../../environments/environment';
 import { buildItemFromData } from '../../../common/utils/player-schema-builder';
-import { NgClass } from '@angular/common';
 import { Player } from '../../../models/colyseus-schema/PlayerSchema';
 import { ItemCardComponent } from '../../../common/components/item-card/item-card.component';
 import { ItemHoverCardDirective } from '../../../common/directives/item-hover-card.directive';

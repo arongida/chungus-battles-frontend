@@ -75,7 +75,7 @@ function calculatePlayerStats(player: Player): void {
     player.income           += src.income           ?? 0;
     player.hpRegen          += src.hpRegen          ?? 0;
     const spd = src.attackSpeed;
-    if (spd && spd !== 0 && spd !== 1) speedMult *= spd;
+    if (spd && spd !== 0 && spd !== 1) speedMult += spd - 1;
   };
 
   player.equippedItems.forEach(item => {

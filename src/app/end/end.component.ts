@@ -63,7 +63,6 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
 
   constructor(
     private router: Router,
-    private route: ActivatedRoute,
     private infoBoxService: InfoBoxService,
     private renderer: Renderer2,
     @Inject(PLATFORM_ID) private platformId: Object,

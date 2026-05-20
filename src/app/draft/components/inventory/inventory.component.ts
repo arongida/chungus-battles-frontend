@@ -8,11 +8,7 @@ import { DraftService } from '../../services/draft.service';
 import { environment } from '../../../../environments/environment';
 import { buildItemFromData } from '../../../common/utils/player-schema-builder';
 import {
-  DecimalPipe,
   NgClass,
-  SlicePipe,
-  TitleCasePipe,
-  UpperCasePipe,
 } from '@angular/common';
 import { AffectedStats } from '../../../models/colyseus-schema/AffectedStatsSchema';
 import { CdkDragHandle } from "@angular/cdk/drag-drop";
@@ -22,7 +18,7 @@ import { ChangeDetectorRef } from '@angular/core';
 @Component({
   selector: 'app-inventory',
   standalone: true,
-  imports: [MatCardModule, MatButtonModule, MatMenuModule, TitleCasePipe, DecimalPipe, NgClass, SlicePipe, UpperCasePipe, CdkDragHandle],
+  imports: [MatCardModule, MatButtonModule, MatMenuModule, NgClass,],
   templateUrl: './inventory.component.html',
   styleUrl: './inventory.component.scss',
 })
@@ -107,33 +103,41 @@ export class InventoryComponent implements OnInit {
     item.image = item.imageCache ? item.imageCache : item.image;
   }
 
-  getItemStats(item: Item, affectedStatsObject: AffectedStats): StatLine[] {
+  getItemStats(item: Item, affectedStatsObject: AffectedStats, includeBase = false): StatLine[] {
     const s = affectedStatsObject ?? {};
-
+    console.log('setBonusStats raw:', JSON.stringify(item.setBonusStats));
     const stats: StatLine[] = [];
 
-    if (item.baseMinDamage || item.baseMaxDamage) {
-      stats.push({
-        label: 'Damage',
-        value: item.baseMinDamage + '-' + item.baseMaxDamage,
-        icon: '⚔️',
-        color: 'text-red-500'
-      });
+    if (includeBase) {
+      if (item.baseMinDamage || item.baseMaxDamage) {
+        stats.push({
+          label: 'Damage',
+          value: item.baseMinDamage + '-' + item.baseMaxDamage,
+          icon: '⚔️',
+          color: 'text-red-500'
+        });
+      }
+
+      if (item.baseAttackSpeed) {
+        stats.push({
+          label: 'A.Speed',
+          value: item.baseAttackSpeed.toString(),
+          icon: '⏩',
+          color: 'text-blue-500'
+        });
+      }
     }
 
-    if (item.baseAttackSpeed) {
-      stats.push({
-        label: 'Speed',
-        value: item.baseAttackSpeed.toString(),
-        icon: '⏩',
-        color: 'text-blue-500'
-      });
-    }
 
-    if (s.defense) stats.push({ label: 'Defense', value: s.defense.toString(), icon: '🛡️', color: 'text-green-500' });
-    if (s.maxHp) stats.push({ label: 'Health', value: s.maxHp.toString(), icon: '❤️', color: 'text-pink-500' });
-    if (s.income) stats.push({ label: 'Income', value: s.income.toString(), icon: '💰', color: 'text-yellow-300' });
-    if (s.hpRegen) stats.push({ label: 'Regen', value: s.hpRegen.toString(), icon: '🧪', color: 'text-orange-500' });
+    if (s.strength) stats.push({ label: 'Strength', value: s.strength.toString(), icon: '⚔️', color: 'text-red-500' });
+    if (s.accuracy) stats.push({ label: 'Accuracy', value: s.accuracy.toString(), icon: '🎯', color: 'text-red-500' });
+    if (s.attackSpeed && s.attackSpeed !== 1) stats.push({ label: 'A.Speed', value: (s.attackSpeed * 100 - 100).toFixed(0) + '%', icon: '⏩', color: 'text-blue-500' });
+    if (s.defense) stats.push({ label: 'Defense', value: s.defense.toFixed(2), icon: '🛡️', color: 'text-green-600' });
+    if (s.flatDmgReduction) stats.push({ label: 'Dmg Reduction', value: s.flatDmgReduction.toFixed(2), icon: '🔰', color: 'text-green-600' });
+    if (s.dodgeRate) stats.push({ label: 'Dodge', value: s.dodgeRate.toFixed(2), icon: '🦵', color: 'text-green-400' });
+    if (s.maxHp) stats.push({ label: 'Health', value: s.maxHp.toFixed(0), icon: '❤️', color: 'text-pink-500' });
+    if (s.income) stats.push({ label: 'Income', value: s.income.toFixed(0), icon: '💰', color: 'text-yellow-300' });
+    if (s.hpRegen) stats.push({ label: 'Regen', value: s.hpRegen.toFixed(2), icon: '🧪', color: 'text-orange-500' });
 
     return stats;
   }
@@ -153,7 +157,7 @@ export class InventoryComponent implements OnInit {
     this.applyFilters('talents');
   }
 
-    filterTalentsByTier(type: string): void {
+  filterTalentsByTier(type: string): void {
     this.selectedTier = type || null;
     this.applyFilters('talents');
   }

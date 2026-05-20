@@ -40,7 +40,7 @@
           <span class="text-yellow-300">{{ item.price }} 🟡</span>
 
         </div>
-        @for (stat of getItemStats(item, item.affectedStats); track stat.label) {
+        @for (stat of getItemStats(item, item.affectedStats, true); track stat.label) {
 
         <div class="flex-1 overflow-y-auto text-center">
           {{ stat.label }}:

@@ -211,7 +211,9 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.playerId = Number(localStorage.getItem('playerId')) ?? 0;
+    if (isPlatformBrowser(this.platformId)) {
+      this.playerId = Number(localStorage.getItem('playerId')) ?? 0;
+    }
     this.fetchPlayerData();
     this.intervalId = setInterval(() => this.fetchPlayerData(), 5000);
 

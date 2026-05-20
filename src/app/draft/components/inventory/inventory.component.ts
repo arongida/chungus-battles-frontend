@@ -14,6 +14,7 @@ import {
   TitleCasePipe,
   UpperCasePipe,
 } from '@angular/common';
+import { AffectedStats } from '../../../models/colyseus-schema/AffectedStatsSchema';
 
 
 @Component({
@@ -89,18 +90,15 @@ export class InventoryComponent implements OnInit {
     item.image = item.imageCache ? item.imageCache : item.image;
   }
 
-  getItemStats(item: Item): StatLine[] {
-    const s = item.affectedStats ?? {};
-    const e = item.setBonusStats ?? {};
-
-    const fmtPercent = (v: number) => `${v > 0 ? '+' : ''}${Math.round((v - 1) * 100)}%`;
+  getItemStats(item: Item, affectedStatsObject: AffectedStats): StatLine[] {
+    const s = affectedStatsObject ?? {};
 
     const stats: StatLine[] = [];
 
     if (item.baseMinDamage || item.baseMaxDamage) {
       stats.push({
         label: 'Damage',
-        value: item.baseMinDamage,
+        value: item.baseMinDamage + '-' + item.baseMaxDamage,
         icon: '⚔️',
         color: 'text-red-500'
       });
@@ -109,18 +107,16 @@ export class InventoryComponent implements OnInit {
     if (item.baseAttackSpeed) {
       stats.push({
         label: 'Speed',
-        value: item.baseAttackSpeed,
+        value: item.baseAttackSpeed.toString(),
         icon: '⏩',
         color: 'text-blue-500'
       });
     }
 
-    if (s.strength) stats.push({ label: 'Strength', value: s.strength, icon: '⚔️', color: 'text-red-500' });
-    if (s.accuracy) stats.push({ label: 'Accuracy', value: s.accuracy, icon: '🎯', color: 'text-red-500' });
-    if (s.defense) stats.push({ label: 'Defense', value: s.defense, icon: '🛡️', color: 'text-green-500' });
-    if (s.maxHp) stats.push({ label: 'Health', value: s.maxHp, icon: '❤️', color: 'text-pink-500' });
-    if (s.income) stats.push({ label: 'Income', value: s.income, icon: '💰', color: 'text-yellow-300' });
-    if (s.hpRegen) stats.push({ label: 'Regen', value: s.hpRegen, icon: '🧪', color: 'text-orange-500' });
+    if (s.defense) stats.push({ label: 'Defense', value: s.defense.toString(), icon: '🛡️', color: 'text-green-500' });
+    if (s.maxHp) stats.push({ label: 'Health', value: s.maxHp.toString(), icon: '❤️', color: 'text-pink-500' });
+    if (s.income) stats.push({ label: 'Income', value: s.income.toString(), icon: '💰', color: 'text-yellow-300' });
+    if (s.hpRegen) stats.push({ label: 'Regen', value: s.hpRegen.toString(), icon: '🧪', color: 'text-orange-500' });
 
     return stats;
   }
@@ -133,7 +129,7 @@ export type TalentPreview = {
 
 type StatLine = {
   label: string;
-  value: number;
+  value: string;
   icon: string;
   color: string;
   format?: 'percent' | 'number';

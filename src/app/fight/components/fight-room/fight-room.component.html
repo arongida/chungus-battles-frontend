@@ -49,7 +49,7 @@
 
 <!-- Battle result (win / loss / draw) -->
 @if (battleResultVisible() && !battleResultMinimized()) {
-<div class="fixed inset-0 z-50 flex items-center justify-center chungus-backdrop">
+<div class="fixed inset-0 z-[9999] flex items-center justify-center chungus-backdrop">
   <div class="chungus-card text-center relative">
     <button class="end-modal-dismiss" (click)="battleResultMinimized.set(true)" title="Dismiss to review combat log">×</button>
     <div class="chungus-modal-icon">
@@ -74,7 +74,7 @@
 </div>
 }
 @if (battleResultVisible() && battleResultMinimized()) {
-<div class="fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
+<div class="fixed bottom-4 left-1/2 -translate-x-1/2 z-[9999]">
   <button class="end-pill" (click)="battleResultMinimized.set(false)">
     @if (battleResult() === 'win') { ⚔️ Round Won }
     @if (battleResult() === 'lose') { 🛡️ Round Lost }
@@ -86,7 +86,7 @@
 
 <!-- Run over (game_over) -->
 @if (gameOverVisible() && !gameOverMinimized()) {
-<div class="fixed inset-0 z-50 flex items-center justify-center chungus-backdrop">
+<div class="fixed inset-0 z-[9999] flex items-center justify-center chungus-backdrop">
   <div class="chungus-card text-center relative">
     <button class="end-modal-dismiss" (click)="gameOverMinimized.set(true)" title="Dismiss to review combat log">×</button>
     <div class="chungus-modal-icon game-over-icon">💀</div>
@@ -99,7 +99,7 @@
 </div>
 }
 @if (gameOverVisible() && gameOverMinimized()) {
-<div class="fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
+<div class="fixed bottom-4 left-1/2 -translate-x-1/2 z-[9999]">
   <button class="end-pill" (click)="gameOverMinimized.set(false)">
     💀 Run Over — tap to continue
   </button>
@@ -108,7 +108,7 @@
 
 <!-- Version record -->
 @if (versionWin() && !versionWinMinimized()) {
-<div class="fixed inset-0 z-50 flex items-center justify-center chungus-backdrop">
+<div class="fixed inset-0 z-[9999] flex items-center justify-center chungus-backdrop">
   <div class="chungus-card text-center relative">
     <button class="end-modal-dismiss" (click)="versionWinMinimized.set(true)" title="Dismiss to review combat log">×</button>
     <div class="chungus-modal-icon">🏆</div>
@@ -129,7 +129,7 @@
 </div>
 }
 @if (versionWin() && versionWinMinimized()) {
-<div class="fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
+<div class="fixed bottom-4 left-1/2 -translate-x-1/2 z-[9999]">
   <button class="end-pill" (click)="versionWinMinimized.set(false)">
     🏆 Version Record — tap to continue
   </button>
@@ -138,7 +138,7 @@
 
 <!-- All-time #1 -->
 @if (topWin() && !topWinMinimized()) {
-<div class="fixed inset-0 z-50 flex items-center justify-center chungus-backdrop">
+<div class="fixed inset-0 z-[9999] flex items-center justify-center chungus-backdrop">
   <div class="chungus-card text-center relative">
     <button class="end-modal-dismiss" (click)="topWinMinimized.set(true)" title="Dismiss to review combat log">×</button>
     <div class="chungus-modal-icon top-win-icon">👑</div>
@@ -155,7 +155,7 @@
 </div>
 }
 @if (topWin() && topWinMinimized()) {
-<div class="fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
+<div class="fixed bottom-4 left-1/2 -translate-x-1/2 z-[9999]">
   <button class="end-pill" (click)="topWinMinimized.set(false)">
     👑 All-Time #1 — tap to continue
   </button>

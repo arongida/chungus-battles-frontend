@@ -74,10 +74,10 @@ export class JoinFormComponent implements AfterViewInit, OnDestroy, OnInit {
     this.infoBoxService.setPageDefault({
       title: 'Choose Your Character',
       entries: [
-        { icon: '⚔️', label: 'Warrior', text: 'Starts with a melee weapon — high damage, slower attack speed. Great for burst.' },
-        { icon: '🗡️', label: 'Thief', text: 'Starts with a fast dagger — lower damage per hit but attacks very quickly.' },
-        { icon: '💰', label: 'Merchant', text: 'Starts with a unique item — gains economic advantages.' },
-        { icon: '💡', label: 'Tip', text: 'Your character choice affects your starting weapon only. Items you buy can take any build in any direction.' },
+        { icon: '⚔️', label: 'Warrior - Value', text: 'Starts with 4 lives instead of 3 and a melee weapon — high damage, slower attack speed. Extra life gives you more swings at the run.' },
+        { icon: '🗡️', label: 'Thief - Tempo', text: 'Starts at level 2 with an extra talent point and access to tier-2 shop items. Snowball early with a fast dagger.' },
+        { icon: '💰', label: 'Merchant - Flexibility', text: 'Starts with +3 income (and +3 bonus gold from a unique starter item) — refresh more, see more, build any direction.' },
+        { icon: '💡', label: 'Tip', text: 'Your character choice picks a starting bonus and weapon. Items you buy can take any build in any direction.' },
       ],
     });
   }

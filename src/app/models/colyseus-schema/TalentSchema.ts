@@ -20,10 +20,12 @@ export class Talent extends Schema {
   @type('number') statDamageDealt: number = 0;
   @type('number') statHealingDone: number = 0;
   @type('number') statGoldGained: number = 0;
+  @type('number') statXpGained: number = 0;
   @type('number') totalActivations: number = 0;
   @type('number') totalDamageDealt: number = 0;
   @type('number') totalHealingDone: number = 0;
   @type('number') totalGoldGained: number = 0;
+  @type('number') totalXpGained: number = 0;
   // Frontend-only display state — not synced, must stay after all backend fields
   levelRequirement: number = 0;
   showDetails: boolean = false;

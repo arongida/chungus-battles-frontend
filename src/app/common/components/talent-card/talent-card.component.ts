@@ -33,11 +33,11 @@ export class TalentCardComponent {
   }
 
   hasCombatStats(): boolean {
-    return !!(this.talent.statActivations || this.talent.statDamageDealt || this.talent.statHealingDone || this.talent.statGoldGained);
+    return !!(this.talent.statActivations || this.talent.statDamageDealt || this.talent.statHealingDone || this.talent.statGoldGained || this.talent.statXpGained);
   }
 
   hasTotalStats(): boolean {
-    return !!(this.talent.totalActivations || this.talent.totalDamageDealt || this.talent.totalHealingDone || this.talent.totalGoldGained);
+    return !!(this.talent.totalActivations || this.talent.totalDamageDealt || this.talent.totalHealingDone || this.talent.totalGoldGained || this.talent.totalXpGained);
   }
 
   fmt2(v: number): string {

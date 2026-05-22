@@ -4,7 +4,7 @@ export type CombatLogKind =
   | 'regen' | 'poison_apply' | 'poison_tick'
   | 'heal' | 'leech'
   | 'talent' | 'item'
-  | 'reward' | 'result';
+  | 'reward' | 'xp' | 'result';
 
 export interface CombatLogEntry {
   text: string;
@@ -22,5 +22,6 @@ export interface CombatLogEntry {
   healing?: number;
   poisonStacks?: number;
   goldDelta?: number;
+  xpDelta?: number;
   result?: 'win' | 'lose' | 'draw';
 }

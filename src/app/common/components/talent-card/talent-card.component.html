@@ -50,6 +50,7 @@
       @if (talent.statDamageDealt)  { <p class="tc-stat tc-stat--debuff">⚔️ {{ fmt2(talent.statDamageDealt) }} dmg dealt</p> }
       @if (talent.statHealingDone)  { <p class="tc-stat tc-stat--buff">💚 {{ fmt2(talent.statHealingDone) }} healed</p> }
       @if (talent.statGoldGained)   { <p class="tc-stat tc-stat--gold">🟡 {{ fmt2(talent.statGoldGained) }} gold</p> }
+      @if (talent.statXpGained)     { <p class="tc-stat tc-stat--neutral">✨ {{ fmt2(talent.statXpGained) }} xp</p> }
     </div>
   }
   @if (hasTotalStats()) {
@@ -60,6 +61,7 @@
       @if (talent.totalDamageDealt)  { <p class="tc-stat tc-stat--debuff">⚔️ {{ fmt2(talent.totalDamageDealt) }} dmg dealt</p> }
       @if (talent.totalHealingDone)  { <p class="tc-stat tc-stat--buff">💚 {{ fmt2(talent.totalHealingDone) }} healed</p> }
       @if (talent.totalGoldGained)   { <p class="tc-stat tc-stat--gold">🟡 {{ fmt2(talent.totalGoldGained) }} gold</p> }
+      @if (talent.totalXpGained)     { <p class="tc-stat tc-stat--neutral">✨ {{ fmt2(talent.totalXpGained) }} xp</p> }
     </div>
   }
 

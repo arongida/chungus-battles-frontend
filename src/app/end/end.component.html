@@ -17,29 +17,51 @@
 
   <h2 class="text-xl sm:text-2xl font-semibold text-white mb-4">Top Players:</h2>
 
-  <div class="flex mb-1 rounded-lg overflow-hidden border border-gray-600">
+  <!-- Version tabs -->
+  <div class="leaderboard-tabs">
     <button
-      class="px-5 py-2 text-sm font-semibold transition-colors"
-      [class.bg-amber-600]="activeTab() === 'latest-version'"
-      [class.text-white]="activeTab() === 'latest-version'"
-      [class.bg-gray-700]="activeTab() !== 'latest-version'"
-      [class.text-gray-300]="activeTab() !== 'latest-version'"
-      (click)="setTab('latest-version')">
+      class="leaderboard-tab"
+      [class.leaderboard-tab-active]="filterCurrentVersionOnly()"
+      (click)="setVersionFilter(true)">
       Latest Version
     </button>
     <button
-      class="px-5 py-2 text-sm font-semibold transition-colors"
-      [class.bg-amber-600]="activeTab() === 'all-time'"
-      [class.text-white]="activeTab() === 'all-time'"
-      [class.bg-gray-700]="activeTab() !== 'all-time'"
-      [class.text-gray-300]="activeTab() !== 'all-time'"
-      (click)="setTab('all-time')">
+      class="leaderboard-tab"
+      [class.leaderboard-tab-active]="!filterCurrentVersionOnly()"
+      (click)="setVersionFilter(false)">
       All Time
     </button>
   </div>
 
+  <!-- Filter row -->
+  <div class="leaderboard-filters">
+    <input
+      class="leaderboard-filter-input"
+      type="text"
+      placeholder="Search name…"
+      [value]="filterName()"
+      (input)="onFilterNameInput($any($event.target).value)" />
+
+    <select
+      class="leaderboard-filter-select"
+      [value]="filterAvatar()"
+      (change)="setFilterAvatar($any($event.target).value)">
+      @for (opt of avatarOptions; track opt.value) {
+        <option [value]="opt.value">{{ opt.label }}</option>
+      }
+    </select>
+
+    <input
+      class="leaderboard-filter-input leaderboard-filter-round"
+      type="number"
+      min="1"
+      placeholder="Min round"
+      [value]="filterMinRound() ?? ''"
+      (change)="setFilterMinRound($any($event.target).value)" />
+  </div>
+
   <div class="w-full max-w-md bg-gray-800 bg-opacity-50 rounded-lg shadow-lg p-6">
-    @for (Player of currentTabPlayers(); track Player.playerId) {
+    @for (Player of leaderboardPlayers(); track Player.playerId) {
       <div
         class="player-row text-lg mb-2 cursor-pointer select-none"
         [class.text-yellow-400]="Player.playerId === playerId"
@@ -49,38 +71,89 @@
         (mouseenter)="onPlayerHover(Player.playerId)"
         (mouseleave)="onPlayerLeave()"
         (click)="onPlayerClick(Player.playerId)">
-        {{ $index + 1 }}. {{ Player.name }} - {{ Player.wins }} wins
+        {{ currentPage() * pageSize + $index + 1 }}. {{ Player.name }} - {{ Player.wins }} wins
         @if (isPinned(Player.playerId)) {
           <span class="text-amber-500 text-sm ml-1">📌</span>
         }
       </div>
     }
-    @if (!topListContainsPlayer()) {
-      <span class="text-gray-500">...</span>
-      <div
-        class="player-row text-lg text-yellow-400 mb-2 cursor-pointer select-none player-row-active"
-        [class.player-row-pinned]="isPinned(playerId)"
-        (mouseenter)="onPlayerHover(playerId)"
-        (mouseleave)="onPlayerLeave()"
-        (click)="onPlayerClick(playerId)">
-        {{ playerRank() }}. {{ playerName() }} - {{ playerWins() }} wins
-        @if (isPinned(playerId)) {
-          <span class="text-amber-500 text-sm ml-1">📌</span>
-        }
-      </div>
+    @if (leaderboardPlayers().length === 0) {
+      <p class="text-gray-500 text-sm text-center py-2">No players match the current filters.</p>
     }
   </div>
 
-  <button mat-fab extended class="mt-5 text-2xl" (click)="goToHome()">
-    RESTART
-  </button>
+  <!-- Pagination controls -->
+  <div class="leaderboard-pagination">
+    <button mat-icon-button [disabled]="currentPage() === 0" (click)="prevPage()">
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+    <span class="leaderboard-page-info">
+      Page {{ currentPage() + 1 }} of {{ totalPages() }}
+      <span class="leaderboard-total">({{ totalCount() }} players)</span>
+    </span>
+    <button mat-icon-button [disabled]="currentPage() >= totalPages() - 1" (click)="nextPage()">
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+  </div>
+
+  <!-- Rank info for current player -->
+  <div class="leaderboard-rank-row">
+    <span class="text-gray-400 text-sm">Your rank: #{{ playerRank() }} — {{ playerWins() }} wins</span>
+  </div>
+
+  <div class="flex gap-3 mt-5 flex-wrap justify-center">
+    <button mat-fab extended class="text-2xl" (click)="goToHome()">
+      RESTART
+    </button>
+    <button mat-stroked-button class="replays-btn" (click)="openReplays(originalPlayerId(), 'My')">
+      <mat-icon>history</mat-icon> My Replays
+    </button>
+  </div>
 </div>
+
+<!-- Replays modal -->
+@if (replaysOpen()) {
+  <div class="fixed inset-0 z-[9999] flex items-center justify-center" style="background: rgba(0,0,0,0.7);" (click)="closeReplays()">
+    <div class="replays-modal" (click)="$event.stopPropagation()">
+      <div class="replays-modal-header">
+        <span>{{ replaysPlayerName() === 'My' ? 'My Fight Replays' : replaysPlayerName() + "'s Replays" }}</span>
+        <button class="replays-close-btn" (click)="closeReplays()">×</button>
+      </div>
+      @if (replaysLoading()) {
+        <p class="replays-empty">Loading...</p>
+      } @else if (replays().length === 0) {
+        @if (replaysPlayerOriginalId() === originalPlayerId()) {
+          <p class="replays-empty">No replays recorded yet. Play a fight to start recording!</p>
+        } @else {
+          <p class="replays-empty">No replays available for this player.</p>
+        }
+      } @else {
+        <div class="replays-list">
+          @for (r of replays(); track r.replayId) {
+            <a [routerLink]="['/replay', r.replayId]" class="replay-row" target="_blank">
+              <span class="replay-row-round">Round {{ r.round }}</span>
+              <span class="replay-row-vs">vs. {{ r.enemyName }}</span>
+              <span class="replay-row-result" [class.win]="r.result === 'win'" [class.lose]="r.result === 'lose' || r.result === 'loose'" [class.draw]="r.result === 'draw'">
+                {{ replayResultLabel(r.result) }}
+              </span>
+              <span class="replay-row-date">{{ r.createdAt | date:'MMM d' }}</span>
+              <mat-icon class="replay-row-icon">play_circle</mat-icon>
+            </a>
+          }
+        </div>
+      }
+    </div>
+  </div>
+}
 
 <!-- Shared panel content template -->
 <ng-template #panelContent let-build="build" let-pinnedId="pinnedId">
   <div class="build-panel-header">
     <mat-icon class="build-panel-icon">person</mat-icon>
     <span class="build-panel-title">{{ build.name }} — {{ build.wins }} wins</span>
+    <button class="build-panel-replays" (mousedown)="$event.stopPropagation()" (click)="openReplays(build.originalPlayerId, build.name)">
+      <mat-icon class="build-panel-replays-icon">history</mat-icon>
+    </button>
     @if (pinnedId !== undefined) {
       <button class="build-panel-close" (mousedown)="$event.stopPropagation()" (click)="unpinPlayer(pinnedId)" title="Unpin">×</button>
     } @else {

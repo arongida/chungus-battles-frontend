@@ -1,0 +1,74 @@
+.replay-bar {
+  background: rgba(10, 10, 15, 0.96);
+  border-bottom: 1px solid var(--cm-border);
+  backdrop-filter: blur(4px);
+  height: 48px;
+}
+
+.replay-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: var(--cm-amber);
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border: 1px solid var(--cm-amber);
+  border-radius: 4px;
+}
+
+.replay-result {
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 2px 10px;
+  border-radius: 12px;
+  &.win  { color: #4ade80; border: 1px solid #4ade80; }
+  &.lose { color: #f87171; border: 1px solid #f87171; }
+  &.draw { color: #fbbf24; border: 1px solid #fbbf24; }
+}
+
+.speed-group {
+  display: flex;
+  gap: 2px;
+  button {
+    background: transparent;
+    border: 1px solid var(--cm-border);
+    color: var(--cm-text-muted);
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 100ms, color 100ms;
+    &.active {
+      background: rgba(180, 120, 30, 0.18);
+      color: var(--cm-amber);
+      border-color: var(--cm-amber);
+    }
+    &:hover:not(.active) {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--cm-text);
+    }
+  }
+}
+
+.replay-ctrl-btn {
+  color: var(--cm-amber) !important;
+}
+
+.progress-bar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: var(--cm-amber);
+}
+
+.version-banner {
+  background: rgba(10, 10, 15, 0.9);
+  border: 1px solid var(--cm-border);
+  border-radius: 8px;
+  color: var(--cm-text-muted);
+  font-size: 0.75rem;
+  padding: 6px 14px;
+}

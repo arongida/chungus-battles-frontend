@@ -1,5 +1,7 @@
-import { Component, ElementRef, ViewChild, Renderer2, AfterViewInit, OnDestroy, OnInit, signal, PLATFORM_ID, Inject } from '@angular/core';
-import { DecimalPipe, isPlatformBrowser, NgTemplateOutlet } from '@angular/common';
+import { Component, ElementRef, ViewChild, Renderer2, AfterViewInit, OnDestroy, OnInit, signal, computed, PLATFORM_ID, Inject } from '@angular/core';
+import { DecimalPipe, DatePipe, isPlatformBrowser, NgTemplateOutlet } from '@angular/common';
+import { RouterLink } from '@angular/router';
+import { ReplayListItem } from '../replay/replay-room.component';
 import { InfoHintDirective } from '../common/directives/info-hint.directive';
 import { InfoContent } from '../common/models/info-content';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -19,19 +21,42 @@ import { DraggablePanelDirective } from '../common/directives/draggable-panel.di
 @Component({
   selector: 'app-end',
   standalone: true,
-  imports: [MatButtonModule, MatIconModule, ItemHoverCardDirective, SkillIconsComponent, DecimalPipe, InfoHintDirective, NgTemplateOutlet, DraggablePanelDirective],
+  imports: [MatButtonModule, MatIconModule, ItemHoverCardDirective, SkillIconsComponent, DecimalPipe, DatePipe, InfoHintDirective, NgTemplateOutlet, DraggablePanelDirective, RouterLink],
   templateUrl: './end.component.html',
   styleUrl: './end.component.scss',
 })
 export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
   message: string = 'Game Over';
-  topPlayers = signal<Player[]>([]);
-  topPlayersLatestVersion = signal<Player[]>([]);
-  activeTab = signal<'all-time' | 'latest-version'>('latest-version');
+  leaderboardPlayers = signal<Player[]>([]);
+  totalCount = signal<number>(0);
+  readonly pageSize = 10;
+  currentPage = signal<number>(0);
+  totalPages = computed(() => Math.max(1, Math.ceil(this.totalCount() / this.pageSize)));
+
+  filterName = signal<string>('');
+  filterAvatar = signal<string>('');
+  filterMinRound = signal<number | null>(null);
+  filterCurrentVersionOnly = signal<boolean>(true);
+
+  readonly avatarOptions: { label: string; value: string }[] = [
+    { label: 'All classes', value: '' },
+    { label: 'Thief', value: 'assets/thief_01.png' },
+    { label: 'Warrior', value: 'assets/warrior_01.png' },
+    { label: 'Merchant', value: 'assets/merchant_01.png' },
+  ];
+
   playerId: number = 0;
   playerRank = signal<number>(0);
   playerName = signal<string>('');
   playerWins = signal<number>(0);
+
+  originalPlayerId = signal<number>(0);
+  replaysOpen = signal(false);
+  replaysPlayerName = signal<string>('');
+  replaysPlayerOriginalId = signal<number>(0);
+  replays = signal<ReplayListItem[]>([]);
+  replaysLoading = signal(false);
+  private replaysCache = new Map<number, ReplayListItem[]>();
 
   hoveredPlayerId = signal<number | null>(null);
   pinnedPlayerIds = signal<number[]>([]);
@@ -227,31 +252,108 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  setTab(tab: 'all-time' | 'latest-version') {
-    this.activeTab.set(tab);
+  private nameDebounceTimer: any;
+
+  onFilterNameInput(value: string): void {
+    this.filterName.set(value);
+    clearTimeout(this.nameDebounceTimer);
+    this.nameDebounceTimer = setTimeout(() => {
+      this.currentPage.set(0);
+      this.fetchLeaderboard();
+    }, 300);
   }
 
-  currentTabPlayers() {
-    return this.activeTab() === 'latest-version'
-      ? this.topPlayersLatestVersion()
-      : this.topPlayers();
+  setFilterAvatar(value: string): void {
+    this.filterAvatar.set(value);
+    this.currentPage.set(0);
+    this.fetchLeaderboard();
   }
 
-  async fetchPlayerData() {
+  setFilterMinRound(value: string): void {
+    const n = value ? Number(value) : null;
+    this.filterMinRound.set(n);
+    this.currentPage.set(0);
+    this.fetchLeaderboard();
+  }
+
+  setVersionFilter(currentOnly: boolean): void {
+    this.filterCurrentVersionOnly.set(currentOnly);
+    this.currentPage.set(0);
+    this.fetchLeaderboard();
+  }
+
+  nextPage(): void {
+    if (this.currentPage() < this.totalPages() - 1) {
+      this.currentPage.update(p => p + 1);
+      this.fetchLeaderboard();
+    }
+  }
+
+  prevPage(): void {
+    if (this.currentPage() > 0) {
+      this.currentPage.update(p => p - 1);
+      this.fetchLeaderboard();
+    }
+  }
+
+  private async fetchLeaderboard(rankForOriginalPlayerId?: number): Promise<void> {
     try {
-      const [allTimeResults, latestVersionResults, playerRankResult] = await Promise.all([
-        fetch(`${environment.gameServer}/topPlayers?numberOfPlayers=10`).then(res => res.json()),
-        fetch(`${environment.gameServer}/topPlayersCurrentVersion?numberOfPlayers=10`).then(res => res.json()),
-        fetch(`${environment.gameServer}/rank?playerId=${this.playerId}`).then(res => res.json()),
-      ]);
-      this.topPlayers.set(allTimeResults);
-      this.topPlayersLatestVersion.set(latestVersionResults);
-      this.playerRank.set(playerRankResult.rank);
+      const params = new URLSearchParams({ limit: String(this.pageSize), skip: String(this.currentPage() * this.pageSize) });
+      if (this.filterCurrentVersionOnly()) params.set('currentVersion', 'true');
+      if (this.filterName()) params.set('name', this.filterName());
+      if (this.filterAvatar()) params.set('avatar', this.filterAvatar());
+      if (this.filterMinRound() !== null) params.set('minRound', String(this.filterMinRound()));
+      const origId = rankForOriginalPlayerId ?? this.originalPlayerId();
+      if (origId) params.set('rankForOriginalPlayerId', String(origId));
+      const result = await fetch(`${environment.gameServer}/leaderboard?${params}`).then(r => r.json());
+      this.leaderboardPlayers.set(Array.isArray(result.players) ? result.players : []);
+      this.totalCount.set(typeof result.total === 'number' ? result.total : 0);
+      if (typeof result.userRank === 'number') this.playerRank.set(result.userRank);
+    } catch (error) {
+      console.error('Error fetching leaderboard:', error);
+    }
+  }
+
+  async fetchPlayerData(): Promise<void> {
+    try {
+      const playerRankResult = await fetch(`${environment.gameServer}/rank?playerId=${this.playerId}`).then(res => res.json());
       this.playerName.set(playerRankResult.name);
       this.playerWins.set(playerRankResult.wins);
+      const origId = playerRankResult.originalPlayerId ?? this.originalPlayerId();
+      if (playerRankResult.originalPlayerId) this.originalPlayerId.set(playerRankResult.originalPlayerId);
+      await this.fetchLeaderboard(origId);
     } catch (error) {
       console.error('Error fetching player data:', error);
     }
+  }
+
+  async openReplays(originalPlayerId: number, displayName: string): Promise<void> {
+    this.replaysPlayerName.set(displayName);
+    this.replaysPlayerOriginalId.set(originalPlayerId);
+    this.replaysOpen.set(true);
+    const cached = this.replaysCache.get(originalPlayerId);
+    if (cached) { this.replays.set(cached); return; }
+    this.replaysLoading.set(true);
+    try {
+      const data = await fetch(`${environment.gameServer}/replays?originalPlayerId=${originalPlayerId}`).then(r => r.json());
+      const list = Array.isArray(data) ? data.reverse() : [];
+      this.replaysCache.set(originalPlayerId, list);
+      this.replays.set(list);
+    } catch {
+      this.replays.set([]);
+    } finally {
+      this.replaysLoading.set(false);
+    }
+  }
+
+  closeReplays(): void {
+    this.replaysOpen.set(false);
+  }
+
+  replayResultLabel(result: string): string {
+    if (result === 'win') return '⚔️ Win';
+    if (result === 'lose' || result === 'loose') return '🛡️ Loss';
+    return '⚡ Draw';
   }
 
   goToHome() {
@@ -260,10 +362,6 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
     localStorage.removeItem('roomId');
     localStorage.removeItem('reconnectToken');
     this.router.navigate(['/']);
-  }
-
-  topListContainsPlayer() {
-    return this.currentTabPlayers().some(player => player.playerId === this.playerId);
   }
 
   ngAfterViewInit(): void {
@@ -293,6 +391,7 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy() {
     if (this.intervalId) clearInterval(this.intervalId);
     if (this.fallingItemsIntervalId) clearInterval(this.fallingItemsIntervalId);
+    clearTimeout(this.nameDebounceTimer);
     this.infoBoxService.clearPageDefault();
     this.infoBoxService.clearContent();
   }

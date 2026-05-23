@@ -36,6 +36,12 @@
             <span class="text-blue-500">{{ item.baseAttackSpeed | number: '1.0-2' }}/s ⏩</span>
           </p>
           }
+          @if (item.strengthScaling !== 1) {
+          <p>
+            Str. Scaling:
+            <span class="text-red-500">{{ item.strengthScaling * 100 | number: '1.0-0' }}% ⚔️</span>
+          </p>
+          }
           @if (item.affectedStats.strength !== 0) {
           <p>
             +Strength:

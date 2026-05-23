@@ -30,6 +30,7 @@ class Item extends Schema {
   @type('number') baseMinDamage: number = 0;
   @type('number') baseMaxDamage: number = 0;
   @type('number') baseAttackSpeed: number = 0;
+  @type('number') strengthScaling: number = 1;
   @type(['string']) triggerTypes: ArraySchema<string> = new ArraySchema<string>();
   @type(AffectedStats) affectedEnemyStats: AffectedStats = new AffectedStats();
   // Frontend-only display state — not synced, must stay after all backend fields

@@ -27,5 +27,10 @@ export const routes: Routes = [
     component: EndComponent,
     pathMatch: 'full',
   },
+  {
+    path: 'replay/:id',
+    loadComponent: () => import('./replay/replay-room.component').then(m => m.ReplayRoomComponent),
+    pathMatch: 'full',
+  },
   { path: '**', redirectTo: '', pathMatch: 'full' },
 ];

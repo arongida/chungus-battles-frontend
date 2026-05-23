@@ -1,0 +1,116 @@
+<!-- Replay controls bar at top -->
+<div class="replay-bar fixed top-0 left-0 right-0 z-20 flex items-center gap-3 px-4 py-2">
+  <span class="replay-label">REPLAY</span>
+  @if (battleResult()) {
+    <span class="replay-result" [class.win]="battleResult() === 'win'" [class.lose]="battleResult() === 'lose'" [class.draw]="battleResult() === 'draw'">
+      {{ battleResult() === 'win' ? '⚔️ Win' : battleResult() === 'lose' ? '🛡️ Loss' : '⚡ Draw' }}
+    </span>
+  }
+  <div class="flex-1"></div>
+  <!-- Speed buttons -->
+  <div class="speed-group">
+    <button (click)="setSpeed(1)" [class.active]="speed() === 1">1×</button>
+    <button (click)="setSpeed(2)" [class.active]="speed() === 2">2×</button>
+    <button (click)="setSpeed(4)" [class.active]="speed() === 4">4×</button>
+  </div>
+  <!-- Play / Pause / Restart -->
+  <button mat-icon-button class="replay-ctrl-btn" (click)="togglePlay()" [title]="done ? 'Restart' : playing() ? 'Pause' : 'Play'">
+    <mat-icon>{{ done ? 'replay' : playing() ? 'pause' : 'play_arrow' }}</mat-icon>
+  </button>
+</div>
+
+<!-- Progress bar -->
+<div class="progress-bar-track fixed z-20" style="top: 48px; left: 0; right: 0; height: 3px;">
+  <div class="progress-bar-fill" [style.width.%]="progressPct()"></div>
+</div>
+
+<!-- Loading / error states -->
+@if (loading()) {
+  <div class="w-screen h-screen flex items-center justify-center bg-amber-950 game-bg">
+    <p class="text-amber-200 text-xl animate-pulse">Loading replay...</p>
+  </div>
+}
+@if (error()) {
+  <div class="w-screen h-screen flex items-center justify-center bg-amber-950 game-bg">
+    <p class="text-red-400 text-xl">{{ error() }}</p>
+  </div>
+}
+
+<!-- Main fight stage (same layout as live fight, no toolbar) -->
+@if (!loading() && !error()) {
+  <div class="w-screen h-screen bg-amber-950 flex flex-col items-center justify-center game-bg">
+    @if (!player()) {
+      <div class="absolute inset-0 flex items-center justify-center z-50">
+        <p class="text-amber-200 text-xl animate-pulse">Loading fighters...</p>
+      </div>
+    }
+  </div>
+
+  <!-- Enemy panel -->
+  @if (enemy()) {
+    <div appDraggablePanel [dragHandleSelector]="'.cd-header'"
+         class="fixed z-10" style="top: 60px; left: 50%; transform: translateX(-50%)">
+      <app-character-details [combat]="true" [player]="enemy()!" [enemy]="true"
+        [playerBeingHit]="playerBeingHit()" [enemyBeingHit]="enemyBeingHit()">
+      </app-character-details>
+    </div>
+  }
+
+  <!-- Player panel -->
+  @if (player()) {
+    <div appDraggablePanel [dragHandleSelector]="'.cd-header'"
+         class="fixed z-10" style="bottom: 72px; left: 50%; transform: translateX(-50%)">
+      <app-character-details [combat]="true" [player]="player()!" [playerBeingHit]="playerBeingHit()"
+        [enemyBeingHit]="enemyBeingHit()">
+      </app-character-details>
+    </div>
+  }
+
+  <!-- Combat log -->
+  @if (player()) {
+    <div appDraggablePanel [dragHandleSelector]="'.cl-header'"
+         class="fixed z-20" style="bottom: 16px; right: 16px">
+      <app-combat-log [entries]="entries()" [player]="player()!" [enemy]="enemy()!"></app-combat-log>
+    </div>
+  }
+
+  <!-- Version mismatch banner -->
+  @if (versionMismatch()) {
+    <div class="version-banner fixed bottom-16 left-1/2 -translate-x-1/2 z-30">
+      Recorded on a different game version — visuals may differ
+    </div>
+  }
+
+  <!-- Truncation warning -->
+  @if (truncated()) {
+    <div class="version-banner fixed bottom-16 left-1/2 -translate-x-1/2 z-30">
+      This replay was truncated (fight was very long)
+    </div>
+  }
+
+  <!-- Fight result overlay -->
+  @if (showResultBanner()) {
+    <div class="fixed inset-0 z-[9999] flex items-center justify-center chungus-backdrop">
+      <div class="chungus-card text-center">
+        <div class="chungus-modal-icon">
+          @if (battleResult() === 'win') { ⚔️ }
+          @if (battleResult() === 'lose') { 🛡️ }
+          @if (battleResult() === 'draw') { ⚡ }
+        </div>
+        <h2 class="chungus-modal-title">
+          @if (battleResult() === 'win') { Fight Won }
+          @if (battleResult() === 'lose') { Fight Lost }
+          @if (battleResult() === 'draw') { Draw }
+        </h2>
+        <div class="flex gap-3 justify-center mt-4">
+          <button mat-raised-button class="chungus-modal-btn" (click)="showResultBanner.set(false)">
+            Review Log
+          </button>
+          <button mat-raised-button class="chungus-modal-btn" (click)="restart()">
+            Watch Again
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+}

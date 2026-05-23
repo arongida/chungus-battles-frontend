@@ -15,10 +15,7 @@ import {
   HealingMessage,
   DamageMessage,
   TriggerTalentMessage,
-  TriggerCollectionMessage,
   TriggerItemMessage,
-  VersionWinMessage,
-  EndBattleMessage,
 } from '../../../models/types/MessageTypes';
 import { CombatLogEntry } from '../../../models/types/CombatLogEntry';
 import { CombatLogComponent } from '../combat-log/combat-log.component';
@@ -28,13 +25,14 @@ import { Router } from '@angular/router';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { triggerTalentActivation, triggerAvatarHit, triggerItemActivation, triggerShowDamageNumber, triggerShowHealingNumber, triggerHpDamageFlash, triggerHpHealFlash } from '../../../common/TriggerAnimations';
+import { triggerAvatarHit } from '../../../common/TriggerAnimations';
 import { RoundInfoComponent } from '../../../common/components/round-info/round-info.component';
 import { CharacterDetailsComponent } from '../../../common/components/character-details/character-details.component';
 import { SkillIconsComponent } from '../../../common/components/skill-icons/skill-icons.component';
 import { DraftToolbarComponent } from '../../../common/components/draft-toolbar/draft-toolbar.component';
 import { MusicOptions, SoundOptions, SoundsService } from '../../../common/services/sounds.service';
 import { DraggablePanelDirective } from '../../../common/directives/draggable-panel.directive';
+import { AnimationContext, FightAnimationService } from '../../services/fight-animation.service';
 
 // Creates a typed Player from any schema object (typed or reflection-decoded generic).
 // Skips `baseStats` to avoid assertInstanceType failures in production minified builds.
@@ -95,7 +93,8 @@ export class FightRoomComponent implements OnInit {
     private router: Router,
     private soundsService: SoundsService,
     private renderer: Renderer2,
-    @Inject(PLATFORM_ID) private platformId: Object
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private fightAnimationService: FightAnimationService,
   ) {
     effect(() => {
       const room = this.fightService.room();
@@ -110,86 +109,86 @@ export class FightRoomComponent implements OnInit {
           this.enemy.set(coercePlayer(state.enemy));
         });
 
-        room.onMessage('game_over', (message: string) => {
-          this.gameOver = true;
-          this.battleOver = true;
-          if (message.includes('#1')) {
-            this.topWin.set(true);
-            this.topWinMinimized.set(false);
-            localStorage.setItem('battleEndState', JSON.stringify({ type: 'top_win', message }));
-          } else {
-            this.gameOverMessage.set(message);
-            this.gameOverMinimized.set(false);
-            this.gameOverVisible.set(true);
-            localStorage.setItem('battleEndState', JSON.stringify({ type: 'game_over', message }));
-          }
-        });
-
-        room.onMessage('end_battle', (message: EndBattleMessage) => {
-          const result = message?.result ?? 'win';
-
-          this.battleOver = true;
-          this.versionWin.set(false);
-          localStorage.setItem('battleEndState', JSON.stringify({ type: 'end_battle', result }));
-
-          if (this.suppressNextBattleResult) {
-            this.suppressNextBattleResult = false;
-            const p = this.player();
-            if (p) this.endBattle(p.playerId, p.name, false, false);
-            return;
-          }
-
-          this.battleResult.set(result);
-          this.battleResultMinimized.set(false);
-          this.battleResultVisible.set(true);
-        });
-
-        room.onMessage('version_win', (message: VersionWinMessage) => {
-          this.versionWin.set(true);
-          this.versionWinMinimized.set(false);
-          this.versionWins.set(message.wins);
-          this.battleOver = true;
-          localStorage.setItem('battleEndState', JSON.stringify({ type: 'version_win', wins: message.wins }));
-        });
+        const animCtx: AnimationContext = {
+          renderer: this.renderer,
+          platformId: this.platformId,
+          player: this.player,
+          enemy: this.enemy,
+          entries: this.entries,
+          triggerAttack: (id) => this.triggerAttack(id),
+          triggerDamagedAvatar: (id) => this.triggerDamagedAvatarImage(id),
+          onEndBattle: (msg) => {
+            const result = msg?.result ?? 'win';
+            this.battleOver = true;
+            this.versionWin.set(false);
+            localStorage.setItem('battleEndState', JSON.stringify({ type: 'end_battle', result }));
+            if (this.suppressNextBattleResult) {
+              this.suppressNextBattleResult = false;
+              const p = this.player();
+              if (p) this.endBattle(p.playerId, p.name, false, false);
+              return;
+            }
+            this.battleResult.set(result);
+            this.battleResultMinimized.set(false);
+            this.battleResultVisible.set(true);
+          },
+          onGameOver: (message) => {
+            this.gameOver = true;
+            this.battleOver = true;
+            if (message.includes('#1')) {
+              this.topWin.set(true);
+              this.topWinMinimized.set(false);
+              localStorage.setItem('battleEndState', JSON.stringify({ type: 'top_win', message }));
+            } else {
+              this.gameOverMessage.set(message);
+              this.gameOverMinimized.set(false);
+              this.gameOverVisible.set(true);
+              localStorage.setItem('battleEndState', JSON.stringify({ type: 'game_over', message }));
+            }
+          },
+          onVersionWin: (message) => {
+            this.versionWin.set(true);
+            this.versionWinMinimized.set(false);
+            this.versionWins.set(message.wins);
+            this.battleOver = true;
+            localStorage.setItem('battleEndState', JSON.stringify({ type: 'version_win', wins: message.wins }));
+          },
+        };
 
         room.onMessage('combat_log', (msg: CombatLogEntry) => {
-          this.entries.update(prev => {
-            const next = [...prev, msg];
-            return next.length > 200 ? next.slice(-200) : next;
-          });
+          this.fightAnimationService.applyCombatLog(animCtx, msg);
         });
 
         room.onMessage('attack', (message: number) => {
-          if (this.player() && this.enemy()) {
-            this.triggerAttack(message);
-          }
+          this.fightAnimationService.applyAttack(animCtx, message);
         });
 
         room.onMessage('damage', (message: DamageMessage) => {
-          if (this.player() && this.enemy()) {
-            triggerShowDamageNumber(this.renderer, this.platformId, Math.round(message.damage), message.playerId);
-            triggerHpDamageFlash(message.playerId);
-            this.triggerDamagedAvatarImage(message.playerId);
-          }
+          this.fightAnimationService.applyDamage(animCtx, message);
         });
 
         room.onMessage('healing', (message: HealingMessage) => {
-          if (this.player() && this.enemy()) {
-            triggerShowHealingNumber(this.renderer, this.platformId, Math.round(message.healing), message.playerId);
-            triggerHpHealFlash(message.playerId);
-          }
+          this.fightAnimationService.applyHealing(animCtx, message);
         });
 
         room.onMessage('trigger_talent', (message: TriggerTalentMessage) => {
-          if (this.player() && this.enemy()) {
-            triggerTalentActivation(message.talentId, message.playerId);
-          }
+          this.fightAnimationService.applyTriggerTalent(animCtx, message);
         });
 
         room.onMessage('trigger_item', (message: TriggerItemMessage) => {
-          if (this.player() && this.enemy()) {
-            triggerItemActivation(message.playerId, message.slot);
-          }
+          this.fightAnimationService.applyTriggerItem(animCtx, message);
+        });
+
+        room.onMessage('game_over', (message: string) => {
+          this.fightAnimationService.dispatch(animCtx, 'game_over', message);
+        });
+
+        room.onMessage('end_battle', (message: any) => {
+          this.fightAnimationService.dispatch(animCtx, 'end_battle', message);
+        });
+
+        room.onMessage('version_win', (message: any) => {
+          this.fightAnimationService.dispatch(animCtx, 'version_win', message);
         });
 
         // All handlers registered and initial state applied — safe to restore now.

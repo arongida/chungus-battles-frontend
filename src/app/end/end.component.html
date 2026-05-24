@@ -50,14 +50,7 @@
         <option [value]="opt.value">{{ opt.label }}</option>
       }
     </select>
-
-    <input
-      class="leaderboard-filter-input leaderboard-filter-round"
-      type="number"
-      min="1"
-      placeholder="Min round"
-      [value]="filterMinRound() ?? ''"
-      (change)="setFilterMinRound($any($event.target).value)" />
+    
   </div>
 
   <div class="w-full max-w-md bg-gray-800 bg-opacity-50 rounded-lg shadow-lg p-6">

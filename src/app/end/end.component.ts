@@ -4,7 +4,7 @@ import { RouterLink } from '@angular/router';
 import { ReplayListItem } from '../replay/replay-room.component';
 import { InfoHintDirective } from '../common/directives/info-hint.directive';
 import { InfoContent } from '../common/models/info-content';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { Player } from '../models/colyseus-schema/PlayerSchema';
 import Item from '../models/colyseus-schema/ItemSchema';
 import { environment } from '../../environments/environment';
@@ -35,7 +35,6 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
 
   filterName = signal<string>('');
   filterAvatar = signal<string>('');
-  filterMinRound = signal<number | null>(null);
   filterCurrentVersionOnly = signal<boolean>(true);
 
   readonly avatarOptions: { label: string; value: string }[] = [
@@ -269,12 +268,6 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
     this.fetchLeaderboard();
   }
 
-  setFilterMinRound(value: string): void {
-    const n = value ? Number(value) : null;
-    this.filterMinRound.set(n);
-    this.currentPage.set(0);
-    this.fetchLeaderboard();
-  }
 
   setVersionFilter(currentOnly: boolean): void {
     this.filterCurrentVersionOnly.set(currentOnly);
@@ -302,7 +295,6 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
       if (this.filterCurrentVersionOnly()) params.set('currentVersion', 'true');
       if (this.filterName()) params.set('name', this.filterName());
       if (this.filterAvatar()) params.set('avatar', this.filterAvatar());
-      if (this.filterMinRound() !== null) params.set('minRound', String(this.filterMinRound()));
       const origId = rankForOriginalPlayerId ?? this.originalPlayerId();
       if (origId) params.set('rankForOriginalPlayerId', String(origId));
       const result = await fetch(`${environment.gameServer}/leaderboard?${params}`).then(r => r.json());
@@ -361,7 +353,6 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
     if (rank <= 0) return;
     this.filterName.set('');
     this.filterAvatar.set('');
-    this.filterMinRound.set(null);
     this.currentPage.set(Math.floor((rank - 1) / this.pageSize));
     this.fetchLeaderboard();
   }

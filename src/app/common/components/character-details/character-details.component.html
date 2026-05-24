@@ -1,4 +1,4 @@
-<div class="details-panel">
+<div class="details-panel" [class.combat-mode]="combat">
 
   <!-- Header -->
   <div class="cd-header">
@@ -11,7 +11,8 @@
   <div class="flex gap-3 p-3" [ngClass]="{'flex-row-reverse': enemy}">
 
     <div id="avatar-{{ player.playerId }}"
-         class="relative flex-shrink-0 w-28 h-36 sm:w-32 sm:h-40">
+         class="relative flex-shrink-0 sm:w-32 sm:h-40"
+         [ngClass]="combat ? 'w-20 h-24' : 'w-28 h-36'">
       <!-- overflow-hidden is on this inner wrapper only so avatar images are clipped
            while damage numbers can float above the component boundary -->
       <div class="absolute inset-0 overflow-hidden rounded-sm">

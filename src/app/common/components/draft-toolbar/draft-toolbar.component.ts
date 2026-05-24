@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges, computed, inject } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges, computed, inject, signal } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -19,7 +19,9 @@ import { CharacterDetailsService } from '../../services/character-details.servic
 import { InfoBoxService } from '../../services/info-box.service';
 import { InfoHintDirective } from '../../directives/info-hint.directive';
 import { InfoContent } from '../../models/info-content';
-import { goldHint, buyXpHint, xpBarHint, lockShopHint, talentHint, draftReadyHint, fightingHint } from './draft-toolbar.hints';
+import { Router } from '@angular/router';
+import { FightService } from '../../../fight/services/fight.service';
+import { goldHint, buyXpHint, xpBarHint, lockShopHint, talentHint, draftReadyHint, fightingHint, abandonHint } from './draft-toolbar.hints';
 
 @Component({
   selector: 'app-draft-toolbar',
@@ -47,6 +49,7 @@ export class DraftToolbarComponent implements OnChanges, OnInit {
   hoverShopRefresh = false;
   hoverBuyXp = false;
   muted = false;
+  showAbandonConfirm = signal(false);
   showTalentPicker = this.characterDetailsService.showTalentPicker;
   showCharacterDetails = computed(() => this.characterDetailsService.showCharacterDetails());
 
@@ -57,6 +60,7 @@ export class DraftToolbarComponent implements OnChanges, OnInit {
   readonly talentHint = talentHint;
   readonly draftReadyHint = draftReadyHint;
   readonly fightingHint = fightingHint;
+  readonly abandonHint = abandonHint;
 
   get refreshShopHint(): InfoContent {
     return {
@@ -69,7 +73,9 @@ export class DraftToolbarComponent implements OnChanges, OnInit {
 
   constructor(
     public draftService: DraftService,
+    private fightService: FightService,
     private soundsService: SoundsService,
+    private router: Router,
   ) { }
 
   @Input({ required: true }) player: Player = new Player();
@@ -164,6 +170,31 @@ export class DraftToolbarComponent implements OnChanges, OnInit {
     }else{
       this.draftService.sendMessage('unlock-shop', {});
     }
+  }
 
+  confirmAbandon(): void {
+    this.showAbandonConfirm.set(true);
+  }
+
+  cancelAbandon(): void {
+    this.showAbandonConfirm.set(false);
+  }
+
+  doAbandon(): void {
+    this.showAbandonConfirm.set(false);
+    const fightRoom = this.fightService.room();
+    const draftRoom = this.draftService.room();
+    if (fightRoom) fightRoom.send('abandon_run', {});
+    else if (draftRoom) draftRoom.send('abandon_run', {});
+    this.soundsService.stopMusic();
+    localStorage.removeItem('reconnectToken');
+    localStorage.removeItem('battleEndState');
+    // Navigate first so reactive room-signal effects in DraftRoomComponent don't
+    // fire while the toolbar is still mounted, which can cancel navigation.
+    // Leave the room after Angular has destroyed the old route's components.
+    this.router.navigate(['/end', { won: 'lost' }]).then(() => {
+      if (fightRoom) this.fightService.leave(false);
+      else if (draftRoom) this.draftService.leave(false);
+    });
   }
 }

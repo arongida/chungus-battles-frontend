@@ -2,6 +2,24 @@
   overflow: hidden !important;
 }
 
+.abandon-run-btn {
+  color: rgba(248, 113, 113, 0.6) !important;
+
+  &:hover {
+    color: #f87171 !important;
+    background: rgba(248, 113, 113, 0.1) !important;
+  }
+}
+
+.abandon-confirm-btn {
+  color: #f87171 !important;
+  border-color: #f87171 !important;
+
+  &:hover {
+    background: rgba(248, 113, 113, 0.1) !important;
+  }
+}
+
 .clicked {
   background-color: white !important;  /* Changes the full background */
   color: brown !important;           /* Ensures text/icon visibility */

@@ -17,7 +17,7 @@
 <!-- Enemy panel — draggable, starts top-center -->
 @if (enemy()) {
   <div appDraggablePanel [dragHandleSelector]="'.cd-header'"
-       class="fixed z-10" style="top: 72px; left: 50%; transform: translateX(-50%)">
+       class="fixed z-10 fight-panel-top">
     <app-character-details [combat]="true" [player]="enemy()!" [enemy]="true"
       [playerBeingHit]="playerBeingHit()" [enemyBeingHit]="enemyBeingHit()">
     </app-character-details>
@@ -27,7 +27,7 @@
 <!-- Player panel — draggable, starts bottom-center -->
 @if (player()) {
   <div appDraggablePanel [dragHandleSelector]="'.cd-header'"
-       class="fixed z-10" style="bottom: 72px; left: 50%; transform: translateX(-50%)">
+       class="fixed z-10 fight-panel-bottom">
     <app-character-details [combat]="true" [player]="player()!" [playerBeingHit]="playerBeingHit()"
       [enemyBeingHit]="enemyBeingHit()">
     </app-character-details>

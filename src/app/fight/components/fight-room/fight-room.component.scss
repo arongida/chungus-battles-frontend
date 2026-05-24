@@ -1,3 +1,27 @@
+/* ── Fight panel positioning ─────────────────────────────── */
+
+.fight-panel-top {
+  top: 72px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.fight-panel-bottom {
+  bottom: 72px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+@media (max-width: 639px) {
+  .fight-panel-top {
+    top: 56px;
+  }
+
+  .fight-panel-bottom {
+    bottom: 56px;
+  }
+}
+
 /* ── Game Over icon pulse ─────────────────────────────────── */
 
 .game-over-icon {

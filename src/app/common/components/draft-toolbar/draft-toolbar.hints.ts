@@ -49,3 +49,10 @@ export const fightingHint: InfoContent = {
     { icon: '⏳', label: 'Please Wait', text: 'The fight is underway — sit back and watch! The next draft round will begin when it\'s over.' },
   ],
 };
+
+export const abandonHint: InfoContent = {
+  title: 'Abandon Run',
+  entries: [
+    { icon: '🏳️', label: 'Abandon', text: 'End your current run immediately. This cannot be undone — your run will be over and you will be taken to the leaderboard.' },
+  ],
+};

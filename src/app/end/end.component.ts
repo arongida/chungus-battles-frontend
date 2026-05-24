@@ -356,6 +356,16 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
     return '⚡ Draw';
   }
 
+  jumpToMe(): void {
+    const rank = this.playerRank();
+    if (rank <= 0) return;
+    this.filterName.set('');
+    this.filterAvatar.set('');
+    this.filterMinRound.set(null);
+    this.currentPage.set(Math.floor((rank - 1) / this.pageSize));
+    this.fetchLeaderboard();
+  }
+
   goToHome() {
     localStorage.removeItem('sessionId');
     localStorage.removeItem('playerId');

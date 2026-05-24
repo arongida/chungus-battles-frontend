@@ -30,4 +30,5 @@ export type VersionWinMessage = {
 
 export type EndBattleMessage = {
   result: 'win' | 'lose' | 'draw';
+  lossBonus?: number;
 };

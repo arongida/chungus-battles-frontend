@@ -67,6 +67,9 @@
       @if (battleResult() === 'lose') { You lost this round, but your run continues. Regroup in the draft. }
       @if (battleResult() === 'draw') { Both fighters fell at the same moment. Head back to the draft. }
     </p>
+    @if (battleResult() === 'lose' && lossBonus() > 0) {
+      <p class="chungus-modal-body" style="color: #f59e0b; font-weight: 600;">+{{ lossBonus() }} bonus gold</p>
+    }
     <button mat-raised-button class="chungus-modal-btn" (click)="handleBattleResultExit()">
       Back to Draft
     </button>

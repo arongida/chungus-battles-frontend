@@ -78,6 +78,7 @@ export class FightRoomComponent implements OnInit {
   battleResultVisible = signal(false);
   battleResult = signal<'win' | 'lose' | 'draw'>('win');
   battleResultMinimized = signal(false);
+  lossBonus = signal(0);
   gameOverVisible = signal(false);
   gameOverMessage = signal('');
   gameOverMinimized = signal(false);
@@ -119,15 +120,17 @@ export class FightRoomComponent implements OnInit {
           triggerDamagedAvatar: (id) => this.triggerDamagedAvatarImage(id),
           onEndBattle: (msg) => {
             const result = msg?.result ?? 'win';
+            const bonus = msg?.lossBonus ?? 0;
             this.battleOver = true;
             this.versionWin.set(false);
-            localStorage.setItem('battleEndState', JSON.stringify({ type: 'end_battle', result }));
+            localStorage.setItem('battleEndState', JSON.stringify({ type: 'end_battle', result, lossBonus: bonus }));
             if (this.suppressNextBattleResult) {
               this.suppressNextBattleResult = false;
               const p = this.player();
               if (p) this.endBattle(p.playerId, p.name, false, false);
               return;
             }
+            this.lossBonus.set(bonus);
             this.battleResult.set(result);
             this.battleResultMinimized.set(false);
             this.battleResultVisible.set(true);
@@ -245,7 +248,7 @@ export class FightRoomComponent implements OnInit {
     const raw = localStorage.getItem('battleEndState');
     if (!raw) return;
     try {
-      const state = JSON.parse(raw) as { type: string; message?: string; wins?: number; result?: string };
+      const state = JSON.parse(raw) as { type: string; message?: string; wins?: number; result?: string; lossBonus?: number };
       const player = this.player();
       if (!player) return;
       if (state.type === 'game_over') {
@@ -256,6 +259,7 @@ export class FightRoomComponent implements OnInit {
         this.gameOverVisible.set(true);
       } else if (state.type === 'end_battle') {
         this.battleOver = true;
+        this.lossBonus.set(state.lossBonus ?? 0);
         this.battleResult.set((state.result as 'win' | 'lose' | 'draw') ?? 'win');
         this.battleResultMinimized.set(false);
         this.battleResultVisible.set(true);

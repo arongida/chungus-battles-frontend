@@ -8,7 +8,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { TalentsComponent } from '../../../draft/components/talents/talents.component';
 import { Talent } from '../../../models/colyseus-schema/TalentSchema';
 import { EncyclopediaComponent } from '../../../draft/components/encyclopedia/encyclopedia.component';
-import { NgClass } from '@angular/common';
+import { DatePipe, NgClass } from '@angular/common';
 import { MatMenuModule } from '@angular/material/menu';
 import { DraftService } from '../../../draft/services/draft.service';
 import { CharacterDetailsComponent } from '../character-details/character-details.component';
@@ -19,9 +19,11 @@ import { CharacterDetailsService } from '../../services/character-details.servic
 import { InfoBoxService } from '../../services/info-box.service';
 import { InfoHintDirective } from '../../directives/info-hint.directive';
 import { InfoContent } from '../../models/info-content';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { FightService } from '../../../fight/services/fight.service';
 import { goldHint, buyXpHint, xpBarHint, lockShopHint, talentHint, draftReadyHint, fightingHint, abandonHint } from './draft-toolbar.hints';
+import { ReplayListItem } from '../../../replay/replay-room.component';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-draft-toolbar',
@@ -38,6 +40,8 @@ import { goldHint, buyXpHint, xpBarHint, lockShopHint, talentHint, draftReadyHin
     MatBadgeModule,
     InfoHintDirective,
     TalentsComponent,
+    RouterLink,
+    DatePipe,
   ],
   templateUrl: './draft-toolbar.component.html',
   styleUrl: './draft-toolbar.component.scss',
@@ -50,6 +54,11 @@ export class DraftToolbarComponent implements OnChanges, OnInit {
   hoverBuyXp = false;
   muted = false;
   showAbandonConfirm = signal(false);
+  replaysOpen = signal(false);
+  replays = signal<ReplayListItem[]>([]);
+  replaysLoading = signal(false);
+  private replaysCache = new Map<number, ReplayListItem[]>();
+
   showTalentPicker = this.characterDetailsService.showTalentPicker;
   showCharacterDetails = computed(() => this.characterDetailsService.showCharacterDetails());
 
@@ -170,6 +179,34 @@ export class DraftToolbarComponent implements OnChanges, OnInit {
     }else{
       this.draftService.sendMessage('unlock-shop', {});
     }
+  }
+
+  async openReplays(): Promise<void> {
+    this.replaysOpen.set(true);
+    const origId = this.player.originalPlayerId;
+    const cached = this.replaysCache.get(origId);
+    if (cached) { this.replays.set(cached); return; }
+    this.replaysLoading.set(true);
+    try {
+      const data = await fetch(`${environment.gameServer}/replays?originalPlayerId=${origId}`).then(r => r.json());
+      const list = Array.isArray(data) ? data.reverse() : [];
+      this.replaysCache.set(origId, list);
+      this.replays.set(list);
+    } catch {
+      this.replays.set([]);
+    } finally {
+      this.replaysLoading.set(false);
+    }
+  }
+
+  closeReplays(): void {
+    this.replaysOpen.set(false);
+  }
+
+  replayResultLabel(result: string): string {
+    if (result === 'win') return '⚔️ Win';
+    if (result === 'lose' || result === 'loose') return '🛡️ Loss';
+    return '⚡ Draw';
   }
 
   confirmAbandon(): void {

@@ -80,6 +80,28 @@ export class DraftToolbarComponent implements OnChanges, OnInit {
     };
   }
 
+  get goldToLevelUp(): number {
+    const xpNeeded = this.player.maxXp - this.player.xp;
+    return Math.ceil(xpNeeded / 4) * 4;
+  }
+
+  get canLevelUp(): boolean {
+    return this.player.gold >= this.goldToLevelUp;
+  }
+
+  get levelUpHint(): InfoContent {
+    return {
+      title: 'Level Up!',
+      entries: [
+        { icon: '⬆️', label: 'Level Up', text: `Spend ${this.goldToLevelUp} gold to level up to level ${this.player.level + 1} in one click.` },
+      ],
+    };
+  }
+
+  get xpButtonHint(): InfoContent {
+    return this.canLevelUp ? this.levelUpHint : this.buyXpHint;
+  }
+
   constructor(
     public draftService: DraftService,
     private fightService: FightService,
@@ -163,6 +185,12 @@ export class DraftToolbarComponent implements OnChanges, OnInit {
     this.characterDetailsService.showCharacterDetails.set(false);
     this.soundsService.playSound(SoundOptions.CLICK);
     this.draftService.sendMessage('buy_xp', {});
+  }
+
+  levelUp() {
+    this.characterDetailsService.showCharacterDetails.set(false);
+    this.soundsService.playSound(SoundOptions.CLICK);
+    this.draftService.sendMessage('level_up', {});
   }
 
   refreshShop() {

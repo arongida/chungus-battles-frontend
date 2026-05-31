@@ -22,6 +22,7 @@ import { CombatLogComponent } from '../fight/components/combat-log/combat-log.co
 import { CharacterDetailsComponent } from '../common/components/character-details/character-details.component';
 import { DraggablePanelDirective } from '../common/directives/draggable-panel.directive';
 import { FightAnimationService, AnimationContext } from '../fight/services/fight-animation.service';
+import { InfoBoxService } from '../common/services/info-box.service';
 import { environment } from '../../environments/environment';
 
 // Mirrors backend playerToPlainObject → rehydrates a plain snapshot into a typed Player.
@@ -138,10 +139,12 @@ export class ReplayRoomComponent implements OnInit, AfterViewInit, OnDestroy {
     private route: ActivatedRoute,
     private renderer: Renderer2,
     private fightAnimationService: FightAnimationService,
+    private infoBoxService: InfoBoxService,
     @Inject(PLATFORM_ID) private platformId: Object,
   ) {}
 
   async ngOnInit(): Promise<void> {
+    this.infoBoxService.hide();
     const id = this.route.snapshot.paramMap.get('id');
     if (!id) { this.error.set('No replay ID in URL.'); this.loading.set(false); return; }
 
@@ -178,6 +181,7 @@ export class ReplayRoomComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     if (this.rafId !== null) cancelAnimationFrame(this.rafId);
+    this.infoBoxService.show();
   }
 
   private setupAnimCtx(): void {

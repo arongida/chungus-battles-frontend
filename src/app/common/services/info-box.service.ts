@@ -11,6 +11,9 @@ export class InfoBoxService {
     this.isVisible.update(v => !v);
   }
 
+  hide(): void { this.isVisible.set(false); }
+  show(): void { this.isVisible.set(true); }
+
   private _clearTimer: ReturnType<typeof setTimeout> | null = null;
 
   setContent(content: InfoContent): void {

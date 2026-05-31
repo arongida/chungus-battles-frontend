@@ -33,7 +33,7 @@
     </div>
   </span>
 
-  <button mat-icon-button (click)="toggleInfoBox()"
+  <button mat-icon-button (click)="toggleInfoBox()" [appInfoHint]="infoBoxHint"
     [class.text-amber-400]="infoBoxService.isVisible()"
     [class.text-gray-400]="!infoBoxService.isVisible()"
     [class.ring-1]="infoBoxService.isVisible()"
@@ -42,16 +42,16 @@
     <mat-icon>{{ infoBoxService.isVisible() ? 'help' : 'help_outline' }}</mat-icon>
   </button>
 
-  <button mat-icon-button (click)="openEncyclopedia()">
+  <button mat-icon-button (click)="openEncyclopedia()" [appInfoHint]="encyclopediaHint">
     <mat-icon>menu_book</mat-icon>
   </button>
 
-  <button mat-icon-button (click)="switchMute()">
+  <button mat-icon-button (click)="switchMute()" [appInfoHint]="soundHint">
     @if(muted) {<mat-icon>volume_off</mat-icon>}
     @else {<mat-icon>volume_up</mat-icon>}
   </button>
 
-  <button mat-icon-button (click)="openReplays()" title="My Replays">
+  <button mat-icon-button (click)="openReplays()" [appInfoHint]="matchHistoryHint">
     <mat-icon>history</mat-icon>
   </button>
 

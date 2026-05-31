@@ -22,6 +22,7 @@ import {
   EquipSlot, ItemRarity,
 } from '../../../models/types/ItemTypes';
 import { InfoHintDirective } from '../../directives/info-hint.directive';
+import { InfoHoverCardDirective } from '../../directives/info-hover-card.directive';
 import { InfoContent } from '../../models/info-content';
 import { SkillIconsComponent } from '../skill-icons/skill-icons.component';
 
@@ -37,6 +38,7 @@ import { SkillIconsComponent } from '../skill-icons/skill-icons.component';
     ItemHoverCardDirective,
     TitleCasePipe,
     InfoHintDirective,
+    InfoHoverCardDirective,
     SkillIconsComponent,
   ],
   templateUrl: './character-details.component.html',
@@ -179,13 +181,13 @@ export class CharacterDetailsComponent {
     const dodgeChance = Math.round(100 * (1 - 100 / (100 + this.player.dodgeRate)));
     const defenseReduction = Math.round(100 * (1 - 100 / (100 + this.player.defense)));
     return {
-      title: 'Your Stats',
+      title: `${this.player.name}'s Stats`,
       entries: [
         { icon: '❤️', label: 'Health', text: `${Math.round(this.player.maxHp)} HP total. Reaches zero = you lose the battle.`, color: 'text-pink-500' },
         { icon: '🎯', label: 'Accuracy', text: `+${this.player.accuracy?.toFixed(1)} added to your weapon's minimum damage roll.`, color: 'text-red-400' },
         { icon: '⚔️', label: 'Strength', text: `+${this.player.strength?.toFixed(1)} added to your weapon's maximum damage roll.`, color: 'text-red-400' },
         { icon: '⏩', label: 'Speed Bonus', text: `${((this.player.attackSpeed - 1) * 100)?.toFixed(0)}% multiplier applied to all weapon attack speeds.`, color: 'text-blue-400' },
-        { icon: '💰', label: 'Income', text: `${this.player.income} gold earned at the end of this fight. Grows by 1 automatically each fight.`, color: 'text-yellow-400' },
+        { icon: '💰', label: 'Income', text: `${this.player.income} gold earned at the end of this fight. Grows by 1 each fight.`, color: 'text-yellow-400' },
         { icon: '🧪', label: 'HP Regen', text: `Recover ${this.player.hpRegen?.toFixed(3)} HP every second during battle.`, color: 'text-orange-400' },
         { icon: '🔰', label: 'Flat Damage Reduction', text: `Reduces all incoming damage by ${this.player.flatDmgReduction?.toFixed(3)} flat.`, color: 'text-green-400' },
         { icon: '🛡️', label: 'Defense', text: `Reduces incoming damage by ${defenseReduction}% (DR formula applied to ${this.player.defense?.toFixed(2)} defense).`, color: 'text-green-400' },

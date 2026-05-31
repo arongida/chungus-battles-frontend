@@ -21,7 +21,7 @@ import { InfoHintDirective } from '../../directives/info-hint.directive';
 import { InfoContent } from '../../models/info-content';
 import { Router, RouterLink } from '@angular/router';
 import { FightService } from '../../../fight/services/fight.service';
-import { goldHint, buyXpHint, xpBarHint, lockShopHint, talentHint, draftReadyHint, fightingHint, abandonHint } from './draft-toolbar.hints';
+import { goldHint, buyXpHint, xpBarHint, lockShopHint, talentHint, draftReadyHint, fightingHint, abandonHint, infoBoxHint, encyclopediaHint, muteHint, unmuteHint, matchHistoryHint } from './draft-toolbar.hints';
 import { ReplayListItem } from '../../../replay/replay-room.component';
 import { environment } from '../../../../environments/environment';
 
@@ -70,6 +70,11 @@ export class DraftToolbarComponent implements OnChanges, OnInit {
   readonly draftReadyHint = draftReadyHint;
   readonly fightingHint = fightingHint;
   readonly abandonHint = abandonHint;
+  readonly infoBoxHint = infoBoxHint;
+  readonly encyclopediaHint = encyclopediaHint;
+  readonly matchHistoryHint = matchHistoryHint;
+
+  get soundHint() { return this.muted ? unmuteHint : muteHint; }
 
   get refreshShopHint(): InfoContent {
     return {

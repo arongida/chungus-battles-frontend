@@ -153,10 +153,10 @@
      All animation-target element IDs are preserved here
      so TriggerAnimations.ts can always find them.
      ══════════════════════════════════════════════ -->
-<div class="compact-card cd-header" (click)="expand()" title="Click to expand">
+<div class="compact-card" (click)="expand()" title="Click to expand">
 
-  <!-- Name row (also the visual drag handle area) -->
-  <div class="compact-name-row">
+  <!-- Name row — the only drag handle in compact mode -->
+  <div class="compact-name-row cd-header">
     <span class="cd-name">{{ player.name }}</span>
     <span class="cd-level">Lv {{ player.level }}</span>
   </div>

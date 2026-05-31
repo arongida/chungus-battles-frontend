@@ -18,10 +18,12 @@ export class DraggablePanelDirective implements AfterViewInit, OnDestroy {
   private readonly panelLayoutService = inject(PanelLayoutService);
 
   private isDragging = false;
+  private hasMoved = false;
   private startX = 0;
   private startY = 0;
   private startLeft = 0;
   private startTop = 0;
+  private static readonly DRAG_THRESHOLD = 4;
 
   constructor() {
     // Watch for layout resets and un-pin this panel so it falls back to default CSS.
@@ -80,6 +82,7 @@ export class DraggablePanelDirective implements AfterViewInit, OnDestroy {
     document.removeEventListener('touchmove', this.onTouchMove);
     document.removeEventListener('touchend', this.onTouchEnd);
     window.removeEventListener('resize', this.onWindowResize);
+    window.removeEventListener('click', this.suppressNextClick, true);
   }
 
   /** Returns true when the event target is within the designated drag handle. */
@@ -168,6 +171,7 @@ export class DraggablePanelDirective implements AfterViewInit, OnDestroy {
     this.applyFixedPosition(rect.left, rect.top);
 
     this.isDragging = true;
+    this.hasMoved = false;
     this.startX = x;
     this.startY = y;
     this.startLeft = rect.left;
@@ -180,6 +184,13 @@ export class DraggablePanelDirective implements AfterViewInit, OnDestroy {
 
   private moveDrag(x: number, y: number): void {
     if (!this.isDragging) return;
+    if (!this.hasMoved) {
+      const dx = x - this.startX;
+      const dy = y - this.startY;
+      if (Math.abs(dx) > DraggablePanelDirective.DRAG_THRESHOLD || Math.abs(dy) > DraggablePanelDirective.DRAG_THRESHOLD) {
+        this.hasMoved = true;
+      }
+    }
     const { left, top } = this.clamp(
       this.startLeft + (x - this.startX),
       this.startTop + (y - this.startY),
@@ -195,6 +206,11 @@ export class DraggablePanelDirective implements AfterViewInit, OnDestroy {
     // Reset inline cursor so CSS takes over (.cd-header has cursor:grab, compact card has cursor:pointer)
     (this.el.nativeElement as HTMLElement).style.cursor = '';
 
+    // Suppress the click that the browser fires after mouseup/touchend when a real drag occurred.
+    if (this.hasMoved) {
+      window.addEventListener('click', this.suppressNextClick, { capture: true, once: true });
+    }
+
     // Persist the final position.
     if (this.panelId) {
       const panel = this.el.nativeElement as HTMLElement;
@@ -203,4 +219,9 @@ export class DraggablePanelDirective implements AfterViewInit, OnDestroy {
       this.panelLayoutService.savePosition(this.panelId, { left, top });
     }
   }
+
+  private suppressNextClick = (e: MouseEvent): void => {
+    e.stopPropagation();
+    e.preventDefault();
+  };
 }

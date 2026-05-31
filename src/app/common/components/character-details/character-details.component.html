@@ -1,9 +1,15 @@
+@if (expanded()) {
+
+<!-- ══════════════════════════════════════════════
+     DETAILED VIEW  (full panel — click ◀ to collapse)
+     ══════════════════════════════════════════════ -->
 <div class="details-panel" [class.combat-mode]="combat">
 
-  <!-- Header -->
+  <!-- Header — drag handle; collapse button returns to compact -->
   <div class="cd-header">
     <span class="cd-name">{{ player.name }}</span>
     <span class="cd-level">Lv {{ player.level }}</span>
+    <button class="cd-collapse-btn" (click)="collapse()" title="Show compact view">◀</button>
   </div>
   <div class="cd-divider"></div>
 
@@ -139,3 +145,65 @@
   }
 
 </div>
+
+} @else {
+
+<!-- ══════════════════════════════════════════════
+     COMPACT VIEW  (small card — click to expand)
+     All animation-target element IDs are preserved here
+     so TriggerAnimations.ts can always find them.
+     ══════════════════════════════════════════════ -->
+<div class="compact-card cd-header" (click)="expand()" title="Click to expand">
+
+  <!-- Name row (also the visual drag handle area) -->
+  <div class="compact-name-row">
+    <span class="cd-name">{{ player.name }}</span>
+    <span class="cd-level">Lv {{ player.level }}</span>
+  </div>
+
+  <!-- Portrait: transparent variant; enemy is horizontally mirrored to face the player.
+       #avatar-{id} must be on the outer wrapper (for avatar-shake animation).
+       Only the inner portrait div is flipped, so damage numbers stay upright. -->
+  <div id="avatar-{{ player.playerId }}" class="compact-avatar">
+    <div class="absolute inset-0 overflow-hidden">
+      <div class="absolute inset-0 bg-contain bg-no-repeat bg-bottom"
+           [class.compact-enemy-flip]="enemy"
+           [style.background-image]="'url(' + getCompactAvatarImage() + ')'"></div>
+    </div>
+    <div id="damage-numbers-{{ player.playerId }}" class="absolute inset-0 pointer-events-none z-10"></div>
+    <div class="absolute" id="attack-{{ player.playerId }}"></div>
+  </div>
+
+  <!-- HP text + bar (#hp-{id} needed for flash animations) -->
+  <div class="compact-hp-text">
+    <span class="text-pink-500 text-[9px]">❤️ {{ getPlayerHp() | number:'1.0-0' }}</span>
+    <span class="text-slate-500 text-[8px]"> / {{ player.maxHp | number:'1.0-0' }}</span>
+  </div>
+  <div id="hp-{{ player.playerId }}" class="hp-bar-wrapper compact-hp-bar">
+    <mat-progress-bar class="red-progress-bar" mode="determinate"
+      [value]="(player.hp / player.maxHp) * 100"></mat-progress-bar>
+  </div>
+
+  <!-- Mini equipped items — display-only, IDs preserved for trigger animations -->
+  @if (player.equippedItems.size > 0) {
+    <div class="compact-items">
+      @for (slot of equipmentLayout[0]; track slot) {
+        @if (getItemAtSlot(slot); as equippedItem) {
+          <div id="equipped-slot-{{slot}}-{{player.playerId}}" class="cd-slot cd-slot--mini">
+            <img [src]="equippedItem.image" class="max-w-full max-h-full object-contain block" />
+          </div>
+        }
+      }
+    </div>
+  }
+
+  <!-- Mini talents — IDs live inside app-skill-icons (talent-{id}-{playerId}) -->
+  @if (player.talents.length) {
+    <div class="compact-talents">
+      <app-skill-icons [player]="player" [row]="true" [iconSizePx]="28"></app-skill-icons>
+    </div>
+  }
+
+</div>
+
+}

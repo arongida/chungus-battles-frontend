@@ -1,9 +1,10 @@
-import { Component, input, Input } from '@angular/core';
+import { Component, inject, input, Input, OnInit, PLATFORM_ID, signal } from '@angular/core';
 import {
   Player,
 } from '../../../models/colyseus-schema/PlayerSchema';
 import {
   DecimalPipe,
+  isPlatformBrowser,
   NgClass,
   TitleCasePipe,
 } from '@angular/common';
@@ -44,13 +45,38 @@ import { SkillIconsComponent } from '../skill-icons/skill-icons.component';
   templateUrl: './character-details.component.html',
   styleUrl: './character-details.component.scss',
 })
-export class CharacterDetailsComponent {
+export class CharacterDetailsComponent implements OnInit {
+  private readonly platformId = inject(PLATFORM_ID);
+
   @Input({ required: true }) player: Player = new Player();
   @Input() enemy: boolean = false;
   @Input() combat: boolean = false;
   @Input() showStats: boolean = true;
   playerBeingHit = input(false);
   enemyBeingHit = input(false);
+
+  /** Compact ↔ detailed toggle. Default: detailed in battle on desktop, compact otherwise. */
+  expanded = signal(false);
+  expand(): void { this.expanded.set(true); }
+  collapse(): void { this.expanded.set(false); }
+
+  ngOnInit(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      // Battle phase: start detailed on desktop (≥640 px), compact on mobile.
+      this.expanded.set(window.innerWidth >= 640);
+    }
+  }
+
+  /**
+   * Returns the "_transparent" portrait variant used in compact view.
+   * Mirrors the transform already used in the draft toolbar:
+   *   warrior_01.png → warrior_transparent.png
+   * Placeholders that lack "01" pass through unchanged.
+   */
+  getCompactAvatarImage(): string {
+    return (this.player?.avatarUrl ?? 'assets/Portrait_ID_0_Placeholder.png')
+      .replace('01', 'transparent');
+  }
 
   equipmentLayout = [
     [EquipSlot.HELMET, EquipSlot.MAIN_HAND, EquipSlot.OFF_HAND, EquipSlot.ARMOR],

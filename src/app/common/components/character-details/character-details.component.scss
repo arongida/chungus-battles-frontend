@@ -20,6 +20,28 @@
   padding: 6px 12px;
   background: var(--cm-header-bg);
   cursor: grab;
+  transition: background 150ms, box-shadow 150ms;
+}
+
+/* Grip-dots affordance — shown only on the detailed header (not the compact card) */
+.cd-header:not(.compact-card)::before {
+  content: '⠿';
+  font-size: 0.85rem;
+  color: var(--cm-text-muted);
+  opacity: 0.4;
+  margin-right: 6px;
+  flex-shrink: 0;
+  transition: opacity 150ms;
+  line-height: 1;
+}
+
+/* Hover glow on the detailed header */
+.cd-header:not(.compact-card):hover {
+  background: color-mix(in srgb, var(--cm-header-bg) 90%, var(--cm-amber) 10%);
+
+  &::before {
+    opacity: 1;
+  }
 }
 
 .cd-name {
@@ -308,4 +330,124 @@
 
 .slot-pulse img {
   animation: slot-activate 0.35s cubic-bezier(0.25, 1.5, 0.5, 1) forwards;
+}
+
+/* ── Collapse button inside the detailed header ── */
+.cd-collapse-btn {
+  background: none;
+  border: 1px solid rgba(180, 120, 30, 0.35);
+  color: var(--cm-text-muted);
+  border-radius: 3px;
+  cursor: pointer;
+  padding: 0 6px;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  transition: border-color 100ms, color 100ms;
+  flex-shrink: 0;
+
+  &:hover {
+    border-color: var(--cm-amber);
+    color: var(--cm-amber);
+  }
+}
+
+/* ══════════════════════════════════════════════════
+   COMPACT CARD
+   Must come AFTER .cd-header so its styles win when
+   both classes are present on the same element.
+   ══════════════════════════════════════════════════ */
+.compact-card {
+  background: var(--cm-bg);
+  border: 1px solid var(--cm-border);
+  border-radius: 6px;
+  box-shadow: var(--cm-shadow);
+  animation: slideDown 0.18s ease-out;
+  user-select: none;
+  width: 140px;
+
+  /* Override conflicting .cd-header rules */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0;
+  justify-content: flex-start;
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--cm-amber);
+  }
+}
+
+/* Name row at the top of the compact card */
+.compact-name-row {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 8px;
+  background: var(--cm-header-bg);
+  border-radius: 5px 5px 0 0;
+}
+
+/* Portrait area — outer wrapper keeps the shake animation target */
+.compact-avatar {
+  position: relative;
+  width: 80px;
+  height: 96px;
+  flex-shrink: 0;
+  margin: 6px 0 0;
+}
+
+/* Horizontal flip applied only to the inner portrait div (not the numbers overlay) */
+.compact-enemy-flip {
+  transform: scaleX(-1);
+}
+
+/* HP text line */
+.compact-hp-text {
+  width: 100%;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 2px;
+  padding: 3px 8px 0;
+}
+
+/* HP bar inside compact card */
+.compact-hp-bar {
+  width: calc(100% - 16px);
+  margin: 2px 8px 4px;
+}
+
+/* Row of mini equipped item icons */
+.compact-items {
+  display: flex;
+  gap: 3px;
+  padding: 3px 6px;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Mini talent row */
+.compact-talents {
+  padding: 2px 6px 6px;
+}
+
+/* Mini variant of the equipment slot */
+.cd-slot--mini {
+  width: 28px !important;
+  height: 28px !important;
+  cursor: default;
+
+  img {
+    max-width: 24px !important;
+    max-height: 24px !important;
+  }
+
+  &:hover {
+    background: rgba(180, 120, 30, 0.05) !important;
+    border-color: rgba(180, 120, 30, 0.3) !important;
+  }
 }

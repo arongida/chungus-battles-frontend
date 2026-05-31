@@ -27,10 +27,33 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  cursor: grab;
+  transition: background 150ms, box-shadow 150ms;
 
   @media (min-width: 1024px) {
     padding: 7px 14px;
     font-size: 0.85rem;
+  }
+
+  /* Grip-dots affordance */
+  &::before {
+    content: '⠿';
+    font-size: 0.85rem;
+    color: var(--cm-text-muted);
+    opacity: 0.4;
+    margin-right: 6px;
+    flex-shrink: 0;
+    transition: opacity 150ms;
+    line-height: 1;
+  }
+
+  /* Hover glow */
+  &:hover {
+    background: color-mix(in srgb, var(--cm-header-bg) 90%, var(--cm-amber) 10%);
+
+    &::before {
+      opacity: 1;
+    }
   }
 }
 

@@ -32,6 +32,7 @@ import { SkillIconsComponent } from '../../../common/components/skill-icons/skil
 import { DraftToolbarComponent } from '../../../common/components/draft-toolbar/draft-toolbar.component';
 import { MusicOptions, SoundOptions, SoundsService } from '../../../common/services/sounds.service';
 import { DraggablePanelDirective } from '../../../common/directives/draggable-panel.directive';
+import { PanelLayoutService } from '../../../common/services/panel-layout.service';
 import { AnimationContext, FightAnimationService } from '../../services/fight-animation.service';
 import { InfoBoxService } from '../../../common/services/info-box.service';
 import {
@@ -106,6 +107,7 @@ export class FightRoomComponent implements OnInit {
     @Inject(PLATFORM_ID) private platformId: Object,
     private fightAnimationService: FightAnimationService,
     private infoBoxService: InfoBoxService,
+    private panelLayoutService: PanelLayoutService,
   ) {
     effect(() => {
       const room = this.fightService.room();
@@ -338,5 +340,9 @@ export class FightRoomComponent implements OnInit {
       this.soundsService.playSound(SoundOptions.ATTACK);
       this.lastAttackSoundTime = now;
     }
+  }
+
+  resetPanelLayout(): void {
+    this.panelLayoutService.reset();
   }
 }

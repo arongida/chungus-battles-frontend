@@ -16,7 +16,7 @@
 
 <!-- Enemy panel — draggable, starts top-center -->
 @if (enemy()) {
-  <div appDraggablePanel [dragHandleSelector]="'.cd-header'"
+  <div appDraggablePanel [dragHandleSelector]="'.cd-header'" [panelId]="'enemy'"
        class="fixed z-10 fight-panel-top">
     <app-character-details [combat]="true" [player]="enemy()!" [enemy]="true"
       [playerBeingHit]="playerBeingHit()" [enemyBeingHit]="enemyBeingHit()">
@@ -26,7 +26,7 @@
 
 <!-- Player panel — draggable, starts bottom-center -->
 @if (player()) {
-  <div appDraggablePanel [dragHandleSelector]="'.cd-header'"
+  <div appDraggablePanel [dragHandleSelector]="'.cd-header'" [panelId]="'player'"
        class="fixed z-10 fight-panel-bottom">
     <app-character-details [combat]="true" [player]="player()!" [playerBeingHit]="playerBeingHit()"
       [enemyBeingHit]="enemyBeingHit()">
@@ -36,10 +36,15 @@
 
 <!-- Combat log — draggable, starts bottom-right -->
 @if (player()) {
-  <div appDraggablePanel [dragHandleSelector]="'.cl-header'"
-       class="fixed z-20" style="bottom: 16px; right: 16px">
+  <div appDraggablePanel [dragHandleSelector]="'.cl-header'" [panelId]="'combat-log'"
+       class="fixed z-20 fight-panel-log">
     <app-combat-log [entries]="entries()" [player]="player()!" [enemy]="enemy()!"></app-combat-log>
   </div>
+}
+
+<!-- Reset panel layout button -->
+@if (player()) {
+  <button class="reset-layout-btn" (click)="resetPanelLayout()" title="Reset panel layout">⤢</button>
 }
 
 

@@ -50,9 +50,86 @@ export const fightingHint: InfoContent = {
   ],
 };
 
+export const infoBoxHint: InfoContent = {
+  title: 'Help & Hints',
+  entries: [
+    { icon: '❓', label: 'Info Box', text: 'Toggle the hint panel. Hover over any element on screen to see a description of what it does.' },
+  ],
+};
+
+export const encyclopediaHint: InfoContent = {
+  title: 'Encyclopedia',
+  entries: [
+    { icon: '📖', label: 'Browse', text: 'Browse all items, talents, and collections in the game. Great for planning your build or looking up what a specific item does.' },
+  ],
+};
+
+export const muteHint: InfoContent = {
+  title: 'Mute',
+  entries: [
+    { icon: '🔇', label: 'Mute', text: 'Mute all background music and sound effects.' },
+  ],
+};
+
+export const unmuteHint: InfoContent = {
+  title: 'Unmute',
+  entries: [
+    { icon: '🔊', label: 'Unmute', text: 'Restore background music and sound effects.' },
+  ],
+};
+
+export const matchHistoryHint: InfoContent = {
+  title: 'Fight Replays',
+  entries: [
+    { icon: '🎬', label: 'Replays', text: 'View recordings of your recent fights. Watch them back to review your build and battle performance.' },
+  ],
+};
+
 export const abandonHint: InfoContent = {
   title: 'Abandon Run',
   entries: [
     { icon: '🏳️', label: 'Abandon', text: 'End your current run immediately. This cannot be undone — your run will be over and you will be taken to the leaderboard.' },
+  ],
+};
+
+export const battleWonHint: InfoContent = {
+  title: 'Round Won!',
+  entries: [
+    { icon: '🏆', label: 'Victory', text: 'You won this round! Click "Back to Draft" on the result panel to continue to the next draft phase.' },
+  ],
+};
+
+export const battleLostHint: InfoContent = {
+  title: 'Round Lost',
+  entries: [
+    { icon: '💔', label: 'Defeat', text: 'You lost this round. Click "Back to Draft" on the result panel to keep building and fight back next round.' },
+  ],
+};
+
+export const battleDrawHint: InfoContent = {
+  title: 'Draw',
+  entries: [
+    { icon: '🤝', label: 'Draw', text: 'The battle ended in a draw — no lives lost. Click "Back to Draft" on the result panel to head into the next round.' },
+  ],
+};
+
+export const runOverHint: InfoContent = {
+  title: 'Run Over',
+  entries: [
+    { icon: '💀', label: 'Game Over', text: 'Your run has ended. Click "View Your Results" on the panel to see your final score and leaderboard position.' },
+  ],
+};
+
+export const versionWinHint: InfoContent = {
+  title: 'New Record!',
+  entries: [
+    { icon: '🌟', label: 'Version Best', text: 'You set a new personal record! Choose to continue pushing your run or accept this as your result.' },
+  ],
+};
+
+export const topWinHint: InfoContent = {
+  title: 'All-Time #1!',
+  entries: [
+    { icon: '👑', label: 'Top of the Leaderboard', text: 'You reached #1 on the all-time leaderboard! Accept your victory to lock in your legendary result.' },
   ],
 };

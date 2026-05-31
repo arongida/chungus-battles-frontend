@@ -23,6 +23,7 @@ import { itemPictures } from '../common/item-image-links';
 import { ItemTrackingService } from '../common/services/item-tracking.service';
 import { MusicOptions, SoundOptions, SoundsService } from '../common/services/sounds.service';
 import { InfoBoxService } from '../common/services/info-box.service';
+import { InfoEntry } from '../common/models/info-content';
 
 @Component({
   selector: 'app-join-form',
@@ -48,6 +49,13 @@ export class JoinFormComponent implements AfterViewInit, OnDestroy, OnInit {
   ];
   fallingItems = itemPictures;
   avatarSelected = this.avatarOptions[1];
+
+  private readonly classInfo: Record<string, InfoEntry> = {
+    'assets/warrior_01.png': { icon: '⚔️', label: 'Warrior - Value', text: 'Starts with 4 lives instead of 3 and a melee weapon — high damage, slower attack speed. Extra life gives you more swings at the run.' },
+    'assets/thief_01.png':   { icon: '🗡️', label: 'Thief - Tempo',   text: 'Starts at level 2 with an extra talent point and access to tier-2 shop items. Snowball early with a fast dagger.' },
+    'assets/merchant_01.png':{ icon: '💰', label: 'Merchant - Flexibility', text: 'Starts with +3 income (and +3 bonus gold from a unique starter item) — refresh more, see more, build any direction.' },
+  };
+  private readonly tipEntry: InfoEntry = { icon: '💡', label: 'Tip', text: 'Your character choice picks a starting bonus and weapon. Items you buy can take any build in any direction.' };
   loading = false;
   intervalId: any;
   @ViewChild('fallingItemsContainer', { static: false })
@@ -71,14 +79,13 @@ export class JoinFormComponent implements AfterViewInit, OnDestroy, OnInit {
   ngOnInit() {
     this.soundsService.playMusic(MusicOptions.DRAFT);
     this.infoBoxService.clearContent();
+    this.updateClassInfo();
+  }
+
+  private updateClassInfo() {
     this.infoBoxService.setPageDefault({
       title: 'Choose Your Character',
-      entries: [
-        { icon: '⚔️', label: 'Warrior - Value', text: 'Starts with 4 lives instead of 3 and a melee weapon — high damage, slower attack speed. Extra life gives you more swings at the run.' },
-        { icon: '🗡️', label: 'Thief - Tempo', text: 'Starts at level 2 with an extra talent point and access to tier-2 shop items. Snowball early with a fast dagger.' },
-        { icon: '💰', label: 'Merchant - Flexibility', text: 'Starts with +3 income (and +3 bonus gold from a unique starter item) — refresh more, see more, build any direction.' },
-        { icon: '💡', label: 'Tip', text: 'Your character choice picks a starting bonus and weapon. Items you buy can take any build in any direction.' },
-      ],
+      entries: [ this.classInfo[this.avatarSelected], this.tipEntry ],
     });
   }
 
@@ -108,12 +115,14 @@ export class JoinFormComponent implements AfterViewInit, OnDestroy, OnInit {
     const currentIndex = this.avatarOptions.indexOf(this.avatarSelected);
     const nextIndex = (currentIndex + 1) % this.avatarOptions.length;
     this.avatarSelected = this.avatarOptions[nextIndex];
+    this.updateClassInfo();
   }
 
   onPrevButton() {
     const currentIndex = this.avatarOptions.indexOf(this.avatarSelected);
     const prevIndex = (currentIndex - 1 + this.avatarOptions.length) % this.avatarOptions.length;
     this.avatarSelected = this.avatarOptions[prevIndex];
+    this.updateClassInfo();
   }
 
   getInputErrorMessage() {

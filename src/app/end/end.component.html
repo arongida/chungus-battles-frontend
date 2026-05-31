@@ -149,8 +149,8 @@
   <div class="build-panel-header">
     <mat-icon class="build-panel-icon">person</mat-icon>
     <span class="build-panel-title">{{ build.name }} — {{ build.wins }} wins</span>
-    <button class="build-panel-replays" (mousedown)="$event.stopPropagation()" (click)="openReplays(build.originalPlayerId, build.name)">
-      <mat-icon class="build-panel-replays-icon">history</mat-icon>
+    <button mat-stroked-button class="replays-btn build-panel-replays-btn" (mousedown)="$event.stopPropagation()" (click)="openReplays(build.originalPlayerId, build.name)">
+      <mat-icon>history</mat-icon> Replays
     </button>
     @if (pinnedId !== undefined) {
       <button class="build-panel-close" (mousedown)="$event.stopPropagation()" (click)="unpinPlayer(pinnedId)" title="Unpin">×</button>

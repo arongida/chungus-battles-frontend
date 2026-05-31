@@ -161,24 +161,15 @@
 
 /* ── Build panel replays button ──────────────────────────── */
 
-.build-panel-replays {
-  background: none;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  padding: 0 2px;
+.build-panel-replays-btn {
+  font-size: 0.72rem !important;
+  line-height: 1 !important;
+  padding: 3px 8px !important;
+  height: auto !important;
+  min-height: unset !important;
   flex-shrink: 0;
-  transition: color 100ms;
-  color: rgba(245, 158, 11, 0.5);
 
-  &:hover { color: #f59e0b; }
-}
-
-.build-panel-replays-icon {
-  font-size: 16px;
-  width: 16px;
-  height: 16px;
+  mat-icon { font-size: 13px; width: 13px; height: 13px; }
 }
 
 /* ── Build panel ─────────────────────────────────────────── */
@@ -216,6 +207,25 @@
   padding: 8px 12px 6px;
   background: rgba(180, 120, 30, 0.1);
   cursor: grab;
+  transition: background 150ms, box-shadow 150ms;
+
+  &::before {
+    content: '⠿';
+    font-size: 0.85rem;
+    color: rgba(180, 120, 30, 0.5);
+    opacity: 0.4;
+    flex-shrink: 0;
+    transition: opacity 150ms;
+    line-height: 1;
+  }
+
+  &:hover {
+    background: rgba(180, 120, 30, 0.15);
+
+    &::before {
+      opacity: 1;
+    }
+  }
 }
 
 .build-panel-icon {

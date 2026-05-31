@@ -1,9 +1,10 @@
-import { Component, input, Input } from '@angular/core';
+import { Component, inject, input, Input, OnInit, PLATFORM_ID, signal } from '@angular/core';
 import {
   Player,
 } from '../../../models/colyseus-schema/PlayerSchema';
 import {
   DecimalPipe,
+  isPlatformBrowser,
   NgClass,
   TitleCasePipe,
 } from '@angular/common';
@@ -22,6 +23,7 @@ import {
   EquipSlot, ItemRarity,
 } from '../../../models/types/ItemTypes';
 import { InfoHintDirective } from '../../directives/info-hint.directive';
+import { InfoHoverCardDirective } from '../../directives/info-hover-card.directive';
 import { InfoContent } from '../../models/info-content';
 import { SkillIconsComponent } from '../skill-icons/skill-icons.component';
 
@@ -37,18 +39,44 @@ import { SkillIconsComponent } from '../skill-icons/skill-icons.component';
     ItemHoverCardDirective,
     TitleCasePipe,
     InfoHintDirective,
+    InfoHoverCardDirective,
     SkillIconsComponent,
   ],
   templateUrl: './character-details.component.html',
   styleUrl: './character-details.component.scss',
 })
-export class CharacterDetailsComponent {
+export class CharacterDetailsComponent implements OnInit {
+  private readonly platformId = inject(PLATFORM_ID);
+
   @Input({ required: true }) player: Player = new Player();
   @Input() enemy: boolean = false;
   @Input() combat: boolean = false;
   @Input() showStats: boolean = true;
   playerBeingHit = input(false);
   enemyBeingHit = input(false);
+
+  /** Compact ↔ detailed toggle. Default: detailed in battle on desktop, compact otherwise. */
+  expanded = signal(false);
+  expand(): void { this.expanded.set(true); }
+  collapse(): void { this.expanded.set(false); }
+
+  ngOnInit(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      // Battle phase: start detailed on desktop (≥640 px), compact on mobile.
+      this.expanded.set(window.innerWidth >= 640);
+    }
+  }
+
+  /**
+   * Returns the "_transparent" portrait variant used in compact view.
+   * Mirrors the transform already used in the draft toolbar:
+   *   warrior_01.png → warrior_transparent.png
+   * Placeholders that lack "01" pass through unchanged.
+   */
+  getCompactAvatarImage(): string {
+    return (this.player?.avatarUrl ?? 'assets/Portrait_ID_0_Placeholder.png')
+      .replace('01', 'transparent');
+  }
 
   equipmentLayout = [
     [EquipSlot.HELMET, EquipSlot.MAIN_HAND, EquipSlot.OFF_HAND, EquipSlot.ARMOR],
@@ -179,13 +207,13 @@ export class CharacterDetailsComponent {
     const dodgeChance = Math.round(100 * (1 - 100 / (100 + this.player.dodgeRate)));
     const defenseReduction = Math.round(100 * (1 - 100 / (100 + this.player.defense)));
     return {
-      title: 'Your Stats',
+      title: `${this.player.name}'s Stats`,
       entries: [
         { icon: '❤️', label: 'Health', text: `${Math.round(this.player.maxHp)} HP total. Reaches zero = you lose the battle.`, color: 'text-pink-500' },
         { icon: '🎯', label: 'Accuracy', text: `+${this.player.accuracy?.toFixed(1)} added to your weapon's minimum damage roll.`, color: 'text-red-400' },
         { icon: '⚔️', label: 'Strength', text: `+${this.player.strength?.toFixed(1)} added to your weapon's maximum damage roll.`, color: 'text-red-400' },
         { icon: '⏩', label: 'Speed Bonus', text: `${((this.player.attackSpeed - 1) * 100)?.toFixed(0)}% multiplier applied to all weapon attack speeds.`, color: 'text-blue-400' },
-        { icon: '💰', label: 'Income', text: `${this.player.income} gold earned at the end of this fight. Grows by 1 automatically each fight.`, color: 'text-yellow-400' },
+        { icon: '💰', label: 'Income', text: `${this.player.income} gold earned at the end of this fight. Grows by 1 each fight.`, color: 'text-yellow-400' },
         { icon: '🧪', label: 'HP Regen', text: `Recover ${this.player.hpRegen?.toFixed(3)} HP every second during battle.`, color: 'text-orange-400' },
         { icon: '🔰', label: 'Flat Damage Reduction', text: `Reduces all incoming damage by ${this.player.flatDmgReduction?.toFixed(3)} flat.`, color: 'text-green-400' },
         { icon: '🛡️', label: 'Defense', text: `Reduces incoming damage by ${defenseReduction}% (DR formula applied to ${this.player.defense?.toFixed(2)} defense).`, color: 'text-green-400' },

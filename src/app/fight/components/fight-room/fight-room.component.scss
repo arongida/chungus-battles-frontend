@@ -12,6 +12,11 @@
   transform: translateX(-50%);
 }
 
+.fight-panel-log {
+  bottom: 16px;
+  right: 16px;
+}
+
 @media (max-width: 639px) {
   .fight-panel-top {
     top: 56px;
@@ -115,6 +120,36 @@
   &:hover {
     background: rgba(180, 120, 30, 0.12);
     box-shadow: 0 0 16px rgba(180, 120, 30, 0.3), 0 4px 24px rgba(0, 0, 0, 0.8);
+  }
+}
+
+/* ── Reset panel layout button ───────────────────────────── */
+
+.reset-layout-btn {
+  position: fixed;
+  top: 76px;
+  left: 16px;
+  z-index: 1100;
+
+  @media (max-width: 639px) {
+    top: 60px;
+  }
+  background: rgba(10, 10, 15, 0.75);
+  border: 1px solid var(--cm-border);
+  border-radius: 6px;
+  color: var(--cm-text-muted);
+  font-size: 1rem;
+  line-height: 1;
+  padding: 5px 8px;
+  cursor: pointer;
+  opacity: 0.45;
+  transition: opacity 150ms, color 150ms, background 150ms, border-color 150ms;
+
+  &:hover {
+    opacity: 1;
+    color: var(--cm-amber);
+    background: rgba(180, 120, 30, 0.1);
+    border-color: var(--cm-amber);
   }
 }
 

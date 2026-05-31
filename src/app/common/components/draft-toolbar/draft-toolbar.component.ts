@@ -147,7 +147,6 @@ export class DraftToolbarComponent implements OnChanges, OnInit {
   }
 
   openEncyclopedia(): void {
-    this.characterDetailsService.showCharacterDetails.set(false);
     this.dialog.open(EncyclopediaComponent, {
       data: {
         player: this.player,
@@ -177,25 +176,21 @@ export class DraftToolbarComponent implements OnChanges, OnInit {
   }
 
   switchMute() {
-    this.characterDetailsService.showCharacterDetails.set(false);
     this.soundsService.setVolume(this.muted ? 0.1 : 0);
     this.muted = !this.muted;
   }
 
   buyXp() {
-    this.characterDetailsService.showCharacterDetails.set(false);
     this.soundsService.playSound(SoundOptions.CLICK);
     this.draftService.sendMessage('buy_xp', {});
   }
 
   levelUp() {
-    this.characterDetailsService.showCharacterDetails.set(false);
     this.soundsService.playSound(SoundOptions.CLICK);
     this.draftService.sendMessage('level_up', {});
   }
 
   refreshShop() {
-    this.characterDetailsService.showCharacterDetails.set(false);
     this.soundsService.playSound(SoundOptions.CLICK);
     this.isLocked = false;
     this.draftService.sendMessage('refresh_shop', {});

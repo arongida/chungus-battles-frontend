@@ -7,7 +7,6 @@ import { Talent } from '../../../models/colyseus-schema/TalentSchema';
 import { SoundOptions, SoundsService } from '../../../common/services/sounds.service';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Player } from '../../../models/colyseus-schema/PlayerSchema';
-import { CharacterDetailsService } from '../../../common/services/character-details.service';
 @Component({
   selector: 'app-ready-button',
   standalone: true,
@@ -23,7 +22,6 @@ export class ReadyButtonComponent {
     private draftService: DraftService,
     private fightService: FightService,
     private soundsService: SoundsService,
-    private characterDetailsService: CharacterDetailsService
   ) {}
 
   @Input({ required: false })
@@ -33,7 +31,6 @@ export class ReadyButtonComponent {
 
   async startFight() {
     this.soundsService.playSound(SoundOptions.CLICK);
-    this.characterDetailsService.showCharacterDetails.set(false);
     if (this.loading) return;
     this.loading = true;
     const playerId = localStorage.getItem('playerId');
@@ -43,11 +40,7 @@ export class ReadyButtonComponent {
     this.loading = false;
   }
 
-  openCharacterDetails() {
-    if (this.missingEquipment) {
-      this.characterDetailsService.showCharacterDetails.set(true);
-    }
-  }
+  openCharacterDetails() {}
 
   shouldShowEquipmentWarning(): boolean {
     this.missingEquipment = false;

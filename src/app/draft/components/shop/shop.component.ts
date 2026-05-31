@@ -72,7 +72,6 @@ export class ShopComponent {
 
   @Input({ required: true }) shop: Item[];
   @Input({ required: true }) player: Player;
-  @Input({ required: false }) showCharacterDetails: boolean = false;
 
   getItemImage(item: Item) {
     return item.image ? item.image : 'assets/Item_ID_0_Empty.png';
@@ -145,7 +144,6 @@ export class ShopComponent {
     this.tempCard?.remove();
     this.tempCard = null;
     this.characterDetailsService.showTalentPicker.set(false);
-    this.characterDetailsService.showCharacterDetails.set(true);
   }
 
   resetDrag(_item: Item) {

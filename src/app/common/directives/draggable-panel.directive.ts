@@ -203,8 +203,10 @@ export class DraggablePanelDirective implements AfterViewInit, OnDestroy {
   private endDrag(): void {
     this.isDragging = false;
     document.body.style.userSelect = '';
-    // Reset inline cursor so CSS takes over (.cd-header has cursor:grab, compact card has cursor:pointer)
-    (this.el.nativeElement as HTMLElement).style.cursor = '';
+    const panel = this.el.nativeElement as HTMLElement;
+    // Reset inline cursor/z-index so CSS class values take over again.
+    panel.style.cursor = '';
+    panel.style.zIndex = '';
 
     // Suppress the click that the browser fires after mouseup/touchend when a real drag occurred.
     if (this.hasMoved) {
@@ -213,7 +215,6 @@ export class DraggablePanelDirective implements AfterViewInit, OnDestroy {
 
     // Persist the final position.
     if (this.panelId) {
-      const panel = this.el.nativeElement as HTMLElement;
       const left = parseFloat(panel.style.left) || 0;
       const top = parseFloat(panel.style.top) || 0;
       this.panelLayoutService.savePosition(this.panelId, { left, top });

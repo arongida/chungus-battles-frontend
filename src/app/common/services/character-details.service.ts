@@ -4,15 +4,5 @@ import { Injectable, signal } from '@angular/core';
   providedIn: 'root',
 })
 export class CharacterDetailsService {
-  public showCharacterDetails = signal<boolean>(false);
   public showTalentPicker = signal<boolean>(false);
-
-  toggleCharacterDetails() {
-    this.showCharacterDetails.set(!this.showCharacterDetails());
-  }
-
-  closeCharacterDetails() {
-    this.showCharacterDetails.set(false);
-  }
-
 }

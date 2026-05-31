@@ -23,8 +23,7 @@
           [hoverCardDisabled]="draggingCard || buyingItem === item"
           (buyFromPopup)="buyItem(item)"
           [appInfoHint]="getItemInfoHint(item)"
-          (mouseenter)="hoveredItem = item" (mouseleave)="hoveredItem = null"
-          (click)="characterDetailsService.closeCharacterDetails()">
+          (mouseenter)="hoveredItem = item" (mouseleave)="hoveredItem = null">
 
 <app-item-card [item]="item" [player]="player"
                          [setTooltipBasedOnInventory]="true"

@@ -12,7 +12,6 @@ export class InfoHoverCardDirective implements OnDestroy {
   @Input({ alias: 'appInfoHoverCard', required: true }) content!: InfoContent;
 
   private overlayRef: OverlayRef | null = null;
-  private closeTimeout: ReturnType<typeof setTimeout> | null = null;
 
   constructor(
     private overlay: Overlay,
@@ -22,13 +21,12 @@ export class InfoHoverCardDirective implements OnDestroy {
 
   @HostListener('mouseenter')
   onMouseEnter() {
-    this.cancelClose();
     this.openOverlay();
   }
 
   @HostListener('mouseleave')
   onMouseLeave() {
-    this.scheduleClose();
+    this.closeOverlay();
   }
 
   private openOverlay() {
@@ -55,20 +53,6 @@ export class InfoHoverCardDirective implements OnDestroy {
     const portal = new ComponentPortal(InfoCardComponent, this.viewContainerRef);
     const ref = this.overlayRef.attach(portal);
     ref.setInput('content', this.content);
-
-    pane.addEventListener('mouseenter', () => this.cancelClose());
-    pane.addEventListener('mouseleave', () => this.scheduleClose());
-  }
-
-  private scheduleClose() {
-    this.closeTimeout = setTimeout(() => this.closeOverlay(), 100);
-  }
-
-  private cancelClose() {
-    if (this.closeTimeout !== null) {
-      clearTimeout(this.closeTimeout);
-      this.closeTimeout = null;
-    }
   }
 
   private closeOverlay() {
@@ -77,7 +61,6 @@ export class InfoHoverCardDirective implements OnDestroy {
   }
 
   ngOnDestroy() {
-    this.cancelClose();
     this.closeOverlay();
   }
 }

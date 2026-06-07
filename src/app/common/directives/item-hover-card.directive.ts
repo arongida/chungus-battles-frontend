@@ -33,7 +33,6 @@ export class ItemHoverCardDirective implements OnChanges, OnDestroy {
   @Output() buyFromPopup = new EventEmitter<void>();
 
   private overlayRef: OverlayRef | null = null;
-  private closeTimeout: ReturnType<typeof setTimeout> | null = null;
   private originalImage: string | null = null;
   private readonly isTouch: boolean;
 
@@ -60,7 +59,6 @@ export class ItemHoverCardDirective implements OnChanges, OnDestroy {
   @HostListener('mouseenter')
   onMouseEnter() {
     if (this.touchMode || this.hoverCardDisabled) return;
-    this.cancelClose();
     if (this.showGlow) this.applyGlow();
     this.openOverlay();
   }
@@ -69,7 +67,7 @@ export class ItemHoverCardDirective implements OnChanges, OnDestroy {
   onMouseLeave() {
     if (this.touchMode) return;
     if (this.showGlow) this.restoreImage();
-    this.scheduleClose();
+    this.closeOverlay();
   }
 
   @HostListener('click')
@@ -147,9 +145,6 @@ export class ItemHoverCardDirective implements OnChanges, OnDestroy {
     componentRef.setInput('item', this.item);
     componentRef.setInput('player', this.hoverPlayer);
     componentRef.setInput('showDetails', true);
-
-    pane.addEventListener('mouseenter', () => this.cancelClose());
-    pane.addEventListener('mouseleave', () => this.scheduleClose());
   }
 
   private applyPaneStyles(pane: HTMLElement, tier: number) {
@@ -176,24 +171,12 @@ export class ItemHoverCardDirective implements OnChanges, OnDestroy {
     }
   }
 
-  private scheduleClose() {
-    this.closeTimeout = setTimeout(() => this.closeOverlay(), 100);
-  }
-
-  private cancelClose() {
-    if (this.closeTimeout !== null) {
-      clearTimeout(this.closeTimeout);
-      this.closeTimeout = null;
-    }
-  }
-
   private closeOverlay() {
     this.overlayRef?.dispose();
     this.overlayRef = null;
   }
 
   ngOnDestroy() {
-    this.cancelClose();
     this.restoreImage();
     this.closeOverlay();
   }

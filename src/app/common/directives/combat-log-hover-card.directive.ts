@@ -17,7 +17,6 @@ export class CombatLogHoverCardDirective implements OnDestroy {
   @Input({ required: true }) hoverEnemy!: Player;
 
   private overlayRef: OverlayRef | null = null;
-  private closeTimeout: ReturnType<typeof setTimeout> | null = null;
 
   constructor(
     private overlay: Overlay,
@@ -27,13 +26,12 @@ export class CombatLogHoverCardDirective implements OnDestroy {
 
   @HostListener('mouseenter')
   onMouseEnter() {
-    this.cancelClose();
     this.openOverlay();
   }
 
   @HostListener('mouseleave')
   onMouseLeave() {
-    this.scheduleClose();
+    this.closeOverlay();
   }
 
   private openOverlay() {
@@ -63,20 +61,6 @@ export class CombatLogHoverCardDirective implements OnDestroy {
     ref.setInput('entry', this.entry);
     ref.setInput('player', this.hoverPlayer);
     ref.setInput('enemy', this.hoverEnemy);
-
-    pane.addEventListener('mouseenter', () => this.cancelClose());
-    pane.addEventListener('mouseleave', () => this.scheduleClose());
-  }
-
-  private scheduleClose() {
-    this.closeTimeout = setTimeout(() => this.closeOverlay(), 100);
-  }
-
-  private cancelClose() {
-    if (this.closeTimeout !== null) {
-      clearTimeout(this.closeTimeout);
-      this.closeTimeout = null;
-    }
   }
 
   private closeOverlay() {
@@ -85,7 +69,6 @@ export class CombatLogHoverCardDirective implements OnDestroy {
   }
 
   ngOnDestroy() {
-    this.cancelClose();
     this.closeOverlay();
   }
 }

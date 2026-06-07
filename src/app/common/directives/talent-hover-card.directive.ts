@@ -12,7 +12,6 @@ export class TalentHoverCardDirective implements OnDestroy {
   @Input({ alias: 'appTalentHoverCard', required: true }) talent!: Talent;
 
   private overlayRef: OverlayRef | null = null;
-  private closeTimeout: ReturnType<typeof setTimeout> | null = null;
 
   constructor(
     private overlay: Overlay,
@@ -22,13 +21,12 @@ export class TalentHoverCardDirective implements OnDestroy {
 
   @HostListener('mouseenter')
   onMouseEnter() {
-    this.cancelClose();
     this.openOverlay();
   }
 
   @HostListener('mouseleave')
   onMouseLeave() {
-    this.scheduleClose();
+    this.closeOverlay();
   }
 
   private openOverlay() {
@@ -55,20 +53,6 @@ export class TalentHoverCardDirective implements OnDestroy {
     const portal = new ComponentPortal(TalentCardComponent, this.viewContainerRef);
     const ref = this.overlayRef.attach(portal);
     ref.setInput('talent', this.talent);
-
-    pane.addEventListener('mouseenter', () => this.cancelClose());
-    pane.addEventListener('mouseleave', () => this.scheduleClose());
-  }
-
-  private scheduleClose() {
-    this.closeTimeout = setTimeout(() => this.closeOverlay(), 100);
-  }
-
-  private cancelClose() {
-    if (this.closeTimeout !== null) {
-      clearTimeout(this.closeTimeout);
-      this.closeTimeout = null;
-    }
   }
 
   private closeOverlay() {
@@ -77,7 +61,6 @@ export class TalentHoverCardDirective implements OnDestroy {
   }
 
   ngOnDestroy() {
-    this.cancelClose();
     this.closeOverlay();
   }
 }

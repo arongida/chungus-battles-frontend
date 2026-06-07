@@ -83,7 +83,6 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
   private pinnedPanelLeftMap = new Map<number, number>();
   private intervalId: any;
   private fallingItemsIntervalId: any;
-  private leaveTimeout: any;
 
   constructor(
     private router: Router,
@@ -142,7 +141,6 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async onPlayerHover(playerId: number) {
-    clearTimeout(this.leaveTimeout);
     this.hoveredPlayerId.set(playerId);
     if (!this.isPinned(playerId)) {
       await this.loadPanelBuild(playerId);
@@ -150,12 +148,10 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onPlayerLeave() {
-    // Small delay so moving the mouse into the panel doesn't cause a flicker
-    this.leaveTimeout = setTimeout(() => this.hoveredPlayerId.set(null), 80);
+    this.hoveredPlayerId.set(null);
   }
 
   onPanelEnter() {
-    clearTimeout(this.leaveTimeout);
     this.panelHovered.set(true);
   }
 

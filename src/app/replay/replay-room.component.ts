@@ -28,13 +28,12 @@ import { environment } from '../../environments/environment';
 // Mirrors backend playerToPlainObject → rehydrates a plain snapshot into a typed Player.
 function rehydrateItem(raw: any): Item {
   const item = new Item();
-  const NESTED = new Set(['affectedStats', 'setBonusStats', 'affectedEnemyStats', 'tags', 'itemCollections', 'triggerTypes', 'equipOptions']);
+  const NESTED = new Set(['affectedStats', 'affectedEnemyStats', 'tags', 'itemCollections', 'triggerTypes', 'equipOptions']);
   for (const key of Object.keys(raw ?? {})) {
     if (NESTED.has(key)) continue;
     try { (item as any)[key] = raw[key]; } catch {}
   }
   if (raw?.affectedStats) Object.assign(item.affectedStats, raw.affectedStats);
-  if (raw?.setBonusStats) Object.assign(item.setBonusStats, raw.setBonusStats);
   if (raw?.affectedEnemyStats) Object.assign(item.affectedEnemyStats, raw.affectedEnemyStats);
   (raw?.tags ?? []).forEach((t: string) => item.tags.push(t));
   (raw?.itemCollections ?? []).forEach((c: number) => item.itemCollections.push(c));

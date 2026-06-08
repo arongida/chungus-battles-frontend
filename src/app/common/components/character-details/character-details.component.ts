@@ -191,7 +191,6 @@ export class CharacterDetailsComponent implements OnInit {
     title: 'Equip Item',
     entries: [
       { icon: '🗡️', label: 'Equip', text: 'Place this item into an equipment slot. Equipped items provide their stats during battle.' },
-      { icon: '🔗', label: 'Set Bonus', text: 'Equipping two items from the same set activates a powerful set bonus.' },
       { icon: '↩️', label: 'Unequip', text: 'Click an equipped item in the slots above to unequip and return it to your inventory.' },
     ],
   };

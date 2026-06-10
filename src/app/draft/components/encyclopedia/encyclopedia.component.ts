@@ -24,7 +24,6 @@ export class EncyclopediaComponent implements OnInit {
   selectedClass: string | null = null;
   selectedTier: string | null = null;
   dummyPlayer: Player = new Player();
-  hoveredItem: Item | null = null;
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public dialogData: any,
@@ -72,11 +71,6 @@ export class EncyclopediaComponent implements OnInit {
 
   getItemImage(item: Item): string {
     return item.image ? item.image : 'assets/Item_ID_0_Empty.png';
-  }
-
-  getGlowImage(item: Item): string {
-    const tier = item.tier < 10 ? item.tier : item.tier - 90;
-    return `assets/level_${tier}_glow.png`;
   }
 
   switchTab(isItems: boolean, classEl: HTMLSelectElement, tierEl: HTMLSelectElement): void {

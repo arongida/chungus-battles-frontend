@@ -6,6 +6,28 @@ import {
 } from '@colyseus/schema';
 import { AffectedStats } from './AffectedStatsSchema';
 
+// Mirrors ItemRollPreview from the backend's src/items/stats/itemRollPreview.ts.
+// Only present on items fetched from the /items catalog endpoint (encyclopedia);
+// items synced via Colyseus state never carry it.
+export interface NumberRange {
+  min: number;
+  max: number;
+}
+
+export interface PossibleStatRange extends NumberRange {
+  stat: string;
+}
+
+export interface ItemRollPreview {
+  affixCount: number;
+  possibleStats: PossibleStatRange[];
+  weaponBase?: {
+    minDamage: NumberRange;
+    maxDamage: NumberRange;
+    attackSpeed: NumberRange;
+  };
+}
+
 class Item extends Schema {
   // Fields in backend declaration order (required for skipHandshake)
   @type('number') itemId: number = 0;
@@ -33,6 +55,7 @@ class Item extends Schema {
   @type(AffectedStats) affectedEnemyStats: AffectedStats = new AffectedStats();
   // Frontend-only display state — not synced, must stay after all backend fields
   imageCache: string = '';
+  rollPreview: ItemRollPreview | null = null;
 }
 
 export default Item;

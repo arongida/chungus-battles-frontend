@@ -15,6 +15,7 @@ export function buildItemFromData(itemData: any): Item {
   if (affectedEnemyStats) { const s = new AffectedStats(); Object.assign(s, affectedEnemyStats); item.affectedEnemyStats = s; }
   if (triggerTypes?.length) item.triggerTypes = new ArraySchema<string>(...triggerTypes);
   if (tags?.length) item.tags = new ArraySchema<string>(...tags);
+  if (primitives.rollPreview) item.rollPreview = primitives.rollPreview;
   return item;
 }
 

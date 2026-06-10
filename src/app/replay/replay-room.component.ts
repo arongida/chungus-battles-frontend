@@ -28,13 +28,12 @@ import { environment } from '../../environments/environment';
 // Mirrors backend playerToPlainObject → rehydrates a plain snapshot into a typed Player.
 function rehydrateItem(raw: any): Item {
   const item = new Item();
-  const NESTED = new Set(['affectedStats', 'setBonusStats', 'affectedEnemyStats', 'tags', 'itemCollections', 'triggerTypes', 'equipOptions']);
+  const NESTED = new Set(['affectedStats', 'affectedEnemyStats', 'tags', 'itemCollections', 'triggerTypes', 'equipOptions']);
   for (const key of Object.keys(raw ?? {})) {
     if (NESTED.has(key)) continue;
     try { (item as any)[key] = raw[key]; } catch {}
   }
   if (raw?.affectedStats) Object.assign(item.affectedStats, raw.affectedStats);
-  if (raw?.setBonusStats) Object.assign(item.setBonusStats, raw.setBonusStats);
   if (raw?.affectedEnemyStats) Object.assign(item.affectedEnemyStats, raw.affectedEnemyStats);
   (raw?.tags ?? []).forEach((t: string) => item.tags.push(t));
   (raw?.itemCollections ?? []).forEach((c: number) => item.itemCollections.push(c));
@@ -214,6 +213,17 @@ export class ReplayRoomComponent implements OnInit, AfterViewInit, OnDestroy {
           this.player.set(p);
         } else if (e && e.playerId === playerId) {
           e.hp = e.hp - damage + healing;
+          this.enemy.set(e);
+        }
+      },
+      setInvincible: (playerId, invincible) => {
+        const p = this.player();
+        const e = this.enemy();
+        if (p && p.playerId === playerId) {
+          p.invincible = invincible;
+          this.player.set(p);
+        } else if (e && e.playerId === playerId) {
+          e.invincible = invincible;
           this.enemy.set(e);
         }
       },

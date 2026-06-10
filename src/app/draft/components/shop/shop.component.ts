@@ -120,7 +120,6 @@ export class ShopComponent {
       entries: [
         { icon: '🛒', label: 'Buy Item', text: `Costs ${item.price} gold. After buying, the item goes to your inventory.` },
         { icon: '🗡️', label: 'Equip It', text: 'Open your character details (avatar button) and use the Equip button.' },
-        { icon: '🔗', label: 'Set Bonus', text: 'Equip two items from the same set to activate a powerful set bonus.' },
         { icon: '🖱️', label: 'How to buy', text: 'Click the Buy button or drag the item to the drop zone at the bottom.' },
       ],
     };

@@ -1,5 +1,6 @@
 import { Renderer2 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
+import { DamageType } from '../models/types/MessageTypes';
 
 export function triggerAvatarHit(playerId: number) {
   const el = document.getElementById(`avatar-${playerId}`);
@@ -30,7 +31,7 @@ export function triggerItemActivation(playerId: number, slot: string) {
   }
 }
 
-export function triggerShowDamageNumber(renderer: Renderer2, platformId: Object, damage: number, defenderId: number): void {
+export function triggerShowDamageNumber(renderer: Renderer2, platformId: Object, damage: number, defenderId: number, type: DamageType = 'normal'): void {
   if (!isPlatformBrowser(platformId)) return;
   const container = document.getElementById(`damage-numbers-${defenderId}`);
   if (!container) {
@@ -39,9 +40,35 @@ export function triggerShowDamageNumber(renderer: Renderer2, platformId: Object,
   }
   const el = renderer.createElement('div');
   renderer.addClass(el, 'damage-number');
+  if (type === 'poison' || type === 'burn') {
+    renderer.addClass(el, `damage-number--${type}`);
+  }
   renderer.appendChild(el, renderer.createText(`-${damage}`));
   renderer.setStyle(el, 'left', `${Math.random() * 100}%`);
   renderer.setStyle(el, 'fontSize', `${18 + damage * 0.5}px`);
+  renderer.appendChild(container, el);
+  setTimeout(() => { if (el.parentNode === container) renderer.removeChild(container, el); }, 3000);
+}
+
+export function triggerShowDodgeText(renderer: Renderer2, platformId: Object, defenderId: number): void {
+  showFloatingText(renderer, platformId, defenderId, 'dodge-number', 'Dodge!');
+}
+
+export function triggerShowInvulnerableText(renderer: Renderer2, platformId: Object, playerId: number): void {
+  showFloatingText(renderer, platformId, playerId, 'invulnerable-number', '🛡️ Invulnerable!');
+}
+
+function showFloatingText(renderer: Renderer2, platformId: Object, playerId: number, cssClass: string, text: string): void {
+  if (!isPlatformBrowser(platformId)) return;
+  const container = document.getElementById(`damage-numbers-${playerId}`);
+  if (!container) {
+    console.warn(`Damage container not found for playerId: ${playerId}`);
+    return;
+  }
+  const el = renderer.createElement('div');
+  renderer.addClass(el, cssClass);
+  renderer.appendChild(el, renderer.createText(text));
+  renderer.setStyle(el, 'left', `${Math.random() * 60}%`);
   renderer.appendChild(container, el);
   setTimeout(() => { if (el.parentNode === container) renderer.removeChild(container, el); }, 3000);
 }

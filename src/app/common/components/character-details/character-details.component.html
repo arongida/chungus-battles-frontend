@@ -18,7 +18,8 @@
 
     <div id="avatar-{{ player.playerId }}"
          class="relative flex-shrink-0 sm:w-32 sm:h-40"
-         [ngClass]="combat ? 'w-20 h-24' : 'w-28 h-36'">
+         [ngClass]="combat ? 'w-20 h-24' : 'w-28 h-36'"
+         [class.invulnerable-aura]="player.invincible">
       <!-- overflow-hidden is on this inner wrapper only so avatar images are clipped
            while damage numbers can float above the component boundary -->
       <div class="absolute inset-0 overflow-hidden rounded-sm">
@@ -164,7 +165,8 @@
   <!-- Portrait: transparent variant; enemy is horizontally mirrored to face the player.
        #avatar-{id} must be on the outer wrapper (for avatar-shake animation).
        Only the inner portrait div is flipped, so damage numbers stay upright. -->
-  <div id="avatar-{{ player.playerId }}" class="compact-avatar">
+  <div id="avatar-{{ player.playerId }}" class="compact-avatar"
+       [class.invulnerable-aura]="player.invincible">
     <div class="absolute inset-0 overflow-hidden">
       <div class="absolute inset-0 bg-contain bg-no-repeat bg-bottom"
            [class.compact-enemy-flip]="enemy"

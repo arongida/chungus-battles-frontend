@@ -5,14 +5,13 @@ import { Talent } from '../../models/colyseus-schema/TalentSchema';
 import { AffectedStats } from '../../models/colyseus-schema/AffectedStatsSchema';
 
 export function buildItemFromData(itemData: any): Item {
-  const { affectedStats, setBonusStats, affectedEnemyStats, triggerTypes, tags, ...primitives } = itemData;
+  const { affectedStats, affectedEnemyStats, triggerTypes, tags, ...primitives } = itemData;
   const item = new Item();
-  const primitiveFields = ['itemId', 'name', 'description', 'price', 'sellPrice', 'setActive',
-    'tier', 'rarity', 'image', 'sold', 'equipped', 'type', 'set', 'showDetails',
+  const primitiveFields = ['itemId', 'name', 'description', 'price', 'sellPrice',
+    'tier', 'rarity', 'image', 'sold', 'equipped', 'type', 'class', 'showDetails',
     'baseMinDamage', 'baseMaxDamage', 'baseAttackSpeed'];
   primitiveFields.forEach(f => { if (primitives[f] !== undefined) try { (item as any)[f] = primitives[f]; } catch {} });
   if (affectedStats) { const s = new AffectedStats(); Object.assign(s, affectedStats); item.affectedStats = s; }
-  if (setBonusStats) { const s = new AffectedStats(); Object.assign(s, setBonusStats); item.setBonusStats = s; }
   if (affectedEnemyStats) { const s = new AffectedStats(); Object.assign(s, affectedEnemyStats); item.affectedEnemyStats = s; }
   if (triggerTypes?.length) item.triggerTypes = new ArraySchema<string>(...triggerTypes);
   if (tags?.length) item.tags = new ArraySchema<string>(...tags);
@@ -80,7 +79,6 @@ function calculatePlayerStats(player: Player): void {
 
   player.equippedItems.forEach(item => {
     if (item.affectedStats) addStats(item.affectedStats);
-    if (item.setActive && item.setBonusStats) addStats(item.setBonusStats);
   });
 
   player.talents.forEach(talent => {

@@ -117,6 +117,10 @@
   &--regen        { border-left-color: #fb923c; }
   &--poison_tick,
   &--poison_apply { border-left-color: #86efac; }
+  &--burn_tick,
+  &--burn_apply   { border-left-color: #fb923c; }
+  &--counter      { border-left-color: #38bdf8; }
+  &--invulnerable { border-left-color: #fbbf24; }
   &--reward       { border-left-color: #fde047; }
   &--xp           { border-left-color: #a3e635; }
   &--end_burn     { border-left-color: #dc2626; }

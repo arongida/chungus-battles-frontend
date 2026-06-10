@@ -14,6 +14,7 @@ import { Player } from '../../../models/colyseus-schema/PlayerSchema';
 import {
   HealingMessage,
   DamageMessage,
+  InvulnerableMessage,
   TriggerTalentMessage,
   TriggerItemMessage,
 } from '../../../models/types/MessageTypes';
@@ -191,6 +192,14 @@ export class FightRoomComponent implements OnInit {
         room.onMessage('healing', (message: HealingMessage) => {
           this.fightAnimationService.applyHealing(animCtx, message);
         });
+
+        room.onMessage('invulnerable', (message: InvulnerableMessage) => {
+          this.fightAnimationService.applyInvulnerable(animCtx, message);
+        });
+
+        // Live mode gets `invincible` via schema sync — the state message only
+        // exists for replays, but an unregistered type would log a warning.
+        room.onMessage('invulnerable_state', () => {});
 
         room.onMessage('trigger_talent', (message: TriggerTalentMessage) => {
           this.fightAnimationService.applyTriggerTalent(animCtx, message);

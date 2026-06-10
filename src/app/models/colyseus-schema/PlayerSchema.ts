@@ -41,6 +41,7 @@ export class Player extends Schema {
   @type('number') private _level: number = 0;
   @type('number') private _defense: number = 0;
   @type('number') private _attackSpeed: number = 0;
+  @type('boolean') invincible: boolean = false;
   // Frontend-only fields not present in backend schema (placed last to preserve index alignment)
   @type([ItemCollection]) activeItemCollections: ArraySchema<ItemCollection> =
     new ArraySchema<ItemCollection>();

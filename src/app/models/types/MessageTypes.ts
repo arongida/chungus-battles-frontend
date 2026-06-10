@@ -1,6 +1,19 @@
+export type DamageType = 'normal' | 'poison' | 'burn';
+
 export type DamageMessage = {
   playerId: number;
   damage: number;
+  type?: DamageType;
+};
+
+export type InvulnerableMessage = {
+  playerId: number;
+  damage: number;
+};
+
+export type InvulnerableStateMessage = {
+  playerId: number;
+  invincible: boolean;
 };
 
 export type HealingMessage = {

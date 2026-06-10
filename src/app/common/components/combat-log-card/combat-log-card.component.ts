@@ -69,6 +69,9 @@ export class CombatLogCardComponent {
       case 'regen':         return { icon: '🧪', label: 'Regen' };
       case 'poison_tick':   return { icon: '☠️', label: 'Poison Tick' };
       case 'poison_apply':  return { icon: '🐍', label: 'Poisoned' };
+      case 'burn_tick':     return { icon: '🔥', label: 'Burn Tick' };
+      case 'burn_apply':    return { icon: '🕯️', label: 'Burning' };
+      case 'counter':       return { icon: '🗡️', label: 'Counter' };
       case 'reward':        return { icon: '💰', label: 'Reward' };
       case 'xp':            return { icon: '✨', label: 'XP' };
       case 'result':        return { icon: '🏆', label: 'Result' };

@@ -123,6 +123,33 @@ body {
   -webkit-text-stroke: 1px red;
 }
 
+.damage-number--poison {
+  @apply text-green-300;
+  -webkit-text-stroke: 1px #16a34a;
+}
+
+.damage-number--burn {
+  @apply text-orange-400;
+  -webkit-text-stroke: 1px #ea580c;
+}
+
+.dodge-number {
+  @apply absolute text-blue-400 text-lg font-bold italic whitespace-nowrap;
+  animation: floatUp 3s ease-in forwards;
+  -webkit-text-stroke: 1px #2563eb;
+}
+
+.invulnerable-number {
+  @apply absolute text-amber-400 text-lg font-bold whitespace-nowrap;
+  animation: floatUp 3s ease-in forwards;
+  -webkit-text-stroke: 1px #d97706;
+}
+
+.invulnerable-aura {
+  animation: invulnerable-pulse 1s ease-in-out infinite;
+  border-radius: 0.5rem;
+}
+
 .healing-number {
   @apply absolute text-green-400 text-lg font-thin transition-all;
   animation: floatUp 3s ease-in forwards;
@@ -139,6 +166,12 @@ body {
 
 .animate-talent {
   animation: weapon-flash 0.4s ease-out forwards;
+}
+
+@keyframes invulnerable-pulse {
+  0%   { box-shadow: 0 0 6px 2px rgba(251, 191, 36, 0.5); }
+  50%  { box-shadow: 0 0 16px 6px rgba(251, 191, 36, 0.9); }
+  100% { box-shadow: 0 0 6px 2px rgba(251, 191, 36, 0.5); }
 }
 
 @keyframes floatUp {

@@ -30,7 +30,6 @@ import {
 } from '../../../common/services/character-details.service';
 import { InfoHintDirective } from '../../../common/directives/info-hint.directive';
 import { InfoContent } from '../../../common/models/info-content';
-import { ItemRarity } from '../../../models/types/ItemTypes';
 import { ItemHoverCardDirective } from '../../../common/directives/item-hover-card.directive';
 @Component({
   selector: 'app-shop',
@@ -104,7 +103,7 @@ export class ShopComponent {
   }
 
   getItemInfoHint(item: Item): InfoContent {
-    const isUpgrade = item.rarity > ItemRarity.COMMON;
+    const isUpgrade = item.upgradePreview;
     if (isUpgrade) {
       return {
         title: `Upgrade: ${item.name}`,
@@ -127,7 +126,7 @@ export class ShopComponent {
 
   getBuyingTooltip() {
     return this.canBuyItem(this.draggedCard)
-      ? ((this.draggedCard?.rarity ?? 0) <= 1 ? 'Buy for ' : 'Upgrade for ') + this.draggedCard?.price
+      ? (this.draggedCard?.upgradePreview ? 'Upgrade for ' : 'Buy for ') + this.draggedCard?.price
       : 'Not enough money!';
   }
 

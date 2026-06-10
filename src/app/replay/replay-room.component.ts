@@ -216,6 +216,17 @@ export class ReplayRoomComponent implements OnInit, AfterViewInit, OnDestroy {
           this.enemy.set(e);
         }
       },
+      setInvincible: (playerId, invincible) => {
+        const p = this.player();
+        const e = this.enemy();
+        if (p && p.playerId === playerId) {
+          p.invincible = invincible;
+          this.player.set(p);
+        } else if (e && e.playerId === playerId) {
+          e.invincible = invincible;
+          this.enemy.set(e);
+        }
+      },
     };
   }
 

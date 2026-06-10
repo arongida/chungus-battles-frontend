@@ -71,6 +71,12 @@
         <span class="clc-val text-lime-400">{{ entry.poisonStacks }}</span>
       </div>
     }
+    @if (entry.burnStacks !== undefined) {
+      <div class="clc-row">
+        <span class="clc-label">Stacks</span>
+        <span class="clc-val text-orange-400">{{ entry.burnStacks }}</span>
+      </div>
+    }
     @if (entry.goldDelta !== undefined) {
       <div class="clc-row">
         <span class="clc-label">Gold</span>

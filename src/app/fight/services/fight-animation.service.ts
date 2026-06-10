@@ -5,6 +5,8 @@ import {
   DamageMessage,
   EndBattleMessage,
   HealingMessage,
+  InvulnerableMessage,
+  InvulnerableStateMessage,
   TriggerItemMessage,
   TriggerTalentMessage,
   VersionWinMessage,
@@ -15,7 +17,9 @@ import {
   triggerHpHealFlash,
   triggerItemActivation,
   triggerShowDamageNumber,
+  triggerShowDodgeText,
   triggerShowHealingNumber,
+  triggerShowInvulnerableText,
   triggerTalentActivation,
 } from '../../common/TriggerAnimations';
 
@@ -34,6 +38,8 @@ export interface AnimationContext {
   onVersionWin?: (msg: VersionWinMessage) => void;
   /** Replay-only: mutates the Player signal's HP directly, since there is no Colyseus schema sync. */
   applyHpDelta?: (playerId: number, damage: number, healing: number) => void;
+  /** Replay-only: mutates the Player signal's invincible flag, since there is no Colyseus schema sync. */
+  setInvincible?: (playerId: number, invincible: boolean) => void;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -43,6 +49,9 @@ export class FightAnimationService {
       const next = [...prev, msg];
       return next.length > 200 ? next.slice(-200) : next;
     });
+    if (msg.kind === 'dodge' && msg.defenderId != null && ctx.player() && ctx.enemy()) {
+      triggerShowDodgeText(ctx.renderer, ctx.platformId, msg.defenderId);
+    }
   }
 
   applyAttack(ctx: AnimationContext, attackerId: number): void {
@@ -53,11 +62,21 @@ export class FightAnimationService {
 
   applyDamage(ctx: AnimationContext, msg: DamageMessage): void {
     if (ctx.player() && ctx.enemy()) {
-      triggerShowDamageNumber(ctx.renderer, ctx.platformId, Math.round(msg.damage), msg.playerId);
+      triggerShowDamageNumber(ctx.renderer, ctx.platformId, Math.round(msg.damage), msg.playerId, msg.type ?? 'normal');
       triggerHpDamageFlash(msg.playerId);
       ctx.triggerDamagedAvatar(msg.playerId);
       ctx.applyHpDelta?.(msg.playerId, msg.damage, 0);
     }
+  }
+
+  applyInvulnerable(ctx: AnimationContext, msg: InvulnerableMessage): void {
+    if (ctx.player() && ctx.enemy()) {
+      triggerShowInvulnerableText(ctx.renderer, ctx.platformId, msg.playerId);
+    }
+  }
+
+  applyInvulnerableState(ctx: AnimationContext, msg: InvulnerableStateMessage): void {
+    ctx.setInvincible?.(msg.playerId, msg.invincible);
   }
 
   applyHealing(ctx: AnimationContext, msg: HealingMessage): void {
@@ -90,6 +109,8 @@ export class FightAnimationService {
       case 'combat_log':      this.applyCombatLog(ctx, payload as CombatLogEntry); break;
       case 'attack':          this.applyAttack(ctx, payload as number); break;
       case 'damage':          this.applyDamage(ctx, payload as DamageMessage); break;
+      case 'invulnerable':    this.applyInvulnerable(ctx, payload as InvulnerableMessage); break;
+      case 'invulnerable_state': this.applyInvulnerableState(ctx, payload as InvulnerableStateMessage); break;
       case 'healing':         this.applyHealing(ctx, payload as HealingMessage); break;
       case 'trigger_talent':  this.applyTriggerTalent(ctx, payload as TriggerTalentMessage); break;
       case 'trigger_item':    this.applyTriggerItem(ctx, payload as TriggerItemMessage); break;

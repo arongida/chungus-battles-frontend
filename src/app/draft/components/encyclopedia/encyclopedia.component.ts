@@ -73,17 +73,9 @@ export class EncyclopediaComponent implements OnInit {
     return item.image ? item.image : 'assets/Item_ID_0_Empty.png';
   }
 
-  switchTab(isItems: boolean, classEl: HTMLSelectElement, tierEl: HTMLSelectElement): void {
+  switchTab(isItems: boolean): void {
     this.isItemsView = isItems;
-    this.selectedClass = null;
-    this.selectedTier = null;
-    classEl.value = '';
-    tierEl.value = '';
-    if (isItems) {
-      this.displayedItems = [...this.itemsData];
-    } else {
-      this.displayedTalents = [...this.talentsData];
-    }
+    this.applyFilters();
   }
 
   filterByClass(type: string): void {
@@ -96,7 +88,7 @@ export class EncyclopediaComponent implements OnInit {
     this.applyFilters();
   }
 
-  private applyFilters(): void {
+  applyFilters(): void {
     if (this.isItemsView) {
       this.displayedItems = this.itemsData.filter(item => {
         const matchesClass = !this.selectedClass ||

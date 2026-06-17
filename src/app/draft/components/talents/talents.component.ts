@@ -58,6 +58,7 @@ export class TalentsComponent implements OnChanges, OnDestroy {
     const statEntries = this.buildStatEntries(talent);
 
     return {
+      id: 'talent-pick',
       title: talent.name,
       entries: [
         { icon: '🌟', text: talent.description },

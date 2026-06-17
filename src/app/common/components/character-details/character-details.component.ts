@@ -188,6 +188,7 @@ export class CharacterDetailsComponent implements OnInit {
   protected readonly ItemRarity = ItemRarity;
 
   readonly equipHint: InfoContent = {
+    id: 'equip-item',
     title: 'Equip Item',
     entries: [
       { icon: '🗡️', label: 'Equip', text: 'Place this item into an equipment slot. Equipped items provide their stats during battle.' },
@@ -196,6 +197,7 @@ export class CharacterDetailsComponent implements OnInit {
   };
 
   readonly sellHint: InfoContent = {
+    id: 'sell-item',
     title: 'Sell Item',
     entries: [
       { icon: '🟡', label: 'Sell for Gold', text: 'Sell this item for 70% of its base price. Sold items cannot be recovered.' },
@@ -206,6 +208,7 @@ export class CharacterDetailsComponent implements OnInit {
     const dodgeChance = Math.round(100 * (1 - 100 / (100 + this.player.dodgeRate)));
     const defenseReduction = Math.round(100 * (1 - 100 / (100 + this.player.defense)));
     return {
+      id: 'all-stats',
       title: `${this.player.name}'s Stats`,
       entries: [
         { icon: '❤️', label: 'Health', text: `${Math.round(this.player.maxHp)} HP total. Reaches zero = you lose the battle.`, color: 'text-pink-500' },

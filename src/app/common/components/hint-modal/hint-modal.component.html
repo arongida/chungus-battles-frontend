@@ -1,0 +1,13 @@
+<div class="hint-modal">
+  <app-info-card [content]="content"></app-info-card>
+  <div class="hint-modal-footer">
+    <mat-checkbox
+      class="dont-show-again"
+      [checked]="dontShowAgain()"
+      (change)="onDontShowAgainChange($event)"
+    >
+      Don't show again
+    </mat-checkbox>
+    <button mat-raised-button color="primary" class="ok-button" (click)="ok()">OK</button>
+  </div>
+</div>

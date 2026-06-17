@@ -79,6 +79,7 @@ export class DraftToolbarComponent implements OnChanges, OnInit {
 
   get refreshShopHint(): InfoContent {
     return {
+      id: 'refresh-shop',
       title: 'Refresh Shop',
       entries: [
         { icon: '🔄', label: 'Refresh', text: `Spend ${this.player.refreshShopCost} gold to roll a new set of items in the shop.` },
@@ -97,6 +98,7 @@ export class DraftToolbarComponent implements OnChanges, OnInit {
 
   get levelUpHint(): InfoContent {
     return {
+      id: 'level-up',
       title: 'Level Up!',
       entries: [
         { icon: '⬆️', label: 'Level Up', text: `Spend ${this.goldToLevelUp} gold to level up to level ${this.player.level + 1} in one click.` },

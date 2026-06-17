@@ -16,7 +16,8 @@ export class InfoBoxComponent implements OnInit {
   private document = inject(DOCUMENT);
   private platformId = inject(PLATFORM_ID);
 
-  isVisible = this.infoBoxService.isVisible;
+  isTouch = this.infoBoxService.isTouch;
+  isVisible = computed(() => this.infoBoxService.isVisible() && !this.isTouch);
   displayContent = computed(() =>
     this.infoBoxService.currentContent() ?? this.infoBoxService.pageDefault()
   );

@@ -106,6 +106,7 @@ export class ShopComponent {
     const isUpgrade = item.upgradePreview;
     if (isUpgrade) {
       return {
+        id: 'upgrade-item',
         title: `Upgrade: ${item.name}`,
         entries: [
           { icon: '⬆️', label: 'Upgrade Available', text: `You already own ${item.name}. Buying it again will upgrade it to a higher rarity tier, making it more powerful.` },
@@ -115,6 +116,7 @@ export class ShopComponent {
       };
     }
     return {
+      id: 'buy-item',
       title: `Buy: ${item.name}`,
       entries: [
         { icon: '🛒', label: 'Buy Item', text: `Costs ${item.price} gold. After buying, the item goes to your inventory.` },

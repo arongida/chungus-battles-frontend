@@ -210,10 +210,11 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   buildStatsHint(p: Player | null): InfoContent {
-    if (!p) return { title: 'Stats', entries: [] };
+    if (!p) return { id: 'stats', title: 'Stats', entries: [] };
     const dodgeChance = Math.round(100 * (1 - 100 / (100 + p.dodgeRate)));
     const defenseReduction = Math.round(100 * (1 - 100 / (100 + p.defense)));
     return {
+      id: 'stats',
       title: `${p.name}'s Stats`,
       entries: [
         { icon: '❤️', label: 'Health',              text: `${Math.round(p.maxHp)} HP total.`,                                                              color: 'text-pink-500' },

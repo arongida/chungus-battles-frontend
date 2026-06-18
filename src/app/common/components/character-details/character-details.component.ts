@@ -27,6 +27,7 @@ import { InfoHoverCardDirective } from '../../directives/info-hover-card.directi
 import { InfoContent } from '../../models/info-content';
 import { SkillIconsComponent } from '../skill-icons/skill-icons.component';
 import { xpBarHint } from '../draft-toolbar/draft-toolbar.hints';
+import { CharacterDetailsService } from '../../services/character-details.service';
 
 
 @Component({
@@ -58,7 +59,10 @@ export class CharacterDetailsComponent implements OnInit {
 
   /** Compact ↔ detailed toggle. Default: detailed in battle on desktop, compact otherwise. */
   expanded = signal(false);
-  expand(): void { this.expanded.set(true); }
+  expand(): void {
+    this.expanded.set(true);
+    this.characterDetailsService.acknowledgePurchase();
+  }
   collapse(): void { this.expanded.set(false); }
 
   readonly xpBarHint: InfoContent = xpBarHint;
@@ -102,7 +106,10 @@ export class CharacterDetailsComponent implements OnInit {
 
   selectedCategory = 'all';
 
-  constructor(public draftService: DraftService) { }
+  constructor(
+    public draftService: DraftService,
+    public characterDetailsService: CharacterDetailsService,
+  ) { }
 
   getNormalAvatarImage(): string {
     let avatar = this.player?.avatarUrl || 'assets/Portrait_ID_0_Placeholder.png';

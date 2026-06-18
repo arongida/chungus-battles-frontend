@@ -395,6 +395,23 @@
   }
 }
 
+/* Pulsing glow prompting the player to open the panel after a purchase */
+@keyframes needs-attention-pulse {
+  0%, 100% { box-shadow: 0 0 4px 1px rgba(245, 158, 11, 0.5); border-color: rgba(180, 120, 30, 0.5); }
+  50%      { box-shadow: 0 0 14px 4px rgba(245, 158, 11, 0.95); border-color: var(--cm-amber); }
+}
+
+.header-only-card.needs-attention {
+  animation: slideDown 0.18s ease-out, needs-attention-pulse 1.4s ease-in-out infinite;
+}
+
+.cd-new-item-badge {
+  font-size: 0.85rem;
+  line-height: 1;
+  margin-left: 4px;
+  animation: slot-activate 0.6s cubic-bezier(0.25, 1.5, 0.5, 1) infinite;
+}
+
 /* ══════════════════════════════════════════════════
    COMPACT CARD
    Must come AFTER .cd-header so its styles win when

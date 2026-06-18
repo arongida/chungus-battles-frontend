@@ -405,13 +405,6 @@
   animation: slideDown 0.18s ease-out, needs-attention-pulse 1.4s ease-in-out infinite;
 }
 
-.cd-new-item-badge {
-  font-size: 0.85rem;
-  line-height: 1;
-  margin-left: 4px;
-  animation: slot-activate 0.6s cubic-bezier(0.25, 1.5, 0.5, 1) infinite;
-}
-
 /* ══════════════════════════════════════════════════
    COMPACT CARD
    Must come AFTER .cd-header so its styles win when

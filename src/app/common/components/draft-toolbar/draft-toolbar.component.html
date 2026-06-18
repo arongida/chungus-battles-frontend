@@ -46,6 +46,10 @@
     <mat-icon>flag</mat-icon>
   </button>
 
+  @if (enemyPickerEnabled) {
+    <app-next-fight-picker></app-next-fight-picker>
+  }
+
   @if(!isFighting()) {
   <div class="fixed top-16 right-1 sm:top-20 sm:right-2 flex flex-col scale-75 sm:scale-90 md:scale-110 origin-top-right">
 
@@ -76,9 +80,8 @@
 
 </mat-toolbar>
 @if (!isFighting()) {
-<div appDraggablePanel [dragHandleSelector]="'.cd-header'" class="fixed z-10 max-w-fit"
-     [ngClass]="cd.expanded() ? 'top-16 left-0' : 'top-1 left-1/2 -translate-x-1/2 sm:top-16 sm:left-0 sm:translate-x-0'">
-  <app-character-details #cd [player]="player" [combat]="false">
+<div appDraggablePanel [dragHandleSelector]="'.cd-header'" class="fixed z-10 top-16 left-0 max-w-fit">
+  <app-character-details [player]="player" [combat]="false">
   </app-character-details>
 </div>
 }

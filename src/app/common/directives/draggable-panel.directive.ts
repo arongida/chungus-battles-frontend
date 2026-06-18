@@ -112,7 +112,10 @@ export class DraggablePanelDirective implements AfterViewInit, OnDestroy {
   private onTouchStart = (e: TouchEvent): void => {
     if (!this.isInHandle(e.target as HTMLElement)) return;
     if ((e.target as HTMLElement).closest('button, a, input, select, textarea')) return;
-    e.preventDefault();
+    // Don't preventDefault here: doing so suppresses the compatibility click event the
+    // browser would otherwise fire on touchend, breaking tap-to-expand on mobile. We only
+    // preventDefault once movement crosses the drag threshold (see onTouchMove), so a still
+    // tap behaves like a normal click while a real drag still blocks page scroll.
     const t = e.touches[0];
     this.beginDrag(t.clientX, t.clientY);
     document.addEventListener('touchmove', this.onTouchMove, { passive: false });
@@ -120,9 +123,9 @@ export class DraggablePanelDirective implements AfterViewInit, OnDestroy {
   };
 
   private onTouchMove = (e: TouchEvent): void => {
-    e.preventDefault();
     const t = e.touches[0];
     this.moveDrag(t.clientX, t.clientY);
+    if (this.hasMoved) e.preventDefault();
   };
 
   private onTouchEnd = (): void => {

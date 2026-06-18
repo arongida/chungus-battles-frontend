@@ -1,0 +1,43 @@
+<button mat-icon-button class="nfp-toggle-btn" (click)="togglePicker()" title="Dev: pick next fight">
+  <mat-icon>person_search</mat-icon>
+</button>
+
+@if (selectedEnemyName()) {
+  <span class="nfp-badge">
+    Next: {{ selectedEnemyName() }}
+    <button class="nfp-badge-clear" (click)="clearSelection()" title="Clear override">×</button>
+  </span>
+}
+
+@if (open()) {
+  <div class="fixed inset-0 z-[9999] flex items-center justify-center" style="background: rgba(0,0,0,0.7);" (click)="close()">
+    <div class="nfp-modal" (click)="$event.stopPropagation()">
+      <div class="nfp-modal-header">
+        <span>Dev: Pick Next Fight</span>
+        <button class="nfp-close-btn" (click)="close()">×</button>
+      </div>
+      <input
+        class="nfp-search-input"
+        type="text"
+        placeholder="Search name…"
+        [value]="searchName()"
+        (input)="onSearchInput($any($event.target).value)" />
+      @if (loading()) {
+        <p class="nfp-empty">Loading...</p>
+      } @else if (results().length === 0) {
+        <p class="nfp-empty">No players found.</p>
+      } @else {
+        <div class="nfp-list">
+          @for (entry of results(); track entry.playerId) {
+            <button class="nfp-row" (click)="select(entry)">
+              <img [src]="entry.avatarUrl" class="nfp-row-avatar" alt="" />
+              <span class="nfp-row-name">{{ entry.name }}</span>
+              <span class="nfp-row-round">Round {{ entry.round }}</span>
+              <span class="nfp-row-wins">🏆 {{ entry.wins }}</span>
+            </button>
+          }
+        </div>
+      }
+    </div>
+  </div>
+}

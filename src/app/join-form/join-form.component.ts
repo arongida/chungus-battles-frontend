@@ -84,6 +84,7 @@ export class JoinFormComponent implements AfterViewInit, OnDestroy, OnInit {
 
   private updateClassInfo() {
     this.infoBoxService.setPageDefault({
+      id: 'choose-character',
       title: 'Choose Your Character',
       entries: [ this.classInfo[this.avatarSelected], this.tipEntry ],
     });

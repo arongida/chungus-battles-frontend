@@ -3,7 +3,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { Player } from '../../../models/colyseus-schema/PlayerSchema';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { TalentsComponent } from '../../../draft/components/talents/talents.component';
 import { Talent } from '../../../models/colyseus-schema/TalentSchema';
@@ -22,7 +21,7 @@ import { DraggablePanelDirective } from '../../directives/draggable-panel.direct
 import { InfoContent } from '../../models/info-content';
 import { Router, RouterLink } from '@angular/router';
 import { FightService } from '../../../fight/services/fight.service';
-import { goldHint, buyXpHint, xpBarHint, lockShopHint, talentHint, draftReadyHint, fightingHint, abandonHint, infoBoxHint, encyclopediaHint, muteHint, unmuteHint, matchHistoryHint } from './draft-toolbar.hints';
+import { goldHint, buyXpHint, lockShopHint, talentHint, draftReadyHint, fightingHint, abandonHint, infoBoxHint, encyclopediaHint, muteHint, unmuteHint, matchHistoryHint } from './draft-toolbar.hints';
 import { ReplayListItem } from '../../../replay/replay-room.component';
 import { environment } from '../../../../environments/environment';
 
@@ -33,7 +32,6 @@ import { environment } from '../../../../environments/environment';
     MatToolbarModule,
     MatButtonModule,
     MatIconModule,
-    MatProgressBarModule,
     NgClass,
     MatMenuModule,
     MatCardModule,
@@ -65,7 +63,6 @@ export class DraftToolbarComponent implements OnChanges, OnInit {
 
   readonly goldHint = goldHint;
   readonly buyXpHint = buyXpHint;
-  readonly xpBarHint = xpBarHint;
   readonly lockShopHint = lockShopHint;
   readonly talentHint = talentHint;
   readonly draftReadyHint = draftReadyHint;

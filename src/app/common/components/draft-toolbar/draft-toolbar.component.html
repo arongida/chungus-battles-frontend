@@ -18,15 +18,7 @@
     }
 
   </div>
-  <span class="flex-auto cursor-default">
-    <div class="flex flex-col gap-1 w-1/4 sm:w-1/3 mx-auto" [appInfoHint]="xpBarHint">
-      <div class="flex justify-between">
-        <label class="text-xs text-center" for="xp"><span class="hidden sm:inline">XP: </span>{{ player.xp }}/{{ player.maxXp }}</label>
-        <label class="text-xs text-center" for="xp"><span class="hidden sm:inline">Level: </span>{{ player.level }}</label>
-      </div>
-      <mat-progress-bar id="xp" mode="determinate" value="{{ (player.xp / player.maxXp) * 100 }}"></mat-progress-bar>
-    </div>
-  </span>
+  <span class="flex-auto"></span>
 
   <button mat-icon-button (click)="toggleInfoBox()" [appInfoHint]="infoBoxHint"
     [class.text-amber-400]="infoBoxService.isVisible()"
@@ -84,8 +76,9 @@
 
 </mat-toolbar>
 @if (!isFighting()) {
-<div appDraggablePanel [dragHandleSelector]="'.cd-header'" class="fixed z-10 top-16 left-0 max-w-fit">
-  <app-character-details [player]="player" [combat]="false">
+<div appDraggablePanel [dragHandleSelector]="'.cd-header'" class="fixed z-10 max-w-fit"
+     [ngClass]="cd.expanded() ? 'top-16 left-0' : 'top-1 left-1/2 -translate-x-1/2 sm:top-16 sm:left-0 sm:translate-x-0'">
+  <app-character-details #cd [player]="player" [combat]="false">
   </app-character-details>
 </div>
 }

@@ -73,6 +73,9 @@ export class InfoBoxService {
 
   setPageDefault(content: InfoContent): void {
     this.pageDefault.set(content);
+    if (this.isTouch) {
+      this.maybeOpenHintModal(content);
+    }
   }
 
   clearPageDefault(): void {

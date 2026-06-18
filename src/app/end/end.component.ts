@@ -239,6 +239,7 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.infoBoxService.clearContent();
     this.infoBoxService.setPageDefault({
+      id: 'end-of-run',
       title: 'End of Run',
       entries: [
         { icon: '🏆', label: 'Top Fighters', text: 'Hover or click a player to inspect their build.' },

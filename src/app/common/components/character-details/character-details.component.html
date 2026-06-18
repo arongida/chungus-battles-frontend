@@ -6,10 +6,18 @@
 <div class="details-panel" [class.combat-mode]="combat">
 
   <!-- Header — drag handle; collapse button returns to compact -->
-  <div class="cd-header">
-    <span class="cd-name">{{ player.name }}</span>
-    <span class="cd-level">Lv {{ player.level }}</span>
-    <button class="cd-collapse-btn" (click)="collapse()" title="Show compact view">◀</button>
+  <div class="cd-header-wrap">
+    <div class="cd-header">
+      <span class="cd-name">{{ player.name }}</span>
+      <span class="cd-level">Lv {{ player.level }}</span>
+      <button class="cd-collapse-btn" (click)="collapse()" title="Show compact view">◀</button>
+    </div>
+    @if (!combat) {
+      <div class="cd-xp-bar" [appInfoHint]="xpBarHint">
+        <mat-progress-bar mode="determinate" [value]="(player.xp / player.maxXp) * 100"></mat-progress-bar>
+        <span class="cd-xp-text">{{ player.xp }}/{{ player.maxXp }}</span>
+      </div>
+    }
   </div>
   <div class="cd-divider"></div>
 
@@ -145,6 +153,23 @@
     </div>
   }
 
+</div>
+
+} @else if (!combat) {
+
+<!-- ══════════════════════════════════════════════
+     HEADER-ONLY VIEW  (shop phase minimized state)
+     Just the name/level row + XP bar — click to expand.
+     ══════════════════════════════════════════════ -->
+<div class="header-only-card" (click)="expand()" title="Click to expand">
+  <div class="cd-header">
+    <span class="cd-name">{{ player.name }}</span>
+    <span class="cd-level">Lv {{ player.level }}</span>
+  </div>
+  <div class="cd-xp-bar" [appInfoHint]="xpBarHint">
+    <mat-progress-bar mode="determinate" [value]="(player.xp / player.maxXp) * 100"></mat-progress-bar>
+    <span class="cd-xp-text">{{ player.xp }}/{{ player.maxXp }}</span>
+  </div>
 </div>
 
 } @else {

@@ -57,6 +57,31 @@
   font-size: 0.7rem;
 }
 
+/* ── XP bar (shop phase only) — sits along the header's bottom edge ── */
+.cd-xp-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--cm-header-bg);
+  padding: 0 12px 4px;
+  cursor: default;
+
+  mat-progress-bar {
+    flex: 1;
+    min-width: 0;
+    height: 4px;
+    border-radius: 2px;
+  }
+}
+
+.cd-xp-text {
+  flex-shrink: 0;
+  font-size: 0.6rem;
+  line-height: 1;
+  color: var(--cm-text-muted);
+  white-space: nowrap;
+}
+
 /* ── Divider ── */
 .cd-divider {
   height: 1px;
@@ -348,6 +373,25 @@
   &:hover {
     border-color: var(--cm-amber);
     color: var(--cm-amber);
+  }
+}
+
+/* ══════════════════════════════════════════════════
+   HEADER-ONLY CARD (shop-phase minimized state)
+   Just the name/level header + XP bar, click to expand.
+   ══════════════════════════════════════════════════ */
+.header-only-card {
+  background: var(--cm-bg);
+  border: 1px solid var(--cm-border);
+  border-radius: 6px;
+  box-shadow: var(--cm-shadow);
+  animation: slideDown 0.18s ease-out;
+  cursor: pointer;
+  width: 220px;
+  overflow: hidden;
+
+  &:hover {
+    border-color: var(--cm-amber);
   }
 }
 

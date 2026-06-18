@@ -11,6 +11,12 @@ export class FightService {
   client: Colyseus.Client;
   room = signal<Colyseus.Room<FightState> | null>(null);
 
+  /** Dev-only "next fight picker" override — consumed (cleared) by the next joinOrCreate.
+   *  selectedEnemyName is display-only (for the picker's "next enemy" badge); selectedEnemyId
+   *  is the value actually sent to the server. */
+  selectedEnemyId = signal<number | null>(null);
+  selectedEnemyName = signal<string | null>(null);
+
   static isLocalStorageAvailable = typeof localStorage !== 'undefined';
 
   constructor(private router: Router) {
@@ -21,9 +27,13 @@ export class FightService {
   public async joinOrCreate(playerId: number) {
     console.log(`[FightService] creating fight_room playerId=${playerId}`);
     try {
+      const enemyPlayerId = this.selectedEnemyId();
+      this.selectedEnemyId.set(null);
+      this.selectedEnemyName.set(null);
       this.room.set(
         await this.client.create('fight_room', {
           playerId: playerId,
+          ...(enemyPlayerId ? { enemyPlayerId } : {}),
         }),
       );
 

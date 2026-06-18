@@ -46,6 +46,10 @@
     <mat-icon>flag</mat-icon>
   </button>
 
+  @if (enemyPickerEnabled) {
+    <app-next-fight-picker></app-next-fight-picker>
+  }
+
   @if(!isFighting()) {
   <div class="fixed top-16 right-1 sm:top-20 sm:right-2 flex flex-col scale-75 sm:scale-90 md:scale-110 origin-top-right">
 

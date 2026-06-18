@@ -24,6 +24,7 @@ import { FightService } from '../../../fight/services/fight.service';
 import { goldHint, buyXpHint, lockShopHint, talentHint, draftReadyHint, fightingHint, abandonHint, infoBoxHint, encyclopediaHint, muteHint, unmuteHint, matchHistoryHint } from './draft-toolbar.hints';
 import { ReplayListItem } from '../../../replay/replay-room.component';
 import { environment } from '../../../../environments/environment';
+import { NextFightPickerComponent } from '../next-fight-picker/next-fight-picker.component';
 
 @Component({
   selector: 'app-draft-toolbar',
@@ -42,6 +43,7 @@ import { environment } from '../../../../environments/environment';
     TalentsComponent,
     RouterLink,
     DatePipe,
+    NextFightPickerComponent,
   ],
   templateUrl: './draft-toolbar.component.html',
   styleUrl: './draft-toolbar.component.scss',
@@ -50,6 +52,7 @@ export class DraftToolbarComponent implements OnChanges, OnInit {
   dialog = inject(MatDialog);
   infoBoxService = inject(InfoBoxService);
   private characterDetailsService = inject(CharacterDetailsService);
+  readonly enemyPickerEnabled = environment.enemyPicker;
   hoverShopRefresh = false;
   hoverBuyXp = false;
   muted = false;

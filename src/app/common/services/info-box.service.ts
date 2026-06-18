@@ -27,7 +27,9 @@ export class InfoBoxService {
 
   constructor() {
     this.isTouch = isPlatformBrowser(this.platformId) && window.matchMedia('(hover: none)').matches;
-    this.isVisible.set(this.loadHintsEnabled());
+    // Touch devices have no hover-driven panel to toggle, and the help button instead
+    // resets the tutorial (see resetTutorial()) — so hints always stay enabled there.
+    this.isVisible.set(this.isTouch ? true : this.loadHintsEnabled());
     this.dismissedHints = this.loadDismissedHints();
   }
 
@@ -90,6 +92,14 @@ export class InfoBoxService {
     if (this.dismissedHints.has(id)) return;
     this.dismissedHints.add(id);
     this.persistDismissedHints();
+  }
+
+  /** Clears every dismissed/seen tutorial hint so they all pop up again on next interaction. */
+  resetTutorial(): void {
+    this.dismissedHints = new Set();
+    this.persistDismissedHints();
+    this.shownThisSession.clear();
+    this.show();
   }
 
   private maybeOpenHintModal(content: InfoContent): void {

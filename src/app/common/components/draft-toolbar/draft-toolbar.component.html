@@ -114,6 +114,26 @@
 </div>
 }
 
+@if (showResetTutorialConfirm()) {
+<div class="fixed inset-0 z-[9999] flex items-center justify-center chungus-backdrop" (click)="cancelResetTutorial()">
+  <div class="chungus-card text-center" (click)="$event.stopPropagation()">
+    <div class="chungus-modal-icon">🔄</div>
+    <h2 class="chungus-modal-title">Reset Tutorial Hints?</h2>
+    <p class="chungus-modal-body">
+      This brings back every tutorial hint you've already seen or dismissed, so they'll pop up again as you play.
+    </p>
+    <div class="flex gap-3 justify-center">
+      <button mat-raised-button class="chungus-modal-btn" (click)="cancelResetTutorial()">
+        Cancel
+      </button>
+      <button mat-raised-button class="chungus-modal-btn" (click)="doResetTutorial()">
+        Reset
+      </button>
+    </div>
+  </div>
+</div>
+}
+
 @if (replaysOpen()) {
   <div class="fixed inset-0 z-[9999] flex items-center justify-center" style="background: rgba(0,0,0,0.7);" (click)="closeReplays()">
     <div class="replays-modal" (click)="$event.stopPropagation()">

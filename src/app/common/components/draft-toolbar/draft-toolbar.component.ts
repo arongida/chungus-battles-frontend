@@ -21,7 +21,7 @@ import { DraggablePanelDirective } from '../../directives/draggable-panel.direct
 import { InfoContent } from '../../models/info-content';
 import { Router, RouterLink } from '@angular/router';
 import { FightService } from '../../../fight/services/fight.service';
-import { goldHint, buyXpHint, lockShopHint, talentHint, draftReadyHint, fightingHint, abandonHint, infoBoxHint, encyclopediaHint, muteHint, unmuteHint, matchHistoryHint } from './draft-toolbar.hints';
+import { goldHint, buyXpHint, lockShopHint, talentHint, draftReadyHint, fightingHint, abandonHint, infoBoxHint, resetTutorialHint, encyclopediaHint, muteHint, unmuteHint, matchHistoryHint } from './draft-toolbar.hints';
 import { ReplayListItem } from '../../../replay/replay-room.component';
 import { environment } from '../../../../environments/environment';
 import { NextFightPickerComponent } from '../next-fight-picker/next-fight-picker.component';
@@ -57,6 +57,7 @@ export class DraftToolbarComponent implements OnChanges, OnInit {
   hoverBuyXp = false;
   muted = false;
   showAbandonConfirm = signal(false);
+  showResetTutorialConfirm = signal(false);
   replaysOpen = signal(false);
   replays = signal<ReplayListItem[]>([]);
   replaysLoading = signal(false);
@@ -71,11 +72,13 @@ export class DraftToolbarComponent implements OnChanges, OnInit {
   readonly draftReadyHint = draftReadyHint;
   readonly fightingHint = fightingHint;
   readonly abandonHint = abandonHint;
-  readonly infoBoxHint = infoBoxHint;
   readonly encyclopediaHint = encyclopediaHint;
   readonly matchHistoryHint = matchHistoryHint;
 
   get soundHint() { return this.muted ? unmuteHint : muteHint; }
+
+  /** On touch, the button resets the tutorial instead of toggling the (desktop-only) hint panel. */
+  get infoBoxHint(): InfoContent { return this.infoBoxService.isTouch ? resetTutorialHint : infoBoxHint; }
 
   get refreshShopHint(): InfoContent {
     return {
@@ -161,7 +164,22 @@ export class DraftToolbarComponent implements OnChanges, OnInit {
   }
 
   toggleInfoBox(): void {
+    // Touch devices keep hints always on (no hover-driven panel to toggle), so the
+    // button instead offers a way to bring back hints already seen/dismissed.
+    if (this.infoBoxService.isTouch) {
+      this.showResetTutorialConfirm.set(true);
+      return;
+    }
     this.infoBoxService.toggle();
+  }
+
+  cancelResetTutorial(): void {
+    this.showResetTutorialConfirm.set(false);
+  }
+
+  doResetTutorial(): void {
+    this.showResetTutorialConfirm.set(false);
+    this.infoBoxService.resetTutorial();
   }
 
   switchShopRefreshAnimate() {

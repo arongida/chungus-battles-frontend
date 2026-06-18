@@ -144,6 +144,7 @@ export class ShopComponent {
     this.tempCard?.remove();
     this.tempCard = null;
     this.characterDetailsService.showTalentPicker.set(false);
+    this.characterDetailsService.notifyPurchase();
   }
 
   resetDrag(_item: Item) {

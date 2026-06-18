@@ -16,12 +16,23 @@
         <span>Dev: Pick Next Fight</span>
         <button class="nfp-close-btn" (click)="close()">×</button>
       </div>
-      <input
-        class="nfp-search-input"
-        type="text"
-        placeholder="Search name…"
-        [value]="searchName()"
-        (input)="onSearchInput($any($event.target).value)" />
+      <div class="nfp-filters">
+        <input
+          class="nfp-search-input"
+          type="text"
+          placeholder="Search name…"
+          [value]="searchName()"
+          (input)="onSearchInput($any($event.target).value)" />
+        <select
+          class="nfp-level-select"
+          [value]="filterLevel()"
+          (change)="onLevelChange($any($event.target).value)">
+          <option value="">All levels</option>
+          @for (lvl of levelOptions; track lvl) {
+            <option [value]="lvl">Level {{ lvl }}</option>
+          }
+        </select>
+      </div>
       @if (loading()) {
         <p class="nfp-empty">Loading...</p>
       } @else if (results().length === 0) {
@@ -29,12 +40,24 @@
       } @else {
         <div class="nfp-list">
           @for (entry of results(); track entry.playerId) {
-            <button class="nfp-row" (click)="select(entry)">
+            <button class="nfp-row" (click)="toggleRow(entry)">
+              <span class="nfp-row-caret">{{ expandedId() === entry.playerId ? '▼' : '▶' }}</span>
               <img [src]="entry.avatarUrl" class="nfp-row-avatar" alt="" />
               <span class="nfp-row-name">{{ entry.name }}</span>
+              <span class="nfp-row-level">Lv {{ entry.level }}</span>
               <span class="nfp-row-round">Round {{ entry.round }}</span>
               <span class="nfp-row-wins">🏆 {{ entry.wins }}</span>
             </button>
+            @if (expandedId() === entry.playerId) {
+              <div class="nfp-build">
+                @if (buildLoading() === entry.playerId) {
+                  <p class="nfp-empty">Loading…</p>
+                } @else if (builds().get(entry.playerId); as build) {
+                  <app-player-build-card [build]="build"></app-player-build-card>
+                  <button class="nfp-select-btn" (click)="select(entry)">Select as next opponent</button>
+                }
+              </div>
+            }
           }
         </div>
       }

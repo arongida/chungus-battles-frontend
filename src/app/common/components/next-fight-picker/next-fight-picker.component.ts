@@ -4,12 +4,16 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { FightService } from '../../../fight/services/fight.service';
 import { environment } from '../../../../environments/environment';
+import { Player } from '../../../models/colyseus-schema/PlayerSchema';
+import { buildPlayerFromData } from '../../utils/player-schema-builder';
+import { PlayerBuildCardComponent } from '../player-build-card/player-build-card.component';
 
 interface LeaderboardEntry {
   playerId: number;
   name: string;
   avatarUrl: string;
   round: number;
+  level: number;
   wins: number;
 }
 
@@ -23,7 +27,7 @@ interface LeaderboardEntry {
 @Component({
   selector: 'app-next-fight-picker',
   standalone: true,
-  imports: [FormsModule, MatButtonModule, MatIconModule],
+  imports: [FormsModule, MatButtonModule, MatIconModule, PlayerBuildCardComponent],
   templateUrl: './next-fight-picker.component.html',
   styleUrl: './next-fight-picker.component.scss',
 })
@@ -33,7 +37,13 @@ export class NextFightPickerComponent {
   open = signal(false);
   loading = signal(false);
   searchName = signal('');
+  filterLevel = signal<string>('');
+  readonly levelOptions = [1, 2, 3, 4, 5];
   results = signal<LeaderboardEntry[]>([]);
+
+  expandedId = signal<number | null>(null);
+  builds = signal<Map<number, Player>>(new Map());
+  buildLoading = signal<number | null>(null);
 
   selectedEnemyId = this.fightService.selectedEnemyId;
   selectedEnemyName = this.fightService.selectedEnemyName;
@@ -47,6 +57,7 @@ export class NextFightPickerComponent {
 
   close(): void {
     this.open.set(false);
+    this.expandedId.set(null);
   }
 
   onSearchInput(value: string): void {
@@ -55,11 +66,17 @@ export class NextFightPickerComponent {
     this.nameDebounceTimer = setTimeout(() => this.search(), 300);
   }
 
+  onLevelChange(value: string): void {
+    this.filterLevel.set(value);
+    this.search();
+  }
+
   async search(): Promise<void> {
     this.loading.set(true);
     try {
       const params = new URLSearchParams({ limit: '20' });
       if (this.searchName().trim()) params.set('name', this.searchName().trim());
+      if (this.filterLevel()) params.set('level', this.filterLevel());
       const result = await fetch(`${environment.gameServer}/leaderboard?${params}`).then(r => r.json());
       this.results.set(Array.isArray(result?.players) ? result.players : []);
     } catch (error) {
@@ -67,6 +84,25 @@ export class NextFightPickerComponent {
       this.results.set([]);
     } finally {
       this.loading.set(false);
+    }
+  }
+
+  async toggleRow(entry: LeaderboardEntry): Promise<void> {
+    if (this.expandedId() === entry.playerId) {
+      this.expandedId.set(null);
+      return;
+    }
+    this.expandedId.set(entry.playerId);
+    if (this.builds().has(entry.playerId)) return;
+    this.buildLoading.set(entry.playerId);
+    try {
+      const data = await fetch(`${environment.gameServer}/playerBuild?playerId=${entry.playerId}`).then(r => r.json());
+      const player = buildPlayerFromData(data);
+      this.builds.update(m => new Map(m).set(entry.playerId, player));
+    } catch (error) {
+      console.error('[NextFightPicker] Error fetching build:', error);
+    } finally {
+      this.buildLoading.set(null);
     }
   }
 

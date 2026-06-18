@@ -166,9 +166,6 @@
   <div class="cd-header">
     <span class="cd-name">{{ player.name }}</span>
     <span class="cd-level">Lv {{ player.level }}</span>
-    @if (characterDetailsService.hasUnseenPurchase()) {
-      <span class="cd-new-item-badge" title="New item bought">🛍️</span>
-    }
   </div>
   <div class="cd-xp-bar" [appInfoHint]="xpBarHint">
     <mat-progress-bar mode="determinate" [value]="(player.xp / player.maxXp) * 100"></mat-progress-bar>

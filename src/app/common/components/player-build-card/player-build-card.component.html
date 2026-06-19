@@ -21,7 +21,7 @@
 </div>
 
 <!-- Row 2: Talents -->
-@if (build.talents?.length) {
+@if (build.talents.length) {
   <div class="build-divider"></div>
   <div class="build-talents">
     <app-skill-icons [player]="build" [row]="true" [iconSizePx]="80"></app-skill-icons>
@@ -34,7 +34,7 @@
   @for (slot of equipmentLayout; track slot) {
     @if (getEquippedItem(slot); as item) {
       <div class="equip-slot" [style.border-color]="rarityBorderColor(item)"
-           [appItemHoverCard]="item" [hoverPlayer]="build">
+           [appItemHoverCard]="item" [hoverPlayer]="build" [showBuyInOverlay]="false">
         <img [src]="item.image" [alt]="item.name" />
       </div>
     } @else {

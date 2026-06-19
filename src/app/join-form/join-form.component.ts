@@ -105,6 +105,13 @@ export class JoinFormComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   toggleInfoBox() {
+    // The hint side panel never renders on touch, so the question-mark button there
+    // instead opens the page's hint as a modal on demand.
+    if (this.infoBoxService.isTouch) {
+      const content = this.infoBoxService.pageDefault();
+      if (content) this.infoBoxService.showHintModal(content);
+      return;
+    }
     this.infoBoxService.toggle();
   }
 

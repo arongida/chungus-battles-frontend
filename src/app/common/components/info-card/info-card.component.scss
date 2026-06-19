@@ -51,9 +51,9 @@
 
 .info-entries {
   padding: 8px 14px 12px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 7px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
   max-height: 600px;
   overflow-y: auto;
 
@@ -66,10 +66,6 @@
   &::-webkit-scrollbar-thumb {
     background: rgba(180, 120, 30, 0.4);
     border-radius: 2px;
-  }
-
-  .info-entry:first-child {
-    grid-column: 1 / -1;
   }
 }
 

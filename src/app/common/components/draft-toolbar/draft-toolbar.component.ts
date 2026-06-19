@@ -21,7 +21,7 @@ import { DraggablePanelDirective } from '../../directives/draggable-panel.direct
 import { InfoContent } from '../../models/info-content';
 import { Router, RouterLink } from '@angular/router';
 import { FightService } from '../../../fight/services/fight.service';
-import { goldHint, buyXpHint, lockShopHint, talentHint, draftReadyHint, fightingHint, abandonHint, infoBoxHint, resetTutorialHint, encyclopediaHint, muteHint, unmuteHint, matchHistoryHint } from './draft-toolbar.hints';
+import { goldHint, buyXpHint, lockShopHint, talentHint, draftReadyHint, fightingHint, abandonHint, infoBoxHint, encyclopediaHint, muteHint, unmuteHint, matchHistoryHint } from './draft-toolbar.hints';
 import { ReplayListItem } from '../../../replay/replay-room.component';
 import { environment } from '../../../../environments/environment';
 import { NextFightPickerComponent } from '../next-fight-picker/next-fight-picker.component';
@@ -74,11 +74,9 @@ export class DraftToolbarComponent implements OnChanges, OnInit {
   readonly abandonHint = abandonHint;
   readonly encyclopediaHint = encyclopediaHint;
   readonly matchHistoryHint = matchHistoryHint;
+  readonly infoBoxHint = infoBoxHint;
 
   get soundHint() { return this.muted ? unmuteHint : muteHint; }
-
-  /** On touch, the button resets the tutorial instead of toggling the (desktop-only) hint panel. */
-  get infoBoxHint(): InfoContent { return this.infoBoxService.isTouch ? resetTutorialHint : infoBoxHint; }
 
   get refreshShopHint(): InfoContent {
     return {
@@ -201,22 +199,26 @@ export class DraftToolbarComponent implements OnChanges, OnInit {
   }
 
   buyXp() {
+    if (!this.infoBoxService.gateAction(this.buyXpHint)) return;
     this.soundsService.playSound(SoundOptions.CLICK);
     this.draftService.sendMessage('buy_xp', {});
   }
 
   levelUp() {
+    if (!this.infoBoxService.gateAction(this.levelUpHint)) return;
     this.soundsService.playSound(SoundOptions.CLICK);
     this.draftService.sendMessage('level_up', {});
   }
 
   refreshShop() {
+    if (!this.infoBoxService.gateAction(this.refreshShopHint)) return;
     this.soundsService.playSound(SoundOptions.CLICK);
     this.isLocked = false;
     this.draftService.sendMessage('refresh_shop', {});
   }
 
   lockShop() {
+    if (!this.infoBoxService.gateAction(this.lockShopHint)) return;
     this.isLocked = !this.isLocked;
     if(this.isLocked){
       this.draftService.sendMessage('lock-shop', {});

@@ -31,6 +31,7 @@ import {
 import { InfoHintDirective } from '../../../common/directives/info-hint.directive';
 import { InfoContent } from '../../../common/models/info-content';
 import { ItemHoverCardDirective } from '../../../common/directives/item-hover-card.directive';
+import { InfoBoxService } from '../../../common/services/info-box.service';
 @Component({
   selector: 'app-shop',
   standalone: true,
@@ -64,6 +65,7 @@ export class ShopComponent {
     public draftService: DraftService,
     private soundsService: SoundsService,
     public characterDetailsService: CharacterDetailsService,
+    public infoBoxService: InfoBoxService,
   ) {
     this.shop = [] as Item[];
     this.player = new Player();
@@ -79,6 +81,15 @@ export class ShopComponent {
   getGlowImage(item: Item): string {
     const tier = item.tier < 10 ? item.tier : item.tier - 90;
     return `assets/level_${tier}_glow.png`;
+  }
+
+  /**
+   * Desktop-only inline hover state. Touch devices synthesize a mouseenter on tap for elements
+   * with click handlers (shop items have several), so without this guard the first tap would
+   * show this inline glow/details instead of reserving that tap for the hint/overlay gating.
+   */
+  isItemHovered(item: Item): boolean {
+    return this.hoveredItem === item && !this.draggingCard && !this.infoBoxService.isTouch;
   }
 
   cardDragStarted(item: Item) {

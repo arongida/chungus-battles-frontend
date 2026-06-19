@@ -125,6 +125,12 @@ export class InfoBoxService {
     return false;
   }
 
+  /** Explicit on-demand open (e.g. a help-icon tap) — bypasses the mobile-hidden/dismissed/session guards that govern passive auto-popups, since a direct request should always show something. */
+  showHintModal(content: InfoContent): void {
+    if (!content.id || this.dialogOpen) return;
+    this.openHintDialog(content);
+  }
+
   private maybeOpenHintModal(content: InfoContent): void {
     if (!content.id || !this.isVisible() || this.dialogOpen) return;
     if (InfoBoxService.MOBILE_HIDDEN_HINTS.has(content.id)) return;

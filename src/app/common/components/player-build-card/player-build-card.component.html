@@ -34,7 +34,7 @@
   @for (slot of equipmentLayout; track slot) {
     @if (getEquippedItem(slot); as item) {
       <div class="equip-slot" [style.border-color]="rarityBorderColor(item)"
-           [appItemHoverCard]="item" [hoverPlayer]="build">
+           [appItemHoverCard]="item" [hoverPlayer]="build" [showBuyInOverlay]="false">
         <img [src]="item.image" [alt]="item.name" />
       </div>
     } @else {

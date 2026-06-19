@@ -65,14 +65,6 @@ export const infoBoxHint: InfoContent = {
   ],
 };
 
-export const resetTutorialHint: InfoContent = {
-  id: 'reset-tutorial',
-  title: 'Reset Tutorial Hints',
-  entries: [
-    { icon: '🔄', label: 'Reset Hints', text: 'Tap to bring back every tutorial hint you have already seen or dismissed.' },
-  ],
-};
-
 export const encyclopediaHint: InfoContent = {
   id: 'encyclopedia',
   title: 'Encyclopedia',

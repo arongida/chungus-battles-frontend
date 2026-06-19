@@ -49,7 +49,7 @@
   <!-- Enemy panel -->
   @if (enemy()) {
     <div appDraggablePanel [dragHandleSelector]="'.cd-header'"
-         class="fixed z-10" style="top: 60px; left: 50%; transform: translateX(-50%)">
+         class="fixed z-10 fight-panel-top">
       <app-character-details [combat]="true" [player]="enemy()!" [enemy]="true"
         [playerBeingHit]="playerBeingHit()" [enemyBeingHit]="enemyBeingHit()">
       </app-character-details>
@@ -59,7 +59,7 @@
   <!-- Player panel -->
   @if (player()) {
     <div appDraggablePanel [dragHandleSelector]="'.cd-header'"
-         class="fixed z-10" style="bottom: 72px; left: 50%; transform: translateX(-50%)">
+         class="fixed z-10 fight-panel-bottom">
       <app-character-details [combat]="true" [player]="player()!" [playerBeingHit]="playerBeingHit()"
         [enemyBeingHit]="enemyBeingHit()">
       </app-character-details>
@@ -69,7 +69,7 @@
   <!-- Combat log -->
   @if (player()) {
     <div appDraggablePanel [dragHandleSelector]="'.cl-header'"
-         class="fixed z-20" style="bottom: 16px; right: 16px">
+         class="fixed z-20 fight-panel-log">
       <app-combat-log [entries]="entries()" [player]="player()!" [enemy]="enemy()!"></app-combat-log>
     </div>
   }

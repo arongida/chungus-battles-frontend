@@ -18,6 +18,8 @@ import { ComponentPortal } from '@angular/cdk/portal';
 import { ItemCardComponent } from '../components/item-card/item-card.component';
 import Item from '../../models/colyseus-schema/ItemSchema';
 import { Player } from '../../models/colyseus-schema/PlayerSchema';
+import { InfoBoxService } from '../services/info-box.service';
+import { InfoContent } from '../models/info-content';
 
 @Directive({
   selector: '[appItemHoverCard]',
@@ -30,6 +32,8 @@ export class ItemHoverCardDirective implements OnChanges, OnDestroy {
   @Input({ required: false }) showGlow = false;
   @Input({ required: false }) touchOnly = false;
   @Input({ required: false }) showBuyInOverlay = true;
+  /** Optional hint to gate the touch overlay behind — first tap shows the hint once, later taps open the overlay. */
+  @Input() hintContent?: InfoContent;
   @Output() buyFromPopup = new EventEmitter<void>();
 
   private overlayRef: OverlayRef | null = null;
@@ -44,6 +48,7 @@ export class ItemHoverCardDirective implements OnChanges, OnDestroy {
     private overlay: Overlay,
     private elementRef: ElementRef,
     private viewContainerRef: ViewContainerRef,
+    private infoBoxService: InfoBoxService,
     @Inject(PLATFORM_ID) private platformId: object,
   ) {
     this.isTouch = isPlatformBrowser(this.platformId) && window.matchMedia('(hover: none)').matches;
@@ -77,6 +82,7 @@ export class ItemHoverCardDirective implements OnChanges, OnDestroy {
       if (this.showGlow) this.restoreImage();
       this.closeOverlay();
     } else {
+      if (this.hintContent && !this.infoBoxService.gateAction(this.hintContent)) return;
       if (this.showGlow) this.applyGlow();
       this.openTouchOverlay();
     }

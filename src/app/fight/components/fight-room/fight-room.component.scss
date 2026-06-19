@@ -18,12 +18,28 @@
 }
 
 @media (max-width: 639px) {
-  .fight-panel-top {
+  /* Row 1: player (left) and enemy (right) side by side; row 2: combat log, centered. */
+  .fight-panel-bottom {
     top: 56px;
+    left: 4px;
+    right: auto;
+    bottom: auto;
+    transform: none;
   }
 
-  .fight-panel-bottom {
-    bottom: 56px;
+  .fight-panel-top {
+    top: 56px;
+    left: auto;
+    right: 4px;
+    transform: none;
+  }
+
+  .fight-panel-log {
+    top: 290px;
+    left: 50%;
+    right: auto;
+    bottom: auto;
+    transform: translateX(-50%);
   }
 }
 

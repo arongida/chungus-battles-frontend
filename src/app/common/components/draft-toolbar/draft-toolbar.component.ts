@@ -201,22 +201,26 @@ export class DraftToolbarComponent implements OnChanges, OnInit {
   }
 
   buyXp() {
+    if (!this.infoBoxService.gateAction(this.buyXpHint)) return;
     this.soundsService.playSound(SoundOptions.CLICK);
     this.draftService.sendMessage('buy_xp', {});
   }
 
   levelUp() {
+    if (!this.infoBoxService.gateAction(this.levelUpHint)) return;
     this.soundsService.playSound(SoundOptions.CLICK);
     this.draftService.sendMessage('level_up', {});
   }
 
   refreshShop() {
+    if (!this.infoBoxService.gateAction(this.refreshShopHint)) return;
     this.soundsService.playSound(SoundOptions.CLICK);
     this.isLocked = false;
     this.draftService.sendMessage('refresh_shop', {});
   }
 
   lockShop() {
+    if (!this.infoBoxService.gateAction(this.lockShopHint)) return;
     this.isLocked = !this.isLocked;
     if(this.isLocked){
       this.draftService.sendMessage('lock-shop', {});

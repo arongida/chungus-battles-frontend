@@ -21,8 +21,9 @@
           [appItemHoverCard]="item" [hoverPlayer]="player"
           [touchOnly]="true"
           [hoverCardDisabled]="draggingCard || buyingItem === item"
+          [hintContent]="getItemInfoHint(item)"
           (buyFromPopup)="buyItem(item)"
-          [appInfoHint]="getItemInfoHint(item)"
+          [appInfoHint]="getItemInfoHint(item)" [gatesAction]="true"
           (mouseenter)="hoveredItem = item" (mouseleave)="hoveredItem = null">
 
 <app-item-card [item]="item" [player]="player"

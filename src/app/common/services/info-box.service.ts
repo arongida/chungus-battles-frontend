@@ -13,6 +13,15 @@ export class InfoBoxService {
   private static readonly DISMISSED_HINTS_KEY = 'dismissedHints';
   private static isLocalStorageAvailable = typeof localStorage !== 'undefined';
 
+  /** Hint modals that should never pop up on touch devices — pure noise there or redundant with on-screen UI. */
+  private static readonly MOBILE_HIDDEN_HINTS = new Set([
+    'choose-character',
+    'draft-ready', 'talent-available', 'talent-pick',
+    'match-history', 'abandon', 'mute', 'unmute',
+    'battle-won', 'battle-lost', 'battle-draw',
+    'run-over', 'version-win', 'top-win',
+  ]);
+
   /** True on touch devices that report no hover support (phones/tablets) — drives the panel-vs-modal split. */
   readonly isTouch: boolean;
 
@@ -102,10 +111,29 @@ export class InfoBoxService {
     this.show();
   }
 
+  /**
+   * Touch-only gate for elements that need first-tap-shows-hint, later-taps-perform-action behavior
+   * (e.g. the level-up button, or the shop item overlay). Returns true once the hint has already
+   * been shown/dismissed (or doesn't apply), meaning the caller's action should proceed; returns
+   * false the first time, after opening the hint, so the caller can swallow that tap.
+   */
+  gateAction(content: InfoContent): boolean {
+    if (!this.isTouch || !content.id) return true;
+    if (InfoBoxService.MOBILE_HIDDEN_HINTS.has(content.id)) return true;
+    if (this.isDismissed(content.id) || this.shownThisSession.has(content.id)) return true;
+    this.openHintDialog(content);
+    return false;
+  }
+
   private maybeOpenHintModal(content: InfoContent): void {
     if (!content.id || !this.isVisible() || this.dialogOpen) return;
+    if (InfoBoxService.MOBILE_HIDDEN_HINTS.has(content.id)) return;
     if (this.isDismissed(content.id) || this.shownThisSession.has(content.id)) return;
+    this.openHintDialog(content);
+  }
 
+  private openHintDialog(content: InfoContent): void {
+    if (!content.id) return;
     this.shownThisSession.add(content.id);
     this.dialogOpen = true;
     const dialogRef = this.dialog.open<HintModalComponent, InfoContent, HintModalResult>(HintModalComponent, {

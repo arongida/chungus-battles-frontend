@@ -75,9 +75,16 @@
     @if (battleResult() === 'lose' && lossBonus() > 0) {
       <p class="chungus-modal-body" style="color: #f59e0b; font-weight: 600;">+{{ lossBonus() }} bonus gold</p>
     }
-    <button mat-raised-button class="chungus-modal-btn" (click)="handleBattleResultExit()">
-      Back to Draft
-    </button>
+    <div class="flex flex-col sm:flex-row gap-3 justify-center">
+      @if (battleReplayId()) {
+        <a mat-stroked-button class="version-win-secondary-btn" [routerLink]="['/replay', battleReplayId()]" target="_blank">
+          Watch Replay
+        </a>
+      }
+      <button mat-raised-button class="chungus-modal-btn" (click)="handleBattleResultExit()">
+        Back to Draft
+      </button>
+    </div>
   </div>
 </div>
 }

@@ -160,6 +160,35 @@ body {
   -webkit-text-stroke: 1px #d97706;
 }
 
+// Draft-phase "lucky find" announcement — floats over the shop card instead of a
+// snackbar toast. Stays inside the card's own bounds (the card wrapper clips overflow
+// for its hover/drag visuals), unlike the battle damage numbers which escape their box.
+.lucky-find-number {
+  @apply absolute left-1/2 text-amber-300 text-[10px] sm:text-xs md:text-sm font-extrabold whitespace-normal text-center pointer-events-none z-20 leading-tight;
+  bottom: 6%;
+  width: 90%;
+  padding: 0 4px;
+  transform: translate(-50%, 0);
+  animation: shopFloatUp 3.5s ease-in forwards;
+  text-shadow: 0 0 4px rgba(0, 0, 0, 0.95), 0 1px 3px #000;
+}
+
+.lucky-find-number--rare {
+  color: #60a5fa;
+}
+
+.lucky-find-number--epic {
+  color: #c084fc;
+}
+
+.lucky-find-number--legendary {
+  color: #fb923c;
+}
+
+.lucky-find-number--mythic {
+  color: #f87171;
+}
+
 .invulnerable-aura {
   animation: invulnerable-pulse 1s ease-in-out infinite;
   border-radius: 0.5rem;
@@ -197,6 +226,24 @@ body {
   100% {
     opacity: 0;
     transform: translateY(-50px);
+  }
+}
+
+@keyframes shopFloatUp {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 16px);
+  }
+  15% {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+  75% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -40px);
   }
 }
 

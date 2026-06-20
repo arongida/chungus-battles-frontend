@@ -163,6 +163,11 @@ export class CharacterDetailsComponent implements OnInit {
     });
   }
 
+  undoSell(): void {
+    if (!this.infoBoxService.gateAction(this.undoSellHint)) return;
+    this.draftService.sendMessage('undo_sell', {});
+  }
+
   equip(item: Item, slot: EquipSlot | string) {
     if (!this.infoBoxService.gateAction(this.equipHint)) return;
     this.draftService.sendMessage('equip', {
@@ -232,7 +237,15 @@ export class CharacterDetailsComponent implements OnInit {
     id: 'sell-item',
     title: 'Sell Item',
     entries: [
-      { icon: '🟡', label: 'Sell for Gold', text: 'Sell this item for 70% of its base price. Sold items cannot be recovered.' },
+      { icon: '🟡', label: 'Sell for Gold', text: 'Sell this item for 70% of its base price. Sold by mistake? Use the "Undo sell" button that appears above your inventory to get it back.' },
+    ],
+  };
+
+  readonly undoSellHint: InfoContent = {
+    id: 'undo-sell',
+    title: 'Undo Sell',
+    entries: [
+      { icon: '↩️', label: 'Undo', text: 'Returns the most recently sold item to your inventory and refunds the gold you got for it. Only the last sale can be undone.' },
     ],
   };
 

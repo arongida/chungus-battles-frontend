@@ -1,4 +1,5 @@
 import {
+  ComponentRef,
   Directive,
   ElementRef,
   EventEmitter,
@@ -41,6 +42,10 @@ export class ItemHoverCardDirective implements OnChanges, OnDestroy {
   private overlayRef: OverlayRef | null = null;
   private originalImage: string | null = null;
   private readonly isTouch: boolean;
+  // The overlay pane sits outside this element in the DOM, so a mouseleave fired by moving
+  // onto it would normally close the card before you could scroll it. Instead we keep the
+  // mouse over the trigger and redirect its wheel events into the card's own scroll area.
+  private activeScrollEl: Element | null = null;
 
   private get touchMode(): boolean {
     return this.isTouch || this.touchOnly;
@@ -75,6 +80,13 @@ export class ItemHoverCardDirective implements OnChanges, OnDestroy {
     if (this.touchMode) return;
     if (this.showGlow) this.restoreImage();
     this.closeOverlay();
+  }
+
+  @HostListener('wheel', ['$event'])
+  onWheel(event: WheelEvent) {
+    if (!this.activeScrollEl) return;
+    event.preventDefault();
+    this.activeScrollEl.scrollTop += event.deltaY;
   }
 
   @HostListener('click')
@@ -117,8 +129,10 @@ export class ItemHoverCardDirective implements OnChanges, OnDestroy {
     componentRef.setInput('item', this.item);
     componentRef.setInput('player', this.hoverPlayer);
     componentRef.setInput('showDetails', true);
+    componentRef.setInput('showPrice', false);
     componentRef.setInput('showBuyButton', this.showBuyInOverlay);
     componentRef.setInput('showUnequipButton', this.showUnequipInOverlay);
+    this.captureScrollEl(componentRef);
     const buySub = componentRef.instance.buyClicked.subscribe(() => {
       this.buyFromPopup.emit();
       this.closeOverlay();
@@ -161,6 +175,15 @@ export class ItemHoverCardDirective implements OnChanges, OnDestroy {
     componentRef.setInput('item', this.item);
     componentRef.setInput('player', this.hoverPlayer);
     componentRef.setInput('showDetails', true);
+    componentRef.setInput('showPrice', false);
+    this.captureScrollEl(componentRef);
+  }
+
+  /** Forces the just-attached card to render, then grabs its internal scroll container
+   *  so wheel events on the (still-hovered) trigger element can be redirected into it. */
+  private captureScrollEl(componentRef: ComponentRef<ItemCardComponent>): void {
+    componentRef.changeDetectorRef.detectChanges();
+    this.activeScrollEl = componentRef.location.nativeElement.querySelector('.item-card-details-scroll');
   }
 
   private applyPaneStyles(pane: HTMLElement, tier: number) {
@@ -195,6 +218,7 @@ export class ItemHoverCardDirective implements OnChanges, OnDestroy {
   private closeOverlay() {
     this.overlayRef?.dispose();
     this.overlayRef = null;
+    this.activeScrollEl = null;
   }
 
   ngOnDestroy() {

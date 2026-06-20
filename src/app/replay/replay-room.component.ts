@@ -148,9 +148,8 @@ export class ReplayRoomComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!id) { this.error.set('No replay ID in URL.'); this.loading.set(false); return; }
 
     try {
-      const resp = await fetch(`${environment.gameServer}/replays/${id}`);
-      if (!resp.ok) { this.error.set('Replay not found.'); this.loading.set(false); return; }
-      const replay = await resp.json();
+      const replay = await this.fetchReplayWithRetry(id);
+      if (!replay) { this.error.set('Replay not found.'); this.loading.set(false); return; }
 
       this.events = replay.events ?? [];
       this.initialState = replay.initialState;
@@ -169,6 +168,19 @@ export class ReplayRoomComponent implements OnInit, AfterViewInit, OnDestroy {
       this.error.set('Failed to load replay.');
       this.loading.set(false);
     }
+  }
+
+  /** The replay save is fire-and-forget right after the fight ends, so clicking "Watch
+   *  Replay" moments after the result modal appears can briefly 404 before the DB write
+   *  lands. Retry a few times before giving up. */
+  private async fetchReplayWithRetry(id: string, attempts = 4, delayMs = 600): Promise<any | null> {
+    for (let i = 0; i < attempts; i++) {
+      const resp = await fetch(`${environment.gameServer}/replays/${id}`);
+      if (resp.ok) return resp.json();
+      if (resp.status !== 404 || i === attempts - 1) return null;
+      await new Promise(r => setTimeout(r, delayMs));
+    }
+    return null;
   }
 
   ngAfterViewInit(): void {

@@ -47,6 +47,12 @@
         <mat-icon>flag</mat-icon>
       </button>
 
+      @if (isFighting()) {
+        <button mat-icon-button class="forfeit-fight-btn" (click)="confirmForfeit()" [appInfoHint]="forfeitHint">
+          <mat-icon>exit_to_app</mat-icon>
+        </button>
+      }
+
       @if (enemyPickerEnabled) {
         <app-next-fight-picker></app-next-fight-picker>
       }
@@ -117,6 +123,26 @@
 </div>
 }
 
+@if (showForfeitConfirm()) {
+<div class="fixed inset-0 z-[9999] flex items-center justify-center chungus-backdrop" (click)="cancelForfeit()">
+  <div class="chungus-card text-center" (click)="$event.stopPropagation()">
+    <div class="chungus-modal-icon">🚩</div>
+    <h2 class="chungus-modal-title">Forfeit This Fight?</h2>
+    <p class="chungus-modal-body">
+      This counts as a loss — you'll lose a life and get the usual consolation gold, but your run continues.
+    </p>
+    <div class="flex gap-3 justify-center">
+      <button mat-raised-button class="chungus-modal-btn" (click)="cancelForfeit()">
+        Keep Fighting
+      </button>
+      <button mat-stroked-button class="abandon-confirm-btn" (click)="doForfeit()">
+        Forfeit
+      </button>
+    </div>
+  </div>
+</div>
+}
+
 @if (showResetTutorialConfirm()) {
 <div class="fixed inset-0 z-[9999] flex items-center justify-center chungus-backdrop" (click)="cancelResetTutorial()">
   <div class="chungus-card text-center" (click)="$event.stopPropagation()">
@@ -131,6 +157,26 @@
       </button>
       <button mat-raised-button class="chungus-modal-btn" (click)="doResetTutorial()">
         Reset
+      </button>
+    </div>
+  </div>
+</div>
+}
+
+@if (showDisableHintsConfirm()) {
+<div class="fixed inset-0 z-[9999] flex items-center justify-center chungus-backdrop" (click)="cancelDisableHints()">
+  <div class="chungus-card text-center" (click)="$event.stopPropagation()">
+    <div class="chungus-modal-icon">❓</div>
+    <h2 class="chungus-modal-title">Disable Hints?</h2>
+    <p class="chungus-modal-body">
+      Tutorial hints explain what each button does. You can turn them back on anytime from this same button.
+    </p>
+    <div class="flex gap-3 justify-center">
+      <button mat-raised-button class="chungus-modal-btn" (click)="cancelDisableHints()">
+        Keep Hints On
+      </button>
+      <button mat-raised-button class="chungus-modal-btn" (click)="confirmDisableHints()">
+        Disable
       </button>
     </div>
   </div>

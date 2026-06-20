@@ -19,6 +19,8 @@ export class DraftState extends Schema {
   @type('boolean') hasFreeTalentReroll: boolean = false;
   @type('number') talentRerollCost: number = 0;
   @type([Item]) questItems: ArraySchema<Item> = new ArraySchema<Item>();
+  // Drives the "Undo sell" button — true while the most recent sale can still be reverted.
+  @type('boolean') canUndoSell: boolean = false;
   // Not synced from server — kept for potential future use
   availableItemCollections: ArraySchema<ItemCollection> = new ArraySchema<ItemCollection>();
 }

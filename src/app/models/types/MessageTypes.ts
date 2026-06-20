@@ -44,4 +44,13 @@ export type VersionWinMessage = {
 export type EndBattleMessage = {
   result: 'win' | 'lose' | 'draw';
   lossBonus?: number;
+  replayId?: string;
+};
+
+/** Draft-phase lucky shop-roll announcement — floats over the shop card at `slot`
+ *  instead of a snackbar toast (see TriggerAnimations.triggerShopFloatingText). */
+export type ShopFloatingMessage = {
+  slot: number;
+  text: string;
+  rarity?: number;
 };

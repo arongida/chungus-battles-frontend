@@ -26,6 +26,7 @@ export class ItemCardComponent {
   @Input({ required: false }) player: Player = new Player();
   @Input({ required: false }) setTooltipBasedOnInventory: boolean = false;
   @Input({ required: false }) showDetails = false;
+  @Input({ required: false }) showPrice = true;
   @Input({ required: false }) showBuyButton = false;
   @Input({ required: false }) showUnequipButton = false;
   @Output() buyClicked = new EventEmitter<void>();

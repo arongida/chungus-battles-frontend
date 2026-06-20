@@ -21,7 +21,7 @@ import { DraggablePanelDirective } from '../../directives/draggable-panel.direct
 import { InfoContent } from '../../models/info-content';
 import { Router, RouterLink } from '@angular/router';
 import { FightService } from '../../../fight/services/fight.service';
-import { goldHint, buyXpHint, lockShopHint, talentHint, draftReadyHint, fightingHint, abandonHint, infoBoxHint, encyclopediaHint, muteHint, unmuteHint, matchHistoryHint } from './draft-toolbar.hints';
+import { goldHint, buyXpHint, lockShopHint, talentHint, draftReadyHint, fightingHint, abandonHint, forfeitHint, infoBoxHint, encyclopediaHint, muteHint, unmuteHint, matchHistoryHint } from './draft-toolbar.hints';
 import { ReplayListItem } from '../../../replay/replay-room.component';
 import { environment } from '../../../../environments/environment';
 import { NextFightPickerComponent } from '../next-fight-picker/next-fight-picker.component';
@@ -57,7 +57,9 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
   hoverBuyXp = false;
   muted = false;
   showAbandonConfirm = signal(false);
+  showForfeitConfirm = signal(false);
   showResetTutorialConfirm = signal(false);
+  showDisableHintsConfirm = signal(false);
   replaysOpen = signal(false);
   replays = signal<ReplayListItem[]>([]);
   replaysLoading = signal(false);
@@ -79,6 +81,7 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
   readonly draftReadyHint = draftReadyHint;
   readonly fightingHint = fightingHint;
   readonly abandonHint = abandonHint;
+  readonly forfeitHint = forfeitHint;
   readonly encyclopediaHint = encyclopediaHint;
   readonly matchHistoryHint = matchHistoryHint;
   readonly infoBoxHint = infoBoxHint;
@@ -230,6 +233,20 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
       this.showResetTutorialConfirm.set(true);
       return;
     }
+    // Only confirm when turning hints OFF — re-enabling them is always safe.
+    if (this.infoBoxService.isVisible()) {
+      this.showDisableHintsConfirm.set(true);
+      return;
+    }
+    this.infoBoxService.toggle();
+  }
+
+  cancelDisableHints(): void {
+    this.showDisableHintsConfirm.set(false);
+  }
+
+  confirmDisableHints(): void {
+    this.showDisableHintsConfirm.set(false);
     this.infoBoxService.toggle();
   }
 
@@ -323,6 +340,21 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
 
   cancelAbandon(): void {
     this.showAbandonConfirm.set(false);
+  }
+
+  confirmForfeit(): void {
+    this.showForfeitConfirm.set(true);
+  }
+
+  cancelForfeit(): void {
+    this.showForfeitConfirm.set(false);
+  }
+
+  /** Concedes only the current fight (counts as a normal loss) — the draft/run continues
+   *  via the usual end_battle flow, so no navigation is needed here. */
+  doForfeit(): void {
+    this.showForfeitConfirm.set(false);
+    this.fightService.room()?.send('forfeit_fight', {});
   }
 
   doAbandon(): void {

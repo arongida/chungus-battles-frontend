@@ -18,6 +18,8 @@ export class DraftService {
   client: Colyseus.Client;
   room = signal<Colyseus.Room<DraftState> | null>(null);
   player: Player | undefined;
+  /** True while the most recent item sale can still be undone (see DraftState.canUndoSell). */
+  canUndoSell = signal(false);
 
   static isLocalStorageAvailable = typeof localStorage !== 'undefined';
 
@@ -97,6 +99,7 @@ export class DraftService {
       room.leave();
       room.removeAllListeners();
       this.room.set(null);
+      this.canUndoSell.set(false);
       if (redirectToHome) this.router.navigate(['/']);
     }
   }

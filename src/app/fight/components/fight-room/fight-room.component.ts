@@ -22,7 +22,7 @@ import { CombatLogEntry } from '../../../models/types/CombatLogEntry';
 import { CombatLogComponent } from '../combat-log/combat-log.component';
 import { DraftService } from '../../../draft/services/draft.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -69,6 +69,7 @@ function coercePlayer(src: any): Player {
     RoundInfoComponent,
     CharacterDetailsComponent,
     DraggablePanelDirective,
+    RouterLink,
   ],
   templateUrl: './fight-room.component.html',
   styleUrl: './fight-room.component.scss',
@@ -90,6 +91,7 @@ export class FightRoomComponent implements OnInit {
   battleResult = signal<'win' | 'lose' | 'draw'>('win');
   battleResultMinimized = signal(false);
   lossBonus = signal(0);
+  battleReplayId = signal<string | null>(null);
   gameOverVisible = signal(false);
   gameOverMessage = signal('');
   gameOverMinimized = signal(false);
@@ -134,9 +136,10 @@ export class FightRoomComponent implements OnInit {
           onEndBattle: (msg) => {
             const result = msg?.result ?? 'win';
             const bonus = msg?.lossBonus ?? 0;
+            const replayId = msg?.replayId ?? null;
             this.battleOver = true;
             this.versionWin.set(false);
-            localStorage.setItem('battleEndState', JSON.stringify({ type: 'end_battle', result, lossBonus: bonus }));
+            localStorage.setItem('battleEndState', JSON.stringify({ type: 'end_battle', result, lossBonus: bonus, replayId }));
             if (this.suppressNextBattleResult) {
               this.suppressNextBattleResult = false;
               const p = this.player();
@@ -144,6 +147,7 @@ export class FightRoomComponent implements OnInit {
               return;
             }
             this.lossBonus.set(bonus);
+            this.battleReplayId.set(replayId);
             this.battleResult.set(result);
             this.battleResultMinimized.set(false);
             this.battleResultVisible.set(true);
@@ -275,7 +279,7 @@ export class FightRoomComponent implements OnInit {
     const raw = localStorage.getItem('battleEndState');
     if (!raw) return;
     try {
-      const state = JSON.parse(raw) as { type: string; message?: string; wins?: number; result?: string; lossBonus?: number };
+      const state = JSON.parse(raw) as { type: string; message?: string; wins?: number; result?: string; lossBonus?: number; replayId?: string | null };
       const player = this.player();
       if (!player) return;
       if (state.type === 'game_over') {
@@ -288,6 +292,7 @@ export class FightRoomComponent implements OnInit {
       } else if (state.type === 'end_battle') {
         this.battleOver = true;
         this.lossBonus.set(state.lossBonus ?? 0);
+        this.battleReplayId.set(state.replayId ?? null);
         const result = (state.result as 'win' | 'lose' | 'draw') ?? 'win';
         this.battleResult.set(result);
         this.battleResultMinimized.set(false);
@@ -311,6 +316,7 @@ export class FightRoomComponent implements OnInit {
 
   async endBattle(playerId: number, name: string, gameOver = false, won = false) {
     localStorage.removeItem('battleEndState');
+    this.battleReplayId.set(null);
     this.fightService.leave(false);
     this.soundsService.stopMusic();
     if (gameOver) {

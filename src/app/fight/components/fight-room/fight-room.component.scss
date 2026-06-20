@@ -18,9 +18,12 @@
 }
 
 @media (max-width: 639px) {
-  /* Row 1: player and enemy side by side, centered as a pair; row 2: combat log, centered. */
+  /* Row 1: player and enemy side by side, centered as a pair; row 2: combat log, centered.
+     Anchored with vh (not a fixed px) so the whole cluster sits nearer the vertical
+     center of the viewport instead of hugging the toolbar, while still scaling
+     sensibly across short and tall phones. */
   .fight-panel-bottom {
-    top: 56px;
+    top: 20vh;
     right: 50%;
     left: auto;
     margin-right: 4px;
@@ -29,7 +32,7 @@
   }
 
   .fight-panel-top {
-    top: 56px;
+    top: 20vh;
     left: 50%;
     right: auto;
     margin-left: 4px;
@@ -37,7 +40,7 @@
   }
 
   .fight-panel-log {
-    top: 290px;
+    top: 53vh;
     left: 50%;
     right: auto;
     bottom: auto;

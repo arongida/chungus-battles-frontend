@@ -171,6 +171,11 @@ export class ItemHoverCardDirective implements OnChanges, OnDestroy {
     pane.style.overflow = 'hidden';
     pane.style.boxShadow = '0 4px 24px rgba(0,0,0,0.7)';
     pane.style.zIndex = '1000';
+    // Keep text clear of the frame artwork's painted border (the glow background is a
+    // decorative ornate frame, not a plain backdrop) — box-sizing keeps the pane's overall
+    // footprint unchanged, just shrinking the inner content area.
+    pane.style.boxSizing = 'border-box';
+    pane.style.padding = '24px 20px 16px';
   }
 
   private applyGlow() {

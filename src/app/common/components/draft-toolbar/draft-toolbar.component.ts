@@ -64,6 +64,8 @@ export class DraftToolbarComponent implements OnChanges, OnInit {
   private replaysCache = new Map<number, ReplayListItem[]>();
 
   showTalentPicker = this.characterDetailsService.showTalentPicker;
+  /** True once a level-up has happened that the player hasn't reviewed in the talent/level modal yet. */
+  levelUpPending = signal(false);
 
   readonly goldHint = goldHint;
   readonly buyXpHint = buyXpHint;
@@ -128,25 +130,44 @@ export class DraftToolbarComponent implements OnChanges, OnInit {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    const change = changes['availableTalents'];
-    if (!change) return;
-    if ((change.previousValue?.length ?? 0) === 0 && change.currentValue?.length > 0) {
-      this.showTalentPicker.set(true);
-      this.infoBoxService.setPageDefault(this.talentHint);
+    const talentsChange = changes['availableTalents'];
+    if (talentsChange) {
+      const prevLen = talentsChange.previousValue?.length ?? 0;
+      const curLen = talentsChange.currentValue?.length ?? 0;
+      if (prevLen === 0 && curLen > 0) {
+        this.showTalentPicker.set(true);
+        this.infoBoxService.setPageDefault(this.talentHint);
+      }
+      // Only close on the talent-was-picked transition — staying empty (e.g. level 6+,
+      // no talent to grant) must not slam the merged level modal shut.
+      if (prevLen > 0 && curLen === 0) {
+        this.showTalentPicker.set(false);
+        this.levelUpPending.set(false);
+        this.infoBoxService.setPageDefault(this.draftReadyHint);
+      }
     }
-    if ((change.currentValue?.length ?? 0) === 0) {
-      this.showTalentPicker.set(false);
-      this.infoBoxService.setPageDefault(this.draftReadyHint);
+
+    const playerChange = changes['player'];
+    if (playerChange && !playerChange.firstChange) {
+      const previousLevel = playerChange.previousValue?.level;
+      const currentLevel = playerChange.currentValue?.level;
+      if (typeof previousLevel === 'number' && typeof currentLevel === 'number' && currentLevel > previousLevel) {
+        this.levelUpPending.set(true);
+        this.showTalentPicker.set(true);
+      }
     }
   }
 
   toggleTalentPicker(): void {
     this.soundsService.playSound(SoundOptions.CLICK);
-    this.showTalentPicker.update(v => !v);
+    const opening = !this.showTalentPicker();
+    this.showTalentPicker.set(opening);
+    if (!opening) this.levelUpPending.set(false);
   }
 
   closeTalentPicker(): void {
     this.showTalentPicker.set(false);
+    this.levelUpPending.set(false);
   }
 
   openEncyclopedia(): void {

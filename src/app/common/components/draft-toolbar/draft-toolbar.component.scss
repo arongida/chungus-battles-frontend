@@ -2,6 +2,28 @@
   overflow: hidden !important;
 }
 
+/* 3-column grid: keeps the center column truly centered in the toolbar's
+   full width regardless of how wide the gold/icon groups on either side are,
+   without resorting to position:absolute (which fought the toolbar's own layout). */
+.toolbar-grid {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  width: 100%;
+}
+
+.toolbar-col-start {
+  justify-self: start;
+}
+
+.toolbar-col-center {
+  justify-self: center;
+}
+
+.toolbar-col-end {
+  justify-self: end;
+}
+
 .abandon-run-btn {
   color: rgba(248, 113, 113, 0.6) !important;
 
@@ -20,14 +42,76 @@
   }
 }
 
+/* ── Shared "chungus button" look — gradient + rectangular, matching .chungus-modal-btn / .tp-reroll-btn ──
+   Built on `mat-button` rather than `mat-icon-button`/`mat-mini-fab`: those components bake a circular
+   ripple/state-layer into their own selectors (independent of our border-radius override), which left a
+   round hover highlight inside a rectangular button. Plain mat-button's ripple is already rectangular. */
+.chungus-icon-btn {
+  background: linear-gradient(135deg, #78350f, #92400e, #78350f) !important;
+  color: #fff !important;
+  border-radius: 6px !important;
+  box-shadow: 0 2px 12px rgba(180, 120, 30, 0.3) !important;
+  transition: box-shadow 0.2s ease, transform 0.1s ease !important;
+  min-width: 40px !important;
+  width: 40px;
+  height: 40px;
+  padding: 0 !important;
+  position: relative !important;
+
+  /* mat-button wraps projected content in its own label element, which left-aligns by
+     default — flex centering on the host button doesn't reach the icon inside that wrapper.
+     Position the icon directly instead, so it's centered regardless of that internal markup.
+     Uses inset+margin (not transform) so it doesn't fight the animate-bounce/animate-spin
+     hover animations, which already animate `transform` on this same icon. */
+  mat-icon {
+    position: absolute !important;
+    inset: 0;
+    margin: auto !important;
+  }
+
+  &:hover {
+    box-shadow: 0 2px 20px rgba(180, 120, 30, 0.55) !important;
+    transform: translateY(-1px);
+  }
+}
+
+/* These highlight states must be declared after .chungus-icon-btn: both set `background`
+   with !important, and on a cascade tie (same specificity) the later rule wins — declared
+   first, .chungus-icon-btn's gradient would always paint over and hide the highlight. */
 .clicked {
-  background-color: white !important;  /* Changes the full background */
-  color: brown !important;           /* Ensures text/icon visibility */
+  background: white !important;
+  color: brown !important;
 }
 
 .level-up-btn {
-  background-color: #f59e0b !important;
+  background: #f59e0b !important;
   color: black !important;
+  box-shadow: 0 0 14px rgba(245, 158, 11, 0.7) !important;
+}
+
+.level-up-toggle {
+  background: linear-gradient(135deg, #78350f, #92400e, #78350f) !important;
+  color: #fff !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.05em !important;
+  padding: 0.3rem 1rem !important;
+  border-radius: 4px !important;
+  font-size: 0.78rem !important;
+  min-width: 0 !important;
+  line-height: 1.2 !important;
+  box-shadow: 0 2px 12px rgba(180, 120, 30, 0.3) !important;
+  display: inline-flex !important;
+  align-items: center;
+  gap: 4px;
+
+  .level-up-toggle-label {
+    white-space: nowrap;
+  }
+
+  &:hover {
+    box-shadow: 0 2px 20px rgba(180, 120, 30, 0.55) !important;
+    transform: translateY(-1px);
+  }
 }
 
 /* ── Replays modal ───────────────────────────────── */

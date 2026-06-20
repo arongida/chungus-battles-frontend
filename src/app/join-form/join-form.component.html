@@ -23,7 +23,7 @@
       <input matInput [formControl]="nameControl" />
       @if (nameControl.invalid && nameControl.touched) {<mat-error>{{getInputErrorMessage()}}</mat-error>}
     </mat-form-field>
-    <button (click)="onFormSubmit()" [disabled]="loading" mat-fab extended color="primary">
+    <button (click)="onFormSubmit()" [disabled]="loading" mat-raised-button class="chungus-modal-btn">
       @if (loading) {<mat-spinner diameter="24"></mat-spinner>}
       @else {Start!}
     </button>

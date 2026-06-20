@@ -26,7 +26,6 @@ import { InfoHintDirective } from '../../directives/info-hint.directive';
 import { InfoHoverCardDirective } from '../../directives/info-hover-card.directive';
 import { InfoContent } from '../../models/info-content';
 import { SkillIconsComponent } from '../skill-icons/skill-icons.component';
-import { xpBarHint } from '../draft-toolbar/draft-toolbar.hints';
 import { CharacterDetailsService } from '../../services/character-details.service';
 import { InfoBoxService } from '../../services/info-box.service';
 
@@ -66,8 +65,6 @@ export class CharacterDetailsComponent implements OnInit {
     this.characterDetailsService.acknowledgePurchase();
   }
   collapse(): void { this.expanded.set(false); }
-
-  readonly xpBarHint: InfoContent = xpBarHint;
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {

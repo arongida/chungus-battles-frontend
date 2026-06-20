@@ -146,7 +146,7 @@
   }
   @if (showBuyButton) {
   <div class="mt-auto flex-none pb-4 pt-1 flex justify-center">
-    <button mat-fab extended [disabled]="player.gold < item.price" color="primary"
+    <button mat-raised-button class="chungus-modal-btn" [disabled]="player.gold < item.price"
       (click)="$event.stopPropagation(); buyClicked.emit()">
       {{ item.upgradePreview ? 'Upgrade' : 'Buy' }} {{ item.price }} 🟡
     </button>
@@ -154,7 +154,7 @@
   }
   @if (showUnequipButton) {
   <div class="mt-auto flex-none pb-4 pt-1 flex justify-center">
-    <button mat-fab extended color="primary"
+    <button mat-raised-button class="chungus-modal-btn"
       (click)="$event.stopPropagation(); unequipClicked.emit()">
       Unequip
     </button>

@@ -13,7 +13,7 @@
       <button class="cd-collapse-btn" (click)="collapse()" title="Show compact view">◀</button>
     </div>
     @if (!combat) {
-      <div class="cd-xp-bar" [appInfoHint]="xpBarHint">
+      <div class="cd-xp-bar">
         <mat-progress-bar mode="determinate" [value]="(player.xp / player.maxXp) * 100"></mat-progress-bar>
         <span class="cd-xp-text">{{ player.xp }}/{{ player.maxXp }}</span>
       </div>
@@ -168,7 +168,7 @@
     <span class="cd-name">{{ player.name }}</span>
     <span class="cd-level">Lv {{ player.level }}</span>
   </div>
-  <div class="cd-xp-bar" [appInfoHint]="xpBarHint">
+  <div class="cd-xp-bar">
     <mat-progress-bar mode="determinate" [value]="(player.xp / player.maxXp) * 100"></mat-progress-bar>
     <span class="cd-xp-text">{{ player.xp }}/{{ player.maxXp }}</span>
   </div>

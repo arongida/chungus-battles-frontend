@@ -42,6 +42,16 @@
   }
 }
 
+/* Lower-stakes than abandon (only the fight is conceded, not the run) — amber rather than red. */
+.forfeit-fight-btn {
+  color: rgba(251, 191, 36, 0.6) !important;
+
+  &:hover {
+    color: #fbbf24 !important;
+    background: rgba(251, 191, 36, 0.1) !important;
+  }
+}
+
 /* ── Shared "chungus button" look — gradient + rectangular, matching .chungus-modal-btn / .tp-reroll-btn ──
    Built on `mat-button` rather than `mat-icon-button`/`mat-mini-fab`: those components bake a circular
    ripple/state-layer into their own selectors (independent of our border-radius override), which left a

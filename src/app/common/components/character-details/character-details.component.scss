@@ -164,6 +164,9 @@
 
 /* ── Inventory ── */
 .cd-inv-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   padding: 5px 12px;
   background: var(--cm-header-bg);
   font-size: 0.65rem;
@@ -171,6 +174,23 @@
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-weight: 600;
+}
+
+.cd-undo-sell-btn {
+  padding: 0 8px;
+  min-width: 0;
+  font-size: 0.62rem;
+  line-height: 1.8;
+  text-transform: none;
+  letter-spacing: normal;
+  color: var(--cm-amber-light);
+  border: 1px solid rgba(180, 120, 30, 0.4);
+  border-radius: 3px;
+  background: rgba(180, 120, 30, 0.1);
+
+  &:hover {
+    background: rgba(180, 120, 30, 0.22);
+  }
 }
 
 .cd-cat-btn {

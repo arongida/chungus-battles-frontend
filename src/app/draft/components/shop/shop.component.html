@@ -17,7 +17,7 @@
           [ngClass]="{'opacity-0':item.sold,'pointer-events-none':item.sold}"
           [style.background-image]="'url(' + (isItemHovered(item) ? getGlowImage(item) : getItemImage(item)) + ')'"
           id="item-{{ $index }}"
-          class="w-32 h-44 sm:w-44 sm:h-60 md:w-52 md:h-72 lg:w-60 lg:h-80 items-center bg-cover bg-center shadow-amber-700"
+          class="relative w-32 h-44 sm:w-44 sm:h-60 md:w-52 md:h-72 lg:w-60 lg:h-80 items-center bg-cover bg-center shadow-amber-700"
           [appItemHoverCard]="item" [hoverPlayer]="player"
           [touchOnly]="true"
           [hoverCardDisabled]="draggingCard || buyingItem === item"

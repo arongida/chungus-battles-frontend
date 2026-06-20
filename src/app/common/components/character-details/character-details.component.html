@@ -115,7 +115,15 @@
   <!-- Inventory (draft only) -->
   @if (!combat) {
     <div class="cd-divider"></div>
-    <div class="cd-inv-section-header">📦 Inventory</div>
+    <div class="cd-inv-section-header">
+      <span>📦 Inventory</span>
+      @if (draftService.canUndoSell()) {
+        <button mat-button class="cd-undo-sell-btn" [appInfoHint]="undoSellHint" [gatesAction]="true"
+                (click)="undoSell()">
+          ↩️ Undo sell
+        </button>
+      }
+    </div>
     <div class="flex gap-1 px-2 pt-1.5 pb-1 flex-wrap">
       @for (cat of inventoryCategories; track cat.value) {
         <button class="cd-cat-btn" [class.cd-cat-btn--active]="selectedCategory === cat.value"

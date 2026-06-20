@@ -73,6 +73,32 @@ function showFloatingText(renderer: Renderer2, platformId: Object, playerId: num
   setTimeout(() => { if (el.parentNode === container) renderer.removeChild(container, el); }, 3000);
 }
 
+const luckyFindRarityClass: Record<number, string> = {
+  2: 'lucky-find-number--rare',
+  3: 'lucky-find-number--epic',
+  4: 'lucky-find-number--legendary',
+  5: 'lucky-find-number--mythic',
+};
+
+/** Draft-phase equivalent of the battle damage numbers — floats a message up from the
+ *  specific shop card (see `#item-{{$index}}` in shop.component.html) instead of queuing
+ *  a Material snackbar toast for lucky shop-roll upgrades. */
+export function triggerShopFloatingText(renderer: Renderer2, platformId: Object, slot: number, text: string, rarity?: number): void {
+  if (!isPlatformBrowser(platformId)) return;
+  const container = document.getElementById(`item-${slot}`);
+  if (!container) {
+    console.warn(`Shop slot container not found for slot: ${slot}`);
+    return;
+  }
+  const el = renderer.createElement('div');
+  renderer.addClass(el, 'lucky-find-number');
+  const rarityClass = rarity != null ? luckyFindRarityClass[rarity] : undefined;
+  if (rarityClass) renderer.addClass(el, rarityClass);
+  renderer.appendChild(el, renderer.createText(text));
+  renderer.appendChild(container, el);
+  setTimeout(() => { if (el.parentNode === container) renderer.removeChild(container, el); }, 3500);
+}
+
 export function triggerHpDamageFlash(playerId: number): void {
   const el = document.getElementById(`hp-${playerId}`);
   if (!el) return;

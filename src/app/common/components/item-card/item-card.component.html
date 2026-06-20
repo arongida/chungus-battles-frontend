@@ -5,13 +5,13 @@
   </div>
 
   @if (item.showDetails || showDetails) {
-  <div class="flex-1 overflow-y-auto text-center">
+  <div class="item-card-details-scroll flex-1 overflow-y-auto text-center">
     @if (item.description) {
     <p class="px-3 pb-1 text-xs italic text-slate-300 leading-snug">{{ (item.description | slice:0:1 |
       uppercase) + (item.description | slice:1) }}</p>
     }
     <div class="flex flex-col items-center justify-start p-1">
-      @if (!showBuyButton) {
+      @if (showPrice && !showBuyButton) {
       <div class="p-1">
         <p class="font-semibold">
           Price: <span class="text-yellow-300">{{ item.price }} 🟡</span>

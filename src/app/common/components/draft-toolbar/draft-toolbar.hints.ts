@@ -97,6 +97,14 @@ export const abandonHint: InfoContent = {
   ],
 };
 
+export const forfeitHint: InfoContent = {
+  id: 'forfeit',
+  title: 'Forfeit Fight',
+  entries: [
+    { icon: '🚩', label: 'Forfeit', text: 'Concede just this fight — it counts as a loss (you lose a life and get the usual consolation gold), but your run continues.' },
+  ],
+};
+
 export const battleWonHint: InfoContent = {
   id: 'battle-won',
   title: 'Round Won!',

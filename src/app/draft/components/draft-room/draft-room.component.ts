@@ -1,10 +1,14 @@
 import {
   Component,
+  Inject,
   OnInit,
+  PLATFORM_ID,
+  Renderer2,
   effect,
   signal,
   untracked,
 } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { DraftService } from '../../services/draft.service';
 import {
   Player,
@@ -34,7 +38,8 @@ import {
   MusicOptions,
   SoundsService,
 } from '../../../common/services/sounds.service';
-import { TriggerItemMessage, TriggerTalentMessage } from '../../../models/types/MessageTypes';
+import { ShopFloatingMessage, TriggerItemMessage, TriggerTalentMessage } from '../../../models/types/MessageTypes';
+import { triggerShopFloatingText } from '../../../common/TriggerAnimations';
 
 // Creates a typed Player from any schema object (typed or reflection-decoded generic).
 // Copies primitive backing fields and collection references; skips `baseStats` because
@@ -76,7 +81,13 @@ export class DraftRoomComponent implements OnInit {
   availableTalents = signal<Talent[]>([]);
   availableCollections = signal<ItemCollection[]>([]);
 
-  constructor(public draftService: DraftService, private snackBar: MatSnackBar, private soundsService: SoundsService) {
+  constructor(
+    public draftService: DraftService,
+    private snackBar: MatSnackBar,
+    private soundsService: SoundsService,
+    private renderer: Renderer2,
+    @Inject(PLATFORM_ID) private platformId: Object,
+  ) {
     effect(() => {
       const room = this.draftService.room();
       if (room) {
@@ -90,6 +101,16 @@ export class DraftRoomComponent implements OnInit {
         room.onMessage('draft_log', (message: string) => {
           console.log('draft_log', message);
           this.snackBar.open(message, 'Close', { duration: 5000, panelClass: 'chungus-snackbar' });
+        });
+
+        // Lucky shop-roll upgrades float over the affected card instead of toasting. The
+        // message can arrive just ahead of the Colyseus state patch that renders the new
+        // shop card, so wait a frame (post-render) before looking the slot element up.
+        room.onMessage('shop_floating', (message: ShopFloatingMessage) => {
+          if (!isPlatformBrowser(this.platformId)) return;
+          requestAnimationFrame(() => {
+            triggerShopFloatingText(this.renderer, this.platformId, message.slot, message.text, message.rarity);
+          });
         });
         room.onMessage('trigger_talent', (message: TriggerTalentMessage) => {
           if (this.player()) {
@@ -119,5 +140,6 @@ export class DraftRoomComponent implements OnInit {
     this.shop.set([...(state.shop ?? [])] as unknown as Item[]);
     this.availableTalents.set([...(state.availableTalents ?? [])] as unknown as Talent[]);
     this.availableCollections.set([...(state.player?.availableItemCollections ?? [])] as unknown as ItemCollection[]);
+    this.draftService.canUndoSell.set(!!state.canUndoSell);
   }
 }

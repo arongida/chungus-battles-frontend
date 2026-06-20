@@ -28,6 +28,7 @@ import { InfoContent } from '../../models/info-content';
 import { SkillIconsComponent } from '../skill-icons/skill-icons.component';
 import { CharacterDetailsService } from '../../services/character-details.service';
 import { InfoBoxService } from '../../services/info-box.service';
+import { PanelLayoutService } from '../../services/panel-layout.service';
 
 
 @Component({
@@ -50,11 +51,15 @@ import { InfoBoxService } from '../../services/info-box.service';
 export class CharacterDetailsComponent implements OnInit {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly infoBoxService = inject(InfoBoxService);
+  private readonly panelLayoutService = inject(PanelLayoutService);
 
   @Input({ required: true }) player: Player = new Player();
   @Input() enemy: boolean = false;
   @Input() combat: boolean = false;
   @Input() showStats: boolean = true;
+  /** When set, the minimized/maximized state below is persisted under this key
+   *  (via PanelLayoutService) so it survives across fights and reloads. */
+  @Input() panelId?: string;
   playerBeingHit = input(false);
   enemyBeingHit = input(false);
 
@@ -63,13 +68,22 @@ export class CharacterDetailsComponent implements OnInit {
   expand(): void {
     this.expanded.set(true);
     this.characterDetailsService.acknowledgePurchase();
+    if (this.panelId) this.panelLayoutService.setExpanded(this.panelId, true);
   }
-  collapse(): void { this.expanded.set(false); }
+  collapse(): void {
+    this.expanded.set(false);
+    if (this.panelId) this.panelLayoutService.setExpanded(this.panelId, false);
+  }
+  toggleExpanded(): void {
+    this.expanded() ? this.collapse() : this.expand();
+  }
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
-      // Battle phase: start detailed on desktop (≥640 px), compact on mobile.
-      this.expanded.set(window.innerWidth >= 640);
+      // Prefer a previously saved minimized/maximized state for this panel; otherwise fall
+      // back to the width-based default: detailed on desktop (≥640 px), compact on mobile.
+      const saved = this.panelId ? this.panelLayoutService.getExpanded(this.panelId) : undefined;
+      this.expanded.set(saved ?? window.innerWidth >= 640);
     }
   }
 

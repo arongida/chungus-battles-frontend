@@ -167,11 +167,12 @@ export class DraggablePanelDirective implements AfterViewInit, OnDestroy {
     panel.style.right = 'auto';
   }
 
+  /** Just records the press origin — no visible side effects yet. A plain click/tap that
+   *  never crosses DRAG_THRESHOLD should leave the panel (and the page) untouched so the
+   *  header's own click handler (e.g. minimize/maximize) can fire normally. */
   private beginDrag(x: number, y: number): void {
     const panel = this.el.nativeElement as HTMLElement;
     const rect = panel.getBoundingClientRect();
-
-    this.applyFixedPosition(rect.left, rect.top);
 
     this.isDragging = true;
     this.hasMoved = false;
@@ -179,32 +180,39 @@ export class DraggablePanelDirective implements AfterViewInit, OnDestroy {
     this.startY = y;
     this.startLeft = rect.left;
     this.startTop = rect.top;
-
-    panel.style.zIndex = String(++topZIndex);
-    panel.style.cursor = 'grabbing';
-    document.body.style.userSelect = 'none';
   }
 
   private moveDrag(x: number, y: number): void {
     if (!this.isDragging) return;
+    const panel = this.el.nativeElement as HTMLElement;
+
     if (!this.hasMoved) {
       const dx = x - this.startX;
       const dy = y - this.startY;
-      if (Math.abs(dx) > DraggablePanelDirective.DRAG_THRESHOLD || Math.abs(dy) > DraggablePanelDirective.DRAG_THRESHOLD) {
-        this.hasMoved = true;
+      if (Math.abs(dx) <= DraggablePanelDirective.DRAG_THRESHOLD && Math.abs(dy) <= DraggablePanelDirective.DRAG_THRESHOLD) {
+        return; // still within the click threshold — don't pin or move anything yet
       }
+      // Crossing the threshold turns this into a real drag: pin the panel at the rect it
+      // had when the press started, then raise it above everything else.
+      this.hasMoved = true;
+      this.applyFixedPosition(this.startLeft, this.startTop);
+      panel.style.zIndex = String(++topZIndex);
+      panel.style.cursor = 'grabbing';
+      document.body.style.userSelect = 'none';
     }
+
     const { left, top } = this.clamp(
       this.startLeft + (x - this.startX),
       this.startTop + (y - this.startY),
     );
-    const panel = this.el.nativeElement as HTMLElement;
     panel.style.left = `${left}px`;
     panel.style.top = `${top}px`;
   }
 
   private endDrag(): void {
     this.isDragging = false;
+    if (!this.hasMoved) return; // pure click/tap — nothing was pinned, nothing to persist
+
     document.body.style.userSelect = '';
     const panel = this.el.nativeElement as HTMLElement;
     // Reset inline cursor/z-index so CSS class values take over again.
@@ -212,9 +220,7 @@ export class DraggablePanelDirective implements AfterViewInit, OnDestroy {
     panel.style.zIndex = '';
 
     // Suppress the click that the browser fires after mouseup/touchend when a real drag occurred.
-    if (this.hasMoved) {
-      window.addEventListener('click', this.suppressNextClick, { capture: true, once: true });
-    }
+    window.addEventListener('click', this.suppressNextClick, { capture: true, once: true });
 
     // Persist the final position.
     if (this.panelId) {

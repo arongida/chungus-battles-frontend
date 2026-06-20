@@ -5,9 +5,9 @@
      ══════════════════════════════════════════════ -->
 <div class="details-panel" [class.combat-mode]="combat">
 
-  <!-- Header — drag handle; collapse button returns to compact -->
+  <!-- Header — drag handle; click anywhere on it (or the ◀ button) to collapse -->
   <div class="cd-header-wrap">
-    <div class="cd-header">
+    <div class="cd-header" (click)="collapse()" title="Click to show compact view">
       <span class="cd-name">{{ player.name }}</span>
       <span class="cd-level">Lv {{ player.level }}</span>
       <button class="cd-collapse-btn" (click)="collapse()" title="Show compact view">◀</button>

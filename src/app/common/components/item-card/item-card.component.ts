@@ -27,7 +27,9 @@ export class ItemCardComponent {
   @Input({ required: false }) setTooltipBasedOnInventory: boolean = false;
   @Input({ required: false }) showDetails = false;
   @Input({ required: false }) showBuyButton = false;
+  @Input({ required: false }) showUnequipButton = false;
   @Output() buyClicked = new EventEmitter<void>();
+  @Output() unequipClicked = new EventEmitter<void>();
 
   protected readonly ItemRarity = ItemRarity;
   protected readonly ItemType = ItemType;

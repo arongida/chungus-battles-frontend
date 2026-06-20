@@ -152,4 +152,12 @@
     </button>
   </div>
   }
+  @if (showUnequipButton) {
+  <div class="mt-auto flex-none pb-4 pt-1 flex justify-center">
+    <button mat-fab extended color="primary"
+      (click)="$event.stopPropagation(); unequipClicked.emit()">
+      Unequip
+    </button>
+  </div>
+  }
 </div>

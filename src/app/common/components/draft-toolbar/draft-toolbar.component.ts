@@ -150,6 +150,7 @@ export class DraftToolbarComponent implements OnChanges, OnInit {
   }
 
   openEncyclopedia(): void {
+    if (!this.infoBoxService.gateAction(this.encyclopediaHint)) return;
     this.dialog.open(EncyclopediaComponent, {
       data: {
         player: this.player,
@@ -159,6 +160,12 @@ export class DraftToolbarComponent implements OnChanges, OnInit {
       height: '100%',
       width: '80%',
     });
+  }
+
+  /** On touch, hints stay enabled at all times (see toggleInfoBox), so the highlight would
+   *  always be on and falsely imply an active hover-hint mode that doesn't exist there. */
+  infoBoxHighlighted(): boolean {
+    return !this.infoBoxService.isTouch && this.infoBoxService.isVisible();
   }
 
   toggleInfoBox(): void {

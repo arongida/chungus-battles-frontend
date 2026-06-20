@@ -2,7 +2,7 @@ import { Injectable, PLATFORM_ID, inject, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { InfoContent } from '../models/info-content';
-import { HintModalComponent, HintModalResult } from '../components/hint-modal/hint-modal.component';
+import { HintModalComponent, HintModalData, HintModalResult } from '../components/hint-modal/hint-modal.component';
 
 @Injectable({ providedIn: 'root' })
 export class InfoBoxService {
@@ -20,6 +20,7 @@ export class InfoBoxService {
     'match-history', 'abandon', 'mute', 'unmute',
     'battle-won', 'battle-lost', 'battle-draw',
     'run-over', 'version-win', 'top-win',
+    'info-box',
   ]);
 
   /** True on touch devices that report no hover support (phones/tablets) — drives the panel-vs-modal split. */
@@ -125,10 +126,15 @@ export class InfoBoxService {
     return false;
   }
 
-  /** Explicit on-demand open (e.g. a help-icon tap) — bypasses the mobile-hidden/dismissed/session guards that govern passive auto-popups, since a direct request should always show something. */
+  /**
+   * Explicit on-demand open (e.g. a help-icon tap) — bypasses the mobile-hidden/dismissed/session
+   * guards that govern passive auto-popups, since a direct request should always show something.
+   * Also omits the "Don't show again" checkbox: it re-opens on every tap regardless, so a remember
+   * choice there would be misleading.
+   */
   showHintModal(content: InfoContent): void {
     if (!content.id || this.dialogOpen) return;
-    this.openHintDialog(content);
+    this.openHintDialog(content, false);
   }
 
   private maybeOpenHintModal(content: InfoContent): void {
@@ -138,12 +144,12 @@ export class InfoBoxService {
     this.openHintDialog(content);
   }
 
-  private openHintDialog(content: InfoContent): void {
+  private openHintDialog(content: InfoContent, showRemember = true): void {
     if (!content.id) return;
     this.shownThisSession.add(content.id);
     this.dialogOpen = true;
-    const dialogRef = this.dialog.open<HintModalComponent, InfoContent, HintModalResult>(HintModalComponent, {
-      data: content,
+    const dialogRef = this.dialog.open<HintModalComponent, HintModalData, HintModalResult>(HintModalComponent, {
+      data: { content, showRemember },
       panelClass: 'hint-modal-panel',
       maxWidth: '90vw',
       width: '320px',

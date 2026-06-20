@@ -94,8 +94,9 @@
             @if (getItemAtSlot(slot); as equippedItem) {
               <div id="equipped-slot-{{slot}}-{{player.playerId}}"
                    class="cd-slot"
-                   (click)="unequip(getItemAtSlot(slot), slot)">
+                   (click)="onEquippedSlotClick(equippedItem, slot)">
                 <div [appItemHoverCard]="equippedItem" [hoverPlayer]="player" [showBuyInOverlay]="false"
+                     [showUnequipInOverlay]="true" (unequipFromPopup)="unequip(equippedItem, slot)"
                      class="inline-flex items-center justify-center w-full h-full">
                   <img [src]="equippedItem.image" class="max-w-full max-h-full object-contain block" />
                 </div>
@@ -139,12 +140,12 @@
             </span>
           </span>
           @for (itemEquipOption of item.equipOptions.values(); track $index) {
-            <button mat-button class="cd-inv-btn" [appInfoHint]="equipHint"
+            <button mat-button class="cd-inv-btn" [appInfoHint]="equipHint" [gatesAction]="true"
                     (click)="equip(item, itemEquipOption)">
               {{ itemEquipOption | titlecase }}
             </button>
           }
-          <button mat-button class="cd-inv-btn" [appInfoHint]="sellHint"
+          <button mat-button class="cd-inv-btn" [appInfoHint]="sellHint" [gatesAction]="true"
                   (click)="sellSelectedItem(item)">
             +{{ item.sellPrice }}🟡
           </button>

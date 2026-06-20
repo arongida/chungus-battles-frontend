@@ -21,15 +21,15 @@
   <span class="flex-auto"></span>
 
   <button mat-icon-button (click)="toggleInfoBox()" [appInfoHint]="infoBoxHint"
-    [class.text-amber-400]="infoBoxService.isVisible()"
-    [class.text-gray-400]="!infoBoxService.isVisible()"
-    [class.ring-1]="infoBoxService.isVisible()"
-    [class.ring-amber-400]="infoBoxService.isVisible()"
-    [class.rounded-full]="infoBoxService.isVisible()">
-    <mat-icon>{{ infoBoxService.isVisible() ? 'help' : 'help_outline' }}</mat-icon>
+    [class.text-amber-400]="infoBoxHighlighted()"
+    [class.text-gray-400]="!infoBoxHighlighted()"
+    [class.ring-1]="infoBoxHighlighted()"
+    [class.ring-amber-400]="infoBoxHighlighted()"
+    [class.rounded-full]="infoBoxHighlighted()">
+    <mat-icon>{{ infoBoxHighlighted() ? 'help' : 'help_outline' }}</mat-icon>
   </button>
 
-  <button mat-icon-button (click)="openEncyclopedia()" [appInfoHint]="encyclopediaHint">
+  <button mat-icon-button (click)="openEncyclopedia()" [appInfoHint]="encyclopediaHint" [gatesAction]="true">
     <mat-icon>menu_book</mat-icon>
   </button>
 

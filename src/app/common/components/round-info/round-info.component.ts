@@ -17,6 +17,7 @@ export class RoundInfoComponent {
 
   get roundInfoHint(): InfoContent {
     return {
+      id: 'round-info',
       title: 'Game Status',
       entries: [
         { icon: '🔄', label: 'Round', text: `You are on round ${this.player.round}. You will be matched against players of a similar round in battle.` },

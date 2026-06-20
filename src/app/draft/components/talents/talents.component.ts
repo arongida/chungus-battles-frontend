@@ -17,6 +17,7 @@ import { InfoContent } from '../../../common/models/info-content';
 })
 export class TalentsComponent implements OnChanges, OnDestroy {
   @Input({ required: true }) talentsList: Talent[] = [];
+  @Input() playerLevel = 1;
   @Output() panelClosed = new EventEmitter<void>();
   @Output() talentChosen = new EventEmitter<void>();
 
@@ -97,6 +98,23 @@ export class TalentsComponent implements OnChanges, OnDestroy {
 
   getTalentImage() {
     return 'assets/talent_tablet_01_horizontal.png';
+  }
+
+  /** Mirrors the backend lucky-find formula: 10% base + 2% per level above 1 (ShopUpgradeUtils.ts). */
+  luckyFindPercent(): number {
+    return Math.round((0.10 + 0.02 * (this.playerLevel - 1)) * 100);
+  }
+
+  /** This level's stat gain (not cumulative), mirroring DraftRoom.ts levelUp: rank = level - 5. */
+  levelStatBonus(): { strength: number; accuracy: number; maxHp: number; defense: number; attackSpeed: number } {
+    const rank = Math.max(0, this.playerLevel - 5);
+    return {
+      strength: rank * 4,
+      accuracy: rank * 2,
+      maxHp: rank * 40,
+      defense: rank * 4,
+      attackSpeed: Math.round(rank * 0.2 * 10) / 10,
+    };
   }
 
   onMouseEnterTalent(talent: Talent) {

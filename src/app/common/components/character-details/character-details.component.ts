@@ -26,8 +26,8 @@ import { InfoHintDirective } from '../../directives/info-hint.directive';
 import { InfoHoverCardDirective } from '../../directives/info-hover-card.directive';
 import { InfoContent } from '../../models/info-content';
 import { SkillIconsComponent } from '../skill-icons/skill-icons.component';
-import { xpBarHint } from '../draft-toolbar/draft-toolbar.hints';
 import { CharacterDetailsService } from '../../services/character-details.service';
+import { InfoBoxService } from '../../services/info-box.service';
 
 
 @Component({
@@ -49,6 +49,7 @@ import { CharacterDetailsService } from '../../services/character-details.servic
 })
 export class CharacterDetailsComponent implements OnInit {
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly infoBoxService = inject(InfoBoxService);
 
   @Input({ required: true }) player: Player = new Player();
   @Input() enemy: boolean = false;
@@ -64,8 +65,6 @@ export class CharacterDetailsComponent implements OnInit {
     this.characterDetailsService.acknowledgePurchase();
   }
   collapse(): void { this.expanded.set(false); }
-
-  readonly xpBarHint: InfoContent = xpBarHint;
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
@@ -144,12 +143,14 @@ export class CharacterDetailsComponent implements OnInit {
   }
 
   sellSelectedItem(item: Item) {
+    if (!this.infoBoxService.gateAction(this.sellHint)) return;
     this.draftService.sendMessage('sell', {
       itemId: item.itemId,
     });
   }
 
   equip(item: Item, slot: EquipSlot | string) {
+    if (!this.infoBoxService.gateAction(this.equipHint)) return;
     this.draftService.sendMessage('equip', {
       itemId: item.itemId,
       slot: slot,
@@ -162,6 +163,13 @@ export class CharacterDetailsComponent implements OnInit {
       itemId: item.itemId,
       slot: slot,
     });
+  }
+
+  /** Desktop only: clicking a filled slot unequips directly. On touch, the item card's
+   *  Unequip button (surfaced via appItemHoverCard) drives this instead — see template. */
+  onEquippedSlotClick(item: Item | undefined, slot: EquipSlot): void {
+    if (this.infoBoxService.isTouch) return;
+    this.unequip(item, slot);
   }
 
   getRarityBorder(rarity: ItemRarity | string): string {
@@ -202,7 +210,7 @@ export class CharacterDetailsComponent implements OnInit {
     title: 'Equip Item',
     entries: [
       { icon: '🗡️', label: 'Equip', text: 'Place this item into an equipment slot. Equipped items provide their stats during battle.' },
-      { icon: '↩️', label: 'Unequip', text: 'Click an equipped item in the slots above to unequip and return it to your inventory.' },
+      { icon: '↩️', label: 'Unequip', text: 'Select an equipped item in the slots above and press Unequip to return it to your inventory.' },
     ],
   };
 

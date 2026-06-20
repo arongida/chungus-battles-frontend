@@ -1,9 +1,23 @@
-.tp-panel {
+.tp-backdrop {
   position: fixed;
-  top: 56px;
-  left: 4px;
+  inset: 0;
+  z-index: 1399 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.6);
+  animation: tp-backdrop-in 0.2s ease-out;
+}
+
+@keyframes tp-backdrop-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.tp-panel {
+  position: relative;
   z-index: 1400 !important;
-  width: 300px;
+  width: 340px;
   max-height: calc(100vh - 64px);
   overflow-y: auto;
   scrollbar-width: thin;
@@ -14,11 +28,6 @@
   box-shadow: var(--cm-shadow);
   animation: tp-in 0.2s ease-out;
   text-shadow: 0 1px 1px rgba(100, 100, 100, 0.9);
-
-  @media (min-width: 640px) {
-    top: 64px;
-    left: 8px;
-  }
 }
 
 @keyframes tp-in {
@@ -126,4 +135,26 @@
     box-shadow: 0 2px 20px rgba(180, 120, 30, 0.55) !important;
     transform: translateY(-1px);
   }
+}
+
+.tp-bonuses {
+  padding: 10px 14px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tp-bonuses-title {
+  color: var(--cm-amber);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.72rem;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.tp-bonus-row {
+  color: var(--cm-text);
+  font-size: 0.8rem;
+  line-height: 1.4;
 }

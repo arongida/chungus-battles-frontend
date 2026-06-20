@@ -1,61 +1,64 @@
 <mat-toolbar class="w-screen fixed top-0 z-10">
-  <div class="flex justify-between gap-1 sm:gap-4 items-center">
-    <span class="text-xs sm:text-sm text-center shrink-0 cursor-default" [appInfoHint]="goldHint">
-      <span class="hidden sm:inline">Gold: </span>{{ player.gold }} 🟡</span>
+  <div class="toolbar-grid">
+    <div class="toolbar-col-start flex justify-between gap-1 sm:gap-4 items-center">
+      <span class="text-sm sm:text-lg text-center shrink-0 cursor-default" [appInfoHint]="goldHint">
+        <span class="hidden sm:inline"></span>{{ player.gold }} 🟡
+        <span class="text-yellow-400">+{{ player.income }} 💰</span></span>
+    </div>
 
-    @if (this.availableTalents && this.availableTalents.length > 0) {
+    <div class="toolbar-col-center">
+      @if (!isFighting() && ((availableTalents?.length ?? 0) > 0 || levelUpPending())) {
+      <button mat-button class="level-up-toggle"
+        (click)="toggleTalentPicker()" [appInfoHint]="talentHint"
+        [class.ring-2]="showTalentPicker()"
+        [class.ring-yellow-400]="showTalentPicker()">
+        <span class="level-up-toggle-label">Level up</span>
+        <mat-icon [class.animate-bounce]="!showTalentPicker() && (availableTalents?.length ?? 0) > 0">
+          {{ showTalentPicker() ? 'keyboard_arrow_down' : 'keyboard_arrow_up' }}
+        </mat-icon>
+      </button>
+      }
+    </div>
 
-    <button mat-mini-fab (click)="toggleTalentPicker()" [appInfoHint]="talentHint"
-      [class.ring-2]="showTalentPicker()"
-      [class.ring-yellow-400]="showTalentPicker()"
-      [class.bg-yellow-400]="showTalentPicker()"
-      [class.text-black]="showTalentPicker()">
-      <mat-icon [class.animate-bounce]="!showTalentPicker()">
-        {{ showTalentPicker() ? 'keyboard_arrow_down' : 'keyboard_arrow_up' }}
-      </mat-icon>
-    </button>
+    <div class="toolbar-col-end flex items-center">
+      <button mat-icon-button (click)="toggleInfoBox()" [appInfoHint]="infoBoxHint"
+        [class.text-amber-400]="infoBoxHighlighted()"
+        [class.text-gray-400]="!infoBoxHighlighted()"
+        [class.ring-1]="infoBoxHighlighted()"
+        [class.ring-amber-400]="infoBoxHighlighted()"
+        [class.rounded-full]="infoBoxHighlighted()">
+        <mat-icon>{{ infoBoxHighlighted() ? 'help' : 'help_outline' }}</mat-icon>
+      </button>
 
-    }
+      <button mat-icon-button (click)="openEncyclopedia()" [appInfoHint]="encyclopediaHint" [gatesAction]="true">
+        <mat-icon>menu_book</mat-icon>
+      </button>
 
+      <button mat-icon-button (click)="switchMute()" [appInfoHint]="soundHint">
+        @if(muted) {<mat-icon>volume_off</mat-icon>}
+        @else {<mat-icon>volume_up</mat-icon>}
+      </button>
+
+      <button mat-icon-button (click)="openReplays()" [appInfoHint]="matchHistoryHint">
+        <mat-icon>history</mat-icon>
+      </button>
+
+      <button mat-icon-button class="abandon-run-btn" (click)="confirmAbandon()" [appInfoHint]="abandonHint">
+        <mat-icon>flag</mat-icon>
+      </button>
+
+      @if (enemyPickerEnabled) {
+        <app-next-fight-picker></app-next-fight-picker>
+      }
+    </div>
   </div>
-  <span class="flex-auto"></span>
-
-  <button mat-icon-button (click)="toggleInfoBox()" [appInfoHint]="infoBoxHint"
-    [class.text-amber-400]="infoBoxService.isVisible()"
-    [class.text-gray-400]="!infoBoxService.isVisible()"
-    [class.ring-1]="infoBoxService.isVisible()"
-    [class.ring-amber-400]="infoBoxService.isVisible()"
-    [class.rounded-full]="infoBoxService.isVisible()">
-    <mat-icon>{{ infoBoxService.isVisible() ? 'help' : 'help_outline' }}</mat-icon>
-  </button>
-
-  <button mat-icon-button (click)="openEncyclopedia()" [appInfoHint]="encyclopediaHint">
-    <mat-icon>menu_book</mat-icon>
-  </button>
-
-  <button mat-icon-button (click)="switchMute()" [appInfoHint]="soundHint">
-    @if(muted) {<mat-icon>volume_off</mat-icon>}
-    @else {<mat-icon>volume_up</mat-icon>}
-  </button>
-
-  <button mat-icon-button (click)="openReplays()" [appInfoHint]="matchHistoryHint">
-    <mat-icon>history</mat-icon>
-  </button>
-
-  <button mat-icon-button class="abandon-run-btn" (click)="confirmAbandon()" [appInfoHint]="abandonHint">
-    <mat-icon>flag</mat-icon>
-  </button>
-
-  @if (enemyPickerEnabled) {
-    <app-next-fight-picker></app-next-fight-picker>
-  }
 
   @if(!isFighting()) {
-  <div class="fixed top-16 right-1 sm:top-20 sm:right-2 flex flex-col scale-75 sm:scale-90 md:scale-110 origin-top-right">
+  <div class="fixed top-1/2 -translate-y-1/2 right-1 sm:right-2 flex flex-col scale-[1.125] sm:scale-[1.35] md:scale-[1.65] origin-right">
 
     <button [disabled]="canLevelUp ? player.gold < goldToLevelUp : player.gold < 4"
       [appInfoHint]="xpButtonHint" [gatesAction]="true"
-      mat-mini-fab color="text-white" class="m-1 sm:m-2"
+      mat-button class="chungus-icon-btn m-1 sm:m-2"
       [ngClass]="{'level-up-btn': canLevelUp}"
       (click)="canLevelUp ? levelUp() : buyXp()"
       (mouseenter)="switchBuyXpAnimate()" (mouseleave)="switchBuyXpAnimate()">
@@ -63,17 +66,16 @@
     </button>
 
     <button [disabled]="player.gold < player.refreshShopCost" [appInfoHint]="refreshShopHint" [gatesAction]="true"
-      mat-mini-fab color="text-white"
-      class="m-1 sm:m-2" (click)="refreshShop()" (mouseenter)="switchShopRefreshAnimate()"
+      mat-button class="chungus-icon-btn m-1 sm:m-2" (click)="refreshShop()" (mouseenter)="switchShopRefreshAnimate()"
       (mouseleave)="switchShopRefreshAnimate()">
       <mat-icon [ngClass]="{'animate-spin': hoverShopRefresh}">refresh</mat-icon>
     </button>
     @if(isLocked){
-    <button [appInfoHint]="lockShopHint" [gatesAction]="true" mat-mini-fab color="text-white"
-      class="m-1 sm:m-2" [ngClass]="{'clicked' : isLocked}" (click)="lockShop()"><mat-icon>lock_outline</mat-icon>
+    <button [appInfoHint]="lockShopHint" [gatesAction]="true" mat-button class="chungus-icon-btn m-1 sm:m-2"
+      [ngClass]="{'clicked' : isLocked}" (click)="lockShop()"><mat-icon>lock_outline</mat-icon>
     </button>} @else {
-      <button [appInfoHint]="lockShopHint" [gatesAction]="true" mat-mini-fab color="text-white"
-      class="m-1 sm:m-2" [ngClass]="{'clicked' : isLocked}" (click)="lockShop()"><mat-icon>lock_open</mat-icon>
+      <button [appInfoHint]="lockShopHint" [gatesAction]="true" mat-button class="chungus-icon-btn m-1 sm:m-2"
+      [ngClass]="{'clicked' : isLocked}" (click)="lockShop()"><mat-icon>lock_open</mat-icon>
     </button>}
   </div>
   }
@@ -86,9 +88,10 @@
 </div>
 }
 
-@if (showTalentPicker() && availableTalents && availableTalents.length > 0) {
+@if (showTalentPicker()) {
 <app-talents
-  [talentsList]="availableTalents"
+  [talentsList]="availableTalents ?? []"
+  [playerLevel]="player.level"
   (panelClosed)="closeTalentPicker()"
   (talentChosen)="closeTalentPicker()">
 </app-talents>

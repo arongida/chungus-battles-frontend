@@ -32,9 +32,11 @@ export class ItemHoverCardDirective implements OnChanges, OnDestroy {
   @Input({ required: false }) showGlow = false;
   @Input({ required: false }) touchOnly = false;
   @Input({ required: false }) showBuyInOverlay = true;
+  @Input({ required: false }) showUnequipInOverlay = false;
   /** Optional hint to gate the touch overlay behind — first tap shows the hint once, later taps open the overlay. */
   @Input() hintContent?: InfoContent;
   @Output() buyFromPopup = new EventEmitter<void>();
+  @Output() unequipFromPopup = new EventEmitter<void>();
 
   private overlayRef: OverlayRef | null = null;
   private originalImage: string | null = null;
@@ -116,11 +118,19 @@ export class ItemHoverCardDirective implements OnChanges, OnDestroy {
     componentRef.setInput('player', this.hoverPlayer);
     componentRef.setInput('showDetails', true);
     componentRef.setInput('showBuyButton', this.showBuyInOverlay);
+    componentRef.setInput('showUnequipButton', this.showUnequipInOverlay);
     const buySub = componentRef.instance.buyClicked.subscribe(() => {
       this.buyFromPopup.emit();
       this.closeOverlay();
     });
-    this.overlayRef.detachments().subscribe(() => buySub.unsubscribe());
+    const unequipSub = componentRef.instance.unequipClicked.subscribe(() => {
+      this.unequipFromPopup.emit();
+      this.closeOverlay();
+    });
+    this.overlayRef.detachments().subscribe(() => {
+      buySub.unsubscribe();
+      unequipSub.unsubscribe();
+    });
   }
 
   private openOverlay() {
@@ -161,6 +171,11 @@ export class ItemHoverCardDirective implements OnChanges, OnDestroy {
     pane.style.overflow = 'hidden';
     pane.style.boxShadow = '0 4px 24px rgba(0,0,0,0.7)';
     pane.style.zIndex = '1000';
+    // Keep text clear of the frame artwork's painted border (the glow background is a
+    // decorative ornate frame, not a plain backdrop) — box-sizing keeps the pane's overall
+    // footprint unchanged, just shrinking the inner content area.
+    pane.style.boxSizing = 'border-box';
+    pane.style.padding = '24px 20px 16px';
   }
 
   private applyGlow() {

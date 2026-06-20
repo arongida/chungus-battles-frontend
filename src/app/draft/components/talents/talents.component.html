@@ -1,33 +1,59 @@
-<div class="tp-panel">
+<div class="tp-backdrop" (click)="close()">
+  <div class="tp-panel" (click)="$event.stopPropagation()">
 
-  <div class="tp-header">
-    <span class="tp-title">✦ Choose a Talent</span>
-  </div>
-  <div class="tp-divider"></div>
+    <div class="tp-header">
+      <span class="tp-title">
+        @if (talents().length > 0) {
+          ✦ Choose a Talent — Level {{ playerLevel }}
+        } @else {
+          ✦ Level {{ playerLevel }}
+        }
+      </span>
+    </div>
+    <div class="tp-divider"></div>
 
-  <div class="tp-list">
-    @for (talent of talents(); track $index) {
-      <div class="tp-card" (click)="selectTalent(talent.talentId)" [appInfoHint]="getTalentHint(talent)">
-        <img class="tp-icon" [src]="talent.image" [alt]="talent.name" />
-        <div class="tp-card-body">
-          <div class="tp-card-name">{{ talent.name }}</div>
-          <div class="tp-card-desc">{{ talent.description }}</div>
-          <div class="tp-card-trigger">⚡ {{ talent.triggerTypes.join(', ') }}</div>
-        </div>
+    @if (talents().length > 0) {
+      <div class="tp-list">
+        @for (talent of talents(); track $index) {
+          <div class="tp-card" (click)="selectTalent(talent.talentId)" [appInfoHint]="getTalentHint(talent)">
+            <img class="tp-icon" [src]="talent.image" [alt]="talent.name" />
+            <div class="tp-card-body">
+              <div class="tp-card-name">{{ talent.name }}</div>
+              <div class="tp-card-desc">{{ talent.description }}</div>
+              <div class="tp-card-trigger">⚡ {{ talent.triggerTypes.join(', ') }}</div>
+            </div>
+          </div>
+        }
       </div>
+
+      <div class="tp-divider"></div>
+
+      <div class="tp-footer">
+        <button mat-button class="tp-reroll-btn"
+          (click)="refreshTalents()"
+          (mouseenter)="switchTalentRefreshAnimate()"
+          (mouseleave)="switchTalentRefreshAnimate()">
+          <mat-icon [ngClass]="{'animate-spin': hoverTelentRefresh}">refresh</mat-icon>
+          {{ talentRerollCost() === 0 ? 'Free!' : talentRerollCost() + ' 🟡' }}
+        </button>
+      </div>
+
+      <div class="tp-divider"></div>
     }
+
+    <div class="tp-bonuses">
+      <div class="tp-bonuses-title">This Level's Perks</div>
+      <div class="tp-bonus-row">🍀 Lucky find: {{ luckyFindPercent() }}%</div>
+      @if (playerLevel < 6) {
+        <div class="tp-bonus-row">🛒 Shop: up to tier {{ playerLevel }} items</div>
+      }
+      @if (playerLevel >= 6) {
+        <div class="tp-bonus-row">
+          💪 This level: ⚔️ +{{ levelStatBonus().strength }} · 🎯 +{{ levelStatBonus().accuracy }} ·
+          ❤️ +{{ levelStatBonus().maxHp }} · 🛡️ +{{ levelStatBonus().defense }} · ⏩ +{{ levelStatBonus().attackSpeed }}
+        </div>
+      }
+    </div>
+
   </div>
-
-  <div class="tp-divider"></div>
-
-  <div class="tp-footer">
-    <button mat-button class="tp-reroll-btn"
-      (click)="refreshTalents()"
-      (mouseenter)="switchTalentRefreshAnimate()"
-      (mouseleave)="switchTalentRefreshAnimate()">
-      <mat-icon [ngClass]="{'animate-spin': hoverTelentRefresh}">refresh</mat-icon>
-      {{ talentRerollCost() === 0 ? 'Free!' : talentRerollCost() + ' 🟡' }}
-    </button>
-  </div>
-
 </div>

@@ -1,5 +1,5 @@
 <div class="fixed-button">
-  <button [disabled]="loading || availableTalents.length > 0" mat-fab extended color="primary" (click)="startFight()"
+  <button [disabled]="loading || availableTalents.length > 0" mat-raised-button class="chungus-modal-btn" (click)="startFight()"
     #avatarTooltip="matTooltip" matTooltip="You have unequipped items!" matTooltipPosition="above"
     [matTooltipDisabled]="!shouldShowEquipmentWarning()" (mouseenter)="openCharacterDetails()">
     @if (loading) {

@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges, inject, signal } from '@angular/core';
+import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, inject, signal } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -48,7 +48,7 @@ import { NextFightPickerComponent } from '../next-fight-picker/next-fight-picker
   templateUrl: './draft-toolbar.component.html',
   styleUrl: './draft-toolbar.component.scss',
 })
-export class DraftToolbarComponent implements OnChanges, OnInit {
+export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
   dialog = inject(MatDialog);
   infoBoxService = inject(InfoBoxService);
   private characterDetailsService = inject(CharacterDetailsService);
@@ -66,6 +66,11 @@ export class DraftToolbarComponent implements OnChanges, OnInit {
   showTalentPicker = this.characterDetailsService.showTalentPicker;
   /** True once a level-up has happened that the player hasn't reviewed in the talent/level modal yet. */
   levelUpPending = signal(false);
+
+  /** Last level we've confirmed as real (settled), used instead of Angular's own
+   *  SimpleChanges.previousValue — see scheduleLevelCheck for why. Null until first seen. */
+  private lastConfirmedLevel: number | null = null;
+  private levelCheckTimeoutId: ReturnType<typeof setTimeout> | null = null;
 
   readonly goldHint = goldHint;
   readonly buyXpHint = buyXpHint;
@@ -147,15 +152,44 @@ export class DraftToolbarComponent implements OnChanges, OnInit {
       }
     }
 
-    const playerChange = changes['player'];
-    if (playerChange && !playerChange.firstChange) {
-      const previousLevel = playerChange.previousValue?.level;
-      const currentLevel = playerChange.currentValue?.level;
-      if (typeof previousLevel === 'number' && typeof currentLevel === 'number' && currentLevel > previousLevel) {
+    if (changes['player']) {
+      this.scheduleLevelCheck(changes['player'].currentValue?.level);
+    }
+  }
+
+  /**
+   * Detects real level-ups without trusting Angular's SimpleChanges.previousValue: on a
+   * laggy connection, room.onStateChange can fire with a transient/partially-hydrated
+   * Player snapshot (e.g. while reconnecting or just after joining the shop phase), and
+   * comparing against whatever object happened to arrive last produced false positives —
+   * the modal popped up even though the player's level never actually changed. Instead we
+   * track our own last-confirmed level and debounce: a candidate increase only fires once
+   * it's still true after a short settle window, so a one-tick glitch can't trigger it.
+   */
+  private scheduleLevelCheck(observedLevel: number | undefined): void {
+    if (typeof observedLevel !== 'number' || observedLevel < 1) return;
+
+    if (this.lastConfirmedLevel === null) {
+      this.lastConfirmedLevel = observedLevel;
+      return;
+    }
+
+    if (observedLevel <= this.lastConfirmedLevel) return;
+
+    if (this.levelCheckTimeoutId) clearTimeout(this.levelCheckTimeoutId);
+    this.levelCheckTimeoutId = setTimeout(() => {
+      this.levelCheckTimeoutId = null;
+      const settledLevel = this.player.level;
+      if (settledLevel > (this.lastConfirmedLevel ?? 0)) {
+        this.lastConfirmedLevel = settledLevel;
         this.levelUpPending.set(true);
         this.showTalentPicker.set(true);
       }
-    }
+    }, 400);
+  }
+
+  ngOnDestroy(): void {
+    if (this.levelCheckTimeoutId) clearTimeout(this.levelCheckTimeoutId);
   }
 
   toggleTalentPicker(): void {

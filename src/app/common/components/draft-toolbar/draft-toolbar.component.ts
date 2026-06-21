@@ -292,12 +292,16 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
   buyXp() {
     if (!this.infoBoxService.gateAction(this.buyXpHint)) return;
     this.soundsService.playSound(SoundOptions.CLICK);
+    // Optimistic: closes the "Undo sell" window immediately rather than waiting for the
+    // server round-trip — see DraftRoom.invalidateUndoSell.
+    this.draftService.canUndoSell.set(false);
     this.draftService.sendMessage('buy_xp', {});
   }
 
   levelUp() {
     if (!this.infoBoxService.gateAction(this.levelUpHint)) return;
     this.soundsService.playSound(SoundOptions.CLICK);
+    this.draftService.canUndoSell.set(false);
     this.draftService.sendMessage('level_up', {});
   }
 
@@ -305,6 +309,7 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
     if (!this.infoBoxService.gateAction(this.refreshShopHint)) return;
     this.soundsService.playSound(SoundOptions.CLICK);
     this.isLocked = false;
+    this.draftService.canUndoSell.set(false);
     this.draftService.sendMessage('refresh_shop', {});
   }
 

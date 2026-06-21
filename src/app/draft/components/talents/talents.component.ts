@@ -145,6 +145,9 @@ export class TalentsComponent implements OnDestroy {
 
   refreshTalents() {
     this.soundsService.playSound(SoundOptions.CLICK);
+    // Optimistic: closes the "Undo sell" window immediately rather than waiting for the
+    // server round-trip — see DraftRoom.invalidateUndoSell.
+    this.draftService.canUndoSell.set(false);
     this.draftService.sendMessage('refresh_talents', {});
   }
 }

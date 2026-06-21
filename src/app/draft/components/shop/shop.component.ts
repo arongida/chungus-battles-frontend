@@ -147,6 +147,10 @@ export class ShopComponent {
   buyItem(item: Item) {
     this.buyingItem = item;
     setTimeout(() => this.buyingItem = null, 0);
+    // Optimistic: any further gold-spending action invalidates an undoable sell, and we
+    // don't want "Undo sell" clickable while waiting for the server round-trip that
+    // confirms it server-side (see DraftRoom.invalidateUndoSell).
+    this.draftService.canUndoSell.set(false);
     this.draftService.sendMessage('buy', {
       itemId: item.itemId,
     });

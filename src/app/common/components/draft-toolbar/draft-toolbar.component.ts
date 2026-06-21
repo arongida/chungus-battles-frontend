@@ -1,13 +1,14 @@
-import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, inject, signal } from '@angular/core';
+import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, effect, inject, signal } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { Player } from '../../../models/colyseus-schema/PlayerSchema';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { ConfirmDialogComponent, ConfirmDialogData } from '../confirm-dialog/confirm-dialog.component';
 import { TalentsComponent } from '../../../draft/components/talents/talents.component';
 import { Talent } from '../../../models/colyseus-schema/TalentSchema';
 import { EncyclopediaComponent } from '../../../draft/components/encyclopedia/encyclopedia.component';
-import { DatePipe, NgClass } from '@angular/common';
+import { NgClass } from '@angular/common';
 import { MatMenuModule } from '@angular/material/menu';
 import { DraftService } from '../../../draft/services/draft.service';
 import { CharacterDetailsComponent } from '../character-details/character-details.component';
@@ -19,10 +20,10 @@ import { InfoBoxService } from '../../services/info-box.service';
 import { InfoHintDirective } from '../../directives/info-hint.directive';
 import { DraggablePanelDirective } from '../../directives/draggable-panel.directive';
 import { InfoContent } from '../../models/info-content';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { FightService } from '../../../fight/services/fight.service';
 import { goldHint, buyXpHint, lockShopHint, talentHint, draftReadyHint, fightingHint, abandonHint, forfeitHint, infoBoxHint, encyclopediaHint, muteHint, unmuteHint, matchHistoryHint } from './draft-toolbar.hints';
-import { ReplayListItem } from '../../../replay/replay-room.component';
+import { ReplaysDialogComponent } from '../replays-dialog/replays-dialog.component';
 import { environment } from '../../../../environments/environment';
 import { NextFightPickerComponent } from '../next-fight-picker/next-fight-picker.component';
 
@@ -40,9 +41,6 @@ import { NextFightPickerComponent } from '../next-fight-picker/next-fight-picker
     MatBadgeModule,
     InfoHintDirective,
     DraggablePanelDirective,
-    TalentsComponent,
-    RouterLink,
-    DatePipe,
     NextFightPickerComponent,
   ],
   templateUrl: './draft-toolbar.component.html',
@@ -56,18 +54,11 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
   hoverShopRefresh = false;
   hoverBuyXp = false;
   muted = false;
-  showAbandonConfirm = signal(false);
-  showForfeitConfirm = signal(false);
-  showResetTutorialConfirm = signal(false);
-  showDisableHintsConfirm = signal(false);
-  replaysOpen = signal(false);
-  replays = signal<ReplayListItem[]>([]);
-  replaysLoading = signal(false);
-  private replaysCache = new Map<number, ReplayListItem[]>();
 
   showTalentPicker = this.characterDetailsService.showTalentPicker;
   /** True once a level-up has happened that the player hasn't reviewed in the talent/level modal yet. */
   levelUpPending = signal(false);
+  private talentDialogRef?: MatDialogRef<TalentsComponent>;
 
   /** Last level we've confirmed as real (settled), used instead of Angular's own
    *  SimpleChanges.previousValue — see scheduleLevelCheck for why. Null until first seen. */
@@ -126,7 +117,26 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
     private fightService: FightService,
     private soundsService: SoundsService,
     private router: Router,
-  ) { }
+  ) {
+    // Mirrors showTalentPicker to an actual MatDialogRef so the talent picker renders in the
+    // CDK overlay instead of the inline @if block it used to be — see TalentsComponent and
+    // ConfirmDialogComponent's class doc for why (toolbar host stacking-context cap).
+    effect(() => {
+      const show = this.showTalentPicker();
+      if (show && !this.talentDialogRef) {
+        this.talentDialogRef = this.dialog.open(TalentsComponent, {
+          backdropClass: 'chungus-dialog-backdrop',
+          autoFocus: false,
+        });
+        this.talentDialogRef.afterClosed().subscribe(() => {
+          this.talentDialogRef = undefined;
+          this.closeTalentPicker();
+        });
+      } else if (!show && this.talentDialogRef) {
+        this.talentDialogRef.close();
+      }
+    });
+  }
 
   @Input({ required: true }) player: Player = new Player();
   @Input({ required: false }) availableTalents?: Talent[] = [];
@@ -138,6 +148,13 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    // Keep the talent dialog's data current on every change — not just open/close
+    // transitions — so it reflects live updates (e.g. a reroll) while it's already open.
+    // TalentsComponent reads these instead of @Inputs since MatDialog content has no
+    // input binding path back to this template.
+    this.characterDetailsService.availableTalents.set(this.availableTalents ?? []);
+    this.characterDetailsService.talentPlayerLevel.set(this.player.level);
+
     const talentsChange = changes['availableTalents'];
     if (talentsChange) {
       const prevLen = talentsChange.previousValue?.length ?? 0;
@@ -230,33 +247,27 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
     // Touch devices keep hints always on (no hover-driven panel to toggle), so the
     // button instead offers a way to bring back hints already seen/dismissed.
     if (this.infoBoxService.isTouch) {
-      this.showResetTutorialConfirm.set(true);
+      this.openConfirmDialog({
+        icon: '🔄',
+        title: 'Reset Tutorial Hints?',
+        body: "This brings back every tutorial hint you've already seen or dismissed, so they'll pop up again as you play.",
+        cancelLabel: 'Cancel',
+        confirmLabel: 'Reset',
+      }, () => this.infoBoxService.resetTutorial());
       return;
     }
     // Only confirm when turning hints OFF — re-enabling them is always safe.
     if (this.infoBoxService.isVisible()) {
-      this.showDisableHintsConfirm.set(true);
+      this.openConfirmDialog({
+        icon: '❓',
+        title: 'Disable Hints?',
+        body: 'Tutorial hints explain what each button does. You can turn them back on anytime from this same button.',
+        cancelLabel: 'Keep Hints On',
+        confirmLabel: 'Disable',
+      }, () => this.infoBoxService.toggle());
       return;
     }
     this.infoBoxService.toggle();
-  }
-
-  cancelDisableHints(): void {
-    this.showDisableHintsConfirm.set(false);
-  }
-
-  confirmDisableHints(): void {
-    this.showDisableHintsConfirm.set(false);
-    this.infoBoxService.toggle();
-  }
-
-  cancelResetTutorial(): void {
-    this.showResetTutorialConfirm.set(false);
-  }
-
-  doResetTutorial(): void {
-    this.showResetTutorialConfirm.set(false);
-    this.infoBoxService.resetTutorial();
   }
 
   switchShopRefreshAnimate() {
@@ -306,59 +317,56 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
     }
   }
 
-  async openReplays(): Promise<void> {
-    this.replaysOpen.set(true);
-    const origId = this.player.originalPlayerId;
-    const cached = this.replaysCache.get(origId);
-    if (cached) { this.replays.set(cached); return; }
-    this.replaysLoading.set(true);
-    try {
-      const data = await fetch(`${environment.gameServer}/replays?originalPlayerId=${origId}`).then(r => r.json());
-      const list = Array.isArray(data) ? data.reverse() : [];
-      this.replaysCache.set(origId, list);
-      this.replays.set(list);
-    } catch {
-      this.replays.set([]);
-    } finally {
-      this.replaysLoading.set(false);
-    }
-  }
-
-  closeReplays(): void {
-    this.replaysOpen.set(false);
-  }
-
-  replayResultLabel(result: string): string {
-    if (result === 'win') return '⚔️ Win';
-    if (result === 'lose' || result === 'loose') return '🛡️ Loss';
-    return '⚡ Draw';
+  openReplays(): void {
+    this.dialog.open(ReplaysDialogComponent, {
+      data: { originalPlayerId: this.player.originalPlayerId },
+      backdropClass: 'chungus-dialog-backdrop',
+      autoFocus: false,
+    });
   }
 
   confirmAbandon(): void {
-    this.showAbandonConfirm.set(true);
-  }
-
-  cancelAbandon(): void {
-    this.showAbandonConfirm.set(false);
+    this.openConfirmDialog({
+      icon: '🏳️',
+      title: 'Abandon Run?',
+      body: "Are you sure you want to abandon your run? You won't be able to continue it after that.",
+      cancelLabel: 'Keep Playing',
+      confirmLabel: 'Abandon',
+      confirmDanger: true,
+    }, () => this.doAbandon());
   }
 
   confirmForfeit(): void {
-    this.showForfeitConfirm.set(true);
+    this.openConfirmDialog({
+      icon: '🚩',
+      title: 'Forfeit This Fight?',
+      body: "This counts as a loss — you'll lose a life and get the usual consolation gold, but your run continues.",
+      cancelLabel: 'Keep Fighting',
+      confirmLabel: 'Forfeit',
+      confirmDanger: true,
+    }, () => this.doForfeit());
   }
 
-  cancelForfeit(): void {
-    this.showForfeitConfirm.set(false);
+  /** Opens the shared confirm dialog via MatDialog (CDK overlay, z-index 800) so it's never
+   *  capped by the toolbar host's own stacking context — see ConfirmDialogComponent. */
+  private openConfirmDialog(data: ConfirmDialogData, onConfirm: () => void): void {
+    this.dialog
+      .open<ConfirmDialogComponent, ConfirmDialogData, boolean>(ConfirmDialogComponent, {
+        data,
+        backdropClass: 'chungus-dialog-backdrop',
+        autoFocus: false,
+      })
+      .afterClosed()
+      .subscribe(ok => { if (ok) onConfirm(); });
   }
 
   /** Concedes only the current fight (counts as a normal loss) — the draft/run continues
    *  via the usual end_battle flow, so no navigation is needed here. */
-  doForfeit(): void {
-    this.showForfeitConfirm.set(false);
+  private doForfeit(): void {
     this.fightService.room()?.send('forfeit_fight', {});
   }
 
-  doAbandon(): void {
-    this.showAbandonConfirm.set(false);
+  private doAbandon(): void {
     const fightRoom = this.fightService.room();
     const draftRoom = this.draftService.room();
     if (fightRoom) fightRoom.send('abandon_run', {});

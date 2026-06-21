@@ -82,14 +82,16 @@ const luckyFindRarityClass: Record<number, string> = {
 
 /** Draft-phase equivalent of the battle damage numbers — floats a message up from the
  *  specific shop card (see `#item-{{$index}}` in shop.component.html) instead of queuing
- *  a Material snackbar toast for lucky shop-roll upgrades. */
-export function triggerShopFloatingText(renderer: Renderer2, platformId: Object, slot: number, text: string, rarity?: number): void {
-  if (!isPlatformBrowser(platformId)) return;
+ *  a Material snackbar toast for lucky shop-roll upgrades.
+ *
+ *  Returns false (without warning) if the card isn't in the DOM yet — the `shop_floating`
+ *  message can arrive before the Colyseus state patch that renders the new shop card lands,
+ *  since custom messages and state patches are flushed on separate schedules. The caller
+ *  (DraftRoomComponent) retries this on every subsequent state change until it succeeds. */
+export function triggerShopFloatingText(renderer: Renderer2, platformId: Object, slot: number, text: string, rarity?: number): boolean {
+  if (!isPlatformBrowser(platformId)) return false;
   const container = document.getElementById(`item-${slot}`);
-  if (!container) {
-    console.warn(`Shop slot container not found for slot: ${slot}`);
-    return;
-  }
+  if (!container) return false;
   const el = renderer.createElement('div');
   renderer.addClass(el, 'lucky-find-number');
   const rarityClass = rarity != null ? luckyFindRarityClass[rarity] : undefined;
@@ -97,6 +99,7 @@ export function triggerShopFloatingText(renderer: Renderer2, platformId: Object,
   renderer.appendChild(el, renderer.createText(text));
   renderer.appendChild(container, el);
   setTimeout(() => { if (el.parentNode === container) renderer.removeChild(container, el); }, 3500);
+  return true;
 }
 
 export function triggerHpDamageFlash(playerId: number): void {

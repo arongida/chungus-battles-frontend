@@ -135,3 +135,42 @@ export function triggerShowHealingNumber(renderer: Renderer2, platformId: Object
   renderer.appendChild(container, el);
   setTimeout(() => { if (el.parentNode === container) renderer.removeChild(container, el); }, 3000);
 }
+
+export type VfxKind = 'blood' | 'fire' | 'poison' | 'heal';
+
+/** Must match the sprite-sheet animation durations defined in styles.scss (`.vfx-{kind}`). */
+const VFX_DURATION_MS: Record<VfxKind, number> = {
+  blood: 500,
+  fire: 800,
+  poison: 700,
+  heal: 900,
+};
+
+/** Impact-style VFX get a small random offset from center so repeated hits don't all
+ *  land on the exact same spot / stack perfectly on top of each other. Heal stays
+ *  centered — it reads as a whole-body effect, not a hit location. */
+const VFX_JITTER_KINDS = new Set<VfxKind>(['blood', 'fire', 'poison']);
+const VFX_JITTER_X_PX = 36;
+const VFX_JITTER_Y_PX = 24;
+
+/** Plays a sprite-sheet VFX (blood splat, fire, poison cloud, heal glow) over the
+ *  target's avatar. Mounts in the same `damage-numbers-{playerId}` overlay used for
+ *  floating text, so it shares that container's stacking/positioning. */
+export function triggerSpriteVfx(renderer: Renderer2, platformId: Object, kind: VfxKind, playerId: number): void {
+  if (!isPlatformBrowser(platformId)) return;
+  const container = document.getElementById(`damage-numbers-${playerId}`);
+  if (!container) {
+    console.warn(`Vfx container not found for playerId: ${playerId}`);
+    return;
+  }
+  const el = renderer.createElement('div');
+  renderer.addClass(el, 'vfx');
+  renderer.addClass(el, `vfx-${kind}`);
+  if (VFX_JITTER_KINDS.has(kind)) {
+    const dx = (Math.random() * 2 - 1) * VFX_JITTER_X_PX;
+    const dy = (Math.random() * 2 - 1) * VFX_JITTER_Y_PX;
+    renderer.setStyle(el, 'transform', `translate(calc(-50% + ${dx.toFixed(1)}px), calc(-50% + ${dy.toFixed(1)}px))`);
+  }
+  renderer.appendChild(container, el);
+  setTimeout(() => { if (el.parentNode === container) renderer.removeChild(container, el); }, VFX_DURATION_MS[kind]);
+}

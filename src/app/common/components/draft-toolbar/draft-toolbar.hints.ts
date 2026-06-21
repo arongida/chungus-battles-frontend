@@ -65,19 +65,11 @@ export const encyclopediaHint: InfoContent = {
   ],
 };
 
-export const muteHint: InfoContent = {
-  id: 'mute',
-  title: 'Mute',
+export const volumeHint: InfoContent = {
+  id: 'volume',
+  title: 'Volume',
   entries: [
-    { icon: '🔇', label: 'Mute', text: 'Mute all background music and sound effects.' },
-  ],
-};
-
-export const unmuteHint: InfoContent = {
-  id: 'unmute',
-  title: 'Unmute',
-  entries: [
-    { icon: '🔊', label: 'Unmute', text: 'Restore background music and sound effects.' },
+    { icon: '🔊', label: 'Volume', text: 'Click to cycle volume: Max → Loud → Quiet → Muted.' },
   ],
 };
 

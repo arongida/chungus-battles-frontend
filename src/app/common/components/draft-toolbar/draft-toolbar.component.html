@@ -34,9 +34,8 @@
         <mat-icon>menu_book</mat-icon>
       </button>
 
-      <button mat-icon-button (click)="switchMute()" [appInfoHint]="soundHint">
-        @if(muted) {<mat-icon>volume_off</mat-icon>}
-        @else {<mat-icon>volume_up</mat-icon>}
+      <button mat-icon-button (click)="cycleVolume()" [appInfoHint]="volumeHint">
+        <mat-icon>{{ volumeIcon }}</mat-icon>
       </button>
 
       <button mat-icon-button (click)="openReplays()" [appInfoHint]="matchHistoryHint">

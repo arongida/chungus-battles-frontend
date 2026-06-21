@@ -60,7 +60,10 @@ export class JoinFormComponent implements AfterViewInit, OnDestroy, OnInit {
   intervalId: any;
   @ViewChild('fallingItemsContainer', { static: false })
   fallingItemsContainer!: ElementRef<HTMLDivElement>;
-  muted = false;
+
+  get volumeIcon(): string {
+    return this.soundsService.volumeIcon;
+  }
 
   constructor(
     public draftService: DraftService,
@@ -178,8 +181,7 @@ export class JoinFormComponent implements AfterViewInit, OnDestroy, OnInit {
     }
   }
 
-  switchMute() {
-    this.soundsService.setVolume(this.muted ? 0.1 : 0);
-    this.muted = !this.muted;
+  cycleVolume() {
+    this.soundsService.cycleVolume();
   }
 }

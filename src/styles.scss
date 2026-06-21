@@ -212,6 +212,58 @@ body {
   animation: weapon-flash 0.4s ease-out forwards;
 }
 
+// ─── Combat sprite-sheet VFX (blood/fire/poison/heal/activation bursts) ───
+// Mounted via triggerSpriteVfx() into the `damage-numbers-{playerId}` overlay (see
+// TriggerAnimations.ts). Uses the percentage background-position spritesheet trick:
+// background-size is set to <frameCount>*100% width, so animating background-position
+// from 0% to 100% pans across exactly (frameCount - 1) frame-widths of travel — hence
+// steps(frameCount - 1) below, not steps(frameCount). Using the frame count itself
+// would land on fractional, non-frame-boundary offsets and make the sheet appear to
+// slide/smear sideways instead of cutting cleanly between static frames.
+.vfx {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-repeat: no-repeat;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.vfx-blood {
+  width: 100px;
+  height: 125px;
+  background-image: url(assets/vfx/blood_sheet.png);
+  background-size: 600% 100%; // 6 frames
+  animation: vfx-blood-play 500ms steps(5) forwards;
+}
+
+.vfx-fire {
+  width: 110px;
+  height: 110px;
+  background-image: url(assets/vfx/fire_sheet.png);
+  background-size: 2500% 100%; // 25 frames
+  animation: vfx-fire-play 800ms steps(24) forwards;
+}
+
+.vfx-poison {
+  width: 110px;
+  height: 110px;
+  background-image: url(assets/vfx/poison_sheet.png);
+  background-size: 1600% 100%; // 16 frames
+  // Source sheet is greyscale smoke — sepia + hue-rotate tints it sickly green.
+  filter: sepia(1) saturate(6) hue-rotate(60deg) brightness(0.9);
+  animation: vfx-poison-play 700ms steps(15) forwards;
+}
+
+.vfx-heal {
+  width: 120px;
+  height: 120px;
+  background-image: url(assets/vfx/heal_sheet.png);
+  background-size: 3500% 100%; // 35 frames
+  animation: vfx-heal-play 900ms steps(34) forwards;
+}
+
 @keyframes invulnerable-pulse {
   0%   { box-shadow: 0 0 6px 2px rgba(251, 191, 36, 0.5); }
   50%  { box-shadow: 0 0 16px 6px rgba(251, 191, 36, 0.9); }
@@ -260,6 +312,31 @@ body {
   60%  { transform: translateX(-5px); }
   80%  { transform: translateX(5px); }
   100% { transform: translateX(0); }
+}
+
+@keyframes vfx-blood-play {
+  0%   { background-position: 0% 0; opacity: 1; }
+  85%  { opacity: 1; }
+  100% { background-position: 100% 0; opacity: 0; }
+}
+
+@keyframes vfx-fire-play {
+  0%   { background-position: 0% 0; opacity: 1; }
+  85%  { opacity: 1; }
+  100% { background-position: 100% 0; opacity: 0; }
+}
+
+@keyframes vfx-poison-play {
+  0%   { background-position: 0% 0; opacity: 0; }
+  10%  { opacity: 0.85; }
+  80%  { opacity: 0.85; }
+  100% { background-position: 100% 0; opacity: 0; }
+}
+
+@keyframes vfx-heal-play {
+  0%   { background-position: 0% 0; opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+  15%  { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  100% { background-position: 100% 0; opacity: 0; transform: translate(-50%, -50%) scale(1.1); }
 }
 
 .mat-toolbar, .mat-toolbar *,

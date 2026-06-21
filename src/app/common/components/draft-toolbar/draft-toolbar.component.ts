@@ -22,7 +22,7 @@ import { DraggablePanelDirective } from '../../directives/draggable-panel.direct
 import { InfoContent } from '../../models/info-content';
 import { Router } from '@angular/router';
 import { FightService } from '../../../fight/services/fight.service';
-import { goldHint, buyXpHint, lockShopHint, talentHint, draftReadyHint, fightingHint, abandonHint, forfeitHint, infoBoxHint, encyclopediaHint, muteHint, unmuteHint, matchHistoryHint } from './draft-toolbar.hints';
+import { goldHint, buyXpHint, lockShopHint, talentHint, draftReadyHint, fightingHint, abandonHint, forfeitHint, infoBoxHint, encyclopediaHint, volumeHint, matchHistoryHint } from './draft-toolbar.hints';
 import { ReplaysDialogComponent } from '../replays-dialog/replays-dialog.component';
 import { environment } from '../../../../environments/environment';
 import { NextFightPickerComponent } from '../next-fight-picker/next-fight-picker.component';
@@ -53,7 +53,10 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
   readonly enemyPickerEnabled = environment.enemyPicker;
   hoverShopRefresh = false;
   hoverBuyXp = false;
-  muted = false;
+
+  get volumeIcon(): string {
+    return this.soundsService.volumeIcon;
+  }
 
   showTalentPicker = this.characterDetailsService.showTalentPicker;
   /** True once a level-up has happened that the player hasn't reviewed in the talent/level modal yet. */
@@ -77,7 +80,7 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
   readonly matchHistoryHint = matchHistoryHint;
   readonly infoBoxHint = infoBoxHint;
 
-  get soundHint() { return this.muted ? unmuteHint : muteHint; }
+  readonly volumeHint = volumeHint;
 
   get refreshShopHint(): InfoContent {
     return {
@@ -143,7 +146,6 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
   isLocked : Boolean = false;
 
   ngOnInit(): void {
-    this.muted = this.soundsService.volume === 0;
     this.infoBoxService.setPageDefault(this.isFighting() ? this.fightingHint : this.draftReadyHint);
   }
 
@@ -283,9 +285,8 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
     return !this.draftService.room();
   }
 
-  switchMute() {
-    this.soundsService.setVolume(this.muted ? 0.1 : 0);
-    this.muted = !this.muted;
+  cycleVolume() {
+    this.soundsService.cycleVolume();
   }
 
   buyXp() {

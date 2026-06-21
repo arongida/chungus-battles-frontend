@@ -73,12 +73,45 @@ function showFloatingText(renderer: Renderer2, platformId: Object, playerId: num
   setTimeout(() => { if (el.parentNode === container) renderer.removeChild(container, el); }, 3000);
 }
 
-const luckyFindRarityClass: Record<number, string> = {
-  2: 'lucky-find-number--rare',
-  3: 'lucky-find-number--epic',
-  4: 'lucky-find-number--legendary',
-  5: 'lucky-find-number--mythic',
+/** Shared rarity → class-name-suffix lookup. Drives both the `.lucky-find-number--{suffix}`
+ *  text color and the `.vfx-fireworks--{suffix}` burst tint, so the two always stay in sync. */
+const luckyFindRaritySuffix: Record<number, string> = {
+  2: 'rare',
+  3: 'epic',
+  4: 'legendary',
+  5: 'mythic',
 };
+
+/** Higher rarities get a bigger fireworks celebration — more bursts staggered across the
+ *  lucky-find text's 3.5s float (see `shopFloatUp` in styles.scss). Anything not listed here
+ *  (common/rare/epic) falls back to DEFAULT_FIREWORKS_BURST_COUNT. */
+const fireworksBurstCountByRaritySuffix: Record<string, number> = {
+  legendary: 2,
+  mythic: 3,
+};
+const DEFAULT_FIREWORKS_BURST_COUNT = 1;
+
+/** Stagger is shorter than the burst's own playtime (FIREWORKS_BURST_DURATION_MS) so
+ *  consecutive bursts overlap — the next one starts while the previous is still fading. */
+const FIREWORKS_BURST_STAGGER_MS = 600;
+const FIREWORKS_BURST_DURATION_MS = 800; // must match vfx-fireworks-play in styles.scss
+const FIREWORKS_JITTER_PX = 32;
+
+/** Spawns one fireworks burst inside `container`, jittered slightly off-center so staggered
+ *  bursts don't all land in exactly the same spot. Re-checks `container.isConnected` since this
+ *  runs on a delay and the shop card may have been removed (item sold/shop refreshed) by then. */
+function spawnFireworksBurst(renderer: Renderer2, container: HTMLElement, rarityClass: string | undefined): void {
+  if (!container.isConnected) return;
+  const fireworks = renderer.createElement('div');
+  renderer.addClass(fireworks, 'vfx');
+  renderer.addClass(fireworks, 'vfx-fireworks');
+  if (rarityClass) renderer.addClass(fireworks, rarityClass);
+  const dx = (Math.random() * 2 - 1) * FIREWORKS_JITTER_PX;
+  const dy = (Math.random() * 2 - 1) * FIREWORKS_JITTER_PX;
+  renderer.setStyle(fireworks, 'transform', `translate(calc(-50% + ${dx.toFixed(1)}px), calc(-50% + ${dy.toFixed(1)}px))`);
+  renderer.appendChild(container, fireworks);
+  setTimeout(() => { if (fireworks.parentNode === container) renderer.removeChild(container, fireworks); }, FIREWORKS_BURST_DURATION_MS);
+}
 
 /** Draft-phase equivalent of the battle damage numbers — floats a message up from the
  *  specific shop card (see `#item-{{$index}}` in shop.component.html) instead of queuing
@@ -94,11 +127,20 @@ export function triggerShopFloatingText(renderer: Renderer2, platformId: Object,
   if (!container) return false;
   const el = renderer.createElement('div');
   renderer.addClass(el, 'lucky-find-number');
-  const rarityClass = rarity != null ? luckyFindRarityClass[rarity] : undefined;
-  if (rarityClass) renderer.addClass(el, rarityClass);
+  const raritySuffix = rarity != null ? luckyFindRaritySuffix[rarity] : undefined;
+  if (raritySuffix) renderer.addClass(el, `lucky-find-number--${raritySuffix}`);
   renderer.appendChild(el, renderer.createText(text));
   renderer.appendChild(container, el);
   setTimeout(() => { if (el.parentNode === container) renderer.removeChild(container, el); }, 3500);
+
+  // Lucky-find fireworks — one or more overlapping bursts (more for rarer finds), tinted to
+  // match the rarity color (falls back to the text's default gold for common finds).
+  const fireworksClass = raritySuffix ? `vfx-fireworks--${raritySuffix}` : undefined;
+  const burstCount = raritySuffix ? (fireworksBurstCountByRaritySuffix[raritySuffix] ?? DEFAULT_FIREWORKS_BURST_COUNT) : DEFAULT_FIREWORKS_BURST_COUNT;
+  for (let i = 0; i < burstCount; i++) {
+    setTimeout(() => spawnFireworksBurst(renderer, container, fireworksClass), i * FIREWORKS_BURST_STAGGER_MS);
+  }
+
   return true;
 }
 

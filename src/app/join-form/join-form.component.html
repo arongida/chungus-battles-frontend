@@ -45,8 +45,7 @@
     [class.rounded-full]="infoBoxHighlighted()">
     <mat-icon>{{ infoBoxHighlighted() ? 'help' : 'help_outline' }}</mat-icon>
   </button>
-  <button mat-icon-button (click)="switchMute()">
-    @if(muted) {<mat-icon>volume_off</mat-icon>}
-    @else {<mat-icon>volume_up</mat-icon>}
+  <button mat-icon-button (click)="cycleVolume()">
+    <mat-icon>{{ volumeIcon }}</mat-icon>
   </button>
 </div>

@@ -81,6 +81,11 @@ export class DraftRoomComponent implements OnInit {
   availableTalents = signal<Talent[]>([]);
   availableCollections = signal<ItemCollection[]>([]);
 
+  /** Queued `shop_floating` messages whose shop card wasn't in the DOM yet — retried on every
+   *  subsequent state change (see comment at the `shop_floating` handler below). */
+  private pendingShopFloatingTexts: (ShopFloatingMessage & { attempts: number })[] = [];
+  private static readonly MAX_SHOP_FLOATING_ATTEMPTS = 20;
+
   constructor(
     public draftService: DraftService,
     private snackBar: MatSnackBar,
@@ -97,6 +102,7 @@ export class DraftRoomComponent implements OnInit {
         }
         room.onStateChange((state) => {
           this.applyState(state);
+          this.flushPendingShopFloatingTexts();
         });
         room.onMessage('draft_log', (message: string) => {
           console.log('draft_log', message);
@@ -104,13 +110,17 @@ export class DraftRoomComponent implements OnInit {
         });
 
         // Lucky shop-roll upgrades float over the affected card instead of toasting. The
-        // message can arrive just ahead of the Colyseus state patch that renders the new
-        // shop card, so wait a frame (post-render) before looking the slot element up.
+        // message is guaranteed to arrive over the same connection before the Colyseus state
+        // patch that renders the new shop card (custom sends and patches are ordered on the
+        // wire), but the patch can still take more than one onStateChange tick to actually
+        // reach the client — so we queue and retry from flushPendingShopFloatingTexts on every
+        // subsequent state change instead of guessing with a single requestAnimationFrame.
         room.onMessage('shop_floating', (message: ShopFloatingMessage) => {
           if (!isPlatformBrowser(this.platformId)) return;
-          requestAnimationFrame(() => {
-            triggerShopFloatingText(this.renderer, this.platformId, message.slot, message.text, message.rarity);
-          });
+          // Don't flush immediately — the matching state patch reliably hasn't landed yet at
+          // this point (see comment above). The very next onStateChange tick will already
+          // include it, so just queue and let that drive the retry.
+          this.pendingShopFloatingTexts.push({ ...message, attempts: 0 });
         });
         room.onMessage('trigger_talent', (message: TriggerTalentMessage) => {
           if (this.player()) {
@@ -141,5 +151,26 @@ export class DraftRoomComponent implements OnInit {
     this.availableTalents.set([...(state.availableTalents ?? [])] as unknown as Talent[]);
     this.availableCollections.set([...(state.player?.availableItemCollections ?? [])] as unknown as ItemCollection[]);
     this.draftService.canUndoSell.set(!!state.canUndoSell);
+  }
+
+  /** Retries queued shop_floating messages once per state change (deferred one frame so the
+   *  @for-rendered shop cards from the applyState() call just above have actually committed to
+   *  the DOM) until each one's card exists. Gives up — and warns — after MAX attempts so a
+   *  message for a slot that genuinely never renders can't accumulate forever. */
+  private flushPendingShopFloatingTexts(): void {
+    if (this.pendingShopFloatingTexts.length === 0 || !isPlatformBrowser(this.platformId)) return;
+    requestAnimationFrame(() => {
+      this.pendingShopFloatingTexts = this.pendingShopFloatingTexts.filter(pending => {
+        if (triggerShopFloatingText(this.renderer, this.platformId, pending.slot, pending.text, pending.rarity)) {
+          return false;
+        }
+        pending.attempts++;
+        if (pending.attempts >= DraftRoomComponent.MAX_SHOP_FLOATING_ATTEMPTS) {
+          console.warn(`Shop slot container never appeared for slot: ${pending.slot} — giving up after ${pending.attempts} attempts`);
+          return false;
+        }
+        return true;
+      });
+    });
   }
 }

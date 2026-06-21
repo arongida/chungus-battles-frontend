@@ -1,0 +1,19 @@
+<div class="chungus-card text-center">
+  <div class="chungus-modal-icon">{{ data.icon }}</div>
+  <h2 class="chungus-modal-title">{{ data.title }}</h2>
+  <p class="chungus-modal-body">{{ data.body }}</p>
+  <div class="flex gap-3 justify-center">
+    <button mat-raised-button class="chungus-modal-btn" (click)="cancel()">
+      {{ data.cancelLabel }}
+    </button>
+    @if (data.confirmDanger) {
+      <button mat-stroked-button class="confirm-danger-btn" (click)="confirm()">
+        {{ data.confirmLabel }}
+      </button>
+    } @else {
+      <button mat-raised-button class="chungus-modal-btn" (click)="confirm()">
+        {{ data.confirmLabel }}
+      </button>
+    }
+  </div>
+</div>

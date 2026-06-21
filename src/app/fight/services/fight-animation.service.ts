@@ -20,8 +20,10 @@ import {
   triggerShowDodgeText,
   triggerShowHealingNumber,
   triggerShowInvulnerableText,
+  triggerSpriteVfx,
   triggerTalentActivation,
 } from '../../common/TriggerAnimations';
+import { SoundOptions, SoundsService } from '../../common/services/sounds.service';
 
 export interface AnimationContext {
   renderer: Renderer2;
@@ -44,6 +46,22 @@ export interface AnimationContext {
 
 @Injectable({ providedIn: 'root' })
 export class FightAnimationService {
+  constructor(private sounds: SoundsService) {}
+
+  /** Per-(category, playerId) cooldown so a flurry of attacks or DoT ticks can't
+   *  pile up overlapping VFX/SFX. Mirrors the throttle FightRoomComponent already
+   *  uses for the weapon-swing sound. */
+  private lastEffectTime = new Map<string, number>();
+  private readonly EFFECT_THROTTLE_MS = 120;
+
+  private throttled(key: string): boolean {
+    const now = performance.now();
+    const last = this.lastEffectTime.get(key) ?? 0;
+    if (now - last < this.EFFECT_THROTTLE_MS) return true;
+    this.lastEffectTime.set(key, now);
+    return false;
+  }
+
   applyCombatLog(ctx: AnimationContext, msg: CombatLogEntry): void {
     ctx.entries.update(prev => {
       const next = [...prev, msg];
@@ -62,10 +80,24 @@ export class FightAnimationService {
 
   applyDamage(ctx: AnimationContext, msg: DamageMessage): void {
     if (ctx.player() && ctx.enemy()) {
-      triggerShowDamageNumber(ctx.renderer, ctx.platformId, Math.round(msg.damage), msg.playerId, msg.type ?? 'normal');
+      const type = msg.type ?? 'normal';
+      triggerShowDamageNumber(ctx.renderer, ctx.platformId, Math.round(msg.damage), msg.playerId, type);
       triggerHpDamageFlash(msg.playerId);
       ctx.triggerDamagedAvatar(msg.playerId);
       ctx.applyHpDelta?.(msg.playerId, msg.damage, 0);
+
+      if (!this.throttled(`damage:${type}:${msg.playerId}`)) {
+        if (type === 'burn') {
+          triggerSpriteVfx(ctx.renderer, ctx.platformId, 'fire', msg.playerId);
+          this.sounds.playSound(SoundOptions.BURN);
+        } else if (type === 'poison') {
+          triggerSpriteVfx(ctx.renderer, ctx.platformId, 'poison', msg.playerId);
+          this.sounds.playSound(SoundOptions.POISON);
+        } else {
+          triggerSpriteVfx(ctx.renderer, ctx.platformId, 'blood', msg.playerId);
+          this.sounds.playSound(SoundOptions.HIT);
+        }
+      }
     }
   }
 
@@ -84,18 +116,33 @@ export class FightAnimationService {
       triggerShowHealingNumber(ctx.renderer, ctx.platformId, Math.round(msg.healing), msg.playerId);
       triggerHpHealFlash(msg.playerId);
       ctx.applyHpDelta?.(msg.playerId, 0, msg.healing);
+
+      if (!this.throttled(`healing:${msg.playerId}`)) {
+        triggerSpriteVfx(ctx.renderer, ctx.platformId, 'heal', msg.playerId);
+        this.sounds.playSound(SoundOptions.HEAL);
+      }
     }
   }
 
   applyTriggerTalent(ctx: AnimationContext, msg: TriggerTalentMessage): void {
     if (ctx.player() && ctx.enemy()) {
       triggerTalentActivation(msg.talentId, msg.playerId);
+      this.applyActivationEffect(msg.playerId);
     }
   }
 
   applyTriggerItem(ctx: AnimationContext, msg: TriggerItemMessage): void {
     if (ctx.player() && ctx.enemy()) {
       triggerItemActivation(msg.playerId, msg.slot);
+      this.applyActivationEffect(msg.playerId);
+    }
+  }
+
+  /** Shared activation sound for both talent and item triggers — keyed on playerId
+   *  alone so a talent and an item firing back-to-back on the same turn don't double up. */
+  private applyActivationEffect(playerId: number): void {
+    if (!this.throttled(`activate:${playerId}`)) {
+      this.sounds.playSound(SoundOptions.ACTIVATE);
     }
   }
 

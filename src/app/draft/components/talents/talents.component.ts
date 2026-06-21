@@ -1,33 +1,44 @@
-import { Component, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges, signal } from '@angular/core';
+import { Component, OnDestroy, computed, signal } from '@angular/core';
+import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { Talent } from '../../../models/colyseus-schema/TalentSchema';
 import { MatButtonModule } from '@angular/material/button';
 import { NgClass } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { DraftService } from '../../services/draft.service';
 import { SoundOptions, SoundsService } from '../../../common/services/sounds.service';
+import { CharacterDetailsService } from '../../../common/services/character-details.service';
 import { InfoHintDirective } from '../../../common/directives/info-hint.directive';
 import { InfoContent } from '../../../common/models/info-content';
 
+/**
+ * Opened via MatDialog from DraftToolbarComponent (rather than taking talentsList/playerLevel
+ * as @Inputs) so it renders in the CDK overlay — immune to the toolbar host's own stacking
+ * context — instead of the inline backdrop it used to render via a plain @if block. Reads its
+ * data from CharacterDetailsService, which the toolbar keeps mirrored to the player's current
+ * talent options/level, including live updates while the dialog is open (e.g. on reroll).
+ */
 @Component({
   selector: 'app-talents',
   standalone: true,
-  imports: [MatButtonModule, MatIconModule, NgClass, InfoHintDirective],
+  imports: [MatDialogModule, MatButtonModule, MatIconModule, NgClass, InfoHintDirective],
   templateUrl: './talents.component.html',
   styleUrl: './talents.component.scss',
 })
-export class TalentsComponent implements OnChanges, OnDestroy {
-  @Input({ required: true }) talentsList: Talent[] = [];
-  @Input() playerLevel = 1;
-  @Output() panelClosed = new EventEmitter<void>();
-  @Output() talentChosen = new EventEmitter<void>();
+export class TalentsComponent implements OnDestroy {
+  talents = computed(() => this.characterDetailsService.availableTalents());
+  playerLevel = computed(() => this.characterDetailsService.talentPlayerLevel());
 
   hoverTelentRefresh = false;
-  talents = signal<Talent[]>([]);
   talentRerollCost = signal<number>(0);
 
   private stateCallback: ((state: any) => void) | undefined;
 
-  constructor(public draftService: DraftService, private soundsService: SoundsService) {
+  constructor(
+    public draftService: DraftService,
+    private soundsService: SoundsService,
+    private characterDetailsService: CharacterDetailsService,
+    private dialogRef: MatDialogRef<TalentsComponent>,
+  ) {
     const currentState = this.draftService.room()?.state;
     if (currentState) {
       this.talentRerollCost.set(currentState.talentRerollCost ?? 0);
@@ -36,12 +47,6 @@ export class TalentsComponent implements OnChanges, OnDestroy {
       this.talentRerollCost.set(state.talentRerollCost ?? 0);
     };
     this.draftService.room()?.onStateChange(this.stateCallback);
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes['talentsList']) {
-      this.talents.set([...this.talentsList]);
-    }
   }
 
   ngOnDestroy() {
@@ -102,12 +107,12 @@ export class TalentsComponent implements OnChanges, OnDestroy {
 
   /** Mirrors the backend lucky-find formula: 10% base + 2% per level above 1 (ShopUpgradeUtils.ts). */
   luckyFindPercent(): number {
-    return Math.round((0.10 + 0.02 * (this.playerLevel - 1)) * 100);
+    return Math.round((0.10 + 0.02 * (this.playerLevel() - 1)) * 100);
   }
 
   /** This level's stat gain (not cumulative), mirroring DraftRoom.ts levelUp: rank = level - 5. */
   levelStatBonus(): { strength: number; accuracy: number; maxHp: number; defense: number; attackSpeed: number } {
-    const rank = Math.max(0, this.playerLevel - 5);
+    const rank = Math.max(0, this.playerLevel() - 5);
     return {
       strength: rank * 4,
       accuracy: rank * 2,
@@ -131,11 +136,11 @@ export class TalentsComponent implements OnChanges, OnDestroy {
 
   selectTalent(talentId: number) {
     this.draftService.sendMessage('select_talent', { talentId });
-    this.talentChosen.emit();
+    this.dialogRef.close();
   }
 
   close() {
-    this.panelClosed.emit();
+    this.dialogRef.close();
   }
 
   refreshTalents() {

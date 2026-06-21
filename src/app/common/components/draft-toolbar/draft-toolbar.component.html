@@ -34,9 +34,8 @@
         <mat-icon>menu_book</mat-icon>
       </button>
 
-      <button mat-icon-button (click)="switchMute()" [appInfoHint]="soundHint">
-        @if(muted) {<mat-icon>volume_off</mat-icon>}
-        @else {<mat-icon>volume_up</mat-icon>}
+      <button mat-icon-button (click)="cycleVolume()" [appInfoHint]="volumeHint">
+        <mat-icon>{{ volumeIcon }}</mat-icon>
       </button>
 
       <button mat-icon-button (click)="openReplays()" [appInfoHint]="matchHistoryHint">
@@ -53,7 +52,7 @@
         </button>
       }
 
-      @if (enemyPickerEnabled) {
+      @if (enemyPickerEnabled && !isFighting()) {
         <app-next-fight-picker></app-next-fight-picker>
       }
     </div>
@@ -92,124 +91,5 @@
   <app-character-details [player]="player" [combat]="false">
   </app-character-details>
 </div>
-}
-
-@if (showTalentPicker()) {
-<app-talents
-  [talentsList]="availableTalents ?? []"
-  [playerLevel]="player.level"
-  (panelClosed)="closeTalentPicker()"
-  (talentChosen)="closeTalentPicker()">
-</app-talents>
-}
-
-@if (showAbandonConfirm()) {
-<div class="fixed inset-0 z-[9999] flex items-center justify-center chungus-backdrop" (click)="cancelAbandon()">
-  <div class="chungus-card text-center" (click)="$event.stopPropagation()">
-    <div class="chungus-modal-icon">🏳️</div>
-    <h2 class="chungus-modal-title">Abandon Run?</h2>
-    <p class="chungus-modal-body">
-      Are you sure you want to abandon your run?<br>You won't be able to continue it after that.
-    </p>
-    <div class="flex gap-3 justify-center">
-      <button mat-raised-button class="chungus-modal-btn" (click)="cancelAbandon()">
-        Keep Playing
-      </button>
-      <button mat-stroked-button class="abandon-confirm-btn" (click)="doAbandon()">
-        Abandon
-      </button>
-    </div>
-  </div>
-</div>
-}
-
-@if (showForfeitConfirm()) {
-<div class="fixed inset-0 z-[9999] flex items-center justify-center chungus-backdrop" (click)="cancelForfeit()">
-  <div class="chungus-card text-center" (click)="$event.stopPropagation()">
-    <div class="chungus-modal-icon">🚩</div>
-    <h2 class="chungus-modal-title">Forfeit This Fight?</h2>
-    <p class="chungus-modal-body">
-      This counts as a loss — you'll lose a life and get the usual consolation gold, but your run continues.
-    </p>
-    <div class="flex gap-3 justify-center">
-      <button mat-raised-button class="chungus-modal-btn" (click)="cancelForfeit()">
-        Keep Fighting
-      </button>
-      <button mat-stroked-button class="abandon-confirm-btn" (click)="doForfeit()">
-        Forfeit
-      </button>
-    </div>
-  </div>
-</div>
-}
-
-@if (showResetTutorialConfirm()) {
-<div class="fixed inset-0 z-[9999] flex items-center justify-center chungus-backdrop" (click)="cancelResetTutorial()">
-  <div class="chungus-card text-center" (click)="$event.stopPropagation()">
-    <div class="chungus-modal-icon">🔄</div>
-    <h2 class="chungus-modal-title">Reset Tutorial Hints?</h2>
-    <p class="chungus-modal-body">
-      This brings back every tutorial hint you've already seen or dismissed, so they'll pop up again as you play.
-    </p>
-    <div class="flex gap-3 justify-center">
-      <button mat-raised-button class="chungus-modal-btn" (click)="cancelResetTutorial()">
-        Cancel
-      </button>
-      <button mat-raised-button class="chungus-modal-btn" (click)="doResetTutorial()">
-        Reset
-      </button>
-    </div>
-  </div>
-</div>
-}
-
-@if (showDisableHintsConfirm()) {
-<div class="fixed inset-0 z-[9999] flex items-center justify-center chungus-backdrop" (click)="cancelDisableHints()">
-  <div class="chungus-card text-center" (click)="$event.stopPropagation()">
-    <div class="chungus-modal-icon">❓</div>
-    <h2 class="chungus-modal-title">Disable Hints?</h2>
-    <p class="chungus-modal-body">
-      Tutorial hints explain what each button does. You can turn them back on anytime from this same button.
-    </p>
-    <div class="flex gap-3 justify-center">
-      <button mat-raised-button class="chungus-modal-btn" (click)="cancelDisableHints()">
-        Keep Hints On
-      </button>
-      <button mat-raised-button class="chungus-modal-btn" (click)="confirmDisableHints()">
-        Disable
-      </button>
-    </div>
-  </div>
-</div>
-}
-
-@if (replaysOpen()) {
-  <div class="fixed inset-0 z-[9999] flex items-center justify-center" style="background: rgba(0,0,0,0.7);" (click)="closeReplays()">
-    <div class="replays-modal" (click)="$event.stopPropagation()">
-      <div class="replays-modal-header">
-        <span>My Fight Replays</span>
-        <button class="replays-close-btn" (click)="closeReplays()">×</button>
-      </div>
-      @if (replaysLoading()) {
-        <p class="replays-empty">Loading...</p>
-      } @else if (replays().length === 0) {
-        <p class="replays-empty">No replays recorded yet. Play a fight to start recording!</p>
-      } @else {
-        <div class="replays-list">
-          @for (r of replays(); track r.replayId) {
-            <a [routerLink]="['/replay', r.replayId]" class="replay-row" target="_blank">
-              <span class="replay-row-round">Round {{ r.round }}</span>
-              <span class="replay-row-vs">vs. {{ r.enemyName }}</span>
-              <span class="replay-row-result" [class.win]="r.result === 'win'" [class.lose]="r.result === 'lose' || r.result === 'loose'" [class.draw]="r.result === 'draw'">
-                {{ replayResultLabel(r.result) }}
-              </span>
-              <span class="replay-row-date">{{ r.createdAt | date:'MMM d' }}</span>
-              <mat-icon class="replay-row-icon">play_circle</mat-icon>
-            </a>
-          }
-        </div>
-      }
-    </div>
-  </div>
 }
 

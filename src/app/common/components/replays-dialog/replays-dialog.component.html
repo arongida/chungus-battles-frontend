@@ -1,0 +1,25 @@
+<div class="replays-modal">
+  <div class="replays-modal-header">
+    <span>My Fight Replays</span>
+    <button class="replays-close-btn" (click)="close()">×</button>
+  </div>
+  @if (replaysLoading()) {
+    <p class="replays-empty">Loading...</p>
+  } @else if (replays().length === 0) {
+    <p class="replays-empty">No replays recorded yet. Play a fight to start recording!</p>
+  } @else {
+    <div class="replays-list">
+      @for (r of replays(); track r.replayId) {
+        <a [routerLink]="['/replay', r.replayId]" class="replay-row" target="_blank">
+          <span class="replay-row-round">Round {{ r.round }}</span>
+          <span class="replay-row-vs">vs. {{ r.enemyName }}</span>
+          <span class="replay-row-result" [class.win]="r.result === 'win'" [class.lose]="r.result === 'lose' || r.result === 'loose'" [class.draw]="r.result === 'draw'">
+            {{ replayResultLabel(r.result) }}
+          </span>
+          <span class="replay-row-date">{{ r.createdAt | date:'MMM d' }}</span>
+          <mat-icon class="replay-row-icon">play_circle</mat-icon>
+        </a>
+      }
+    </div>
+  }
+</div>

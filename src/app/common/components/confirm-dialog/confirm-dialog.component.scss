@@ -1,0 +1,11 @@
+/* Carried over from the old inline modals (draft-toolbar.component.scss .abandon-confirm-btn) —
+   used for the higher-stakes confirm action (forfeit/abandon) instead of the standard amber
+   .chungus-modal-btn gradient. */
+.confirm-danger-btn {
+  color: #f87171 !important;
+  border-color: #f87171 !important;
+
+  &:hover {
+    background: rgba(248, 113, 113, 0.1) !important;
+  }
+}

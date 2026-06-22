@@ -212,7 +212,7 @@ body {
   animation: weapon-flash 0.4s ease-out forwards;
 }
 
-// ─── Combat sprite-sheet VFX (blood/fire/poison/heal/activation bursts) ───
+// ─── Combat sprite-sheet VFX (slash/fire/poison/heal/activation bursts) ───
 // Mounted via triggerSpriteVfx() into the `damage-numbers-{playerId}` overlay (see
 // TriggerAnimations.ts). Uses the percentage background-position spritesheet trick:
 // background-size is set to <frameCount>*100% width, so animating background-position
@@ -230,12 +230,14 @@ body {
   z-index: 10;
 }
 
-.vfx-blood {
-  width: 100px;
-  height: 125px;
-  background-image: url(assets/vfx/blood_sheet.png);
-  background-size: 600% 100%; // 6 frames
-  animation: vfx-blood-play 500ms steps(5) forwards;
+.vfx-slash {
+  width: 90px;
+  height: 90px;
+  background-image: url(assets/vfx/slash.png);
+  background-size: 900% 100%; // 9 frames
+  // Duration is overridden per-hit via inline animationDuration (see triggerSpriteVfx)
+  // so consecutive strikes vary in quickness; this is just the steps timing function.
+  animation: vfx-slash-play 300ms steps(8) forwards;
 }
 
 // Fire/fireworks sheets are vertical 6-frame pixel-art strips (64x384, frame 0 on top),
@@ -252,8 +254,8 @@ body {
 }
 
 .vfx-fireworks {
-  width: 90px;
-  height: 90px;
+  width: 117px; // 30% bigger than the other 90px VFX sprites — celebration burst stands out more
+  height: 117px;
   background-image: url(assets/vfx/fireworks_sheet.png);
   background-size: 100% 600%; // 6 vertical frames
   image-rendering: pixelated;
@@ -352,7 +354,7 @@ body {
   100% { transform: translateX(0); }
 }
 
-@keyframes vfx-blood-play {
+@keyframes vfx-slash-play {
   0%   { background-position: 0% 0; opacity: 1; }
   85%  { opacity: 1; }
   100% { background-position: 100% 0; opacity: 0; }

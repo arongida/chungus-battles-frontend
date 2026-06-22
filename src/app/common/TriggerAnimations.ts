@@ -99,8 +99,10 @@ const FIREWORKS_JITTER_PX = 32;
 
 /** Spawns one fireworks burst inside `container`, jittered slightly off-center so staggered
  *  bursts don't all land in exactly the same spot. Re-checks `container.isConnected` since this
- *  runs on a delay and the shop card may have been removed (item sold/shop refreshed) by then. */
-function spawnFireworksBurst(renderer: Renderer2, container: HTMLElement, rarityClass: string | undefined): void {
+ *  runs on a delay and the shop card may have been removed (item sold/shop refreshed) by then.
+ *  `onBurst` (if given) fires in the same tick the burst is mounted, so the sound stays in sync
+ *  with the visual for every staggered burst, not just the first. */
+function spawnFireworksBurst(renderer: Renderer2, container: HTMLElement, rarityClass: string | undefined, onBurst?: () => void): void {
   if (!container.isConnected) return;
   const fireworks = renderer.createElement('div');
   renderer.addClass(fireworks, 'vfx');
@@ -110,6 +112,7 @@ function spawnFireworksBurst(renderer: Renderer2, container: HTMLElement, rarity
   const dy = (Math.random() * 2 - 1) * FIREWORKS_JITTER_PX;
   renderer.setStyle(fireworks, 'transform', `translate(calc(-50% + ${dx.toFixed(1)}px), calc(-50% + ${dy.toFixed(1)}px))`);
   renderer.appendChild(container, fireworks);
+  onBurst?.();
   setTimeout(() => { if (fireworks.parentNode === container) renderer.removeChild(container, fireworks); }, FIREWORKS_BURST_DURATION_MS);
 }
 
@@ -120,8 +123,12 @@ function spawnFireworksBurst(renderer: Renderer2, container: HTMLElement, rarity
  *  Returns false (without warning) if the card isn't in the DOM yet — the `shop_floating`
  *  message can arrive before the Colyseus state patch that renders the new shop card lands,
  *  since custom messages and state patches are flushed on separate schedules. The caller
- *  (DraftRoomComponent) retries this on every subsequent state change until it succeeds. */
-export function triggerShopFloatingText(renderer: Renderer2, platformId: Object, slot: number, text: string, rarity?: number): boolean {
+ *  (DraftRoomComponent) retries this on every subsequent state change until it succeeds.
+ *
+ *  `onFireworksBurst` (if given) is invoked once per spawned burst, at the exact moment that
+ *  burst's animation starts — so a caller can fire a matching sound effect per burst (more
+ *  bursts for rarer finds) instead of once for the whole celebration. */
+export function triggerShopFloatingText(renderer: Renderer2, platformId: Object, slot: number, text: string, rarity?: number, onFireworksBurst?: () => void): boolean {
   if (!isPlatformBrowser(platformId)) return false;
   const container = document.getElementById(`item-${slot}`);
   if (!container) return false;
@@ -138,7 +145,7 @@ export function triggerShopFloatingText(renderer: Renderer2, platformId: Object,
   const fireworksClass = raritySuffix ? `vfx-fireworks--${raritySuffix}` : undefined;
   const burstCount = raritySuffix ? (fireworksBurstCountByRaritySuffix[raritySuffix] ?? DEFAULT_FIREWORKS_BURST_COUNT) : DEFAULT_FIREWORKS_BURST_COUNT;
   for (let i = 0; i < burstCount; i++) {
-    setTimeout(() => spawnFireworksBurst(renderer, container, fireworksClass), i * FIREWORKS_BURST_STAGGER_MS);
+    setTimeout(() => spawnFireworksBurst(renderer, container, fireworksClass, onFireworksBurst), i * FIREWORKS_BURST_STAGGER_MS);
   }
 
   return true;
@@ -178,11 +185,13 @@ export function triggerShowHealingNumber(renderer: Renderer2, platformId: Object
   setTimeout(() => { if (el.parentNode === container) renderer.removeChild(container, el); }, 3000);
 }
 
-export type VfxKind = 'blood' | 'fire' | 'poison' | 'heal';
+export type VfxKind = 'slash' | 'fire' | 'poison' | 'heal';
 
-/** Must match the sprite-sheet animation durations defined in styles.scss (`.vfx-{kind}`). */
+/** Must match the sprite-sheet animation durations defined in styles.scss (`.vfx-{kind}`).
+ *  `slash` has a randomized duration (see SLASH_DURATION_*_MS below) — this entry is just
+ *  the upper bound, used as the cleanup fallback. */
 const VFX_DURATION_MS: Record<VfxKind, number> = {
-  blood: 500,
+  slash: 360,
   fire: 800,
   poison: 700,
   heal: 900,
@@ -191,11 +200,19 @@ const VFX_DURATION_MS: Record<VfxKind, number> = {
 /** Impact-style VFX get a small random offset from center so repeated hits don't all
  *  land on the exact same spot / stack perfectly on top of each other. Heal stays
  *  centered — it reads as a whole-body effect, not a hit location. */
-const VFX_JITTER_KINDS = new Set<VfxKind>(['blood', 'fire', 'poison']);
+const VFX_JITTER_KINDS = new Set<VfxKind>(['fire', 'poison']);
 const VFX_JITTER_X_PX = 36;
 const VFX_JITTER_Y_PX = 24;
 
-/** Plays a sprite-sheet VFX (blood splat, fire, poison cloud, heal glow) over the
+/** Slash hits randomize angle, facing, size and speed each time so consecutive strikes
+ *  don't all look like the exact same canned animation. */
+const SLASH_ANGLE_RANGE_DEG = 55;
+const SLASH_SCALE_MIN = 0.85;
+const SLASH_SCALE_MAX = 1.25;
+const SLASH_DURATION_MIN_MS = 200;
+const SLASH_DURATION_MAX_MS = 360;
+
+/** Plays a sprite-sheet VFX (weapon slash, fire, poison cloud, heal glow) over the
  *  target's avatar. Mounts in the same `damage-numbers-{playerId}` overlay used for
  *  floating text, so it shares that container's stacking/positioning. */
 export function triggerSpriteVfx(renderer: Renderer2, platformId: Object, kind: VfxKind, playerId: number): void {
@@ -208,11 +225,25 @@ export function triggerSpriteVfx(renderer: Renderer2, platformId: Object, kind: 
   const el = renderer.createElement('div');
   renderer.addClass(el, 'vfx');
   renderer.addClass(el, `vfx-${kind}`);
-  if (VFX_JITTER_KINDS.has(kind)) {
+  let duration = VFX_DURATION_MS[kind];
+  if (kind === 'slash') {
+    const dx = (Math.random() * 2 - 1) * VFX_JITTER_X_PX;
+    const dy = (Math.random() * 2 - 1) * VFX_JITTER_Y_PX;
+    const angle = (Math.random() * 2 - 1) * SLASH_ANGLE_RANGE_DEG;
+    const flip = Math.random() < 0.5 ? -1 : 1;
+    const scale = SLASH_SCALE_MIN + Math.random() * (SLASH_SCALE_MAX - SLASH_SCALE_MIN);
+    renderer.setStyle(
+      el,
+      'transform',
+      `translate(calc(-50% + ${dx.toFixed(1)}px), calc(-50% + ${dy.toFixed(1)}px)) rotate(${angle.toFixed(1)}deg) scale(${(flip * scale).toFixed(2)}, ${scale.toFixed(2)})`
+    );
+    duration = SLASH_DURATION_MIN_MS + Math.random() * (SLASH_DURATION_MAX_MS - SLASH_DURATION_MIN_MS);
+    renderer.setStyle(el, 'animationDuration', `${duration.toFixed(0)}ms`);
+  } else if (VFX_JITTER_KINDS.has(kind)) {
     const dx = (Math.random() * 2 - 1) * VFX_JITTER_X_PX;
     const dy = (Math.random() * 2 - 1) * VFX_JITTER_Y_PX;
     renderer.setStyle(el, 'transform', `translate(calc(-50% + ${dx.toFixed(1)}px), calc(-50% + ${dy.toFixed(1)}px))`);
   }
   renderer.appendChild(container, el);
-  setTimeout(() => { if (el.parentNode === container) renderer.removeChild(container, el); }, VFX_DURATION_MS[kind]);
+  setTimeout(() => { if (el.parentNode === container) renderer.removeChild(container, el); }, duration);
 }

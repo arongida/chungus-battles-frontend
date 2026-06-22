@@ -94,7 +94,7 @@ export class FightAnimationService {
           triggerSpriteVfx(ctx.renderer, ctx.platformId, 'poison', msg.playerId);
           this.sounds.playSound(SoundOptions.POISON);
         } else {
-          triggerSpriteVfx(ctx.renderer, ctx.platformId, 'blood', msg.playerId);
+          triggerSpriteVfx(ctx.renderer, ctx.platformId, 'slash', msg.playerId);
           this.sounds.playSound(SoundOptions.HIT);
         }
       }

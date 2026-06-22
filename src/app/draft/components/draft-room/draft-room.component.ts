@@ -36,6 +36,7 @@ import {
 } from '../../../common/components/skill-icons/skill-icons.component';
 import {
   MusicOptions,
+  SoundOptions,
   SoundsService,
 } from '../../../common/services/sounds.service';
 import { ShopFloatingMessage, TriggerItemMessage, TriggerTalentMessage } from '../../../models/types/MessageTypes';
@@ -161,7 +162,7 @@ export class DraftRoomComponent implements OnInit {
     if (this.pendingShopFloatingTexts.length === 0 || !isPlatformBrowser(this.platformId)) return;
     requestAnimationFrame(() => {
       this.pendingShopFloatingTexts = this.pendingShopFloatingTexts.filter(pending => {
-        if (triggerShopFloatingText(this.renderer, this.platformId, pending.slot, pending.text, pending.rarity)) {
+        if (triggerShopFloatingText(this.renderer, this.platformId, pending.slot, pending.text, pending.rarity, () => this.soundsService.playSound(SoundOptions.FIREWORK))) {
           return false;
         }
         pending.attempts++;

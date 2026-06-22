@@ -153,6 +153,7 @@ export enum SoundOptions {
   POISON = 'POISON',
   HEAL = 'HEAL',
   ACTIVATE = 'ACTIVATE',
+  FIREWORK = 'FIREWORK',
 }
 
 /** Per-category volume multiplier on top of the master volume, to balance clips that
@@ -166,6 +167,7 @@ const SOUND_GAIN: Record<SoundOptions, number> = {
   [SoundOptions.POISON]: 1,
   [SoundOptions.HEAL]: 0.4,
   [SoundOptions.ACTIVATE]: 1,
+  [SoundOptions.FIREWORK]: 1,
 };
 
 /** Variant file pools per sound. Multiple entries are randomized on each `playSound`. */
@@ -193,4 +195,5 @@ const SOUND_FILES: Record<SoundOptions, string[]> = {
     'assets/sound/activate-1.mp3',
     'assets/sound/activate-2.mp3',
   ],
+  [SoundOptions.FIREWORK]: ['assets/sound/firework-sparkle.mp3'],
 };

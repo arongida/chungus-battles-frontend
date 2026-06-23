@@ -49,7 +49,7 @@
     @if (playerLevel() >= 6) {
       <div class="tp-bonus-row">
         💪 This level: ⚔️ +{{ levelStatBonus().strength }} · 🎯 +{{ levelStatBonus().accuracy }} ·
-        ❤️ +{{ levelStatBonus().maxHp }} · 🛡️ +{{ levelStatBonus().defense }} · ⏩ +{{ levelStatBonus().attackSpeed }}
+        ❤️ +{{ levelStatBonus().maxHp }} · 🛡️ +{{ levelStatBonus().defense }} · ⏩ +{{ levelStatBonus().attackSpeed * 100 }}%
       </div>
     }
   </div>

@@ -54,6 +54,8 @@ class Item extends Schema {
   @type(['string']) triggerTypes: ArraySchema<string> = new ArraySchema<string>();
   @type(AffectedStats) affectedEnemyStats: AffectedStats = new AffectedStats();
   @type('boolean') upgradePreview: boolean = false;
+  // True for shop slots that rolled a lucky-find rarity-up (see applyLuckyShopUpgrades).
+  @type('boolean') luckyFind: boolean = false;
   // Frontend-only display state — not synced, must stay after all backend fields
   imageCache: string = '';
   rollPreview: ItemRollPreview | null = null;

@@ -34,6 +34,9 @@ export class ItemHoverCardDirective implements OnChanges, OnDestroy {
   @Input({ required: false }) touchOnly = false;
   @Input({ required: false }) showBuyInOverlay = true;
   @Input({ required: false }) showUnequipInOverlay = false;
+  /** Forwarded to the popped-out ItemCardComponent's `isFreeLuckyFind` input (see
+   *  ItemCardComponent — Black Market Contact's once-per-draft-phase free buy). */
+  @Input({ required: false }) isFreeLuckyFind = false;
   /** Optional hint to gate the touch overlay behind — first tap shows the hint once, later taps open the overlay. */
   @Input() hintContent?: InfoContent;
   @Output() buyFromPopup = new EventEmitter<void>();
@@ -132,6 +135,7 @@ export class ItemHoverCardDirective implements OnChanges, OnDestroy {
     componentRef.setInput('showPrice', false);
     componentRef.setInput('showBuyButton', this.showBuyInOverlay);
     componentRef.setInput('showUnequipButton', this.showUnequipInOverlay);
+    componentRef.setInput('isFreeLuckyFind', this.isFreeLuckyFind);
     this.captureScrollEl(componentRef);
     const buySub = componentRef.instance.buyClicked.subscribe(() => {
       this.buyFromPopup.emit();
@@ -163,8 +167,8 @@ export class ItemHoverCardDirective implements OnChanges, OnDestroy {
           { originX: 'center', originY: 'bottom', overlayX: 'center', overlayY: 'top', offsetY: 8 },
         ]),
       scrollStrategy: this.overlay.scrollStrategies.reposition(),
-      width: '210px',
-      height: '280px',
+      width: '240px',
+      height: '320px',
     });
 
     const pane = this.overlayRef.overlayElement;

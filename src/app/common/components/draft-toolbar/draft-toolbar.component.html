@@ -3,7 +3,7 @@
     <div class="toolbar-col-start flex justify-between gap-1 sm:gap-4 items-center">
       <span class="text-sm sm:text-lg text-center shrink-0 cursor-default" [appInfoHint]="goldHint">
         <span class="hidden sm:inline"></span>{{ player.gold }} 🟡
-        <span class="text-yellow-400">+{{ player.income }} 💰</span></span>
+        <span class="text-yellow-400">+{{ player.income | number:'1.0-0' }} 💰</span></span>
     </div>
 
     <div class="toolbar-col-center">

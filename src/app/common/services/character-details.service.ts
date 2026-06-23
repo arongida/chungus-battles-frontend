@@ -14,6 +14,9 @@ export class CharacterDetailsService {
   public availableTalents = signal<Talent[]>([]);
   public talentPlayerLevel = signal<number>(1);
 
+  /** True when the player has picked Black Market Contact — doubles the displayed lucky-find %. */
+  public hasBlackMarketTalent = signal<boolean>(false);
+
   /** True when an item has been bought since the panel was last opened — drives the
    * "open me" glow on the minimized character panel in the shop. */
   public hasUnseenPurchase = signal<boolean>(false);

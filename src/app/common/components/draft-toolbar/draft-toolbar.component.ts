@@ -8,7 +8,7 @@ import { ConfirmDialogComponent, ConfirmDialogData } from '../confirm-dialog/con
 import { TalentsComponent } from '../../../draft/components/talents/talents.component';
 import { Talent } from '../../../models/colyseus-schema/TalentSchema';
 import { EncyclopediaComponent } from '../../../draft/components/encyclopedia/encyclopedia.component';
-import { NgClass } from '@angular/common';
+import { DecimalPipe, NgClass } from '@angular/common';
 import { MatMenuModule } from '@angular/material/menu';
 import { DraftService } from '../../../draft/services/draft.service';
 import { CharacterDetailsComponent } from '../character-details/character-details.component';
@@ -35,6 +35,7 @@ import { NextFightPickerComponent } from '../next-fight-picker/next-fight-picker
     MatButtonModule,
     MatIconModule,
     NgClass,
+    DecimalPipe,
     MatMenuModule,
     MatCardModule,
     CharacterDetailsComponent,
@@ -156,6 +157,10 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
     // input binding path back to this template.
     this.characterDetailsService.availableTalents.set(this.availableTalents ?? []);
     this.characterDetailsService.talentPlayerLevel.set(this.player.level);
+    // talentId 504 = Black Market Contact (doubles the displayed lucky-find %).
+    this.characterDetailsService.hasBlackMarketTalent.set(
+      this.player.talents?.some((t) => t.talentId === 504) ?? false
+    );
 
     const talentsChange = changes['availableTalents'];
     if (talentsChange) {

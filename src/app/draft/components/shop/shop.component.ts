@@ -113,15 +113,23 @@ export class ShopComponent {
     return this.player.gold >= item.price && !item.sold;
   }
 
+  /** True if this lucky-find slot has been flipped to free by Black Market Contact's aura
+   *  behavior (server-side; see TalentBehaviors.ts) — once-per-draft-phase, until bought. */
+  isFreeLuckyFind(item: Item): boolean {
+    return item.luckyFind && item.price === 0;
+  }
+
   getItemInfoHint(item: Item): InfoContent {
     const isUpgrade = item.upgradePreview;
+    const isFree = this.isFreeLuckyFind(item);
+    const costText = isFree ? 'Free — claim your Black Market lucky find!' : `${item.price} gold`;
     if (isUpgrade) {
       return {
         id: 'upgrade-item',
         title: `Upgrade: ${item.name}`,
         entries: [
           { icon: '⬆️', label: 'Upgrade Available', text: `You already own ${item.name}. Buying it again will upgrade it to a higher rarity tier, making it more powerful.` },
-          { icon: '🟡', label: 'Cost', text: `${item.price} gold to upgrade.` },
+          { icon: '🟡', label: 'Cost', text: isFree ? costText : `${costText} to upgrade.` },
           { icon: '🖱️', label: 'How to buy', text: 'Click the Buy button or drag the item to the drop zone at the bottom.' },
         ],
       };
@@ -130,7 +138,7 @@ export class ShopComponent {
       id: 'buy-item',
       title: `Buy: ${item.name}`,
       entries: [
-        { icon: '🛒', label: 'Buy Item', text: `Costs ${item.price} gold. After buying, the item goes to your inventory.` },
+        { icon: '🛒', label: 'Buy Item', text: isFree ? `${costText} After buying, the item goes to your inventory.` : `Costs ${costText}. After buying, the item goes to your inventory.` },
         { icon: '🗡️', label: 'Equip It', text: 'Open your character details (avatar button) and use the Equip button.' },
         { icon: '🖱️', label: 'How to buy', text: 'Click the Buy button or drag the item to the drop zone at the bottom.' },
       ],
@@ -138,9 +146,11 @@ export class ShopComponent {
   }
 
   getBuyingTooltip() {
-    return this.canBuyItem(this.draggedCard)
-      ? (this.draggedCard?.upgradePreview ? 'Upgrade for ' : 'Buy for ') + this.draggedCard?.price
-      : 'Not enough money!';
+    if (!this.canBuyItem(this.draggedCard)) return 'Not enough money!';
+    const label = this.draggedCard?.upgradePreview ? 'Upgrade for ' : 'Buy for ';
+    return this.draggedCard && this.isFreeLuckyFind(this.draggedCard)
+      ? label + 'FREE'
+      : label + this.draggedCard?.price;
   }
 
 

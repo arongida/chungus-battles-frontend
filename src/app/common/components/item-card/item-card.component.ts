@@ -29,6 +29,9 @@ export class ItemCardComponent {
   @Input({ required: false }) showPrice = true;
   @Input({ required: false }) showBuyButton = false;
   @Input({ required: false }) showUnequipButton = false;
+  /** True when this is a lucky-find shop slot the player can claim via their
+   *  once-per-draft-phase Black Market Contact free buy (see DraftState.hasFreeLuckyFind). */
+  @Input({ required: false }) isFreeLuckyFind = false;
   @Output() buyClicked = new EventEmitter<void>();
   @Output() unequipClicked = new EventEmitter<void>();
 

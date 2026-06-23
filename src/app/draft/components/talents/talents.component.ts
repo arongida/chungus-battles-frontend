@@ -105,9 +105,12 @@ export class TalentsComponent implements OnDestroy {
     return 'assets/talent_tablet_01_horizontal.png';
   }
 
-  /** Mirrors the backend lucky-find formula: 10% base + 2% per level above 1 (ShopUpgradeUtils.ts). */
+  /** Mirrors the backend lucky-find formula: 10% base + 2% per level above 1 (ShopUpgradeUtils.ts).
+   *  Black Market Contact doubles this rate. */
   luckyFindPercent(): number {
-    return Math.round((0.10 + 0.02 * (this.playerLevel() - 1)) * 100);
+    const base = 0.10 + 0.02 * (this.playerLevel() - 1);
+    const multiplier = this.characterDetailsService.hasBlackMarketTalent() ? 2 : 1;
+    return Math.round(base * multiplier * 100);
   }
 
   /** This level's stat gain (not cumulative), mirroring DraftRoom.ts levelUp: rank = level - 5. */

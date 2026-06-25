@@ -7,19 +7,23 @@ import {
   HealingMessage,
   InvulnerableMessage,
   InvulnerableStateMessage,
+  RewardGainMessage,
   TriggerItemMessage,
   TriggerTalentMessage,
   VersionWinMessage,
 } from '../../models/types/MessageTypes';
 import {
   triggerAvatarHit,
+  triggerGoldBurst,
   triggerHpDamageFlash,
   triggerHpHealFlash,
   triggerItemActivation,
   triggerShowDamageNumber,
   triggerShowDodgeText,
+  triggerShowGoldNumber,
   triggerShowHealingNumber,
   triggerShowInvulnerableText,
+  triggerShowXpNumber,
   triggerSpriteVfx,
   triggerTalentActivation,
 } from '../../common/TriggerAnimations';
@@ -53,6 +57,10 @@ export class FightAnimationService {
    *  uses for the weapon-swing sound. */
   private lastEffectTime = new Map<string, number>();
   private readonly EFFECT_THROTTLE_MS = 120;
+  /** Gold gains at or above this amount get a celebratory fireworks burst in addition to
+   *  the floating number — reserved for bigger payouts (fight-end income, loss bonus,
+   *  jackpot-style talents) so routine +1 talent procs don't spam a burst every tick. */
+  private readonly GOLD_BURST_THRESHOLD = 5;
 
   private throttled(key: string): boolean {
     const now = performance.now();
@@ -124,6 +132,28 @@ export class FightAnimationService {
     }
   }
 
+  /** Gold/xp gains — fired during the fight (fight-end income/xp, loss bonus, talent procs).
+   *  Floating numbers always show (each carries the actual amount gained); the gold sound
+   *  and burst are throttled per-player so a flurry of small talent procs in the same tick
+   *  doesn't spam audio. Xp gains get a floating number only — no sound for now. */
+  applyReward(ctx: AnimationContext, msg: RewardGainMessage): void {
+    if (!(ctx.player() && ctx.enemy())) return;
+
+    if (msg.gold) {
+      triggerShowGoldNumber(ctx.renderer, ctx.platformId, Math.round(msg.gold), msg.playerId);
+    }
+    if (msg.xp) {
+      triggerShowXpNumber(ctx.renderer, ctx.platformId, Math.round(msg.xp), msg.playerId);
+    }
+
+    if (msg.gold && !this.throttled(`reward:${msg.playerId}`)) {
+      this.sounds.playSound(SoundOptions.GOLD);
+      if (msg.gold >= this.GOLD_BURST_THRESHOLD) {
+        triggerGoldBurst(ctx.renderer, ctx.platformId, msg.playerId);
+      }
+    }
+  }
+
   applyTriggerTalent(ctx: AnimationContext, msg: TriggerTalentMessage): void {
     if (ctx.player() && ctx.enemy()) {
       triggerTalentActivation(msg.talentId, msg.playerId);
@@ -159,6 +189,7 @@ export class FightAnimationService {
       case 'invulnerable':    this.applyInvulnerable(ctx, payload as InvulnerableMessage); break;
       case 'invulnerable_state': this.applyInvulnerableState(ctx, payload as InvulnerableStateMessage); break;
       case 'healing':         this.applyHealing(ctx, payload as HealingMessage); break;
+      case 'reward_gain':     this.applyReward(ctx, payload as RewardGainMessage); break;
       case 'trigger_talent':  this.applyTriggerTalent(ctx, payload as TriggerTalentMessage); break;
       case 'trigger_item':    this.applyTriggerItem(ctx, payload as TriggerItemMessage); break;
       case 'end_battle':      ctx.onEndBattle?.(payload as EndBattleMessage); break;

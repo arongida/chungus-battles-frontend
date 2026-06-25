@@ -315,6 +315,7 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
 
   lockShop() {
     if (!this.infoBoxService.gateAction(this.lockShopHint)) return;
+    this.soundsService.playSound(SoundOptions.CLICK);
     this.isLocked = !this.isLocked;
     if(this.isLocked){
       this.draftService.sendMessage('lock-shop', {});

@@ -13,6 +13,12 @@ export class SoundsService {
   private music?: Howl;
   private currentMusicSrc?: string;
 
+  /** Per-play volume randomization so repeated triggers of the same clip (rapid attacks,
+   *  DoT ticks, menu clicks) don't sound like a robotic loop — applied universally to
+   *  every sound in playSound(), on top of whatever file-variant pool that sound already
+   *  has. */
+  private static readonly VOLUME_JITTER = 0.06; // ±6% volume
+
   /** One Howl per variant file, lazily created. Howler plays each Howl through the
    *  Web Audio API by default, so overlapping plays of the same Howl are handled
    *  natively — no manual instance pooling needed (unlike the old HTMLAudioElement impl). */
@@ -68,7 +74,7 @@ export class SoundsService {
 
   playMusic(music: MusicOptions) {
     if (this.currentMusicSrc === music && this.music?.playing()) {
-      this.music.volume(this.volume);
+      this.music.volume(this.effectiveMusicVolume());
       this.music.mute(this.volume === 0);
       return;
     }
@@ -77,7 +83,7 @@ export class SoundsService {
     this.music = new Howl({
       src: [music],
       loop: true,
-      volume: this.volume,
+      volume: this.effectiveMusicVolume(),
       mute: this.volume === 0,
     });
     if (this.volume > 0) {
@@ -85,11 +91,17 @@ export class SoundsService {
     }
   }
 
+  /** Music sits behind sound effects in the mix, so it gets its own gain on top of the
+   *  master volume — independent of SOUND_GAIN, which only scales individual SFX. */
+  private effectiveMusicVolume(): number {
+    return this.volume * MUSIC_GAIN;
+  }
+
   private setVolume(volume: number) {
     this.volume = volume;
     const muted = volume === 0;
     if (this.music) {
-      this.music.volume(volume);
+      this.music.volume(this.effectiveMusicVolume());
       this.music.mute(muted);
       if (muted) {
         this.music.pause();
@@ -109,13 +121,19 @@ export class SoundsService {
     this.music?.pause();
   }
 
-  /** Plays a sound. If `sound` has multiple variant files, picks one at random so
-   *  repeated triggers (e.g. rapid attacks, DoT ticks) don't sound identical every time. */
+  /** Plays a sound. If `sound` has multiple variant files, picks one at random, then
+   *  jitters volume a little further so repeated triggers (rapid attacks, DoT ticks, menu
+   *  clicks) never sound like an exact robotic repeat — even sounds with only one source
+   *  file get some variety this way. Jitter is applied per-instance (via the Howler
+   *  playback id) rather than on the Howl's default volume, so it doesn't drift the
+   *  baseline that setVolume() relies on for future plays.
+   *  (Pitch jitter was tried here too but sounded bad and was reverted.) */
   playSound(sound: SoundOptions) {
     if (this.volume === 0) return;
     const pool = this.getPool(sound);
     const howl = pool[Math.floor(Math.random() * pool.length)];
-    howl.play();
+    const id = howl.play();
+    howl.volume(this.effectiveVolume(sound) * (1 + (Math.random() * 2 - 1) * SoundsService.VOLUME_JITTER), id);
   }
 }
 
@@ -139,6 +157,10 @@ const VOLUME_LEVEL_ICONS: Record<VolumeLevel, string> = {
 
 const VOLUME_LEVEL_STORAGE_KEY = 'soundVolumeLevel';
 
+/** Music is mixed quieter than sound effects so SFX stay legible over it — independent of
+ *  the master volume slider. Tune this directly if the music still feels too loud/quiet. */
+const MUSIC_GAIN = 0.6;
+
 export enum MusicOptions {
   BATTLE = 'assets/music/battle-music.mp3',
   DRAFT = 'assets/music/shop-music.mp3',
@@ -154,6 +176,7 @@ export enum SoundOptions {
   HEAL = 'HEAL',
   ACTIVATE = 'ACTIVATE',
   FIREWORK = 'FIREWORK',
+  GOLD = 'GOLD',
 }
 
 /** Per-category volume multiplier on top of the master volume, to balance clips that
@@ -168,17 +191,25 @@ const SOUND_GAIN: Record<SoundOptions, number> = {
   [SoundOptions.HEAL]: 0.4,
   [SoundOptions.ACTIVATE]: 1,
   [SoundOptions.FIREWORK]: 1,
+  [SoundOptions.GOLD]: 0.6,
 };
 
 /** Variant file pools per sound. Multiple entries are randomized on each `playSound`. */
 const SOUND_FILES: Record<SoundOptions, string[]> = {
   [SoundOptions.ATTACK]: ['assets/sound/sword-attack.mp3'],
-  [SoundOptions.CLICK]: ['assets/sound/click-old.mp3'],
-  [SoundOptions.BUY]: ['assets/sound/coin-cling.mp3'],
+  [SoundOptions.CLICK]: [
+    'assets/sound/click-1.mp3',
+    'assets/sound/click-2.mp3',
+    'assets/sound/click-3.mp3',
+  ],
+  [SoundOptions.BUY]: [
+    'assets/sound/coin-handle-1.mp3',
+    'assets/sound/coin-handle-2.mp3',
+  ],
   [SoundOptions.HIT]: [
-    'assets/sound/hit-impact-1.mp3',
-    'assets/sound/hit-impact-2.mp3',
-    'assets/sound/hit-impact-3.mp3',
+    'assets/sound/sword-slash-1.mp3',
+    'assets/sound/sword-slash-2.mp3',
+    'assets/sound/sword-slash-3.mp3',
   ],
   [SoundOptions.BURN]: [
     'assets/sound/burn-crackle-1.mp3',
@@ -190,10 +221,14 @@ const SOUND_FILES: Record<SoundOptions, string[]> = {
     'assets/sound/poison-bubble-2.mp3',
     'assets/sound/poison-bubble-3.mp3',
   ],
-  [SoundOptions.HEAL]: ['assets/sound/heal-chime.mp3'],
+  [SoundOptions.HEAL]: ['assets/sound/heal-harp.mp3'],
   [SoundOptions.ACTIVATE]: [
     'assets/sound/activate-1.mp3',
     'assets/sound/activate-2.mp3',
   ],
   [SoundOptions.FIREWORK]: ['assets/sound/firework-sparkle.mp3'],
+  [SoundOptions.GOLD]: [
+    'assets/sound/coin-handle-1.mp3',
+    'assets/sound/coin-handle-2.mp3',
+  ],
 };

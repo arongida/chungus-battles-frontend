@@ -154,11 +154,11 @@
   @if (showBuyButton) {
   <div class="mt-auto flex-none pb-4 pt-1 flex justify-center">
     @if (isFreeLuckyFind) {
-    <button mat-raised-button class="chungus-modal-btn" (click)="$event.stopPropagation(); buyClicked.emit()">
+    <button mat-raised-button class="chungus-modal-btn no-click-sound" (click)="$event.stopPropagation(); buyClicked.emit()">
       {{ item.upgradePreview ? 'Upgrade' : 'Buy' }} FREE 🍀
     </button>
     } @else {
-    <button mat-raised-button class="chungus-modal-btn" [disabled]="player.gold < item.price"
+    <button mat-raised-button class="chungus-modal-btn no-click-sound" [disabled]="player.gold < item.price"
       (click)="$event.stopPropagation(); buyClicked.emit()">
       {{ item.upgradePreview ? 'Upgrade' : 'Buy' }} {{ item.price }} 🟡
     </button>

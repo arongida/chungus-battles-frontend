@@ -174,7 +174,6 @@ export enum SoundOptions {
   BURN = 'BURN',
   POISON = 'POISON',
   HEAL = 'HEAL',
-  ACTIVATE = 'ACTIVATE',
   FIREWORK = 'FIREWORK',
   GOLD = 'GOLD',
 }
@@ -189,7 +188,6 @@ const SOUND_GAIN: Record<SoundOptions, number> = {
   [SoundOptions.BURN]: 1,
   [SoundOptions.POISON]: 1,
   [SoundOptions.HEAL]: 0.4,
-  [SoundOptions.ACTIVATE]: 1,
   [SoundOptions.FIREWORK]: 1,
   [SoundOptions.GOLD]: 0.6,
 };
@@ -209,7 +207,6 @@ const SOUND_FILES: Record<SoundOptions, string[]> = {
   [SoundOptions.HIT]: [
     'assets/sound/sword-slash-1.mp3',
     'assets/sound/sword-slash-2.mp3',
-    'assets/sound/sword-slash-3.mp3',
   ],
   [SoundOptions.BURN]: [
     'assets/sound/burn-crackle-1.mp3',
@@ -222,10 +219,6 @@ const SOUND_FILES: Record<SoundOptions, string[]> = {
     'assets/sound/poison-bubble-3.mp3',
   ],
   [SoundOptions.HEAL]: ['assets/sound/heal-harp.mp3'],
-  [SoundOptions.ACTIVATE]: [
-    'assets/sound/activate-1.mp3',
-    'assets/sound/activate-2.mp3',
-  ],
   [SoundOptions.FIREWORK]: ['assets/sound/firework-sparkle.mp3'],
   [SoundOptions.GOLD]: [
     'assets/sound/coin-handle-1.mp3',

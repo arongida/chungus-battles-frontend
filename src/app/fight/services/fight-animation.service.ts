@@ -157,22 +157,12 @@ export class FightAnimationService {
   applyTriggerTalent(ctx: AnimationContext, msg: TriggerTalentMessage): void {
     if (ctx.player() && ctx.enemy()) {
       triggerTalentActivation(msg.talentId, msg.playerId);
-      this.applyActivationEffect(msg.playerId);
     }
   }
 
   applyTriggerItem(ctx: AnimationContext, msg: TriggerItemMessage): void {
     if (ctx.player() && ctx.enemy()) {
       triggerItemActivation(msg.playerId, msg.slot);
-      this.applyActivationEffect(msg.playerId);
-    }
-  }
-
-  /** Shared activation sound for both talent and item triggers — keyed on playerId
-   *  alone so a talent and an item firing back-to-back on the same turn don't double up. */
-  private applyActivationEffect(playerId: number): void {
-    if (!this.throttled(`activate:${playerId}`)) {
-      this.sounds.playSound(SoundOptions.ACTIVATE);
     }
   }
 

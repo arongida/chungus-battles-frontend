@@ -185,6 +185,49 @@ export function triggerShowHealingNumber(renderer: Renderer2, platformId: Object
   setTimeout(() => { if (el.parentNode === container) renderer.removeChild(container, el); }, 3000);
 }
 
+export function triggerShowGoldNumber(renderer: Renderer2, platformId: Object, amount: number, playerId: number): void {
+  if (!isPlatformBrowser(platformId)) return;
+  const container = document.getElementById(`damage-numbers-${playerId}`);
+  if (!container) {
+    console.warn(`Gold container not found for playerId: ${playerId}`);
+    return;
+  }
+  const el = renderer.createElement('div');
+  renderer.addClass(el, 'gold-number');
+  renderer.appendChild(el, renderer.createText(`+${amount} 🟡`));
+  renderer.setStyle(el, 'left', `${Math.random() * 100}%`);
+  renderer.setStyle(el, 'fontSize', `${18 + Math.min(amount, 20)}px`);
+  renderer.appendChild(container, el);
+  setTimeout(() => { if (el.parentNode === container) renderer.removeChild(container, el); }, 3000);
+}
+
+export function triggerShowXpNumber(renderer: Renderer2, platformId: Object, amount: number, playerId: number): void {
+  if (!isPlatformBrowser(platformId)) return;
+  const container = document.getElementById(`damage-numbers-${playerId}`);
+  if (!container) {
+    console.warn(`Xp container not found for playerId: ${playerId}`);
+    return;
+  }
+  const el = renderer.createElement('div');
+  renderer.addClass(el, 'xp-number');
+  renderer.appendChild(el, renderer.createText(`+${amount} XP`));
+  renderer.setStyle(el, 'left', `${Math.random() * 100}%`);
+  renderer.appendChild(container, el);
+  setTimeout(() => { if (el.parentNode === container) renderer.removeChild(container, el); }, 3000);
+}
+
+/** Celebratory burst for sizeable gold gains (e.g. fight-end income, loss consolation) — reuses
+ *  the gold-tinted default `.vfx-fireworks` sprite, mounted into the same damage-numbers overlay
+ *  used for the floating text. Callers should reserve this for larger amounts; spamming it on
+ *  every +1 talent proc would be noisy (see FightAnimationService/DraftRoomComponent for the
+ *  threshold that decides when to call this). */
+export function triggerGoldBurst(renderer: Renderer2, platformId: Object, playerId: number): void {
+  if (!isPlatformBrowser(platformId)) return;
+  const container = document.getElementById(`damage-numbers-${playerId}`);
+  if (!container) return;
+  spawnFireworksBurst(renderer, container, undefined);
+}
+
 export type VfxKind = 'slash' | 'fire' | 'poison' | 'heal';
 
 /** Must match the sprite-sheet animation durations defined in styles.scss (`.vfx-{kind}`).

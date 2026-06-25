@@ -29,6 +29,7 @@ import { SkillIconsComponent } from '../skill-icons/skill-icons.component';
 import { CharacterDetailsService } from '../../services/character-details.service';
 import { InfoBoxService } from '../../services/info-box.service';
 import { PanelLayoutService } from '../../services/panel-layout.service';
+import { SoundOptions, SoundsService } from '../../services/sounds.service';
 
 
 @Component({
@@ -122,6 +123,7 @@ export class CharacterDetailsComponent implements OnInit {
   constructor(
     public draftService: DraftService,
     public characterDetailsService: CharacterDetailsService,
+    private soundsService: SoundsService,
   ) { }
 
   getNormalAvatarImage(): string {
@@ -165,6 +167,7 @@ export class CharacterDetailsComponent implements OnInit {
 
   undoSell(): void {
     if (!this.infoBoxService.gateAction(this.undoSellHint)) return;
+    this.soundsService.playSound(SoundOptions.BUY);
     this.draftService.sendMessage('undo_sell', {});
   }
 

@@ -15,6 +15,7 @@ import {
   HealingMessage,
   DamageMessage,
   InvulnerableMessage,
+  RewardGainMessage,
   TriggerTalentMessage,
   TriggerItemMessage,
 } from '../../../models/types/MessageTypes';
@@ -195,6 +196,10 @@ export class FightRoomComponent implements OnInit {
 
         room.onMessage('healing', (message: HealingMessage) => {
           this.fightAnimationService.applyHealing(animCtx, message);
+        });
+
+        room.onMessage('reward_gain', (message: RewardGainMessage) => {
+          this.fightAnimationService.applyReward(animCtx, message);
         });
 
         room.onMessage('invulnerable', (message: InvulnerableMessage) => {

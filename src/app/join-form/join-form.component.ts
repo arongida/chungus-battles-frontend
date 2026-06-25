@@ -21,7 +21,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { isPlatformBrowser } from '@angular/common';
 import { itemPictures } from '../common/item-image-links';
 import { ItemTrackingService } from '../common/services/item-tracking.service';
-import { MusicOptions, SoundOptions, SoundsService } from '../common/services/sounds.service';
+import { MusicOptions, SoundsService } from '../common/services/sounds.service';
 import { InfoBoxService } from '../common/services/info-box.service';
 import { InfoEntry } from '../common/models/info-content';
 
@@ -150,7 +150,6 @@ export class JoinFormComponent implements AfterViewInit, OnDestroy, OnInit {
       return;
     }
 
-    this.soundsService.playSound(SoundOptions.CLICK);
     this.loading = true;
     this.itemTrackingService.resetTrackedCollections();
     const joinResult = await this.draftService.joinOrCreate(this.nameControl.value!, undefined, this.avatarSelected);

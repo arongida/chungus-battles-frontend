@@ -200,6 +200,21 @@ body {
   -webkit-text-stroke: 1px rgb(8, 238, 96);
 }
 
+// Floating gold/xp gain text — shown during both the fight and the shop round (see
+// triggerShowGoldNumber/triggerShowXpNumber in TriggerAnimations.ts). Mounted into the
+// same damage-numbers-{playerId} overlay as the combat numbers above.
+.gold-number {
+  @apply absolute text-yellow-400 text-lg font-bold whitespace-nowrap transition-all;
+  animation: floatUp 3s ease-in forwards;
+  -webkit-text-stroke: 1px #a16207;
+}
+
+.xp-number {
+  @apply absolute text-sky-300 text-lg font-bold whitespace-nowrap transition-all;
+  animation: floatUp 3s ease-in forwards;
+  -webkit-text-stroke: 1px #0369a1;
+}
+
 .animate-weapon-attack {
   animation: weapon-flash 0.4s ease-out forwards;
 }

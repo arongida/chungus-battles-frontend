@@ -39,8 +39,8 @@ import {
   SoundOptions,
   SoundsService,
 } from '../../../common/services/sounds.service';
-import { ShopFloatingMessage, TriggerItemMessage, TriggerTalentMessage } from '../../../models/types/MessageTypes';
-import { triggerShopFloatingText } from '../../../common/TriggerAnimations';
+import { RewardGainMessage, ShopFloatingMessage, TriggerItemMessage, TriggerTalentMessage } from '../../../models/types/MessageTypes';
+import { triggerGoldBurst, triggerShopFloatingText, triggerShowGoldNumber, triggerShowXpNumber } from '../../../common/TriggerAnimations';
 
 // Creates a typed Player from any schema object (typed or reflection-decoded generic).
 // Copies primitive backing fields and collection references; skips `baseStats` because
@@ -87,6 +87,13 @@ export class DraftRoomComponent implements OnInit {
   private pendingShopFloatingTexts: (ShopFloatingMessage & { attempts: number })[] = [];
   private static readonly MAX_SHOP_FLOATING_ATTEMPTS = 20;
 
+  /** Per-player cooldown for the reward_gain sound/burst — mirrors FightAnimationService's
+   *  throttle so a flurry of small talent procs (e.g. an aura re-ticking) can't spam audio.
+   *  The floating number itself is never throttled — each one carries the real amount gained. */
+  private lastRewardSoundTime = new Map<number, number>();
+  private static readonly REWARD_SOUND_THROTTLE_MS = 120;
+  private static readonly GOLD_BURST_THRESHOLD = 5;
+
   constructor(
     public draftService: DraftService,
     private snackBar: MatSnackBar,
@@ -123,6 +130,10 @@ export class DraftRoomComponent implements OnInit {
           // include it, so just queue and let that drive the retry.
           this.pendingShopFloatingTexts.push({ ...message, attempts: 0 });
         });
+        room.onMessage('reward_gain', (message: RewardGainMessage) => {
+          this.applyRewardGain(message);
+        });
+
         room.onMessage('trigger_talent', (message: TriggerTalentMessage) => {
           if (this.player()) {
             //triggerTalentActivation(message.talentId, message.playerId);
@@ -152,6 +163,33 @@ export class DraftRoomComponent implements OnInit {
     this.availableTalents.set([...(state.availableTalents ?? [])] as unknown as Talent[]);
     this.availableCollections.set([...(state.player?.availableItemCollections ?? [])] as unknown as ItemCollection[]);
     this.draftService.canUndoSell.set(!!state.canUndoSell);
+  }
+
+  /** Gold/xp gains during the shop round (sells, buying xp/leveling, talent procs). Floats
+   *  the number over the player's avatar/header card (see character-details.component.html's
+   *  `damage-numbers-{playerId}` overlay, present in every collapse state) and plays a
+   *  throttled coin sound with a celebratory burst for sizeable gold gains. Xp gains get
+   *  a floating number only — no sound for now. */
+  private applyRewardGain(message: RewardGainMessage): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    if (message.gold) {
+      triggerShowGoldNumber(this.renderer, this.platformId, Math.round(message.gold), message.playerId);
+    }
+    if (message.xp) {
+      triggerShowXpNumber(this.renderer, this.platformId, Math.round(message.xp), message.playerId);
+    }
+
+    if (!message.gold) return;
+    const now = performance.now();
+    const last = this.lastRewardSoundTime.get(message.playerId) ?? 0;
+    if (now - last < DraftRoomComponent.REWARD_SOUND_THROTTLE_MS) return;
+    this.lastRewardSoundTime.set(message.playerId, now);
+
+    this.soundsService.playSound(SoundOptions.GOLD);
+    if (message.gold >= DraftRoomComponent.GOLD_BURST_THRESHOLD) {
+      triggerGoldBurst(this.renderer, this.platformId, message.playerId);
+    }
   }
 
   /** Retries queued shop_floating messages once per state change (deferred one frame so the

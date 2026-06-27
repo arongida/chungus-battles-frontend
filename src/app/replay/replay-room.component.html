@@ -17,6 +17,11 @@
   <button mat-icon-button class="replay-ctrl-btn" (click)="togglePlay()" [title]="done ? 'Restart' : playing() ? 'Pause' : 'Play'">
     <mat-icon>{{ done ? 'replay' : playing() ? 'pause' : 'play_arrow' }}</mat-icon>
   </button>
+  <!-- Return to game — closes this tab so the live game tab comes back into focus -->
+  <button mat-button class="replay-back-btn" (click)="closeTab()" title="Return to your game">
+    <mat-icon>close</mat-icon>
+    <span class="hidden sm:inline ml-1">Back to game</span>
+  </button>
 </div>
 
 <!-- Progress bar -->

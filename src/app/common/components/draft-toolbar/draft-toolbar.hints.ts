@@ -41,6 +41,16 @@ export const draftReadyHint: InfoContent = {
   ],
 };
 
+export const shopPhaseHint: InfoContent = {
+  id: 'shop-phase',
+  title: '🛒 Shop Phase',
+  entries: [
+    { icon: '🛍️', label: 'Buy Items', text: 'Spend gold to buy items from the shop. Bought items go into your inventory.' },
+    { icon: '🗡️', label: 'Equip Items', text: 'Open your inventory (the bag button in the toolbar) and equip items to strengthen your fighter.' },
+    { icon: '⚔️', label: 'Go Fight', text: 'When your build is ready, press the Ready to Chungus! button to start the battle.' },
+  ],
+};
+
 export const fightingHint: InfoContent = {
   id: 'fighting',
   title: 'Battle in Progress',

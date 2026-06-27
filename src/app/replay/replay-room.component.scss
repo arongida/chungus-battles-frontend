@@ -100,6 +100,19 @@
   color: var(--cm-amber) !important;
 }
 
+.replay-back-btn {
+  color: var(--cm-text-muted) !important;
+  font-size: 0.75rem !important;
+  padding: 0 8px !important;
+  min-width: 0 !important;
+  border: 1px solid var(--cm-border) !important;
+  border-radius: 4px !important;
+  &:hover {
+    color: var(--cm-text) !important;
+    border-color: var(--cm-text-muted) !important;
+  }
+}
+
 .progress-bar-track {
   background: rgba(255, 255, 255, 0.05);
 }

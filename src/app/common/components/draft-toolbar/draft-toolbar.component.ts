@@ -22,7 +22,7 @@ import { DraggablePanelDirective } from '../../directives/draggable-panel.direct
 import { InfoContent } from '../../models/info-content';
 import { Router } from '@angular/router';
 import { FightService } from '../../../fight/services/fight.service';
-import { goldHint, buyXpHint, lockShopHint, talentHint, draftReadyHint, fightingHint, abandonHint, forfeitHint, infoBoxHint, encyclopediaHint, volumeHint, matchHistoryHint } from './draft-toolbar.hints';
+import { goldHint, buyXpHint, lockShopHint, talentHint, draftReadyHint, shopPhaseHint, fightingHint, abandonHint, forfeitHint, infoBoxHint, encyclopediaHint, volumeHint, matchHistoryHint } from './draft-toolbar.hints';
 import { ReplaysDialogComponent } from '../replays-dialog/replays-dialog.component';
 import { environment } from '../../../../environments/environment';
 import { NextFightPickerComponent } from '../next-fight-picker/next-fight-picker.component';
@@ -74,6 +74,7 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
   readonly lockShopHint = lockShopHint;
   readonly talentHint = talentHint;
   readonly draftReadyHint = draftReadyHint;
+  readonly shopPhaseHint = shopPhaseHint;
   readonly fightingHint = fightingHint;
   readonly abandonHint = abandonHint;
   readonly forfeitHint = forfeitHint;
@@ -146,8 +147,9 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
   @Input({ required: false }) availableTalents?: Talent[] = [];
   isLocked : Boolean = false;
 
+
   ngOnInit(): void {
-    this.infoBoxService.setPageDefault(this.isFighting() ? this.fightingHint : this.draftReadyHint);
+    this.infoBoxService.setPageDefault(this.isFighting() ? this.fightingHint : this.shopPhaseHint);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -175,7 +177,7 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
       if (prevLen > 0 && curLen === 0) {
         this.showTalentPicker.set(false);
         this.levelUpPending.set(false);
-        this.infoBoxService.setPageDefault(this.draftReadyHint);
+        this.infoBoxService.setPageDefault(this.shopPhaseHint);
       }
     }
 
@@ -284,7 +286,6 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
   switchBuyXpAnimate() {
     this.hoverBuyXp = !this.hoverBuyXp;
   }
-
 
   isFighting(): boolean {
     return !this.draftService.room();

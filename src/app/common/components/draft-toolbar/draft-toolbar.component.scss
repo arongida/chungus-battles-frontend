@@ -53,21 +53,34 @@
   border-radius: 6px !important;
   box-shadow: 0 2px 12px rgba(180, 120, 30, 0.3) !important;
   transition: box-shadow 0.2s ease, transform 0.1s ease !important;
-  min-width: 40px !important;
-  width: 40px;
-  height: 40px;
-  padding: 0 !important;
+  min-width: 48px !important;
+  width: auto;
+  height: auto !important;
+  padding: 4px 6px !important;
   position: relative !important;
 
-  /* mat-button wraps projected content in its own label element, which left-aligns by
-     default — flex centering on the host button doesn't reach the icon inside that wrapper.
-     Position the icon directly instead, so it's centered regardless of that internal markup.
-     Uses inset+margin (not transform) so it doesn't fight the animate-bounce/animate-spin
-     hover animations, which already animate `transform` on this same icon. */
+  /* btn-content wraps icon + label in a column so the button grows to fit
+     both without needing the absolute-position trick used in the icon-only version. */
+  .btn-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+  }
+
   mat-icon {
-    position: absolute !important;
-    inset: 0;
-    margin: auto !important;
+    font-size: 18px !important;
+    width: 18px !important;
+    height: 18px !important;
+    line-height: 18px !important;
+  }
+
+  .btn-label {
+    font-size: 9px;
+    line-height: 1.1;
+    white-space: nowrap;
+    font-weight: 500;
+    letter-spacing: 0.02em;
   }
 
   &:hover {

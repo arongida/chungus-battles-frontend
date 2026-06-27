@@ -12,19 +12,6 @@
       uppercase) + (item.description | slice:1) }}</p>
     }
     <div class="flex flex-col items-center justify-start p-1">
-      @if (showPrice && !showBuyButton) {
-      <div class="p-1">
-        @if (isFreeLuckyFind) {
-        <p class="font-semibold">
-          Price: <span class="text-green-400">FREE 🍀</span>
-        </p>
-        } @else {
-        <p class="font-semibold">
-          Price: <span class="text-yellow-300">{{ item.price }} 🟡</span>
-        </p>
-        }
-      </div>
-      }
       <div class="flex flex-col items-center">
         <div class="grid place-content-center text-sm p-1">
 
@@ -148,6 +135,15 @@
     <p class="px-3 pt-1 text-xs text-slate-400">
       Class: <span class="font-semibold capitalize text-slate-200">{{ item.class }}</span>
     </p>
+    }
+  </div>
+  }
+  @if (showPrice && !showBuyButton) {
+  <div class="mt-auto flex-none text-center text-xs sm:text-sm font-semibold pb-2">
+    @if (isFreeLuckyFind) {
+      <span class="text-green-400">FREE 🍀</span>
+    } @else {
+      <span class="text-yellow-300">{{ item.price }} 🟡</span>
     }
   </div>
   }

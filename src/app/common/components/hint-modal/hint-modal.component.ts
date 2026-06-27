@@ -28,7 +28,7 @@ export interface HintModalData {
   styleUrl: './hint-modal.component.scss',
 })
 export class HintModalComponent {
-  readonly dontShowAgain = signal(true);
+  readonly dontShowAgain = signal(false);
   readonly content: InfoContent;
   readonly showRemember: boolean;
 

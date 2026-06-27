@@ -67,20 +67,34 @@
       [ngClass]="{'level-up-btn': canLevelUp}"
       (click)="canLevelUp ? levelUp() : buyXp()"
       (mouseenter)="switchBuyXpAnimate()" (mouseleave)="switchBuyXpAnimate()">
-      <mat-icon [ngClass]="{'animate-bounce': hoverBuyXp}">{{ canLevelUp ? 'arrow_upward' : 'keyboard_arrow_up' }}</mat-icon>
+      <span class="btn-content">
+        <mat-icon [ngClass]="{'animate-bounce': hoverBuyXp}">{{ canLevelUp ? 'arrow_upward' : 'keyboard_arrow_up' }}</mat-icon>
+        <span class="btn-label">{{ canLevelUp ? goldToLevelUp + '🟡' : '4🟡' }}</span>
+      </span>
     </button>
 
     <button [disabled]="player.gold < player.refreshShopCost" [appInfoHint]="refreshShopHint" [gatesAction]="true"
       mat-button class="chungus-icon-btn m-1 sm:m-2" (click)="refreshShop()" (mouseenter)="switchShopRefreshAnimate()"
       (mouseleave)="switchShopRefreshAnimate()">
-      <mat-icon [ngClass]="{'animate-spin': hoverShopRefresh}">refresh</mat-icon>
+      <span class="btn-content">
+        <mat-icon [ngClass]="{'animate-spin': hoverShopRefresh}">refresh</mat-icon>
+        <span class="btn-label">{{ player.refreshShopCost }}🟡</span>
+      </span>
     </button>
     @if(isLocked){
     <button [appInfoHint]="lockShopHint" [gatesAction]="true" mat-button class="chungus-icon-btn m-1 sm:m-2"
-      [ngClass]="{'clicked' : isLocked}" (click)="lockShop()"><mat-icon>lock_outline</mat-icon>
+      [ngClass]="{'clicked' : isLocked}" (click)="lockShop()">
+      <span class="btn-content">
+        <mat-icon>lock_outline</mat-icon>
+        <span class="btn-label">Locked</span>
+      </span>
     </button>} @else {
       <button [appInfoHint]="lockShopHint" [gatesAction]="true" mat-button class="chungus-icon-btn m-1 sm:m-2"
-      [ngClass]="{'clicked' : isLocked}" (click)="lockShop()"><mat-icon>lock_open</mat-icon>
+      [ngClass]="{'clicked' : isLocked}" (click)="lockShop()">
+      <span class="btn-content">
+        <mat-icon>lock_open</mat-icon>
+        <span class="btn-label">Lock</span>
+      </span>
     </button>}
   </div>
   }

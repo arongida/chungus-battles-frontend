@@ -303,4 +303,11 @@ export class ReplayRoomComponent implements OnInit, AfterViewInit, OnDestroy {
       this.rafId = requestAnimationFrame(this.tick);
     }
   }
+
+  /** Closes this replay tab so the browser returns focus to the live game tab beneath it. */
+  closeTab(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      window.close();
+    }
+  }
 }

@@ -116,31 +116,35 @@ export class ItemHoverCardDirective implements OnChanges, OnDestroy {
     if (this.overlayRef?.hasAttached()) return;
 
     const tier = this.item.tier < 10 ? this.item.tier : this.item.tier - 90;
-    const equippedItem = this.showComparison ? this.findEquippedInSlot() : undefined;
+    const hasEquipped = this.showComparison && this.hasAnyEquippedInSlots();
 
-    if (equippedItem) {
+    if (hasEquipped) {
       this.openComparisonOverlay();
     } else {
       this.openSingleCardOverlay(tier);
     }
   }
 
-  /** Two-card overlay: each card renders its own glow frame; no shared pane background. */
+  /**
+   * Comparison overlay — starts at single-card size showing the shop item + slot buttons.
+   * The ItemComparisonOverlayComponent resizes the CDK overlay when the user picks a slot.
+   */
   private openComparisonOverlay(): void {
     const vw = window.innerWidth;
-    // Main card shrinks below 260px on narrow phones (≥52 vw); equipped is 75% of main.
     const mainW = Math.min(260, Math.floor(vw * 0.52));
-    const equippedW = Math.round(mainW * 0.75);
     const mainH = Math.round(mainW * 340 / 260);
-    const paneW = mainW + 10 + equippedW; // 10px gap between cards
+    // Both cards are the same width in comparison mode; fit two in 96vw with a 10px gap.
+    const compW = Math.min(mainW, Math.floor((Math.min(vw * 0.96, 530) - 10) / 2));
+    const { BUTTON_AREA_H } = ItemComparisonOverlayComponent;
+    const singlePaneH = mainH + BUTTON_AREA_H;
 
     this.overlayRef = this.overlay.create({
       positionStrategy: this.overlay.position().global().centerHorizontally().centerVertically(),
       scrollStrategy: this.overlay.scrollStrategies.reposition(),
       hasBackdrop: true,
       backdropClass: 'cdk-overlay-transparent-backdrop',
-      width: `${paneW}px`,
-      height: `${mainH}px`,
+      width: `${mainW}px`,
+      height: `${singlePaneH}px`,
     });
 
     this.overlayRef.backdropClick().subscribe(() => {
@@ -154,7 +158,8 @@ export class ItemHoverCardDirective implements OnChanges, OnDestroy {
     componentRef.setInput('player', this.hoverPlayer);
     componentRef.setInput('isFreeLuckyFind', this.isFreeLuckyFind);
     componentRef.setInput('mainCardWidth', mainW);
-    componentRef.setInput('equippedCardWidth', equippedW);
+    componentRef.setInput('comparisonCardWidth', compW);
+    componentRef.setInput('overlayRef', this.overlayRef);
     componentRef.changeDetectorRef.detectChanges();
     this.activeScrollEl = componentRef.location.nativeElement.querySelector('.item-card-details-scroll');
 
@@ -208,14 +213,13 @@ export class ItemHoverCardDirective implements OnChanges, OnDestroy {
     });
   }
 
-  /** Returns the item currently equipped in the same slot as this.item, if any. */
-  private findEquippedInSlot(): Item | undefined {
-    if (this.item.equipped || !this.item.equipOptions) return undefined;
+  /** True when at least one of the item's possible equip slots already has an item equipped. */
+  private hasAnyEquippedInSlots(): boolean {
+    if (this.item.equipped || !this.item.equipOptions) return false;
     for (const slot of this.item.equipOptions) {
-      const equipped = this.hoverPlayer.equippedItems.get(slot);
-      if (equipped) return equipped;
+      if (this.hoverPlayer.equippedItems.get(slot)) return true;
     }
-    return undefined;
+    return false;
   }
 
   private openOverlay() {

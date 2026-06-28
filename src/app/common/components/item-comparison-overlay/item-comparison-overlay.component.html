@@ -1,35 +1,68 @@
-<!-- Main (shop) card — full size with its own tier glow frame -->
-<div class="card-frame"
-     [style.width.px]="mainCardWidth"
-     [style.height.px]="mainCardHeight"
-     [style.background-image]="mainGlowUrl"
-     [style.padding]="mainPadding">
-  <app-item-card
-    [item]="item"
-    [player]="player"
-    [showDetails]="true"
-    [showPrice]="false"
-    [showBuyButton]="true"
-    [isFreeLuckyFind]="isFreeLuckyFind"
-    (buyClicked)="buyClicked.emit()">
-  </app-item-card>
-</div>
-
-<!-- Equipped item — slightly smaller, with its own tier glow frame -->
-@if (equippedItem) {
-  <div class="comparison-equipped">
-    <span class="equipped-label">Equipped</span>
+@if (selectedSlot() === null) {
+  <!-- Single-card mode: main card + slot comparison buttons below -->
+  <div class="card-frame"
+       [style.width.px]="mainCardWidth"
+       [style.height.px]="mainCardHeight"
+       [style.background-image]="mainGlowUrl"
+       [style.padding]="mainPadding">
+    <app-item-card
+      [item]="item"
+      [player]="player"
+      [showDetails]="true"
+      [showPrice]="false"
+      [showBuyButton]="true"
+      [isFreeLuckyFind]="isFreeLuckyFind"
+      (buyClicked)="buyClicked.emit()">
+    </app-item-card>
+  </div>
+  <div class="slot-buttons">
+    @for (eq of equippedSlots; track eq.slot) {
+      <button class="slot-btn" (click)="selectSlot(eq.slot)">vs {{ formatSlot(eq.slot) }}</button>
+    }
+  </div>
+} @else {
+  <!-- Comparison mode: two cards side by side + slot tabs / back button below -->
+  <div class="cards-row">
     <div class="card-frame"
-         [style.width.px]="equippedCardWidth"
-         [style.height.px]="equippedCardHeight"
-         [style.background-image]="equippedGlowUrl"
-         [style.padding]="equippedPadding">
+         [style.width.px]="comparisonCardWidth"
+         [style.height.px]="compCardHeight"
+         [style.background-image]="mainGlowUrl"
+         [style.padding]="compPadding">
       <app-item-card
-        [item]="equippedItem"
+        [item]="item"
         [player]="player"
         [showDetails]="true"
-        [showPrice]="false">
+        [showPrice]="false"
+        [showBuyButton]="true"
+        [isFreeLuckyFind]="isFreeLuckyFind"
+        (buyClicked)="buyClicked.emit()">
       </app-item-card>
     </div>
+    @if (selectedEquipped; as eq) {
+      <div class="card-frame"
+           [style.width.px]="comparisonCardWidth"
+           [style.height.px]="compCardHeight"
+           [style.background-image]="glowUrl(eq)"
+           [style.padding]="compPadding">
+        <app-item-card
+          [item]="eq"
+          [player]="player"
+          [showDetails]="true"
+          [showPrice]="false">
+        </app-item-card>
+      </div>
+    }
+  </div>
+  <div class="slot-buttons">
+    @if (equippedSlots.length > 1) {
+      @for (eq of equippedSlots; track eq.slot) {
+        <button class="slot-btn"
+                [class.slot-btn--active]="selectedSlot() === eq.slot"
+                (click)="selectSlot(eq.slot)">
+          {{ formatSlot(eq.slot) }}
+        </button>
+      }
+    }
+    <button class="slot-btn slot-btn--back" (click)="goBack()">← Back</button>
   </div>
 }

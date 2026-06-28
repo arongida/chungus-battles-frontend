@@ -153,7 +153,10 @@ export class InfoBoxService {
 
   private openHintDialog(content: InfoContent, showRemember = true, onConfirm?: () => void): void {
     if (!content.id) return;
-    this.shownThisSession.add(content.id);
+    // Passive info popups (no action) are marked as seen immediately so they don't re-pop this
+    // session. Action-gated modals only get suppressed when the user explicitly checks
+    // "Don't show again" — otherwise they keep appearing on every tap.
+    if (!onConfirm) this.shownThisSession.add(content.id);
     this.dialogOpen = true;
     const dialogRef = this.dialog.open<HintModalComponent, HintModalData, HintModalResult>(HintModalComponent, {
       data: { content, showRemember, hasAction: !!onConfirm },
@@ -166,6 +169,7 @@ export class InfoBoxService {
       this.dialogOpen = false;
       if (result?.dontShowAgain && content.id) {
         this.dismiss(content.id);
+        this.shownThisSession.add(content.id);
       }
       if (result?.proceed && onConfirm) {
         onConfirm();

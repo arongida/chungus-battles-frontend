@@ -1,7 +1,10 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, signal } from '@angular/core';
+import { OverlayRef } from '@angular/cdk/overlay';
 import Item from '../../../models/colyseus-schema/ItemSchema';
 import { Player } from '../../../models/colyseus-schema/PlayerSchema';
 import { ItemCardComponent } from '../item-card/item-card.component';
+
+interface EquippedSlot { slot: string; item: Item; }
 
 @Component({
   selector: 'app-item-comparison-overlay',
@@ -14,45 +17,72 @@ export class ItemComparisonOverlayComponent {
   @Input({ required: true }) item!: Item;
   @Input({ required: true }) player!: Player;
   @Input() isFreeLuckyFind = false;
-  /** Pixel width of the main (shop) card frame. Height is derived from aspect ratio. */
   @Input() mainCardWidth = 260;
-  /** Pixel width of the equipped card frame. Height is derived from aspect ratio. */
-  @Input() equippedCardWidth = 195;
+  /** Width of each card when two are shown side by side (may differ from mainCardWidth on narrow screens). */
+  @Input() comparisonCardWidth = 260;
+  /** Passed from the directive so this component can resize the overlay on slot selection. */
+  @Input() overlayRef: OverlayRef | null = null;
   @Output() buyClicked = new EventEmitter<void>();
 
-  private static readonly CARD_ASPECT = 340 / 260;
+  readonly selectedSlot = signal<string | null>(null);
 
-  get mainCardHeight(): number { return Math.round(this.mainCardWidth * ItemComparisonOverlayComponent.CARD_ASPECT); }
-  get equippedCardHeight(): number { return Math.round(this.equippedCardWidth * ItemComparisonOverlayComponent.CARD_ASPECT); }
+  private static readonly ASPECT = 340 / 260;
+  static readonly BUTTON_AREA_H = 60;
 
-  get mainGlowUrl(): string {
-    const tier = this.item.tier < 10 ? this.item.tier : this.item.tier - 90;
+  get mainCardHeight(): number { return Math.round(this.mainCardWidth * ItemComparisonOverlayComponent.ASPECT); }
+  get compCardHeight(): number { return Math.round(this.comparisonCardWidth * ItemComparisonOverlayComponent.ASPECT); }
+
+  get mainGlowUrl(): string { return this.glowUrl(this.item); }
+
+  glowUrl(item: Item): string {
+    const tier = item.tier < 10 ? item.tier : item.tier - 90;
     return `url(assets/level_${tier}_glow.png)`;
   }
 
-  get equippedGlowUrl(): string {
-    const eq = this.equippedItem;
-    if (!eq) return '';
-    const tier = eq.tier < 10 ? eq.tier : eq.tier - 90;
-    return `url(assets/level_${tier}_glow.png)`;
-  }
-
-  /** Padding scaled proportionally to the card width (original frame is 260px with 24/20/16 padding). */
   get mainPadding(): string { return this.scaledPadding(this.mainCardWidth); }
-  get equippedPadding(): string { return this.scaledPadding(this.equippedCardWidth); }
+  get compPadding(): string { return this.scaledPadding(this.comparisonCardWidth); }
 
   private scaledPadding(w: number): string {
     const s = w / 260;
     return `${Math.round(24 * s)}px ${Math.round(20 * s)}px ${Math.round(16 * s)}px`;
   }
 
-  get equippedItem(): Item | undefined {
+  get equippedSlots(): EquippedSlot[] {
     const opts = this.item.equipOptions;
-    if (!opts) return undefined;
+    if (!opts || this.item.equipped) return [];
+    const result: EquippedSlot[] = [];
     for (const slot of opts) {
-      const equipped = this.player.equippedItems.get(slot);
-      if (equipped) return equipped;
+      const eq = this.player.equippedItems.get(slot);
+      if (eq) result.push({ slot, item: eq });
     }
-    return undefined;
+    return result;
+  }
+
+  get selectedEquipped(): Item | null {
+    const slot = this.selectedSlot();
+    if (!slot) return null;
+    return this.player.equippedItems.get(slot) ?? null;
+  }
+
+  selectSlot(slot: string): void {
+    this.selectedSlot.set(slot);
+    if (this.overlayRef) {
+      const w = this.comparisonCardWidth * 2 + 10;
+      const h = this.compCardHeight + ItemComparisonOverlayComponent.BUTTON_AREA_H;
+      this.overlayRef.updateSize({ width: `${w}px`, height: `${h}px` });
+    }
+  }
+
+  goBack(): void {
+    this.selectedSlot.set(null);
+    if (this.overlayRef) {
+      const w = this.mainCardWidth;
+      const h = this.mainCardHeight + ItemComparisonOverlayComponent.BUTTON_AREA_H;
+      this.overlayRef.updateSize({ width: `${w}px`, height: `${h}px` });
+    }
+  }
+
+  formatSlot(slot: string): string {
+    return slot.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase()).trim();
   }
 }

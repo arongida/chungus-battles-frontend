@@ -27,7 +27,7 @@ import { Router, RouterLink } from '@angular/router';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { triggerAvatarHit } from '../../../common/TriggerAnimations';
+import { triggerAvatarHit, triggerCelebrationFireworks } from '../../../common/TriggerAnimations';
 import { RoundInfoComponent } from '../../../common/components/round-info/round-info.component';
 import { CharacterDetailsComponent } from '../../../common/components/character-details/character-details.component';
 import { SkillIconsComponent } from '../../../common/components/skill-icons/skill-icons.component';
@@ -147,6 +147,8 @@ export class FightRoomComponent implements OnInit {
               if (p) this.endBattle(p.playerId, p.name, false, false);
               return;
             }
+            if (result === 'win') this.soundsService.playSound(SoundOptions.CHEER);
+            else if (result === 'lose') this.soundsService.playSound(SoundOptions.JEER);
             this.lossBonus.set(bonus);
             this.battleReplayId.set(replayId);
             this.battleResult.set(result);
@@ -160,6 +162,9 @@ export class FightRoomComponent implements OnInit {
             this.gameOver = true;
             this.battleOver = true;
             if (message.includes('#1')) {
+              this.soundsService.playSound(SoundOptions.CHEER);
+              triggerCelebrationFireworks(this.renderer, this.platformId, 7,
+                () => this.soundsService.playSound(SoundOptions.FIREWORK));
               this.topWin.set(true);
               this.topWinMinimized.set(false);
               localStorage.setItem('battleEndState', JSON.stringify({ type: 'top_win', message }));
@@ -173,6 +178,9 @@ export class FightRoomComponent implements OnInit {
             }
           },
           onVersionWin: (message) => {
+            this.soundsService.playSound(SoundOptions.CHEER);
+            triggerCelebrationFireworks(this.renderer, this.platformId, 4,
+              () => this.soundsService.playSound(SoundOptions.FIREWORK));
             this.versionWin.set(true);
             this.versionWinMinimized.set(false);
             this.versionWins.set(message.wins);

@@ -228,6 +228,41 @@ export function triggerGoldBurst(renderer: Renderer2, platformId: Object, player
   spawnFireworksBurst(renderer, container, undefined);
 }
 
+/** Full-screen fireworks celebration for major win events (version win, all-time win). Mounts
+ *  a temporary fixed overlay on `document.body`, scatters `burstCount` fireworks bursts at
+ *  random screen positions (staggered so they don't all land at once), then removes the overlay
+ *  once the last burst finishes. `onBurst` fires in the same tick each burst starts so the
+ *  caller can play a matching sound per burst rather than once for the whole sequence. */
+export function triggerCelebrationFireworks(renderer: Renderer2, platformId: Object, burstCount: number, onBurst?: () => void): void {
+  if (!isPlatformBrowser(platformId)) return;
+  const overlay = renderer.createElement('div');
+  renderer.addClass(overlay, 'celebration-vfx-layer');
+  renderer.appendChild(document.body, overlay);
+
+  const totalDuration = (burstCount - 1) * FIREWORKS_BURST_STAGGER_MS + FIREWORKS_BURST_DURATION_MS;
+  for (let i = 0; i < burstCount; i++) {
+    setTimeout(() => {
+      if (!overlay.isConnected) return;
+      const burst = renderer.createElement('div');
+      renderer.addClass(burst, 'vfx');
+      renderer.addClass(burst, 'vfx-fireworks');
+      // Random position across the viewport so bursts scatter rather than stacking
+      const left = 10 + Math.random() * 80; // 10%–90% from left
+      const top = 10 + Math.random() * 70;  // 10%–80% from top
+      renderer.setStyle(burst, 'left', `${left.toFixed(1)}%`);
+      renderer.setStyle(burst, 'top', `${top.toFixed(1)}%`);
+      // The existing sprite is centered via translate(-50%,-50%) in styles.scss; no extra
+      // transform needed here — position is absolute within the fixed overlay.
+      renderer.setStyle(burst, 'transform', 'translate(-50%, -50%)');
+      renderer.appendChild(overlay, burst);
+      onBurst?.();
+      setTimeout(() => { if (burst.parentNode === overlay) renderer.removeChild(overlay, burst); }, FIREWORKS_BURST_DURATION_MS);
+    }, i * FIREWORKS_BURST_STAGGER_MS);
+  }
+
+  setTimeout(() => { if (overlay.parentNode === document.body) renderer.removeChild(document.body, overlay); }, totalDuration + 100);
+}
+
 export type VfxKind = 'slash' | 'fire' | 'poison' | 'heal';
 
 /** Must match the sprite-sheet animation durations defined in styles.scss (`.vfx-{kind}`).

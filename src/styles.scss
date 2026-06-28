@@ -297,6 +297,16 @@ body {
   filter: hue-rotate(0deg) saturate(1.5);
 }
 
+/** Fixed full-viewport overlay for end-of-run fireworks celebrations (version win, all-time win).
+ *  Mounted on document.body by triggerCelebrationFireworks() so it appears above everything. */
+.celebration-vfx-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  overflow: hidden;
+}
+
 .vfx-poison {
   width: 110px;
   height: 110px;

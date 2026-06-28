@@ -1,0 +1,33 @@
+// :host is the flex row — its two children are the main card frame and the equipped section
+:host {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 100%;
+}
+
+// Shared frame styling; dimensions and background are set via inline [style] bindings
+.card-frame {
+  flex-shrink: 0;
+  background-size: cover;
+  background-position: center;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.7);
+  box-sizing: border-box;
+}
+
+.comparison-equipped {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.equipped-label {
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--cm-text-muted, #9ca3af);
+}

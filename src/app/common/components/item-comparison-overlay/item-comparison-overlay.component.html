@@ -1,0 +1,35 @@
+<!-- Main (shop) card — full size with its own tier glow frame -->
+<div class="card-frame"
+     [style.width.px]="mainCardWidth"
+     [style.height.px]="mainCardHeight"
+     [style.background-image]="mainGlowUrl"
+     [style.padding]="mainPadding">
+  <app-item-card
+    [item]="item"
+    [player]="player"
+    [showDetails]="true"
+    [showPrice]="false"
+    [showBuyButton]="true"
+    [isFreeLuckyFind]="isFreeLuckyFind"
+    (buyClicked)="buyClicked.emit()">
+  </app-item-card>
+</div>
+
+<!-- Equipped item — slightly smaller, with its own tier glow frame -->
+@if (equippedItem) {
+  <div class="comparison-equipped">
+    <span class="equipped-label">Equipped</span>
+    <div class="card-frame"
+         [style.width.px]="equippedCardWidth"
+         [style.height.px]="equippedCardHeight"
+         [style.background-image]="equippedGlowUrl"
+         [style.padding]="equippedPadding">
+      <app-item-card
+        [item]="equippedItem"
+        [player]="player"
+        [showDetails]="true"
+        [showPrice]="false">
+      </app-item-card>
+    </div>
+  </div>
+}

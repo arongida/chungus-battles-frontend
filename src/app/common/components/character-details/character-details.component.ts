@@ -1,4 +1,4 @@
-import { Component, inject, input, Input, OnInit, PLATFORM_ID, signal } from '@angular/core';
+import { Component, effect, ElementRef, inject, input, Input, OnInit, PLATFORM_ID, signal } from '@angular/core';
 import {
   Player,
 } from '../../../models/colyseus-schema/PlayerSchema';
@@ -51,8 +51,14 @@ import { SoundOptions, SoundsService } from '../../services/sounds.service';
 })
 export class CharacterDetailsComponent implements OnInit {
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly el = inject(ElementRef);
   private readonly infoBoxService = inject(InfoBoxService);
   private readonly panelLayoutService = inject(PanelLayoutService);
+
+  private readonly _expandClampEffect = effect(() => {
+    if (!this.expanded() || !isPlatformBrowser(this.platformId)) return;
+    requestAnimationFrame(() => this.clampExpandedToViewport());
+  });
 
   @Input({ required: true }) player: Player = new Player();
   @Input() enemy: boolean = false;
@@ -85,6 +91,20 @@ export class CharacterDetailsComponent implements OnInit {
       // back to the width-based default: detailed on desktop (≥640 px), compact on mobile.
       const saved = this.panelId ? this.panelLayoutService.getExpanded(this.panelId) : undefined;
       this.expanded.set(saved ?? window.innerWidth >= 640);
+    }
+  }
+
+  /** When the panel has been dragged (style.top set), ensure switching to detailed view
+   *  doesn't push it below the viewport bottom. Only applies to the fight/replay context
+   *  where the panel has a draggable fixed-positioned wrapper. */
+  private clampExpandedToViewport(): void {
+    const wrapper = (this.el.nativeElement as HTMLElement).parentElement;
+    if (!wrapper || !wrapper.style.top) return;
+    const top = parseFloat(wrapper.style.top);
+    const height = wrapper.offsetHeight;
+    const maxTop = window.innerHeight - height - 4;
+    if (top > maxTop) {
+      wrapper.style.top = `${Math.max(0, maxTop)}px`;
     }
   }
 
@@ -159,23 +179,21 @@ export class CharacterDetailsComponent implements OnInit {
   }
 
   sellSelectedItem(item: Item) {
-    if (!this.infoBoxService.gateAction(this.sellHint)) return;
-    this.draftService.sendMessage('sell', {
-      itemId: item.itemId,
+    this.infoBoxService.runGated(this.sellHint, () => {
+      this.draftService.sendMessage('sell', { itemId: item.itemId });
     });
   }
 
   undoSell(): void {
-    if (!this.infoBoxService.gateAction(this.undoSellHint)) return;
-    this.soundsService.playSound(SoundOptions.BUY);
-    this.draftService.sendMessage('undo_sell', {});
+    this.infoBoxService.runGated(this.undoSellHint, () => {
+      this.soundsService.playSound(SoundOptions.BUY);
+      this.draftService.sendMessage('undo_sell', {});
+    });
   }
 
   equip(item: Item, slot: EquipSlot | string) {
-    if (!this.infoBoxService.gateAction(this.equipHint)) return;
-    this.draftService.sendMessage('equip', {
-      itemId: item.itemId,
-      slot: slot,
+    this.infoBoxService.runGated(this.equipHint, () => {
+      this.draftService.sendMessage('equip', { itemId: item.itemId, slot: slot });
     });
   }
 

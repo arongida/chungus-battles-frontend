@@ -1,12 +1,5 @@
 <div class="cl-panel" [class.cl-panel--collapsed]="collapsed()">
-  <div class="cl-header">
-    <span>⚔️ Combat Log</span>
-    <button class="cl-toggle" (click)="collapsed.update(v => !v)" [title]="collapsed() ? 'Show log' : 'Hide log'">
-      {{ collapsed() ? '▲' : '▼' }}
-    </button>
-  </div>
   @if (!collapsed()) {
-    <div class="cl-divider"></div>
     <div class="cl-scroll" #scroll>
       @for (entry of entries; track $index) {
         <div class="cl-row" [class]="'cl-row--' + entry.kind"
@@ -17,5 +10,13 @@
         </div>
       }
     </div>
+    <div class="cl-divider"></div>
   }
+  <div class="cl-header" (click)="collapsed.update(v => !v)">
+    <span>⚔️ Combat Log</span>
+    <button class="cl-toggle" (click)="collapsed.update(v => !v); $event.stopPropagation()"
+            [title]="collapsed() ? 'Show log' : 'Hide log'">
+      {{ collapsed() ? '▲' : '▼' }}
+    </button>
+  </div>
 </div>

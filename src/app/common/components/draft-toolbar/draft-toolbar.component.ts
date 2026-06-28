@@ -234,15 +234,16 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
   }
 
   openEncyclopedia(): void {
-    if (!this.infoBoxService.gateAction(this.encyclopediaHint)) return;
-    this.dialog.open(EncyclopediaComponent, {
-      data: {
-        player: this.player,
-      },
-      maxWidth: '100vw',
-      maxHeight: '100vh',
-      height: '100%',
-      width: '80%',
+    this.infoBoxService.runGated(this.encyclopediaHint, () => {
+      this.dialog.open(EncyclopediaComponent, {
+        data: {
+          player: this.player,
+        },
+        maxWidth: '100vw',
+        maxHeight: '100vh',
+        height: '100%',
+        width: '80%',
+      });
     });
   }
 
@@ -292,37 +293,41 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
   }
 
   cycleVolume() {
-    this.soundsService.cycleVolume();
+    this.infoBoxService.runGated(this.volumeHint, () => this.soundsService.cycleVolume());
   }
 
   buyXp() {
-    if (!this.infoBoxService.gateAction(this.buyXpHint)) return;
-    this.soundsService.playSound(SoundOptions.CLICK);
-    this.draftService.sendMessage('buy_xp', {});
+    this.infoBoxService.runGated(this.buyXpHint, () => {
+      this.soundsService.playSound(SoundOptions.CLICK);
+      this.draftService.sendMessage('buy_xp', {});
+    });
   }
 
   levelUp() {
-    if (!this.infoBoxService.gateAction(this.levelUpHint)) return;
-    this.soundsService.playSound(SoundOptions.CLICK);
-    this.draftService.sendMessage('level_up', {});
+    this.infoBoxService.runGated(this.levelUpHint, () => {
+      this.soundsService.playSound(SoundOptions.CLICK);
+      this.draftService.sendMessage('level_up', {});
+    });
   }
 
   refreshShop() {
-    if (!this.infoBoxService.gateAction(this.refreshShopHint)) return;
-    this.soundsService.playSound(SoundOptions.CLICK);
-    this.isLocked = false;
-    this.draftService.sendMessage('refresh_shop', {});
+    this.infoBoxService.runGated(this.refreshShopHint, () => {
+      this.soundsService.playSound(SoundOptions.CLICK);
+      this.isLocked = false;
+      this.draftService.sendMessage('refresh_shop', {});
+    });
   }
 
   lockShop() {
-    if (!this.infoBoxService.gateAction(this.lockShopHint)) return;
-    this.soundsService.playSound(SoundOptions.CLICK);
-    this.isLocked = !this.isLocked;
-    if(this.isLocked){
-      this.draftService.sendMessage('lock-shop', {});
-    }else{
-      this.draftService.sendMessage('unlock-shop', {});
-    }
+    this.infoBoxService.runGated(this.lockShopHint, () => {
+      this.soundsService.playSound(SoundOptions.CLICK);
+      this.isLocked = !this.isLocked;
+      if (this.isLocked) {
+        this.draftService.sendMessage('lock-shop', {});
+      } else {
+        this.draftService.sendMessage('unlock-shop', {});
+      }
+    });
   }
 
   openReplays(): void {

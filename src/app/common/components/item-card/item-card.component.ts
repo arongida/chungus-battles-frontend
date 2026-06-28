@@ -78,4 +78,5 @@ export class ItemCardComponent {
     if (r === ItemRarity.MYTHIC) return 'text-red-500';
     return '';
   }
+
 }

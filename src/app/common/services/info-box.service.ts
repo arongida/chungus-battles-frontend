@@ -113,17 +113,24 @@ export class InfoBoxService {
   }
 
   /**
-   * Touch-only gate for elements that need first-tap-shows-hint, later-taps-perform-action behavior
-   * (e.g. the level-up button, or the shop item overlay). Returns true once the hint has already
-   * been shown/dismissed (or doesn't apply), meaning the caller's action should proceed; returns
-   * false the first time, after opening the hint, so the caller can swallow that tap.
+   * Touch-only gate for action buttons: shows the hint modal on the first tap (with OK / Cancel),
+   * then runs the action only when the user taps OK. On later taps (hint already seen this session
+   * or dismissed) the action runs immediately without a modal. On non-touch devices the action
+   * always runs immediately.
    */
-  gateAction(content: InfoContent): boolean {
-    if (!this.isTouch || !content.id) return true;
-    if (InfoBoxService.MOBILE_HIDDEN_HINTS.has(content.id)) return true;
-    if (this.isDismissed(content.id) || this.shownThisSession.has(content.id)) return true;
-    this.openHintDialog(content);
-    return false;
+  runGated(content: InfoContent, action: () => void): void {
+    if (this.shouldGate(content)) {
+      this.openHintDialog(content, true, action);
+    } else {
+      action();
+    }
+  }
+
+  private shouldGate(content: InfoContent): boolean {
+    if (!this.isTouch || !content.id) return false;
+    if (InfoBoxService.MOBILE_HIDDEN_HINTS.has(content.id)) return false;
+    if (this.isDismissed(content.id) || this.shownThisSession.has(content.id)) return false;
+    return true;
   }
 
   /**
@@ -144,12 +151,12 @@ export class InfoBoxService {
     this.openHintDialog(content);
   }
 
-  private openHintDialog(content: InfoContent, showRemember = true): void {
+  private openHintDialog(content: InfoContent, showRemember = true, onConfirm?: () => void): void {
     if (!content.id) return;
     this.shownThisSession.add(content.id);
     this.dialogOpen = true;
     const dialogRef = this.dialog.open<HintModalComponent, HintModalData, HintModalResult>(HintModalComponent, {
-      data: { content, showRemember },
+      data: { content, showRemember, hasAction: !!onConfirm },
       panelClass: 'hint-modal-panel',
       maxWidth: '90vw',
       width: '320px',
@@ -159,6 +166,9 @@ export class InfoBoxService {
       this.dialogOpen = false;
       if (result?.dontShowAgain && content.id) {
         this.dismiss(content.id);
+      }
+      if (result?.proceed && onConfirm) {
+        onConfirm();
       }
     });
   }

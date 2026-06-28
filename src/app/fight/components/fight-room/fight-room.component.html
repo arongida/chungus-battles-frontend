@@ -134,9 +134,9 @@
   <div class="chungus-card text-center relative">
     <button class="end-modal-dismiss" (click)="versionWinMinimized.set(true)" title="Dismiss to review combat log">×</button>
     <div class="chungus-modal-icon">🏆</div>
-    <h2 class="chungus-modal-title">Version Record!</h2>
+    <h2 class="chungus-modal-title">Season {{ versionWinSeason() || '' }} Record!</h2>
     <p class="chungus-modal-body">
-      You reached <span style="color: var(--cm-amber-light); font-weight: 700">{{ versionWins() }} wins</span> — the best of the current version!<br>
+      You reached <span style="color: var(--cm-amber-light); font-weight: 700">{{ versionWins() }} wins</span> — the best of Season {{ versionWinSeason() || '' }}!<br>
       Keep going to challenge the all-time record, or end your run here.
     </p>
     <div class="flex flex-col sm:flex-row gap-3 justify-center">
@@ -153,7 +153,7 @@
 @if (versionWin() && versionWinMinimized()) {
 <div class="fixed bottom-4 left-1/2 -translate-x-1/2 z-[9999]">
   <button class="end-pill" (click)="versionWinMinimized.set(false)">
-    🏆 Version Record — tap to continue
+    🏆 Season {{ versionWinSeason() || '' }} Record — tap to continue
   </button>
 </div>
 }

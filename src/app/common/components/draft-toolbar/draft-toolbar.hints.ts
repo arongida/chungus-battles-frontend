@@ -143,7 +143,7 @@ export const versionWinHint: InfoContent = {
   id: 'version-win',
   title: 'New Record!',
   entries: [
-    { icon: '🌟', label: 'Version Best', text: 'You set a new personal record! Choose to continue pushing your run or accept this as your result.' },
+    { icon: '🌟', label: 'Season Best', text: 'You set a new record for this season! Choose to continue pushing your run or accept this as your result.' },
   ],
 };
 

@@ -8,6 +8,7 @@ import { environment } from '../../environments/environment';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { InfoBoxService } from '../common/services/info-box.service';
+import { SeasonsService } from '../common/services/seasons.service';
 import { itemPictures } from '../common/item-image-links';
 import { buildPlayerFromData } from '../common/utils/player-schema-builder';
 import { DraggablePanelDirective } from '../common/directives/draggable-panel.directive';
@@ -31,6 +32,7 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
   filterName = signal<string>('');
   filterAvatar = signal<string>('');
   filterCurrentVersionOnly = signal<boolean>(true);
+  currentSeason = signal<number>(0);
 
   readonly avatarOptions: { label: string; value: string }[] = [
     { label: 'All classes', value: '' },
@@ -73,6 +75,7 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
     private infoBoxService: InfoBoxService,
     private renderer: Renderer2,
     @Inject(PLATFORM_ID) private platformId: Object,
+    private seasonsService: SeasonsService,
   ) {}
 
   get infoBoxVisible() {
@@ -178,6 +181,7 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
     if (isPlatformBrowser(this.platformId)) {
       this.playerId = Number(localStorage.getItem('playerId')) ?? 0;
     }
+    this.seasonsService.getSeasons().then(data => this.currentSeason.set(data.currentSeason));
     this.fetchPlayerData();
     this.intervalId = setInterval(() => this.fetchPlayerData(), 5000);
 

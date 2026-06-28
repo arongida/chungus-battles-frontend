@@ -85,6 +85,7 @@ export class FightRoomComponent implements OnInit {
   enemyBeingHit = signal(false);
   versionWin = signal(false);
   versionWins = signal(0);
+  versionWinSeason = signal(0);
   versionWinMinimized = signal(false);
   topWin = signal(false);
   topWinMinimized = signal(false);
@@ -185,8 +186,9 @@ export class FightRoomComponent implements OnInit {
             this.versionWin.set(true);
             this.versionWinMinimized.set(false);
             this.versionWins.set(message.wins);
+            this.versionWinSeason.set(message.season ?? 0);
             this.battleOver = true;
-            localStorage.setItem('battleEndState', JSON.stringify({ type: 'version_win', wins: message.wins }));
+            localStorage.setItem('battleEndState', JSON.stringify({ type: 'version_win', wins: message.wins, season: message.season }));
             this.infoBoxService.setPageDefault(versionWinHint);
           },
         };
@@ -300,7 +302,7 @@ export class FightRoomComponent implements OnInit {
     const raw = localStorage.getItem('battleEndState');
     if (!raw) return;
     try {
-      const state = JSON.parse(raw) as { type: string; message?: string; wins?: number; result?: string; lossBonus?: number; replayId?: string | null };
+      const state = JSON.parse(raw) as { type: string; message?: string; wins?: number; season?: number; result?: string; lossBonus?: number; replayId?: string | null };
       const player = this.player();
       if (!player) return;
       if (state.type === 'game_over') {
@@ -325,6 +327,7 @@ export class FightRoomComponent implements OnInit {
         this.battleOver = true;
         this.versionWin.set(true);
         this.versionWins.set(state.wins ?? 0);
+        this.versionWinSeason.set(state.season ?? 0);
         this.infoBoxService.setPageDefault(versionWinHint);
       } else if (state.type === 'top_win') {
         this.gameOver = true;

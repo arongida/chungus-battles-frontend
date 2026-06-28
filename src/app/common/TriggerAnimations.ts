@@ -114,6 +114,25 @@ function spawnFireworksBurst(renderer: Renderer2, container: HTMLElement, rarity
   setTimeout(() => { if (fireworks.parentNode === container) renderer.removeChild(container, fireworks); }, FIREWORKS_BURST_DURATION_MS);
 }
 
+/** Draft-phase event notification — floats a message up from the bottom of the screen
+ *  (the full-width `#draft-log-floats` fixed container) instead of a Material snackbar
+ *  toast. Uses the same amber lucky-find aesthetic. */
+export function triggerDraftLogFloatingText(renderer: Renderer2, platformId: Object, text: string): void {
+  if (!isPlatformBrowser(platformId)) return;
+  const container = document.getElementById('draft-log-floats');
+  if (!container) {
+    console.warn('[TriggerAnimations] #draft-log-floats container not found');
+    return;
+  }
+  const el = renderer.createElement('div');
+  renderer.addClass(el, 'draft-log-float');
+  renderer.appendChild(el, renderer.createText(text));
+  // Randomise horizontal position so stacked messages don't overlap exactly.
+  renderer.setStyle(el, 'left', `${10 + Math.random() * 70}%`);
+  renderer.appendChild(container, el);
+  setTimeout(() => { if (el.parentNode === container) renderer.removeChild(container, el); }, 4000);
+}
+
 /** Draft-phase equivalent of the battle damage numbers — floats a message up from the
  *  specific shop card (see `#item-{{$index}}` in shop.component.html) instead of queuing
  *  a Material snackbar toast for lucky shop-roll upgrades.

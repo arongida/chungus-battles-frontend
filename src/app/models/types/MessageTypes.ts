@@ -48,6 +48,7 @@ export type TriggerItemMessage = {
 
 export type VersionWinMessage = {
   wins: number;
+  season: number;
 };
 
 export type EndBattleMessage = {

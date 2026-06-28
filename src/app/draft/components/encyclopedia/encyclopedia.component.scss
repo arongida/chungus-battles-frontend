@@ -204,3 +204,86 @@
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
+
+/* Seasons list */
+.enc-seasons-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.enc-season-card {
+  border: 1px solid rgba(180, 120, 30, 0.2);
+  border-radius: 6px;
+  padding: 12px 16px;
+  background: rgba(180, 120, 30, 0.04);
+  transition: border-color 120ms, background 120ms;
+
+  &:hover {
+    background: rgba(180, 120, 30, 0.08);
+    border-color: rgba(180, 120, 30, 0.4);
+  }
+
+  &--current {
+    border-color: var(--cm-amber);
+    background: rgba(245, 158, 11, 0.08);
+    box-shadow: 0 0 10px rgba(180, 120, 30, 0.15);
+  }
+}
+
+.enc-season-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.enc-season-number {
+  color: var(--cm-text-muted);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  flex-shrink: 0;
+}
+
+.enc-season-name {
+  color: var(--cm-amber);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  flex: 1;
+}
+
+.enc-season-badge {
+  background: var(--cm-amber);
+  color: #000;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 2px 7px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.enc-season-changes {
+  margin: 0;
+  padding: 0 0 0 1rem;
+  list-style: disc;
+  color: var(--cm-text);
+  font-size: 0.78rem;
+  line-height: 1.6;
+
+  li + li {
+    margin-top: 2px;
+  }
+}
+
+.enc-season-empty {
+  color: var(--cm-text-muted);
+  font-size: 0.78rem;
+  font-style: italic;
+  margin: 0;
+}

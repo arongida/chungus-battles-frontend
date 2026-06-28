@@ -21,6 +21,7 @@ export class InfoBoxService {
     'battle-won', 'battle-lost', 'battle-draw',
     'run-over', 'version-win', 'top-win',
     'info-box',
+    'forfeit', 'volume',
   ]);
 
   /** True on touch devices that report no hover support (phones/tablets) — drives the panel-vs-modal split. */

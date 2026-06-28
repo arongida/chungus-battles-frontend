@@ -1,4 +1,4 @@
-import { Component, effect, ElementRef, inject, input, Input, OnInit, PLATFORM_ID, signal } from '@angular/core';
+import { Component, effect, ElementRef, inject, input, Input, OnDestroy, OnInit, PLATFORM_ID, signal } from '@angular/core';
 import {
   Player,
 } from '../../../models/colyseus-schema/PlayerSchema';
@@ -49,7 +49,7 @@ import { SoundOptions, SoundsService } from '../../services/sounds.service';
   templateUrl: './character-details.component.html',
   styleUrl: './character-details.component.scss',
 })
-export class CharacterDetailsComponent implements OnInit {
+export class CharacterDetailsComponent implements OnInit, OnDestroy {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly el = inject(ElementRef);
   private readonly infoBoxService = inject(InfoBoxService);
@@ -69,6 +69,18 @@ export class CharacterDetailsComponent implements OnInit {
   @Input() panelId?: string;
   playerBeingHit = input(false);
   enemyBeingHit = input(false);
+
+  /** Collapse the panel when the user taps outside it on touch devices. */
+  private readonly onDocumentPointerDown = (e: PointerEvent): void => {
+    if (!this.expanded()) return;
+    const target = e.target as HTMLElement | null;
+    if (!target) return;
+    // Tap inside the panel itself — keep expanded.
+    if (this.el.nativeElement.contains(target)) return;
+    // Tap inside a CDK overlay (item card, comparison card, hint modal) — keep expanded.
+    if (target.closest('.cdk-overlay-container')) return;
+    this.collapse();
+  };
 
   /** Compact ↔ detailed toggle. Default: detailed in battle on desktop, compact otherwise. */
   expanded = signal(false);
@@ -91,6 +103,17 @@ export class CharacterDetailsComponent implements OnInit {
       // back to the width-based default: detailed on desktop (≥640 px), compact on mobile.
       const saved = this.panelId ? this.panelLayoutService.getExpanded(this.panelId) : undefined;
       this.expanded.set(saved ?? window.innerWidth >= 640);
+
+      // On touch devices, collapse the panel when the user taps anywhere outside it.
+      if (this.infoBoxService.isTouch) {
+        document.addEventListener('pointerdown', this.onDocumentPointerDown, true);
+      }
+    }
+  }
+
+  ngOnDestroy(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      document.removeEventListener('pointerdown', this.onDocumentPointerDown, true);
     }
   }
 

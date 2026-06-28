@@ -272,6 +272,25 @@
   }
 }
 
+/* ── Drag-to-equip (CDK DragDrop) ── */
+
+/* Make the source row invisible while dragging — it "leaves" the inventory */
+.cd-inv-row.cdk-drag-placeholder {
+  opacity: 0;
+}
+
+/* Suppress the placeholder CDK injects into the slot containers while hovering */
+.cd-slot .cdk-drag-placeholder {
+  display: none !important;
+}
+
+/* Highlight only the slot currently being hovered during a drag */
+.cd-slot--drag-target {
+  background: rgba(245, 158, 11, 0.18) !important;
+  border-color: var(--cm-amber) !important;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.45);
+}
+
 /* ── HP bar flash animations (triggered by TriggerAnimations.ts) ── */
 .hp-bar-wrapper {
   border-radius: 2px;

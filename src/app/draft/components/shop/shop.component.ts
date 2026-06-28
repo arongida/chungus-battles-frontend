@@ -10,8 +10,6 @@ import {
 } from '@angular/material/tooltip';
 import {
   CdkDrag,
-  CdkDragDrop,
-  CdkDragExit,
   CdkDropList,
   DragDropModule,
 } from '@angular/cdk/drag-drop';
@@ -53,11 +51,8 @@ import { InfoBoxService } from '../../../common/services/info-box.service';
 })
 export class ShopComponent {
   draggedCard: Item | null = null;
-  dragPosition = { x: 0, y: 0 };
   draggingCard = false;
   dragIndex = 0;
-  previewBuyItem = false;
-  tempCard: HTMLElement | null = null;
   hoveredItem: Item | null = null;
   buyingItem: Item | null = null;
 
@@ -99,20 +94,6 @@ export class ShopComponent {
     this.draggedCard = item;
   }
 
-  onDrop(event: CdkDragDrop<any[]>) {
-    this.draggingCard = false;
-    this.draggedCard = null;
-    const item = this.shop[event.previousIndex];
-    if (this.canBuyItem(item)) {
-      this.buyItem(item);
-    }
-  }
-
-  canBuyItem(item: Item | null) {
-    if (!item) return false;
-    return this.player.gold >= item.price && !item.sold;
-  }
-
   /** True if this lucky-find slot has been flipped to free by Black Market Contact's aura
    *  behavior (server-side; see TalentBehaviors.ts) — once-per-draft-phase, until bought. */
   isFreeLuckyFind(item: Item): boolean {
@@ -130,7 +111,7 @@ export class ShopComponent {
         entries: [
           { icon: '⬆️', label: 'Upgrade Available', text: `You already own ${item.name}. Buying it again will upgrade it to a higher rarity tier, making it more powerful.` },
           { icon: '🟡', label: 'Cost', text: isFree ? costText : `${costText} to upgrade.` },
-          { icon: '🖱️', label: 'How to buy', text: 'Click the Buy button or drag the item to the drop zone at the bottom.' },
+          { icon: '🖱️', label: 'How to buy', text: 'Click the Buy button or drag the item onto your character panel.' },
         ],
       };
     }
@@ -139,18 +120,10 @@ export class ShopComponent {
       title: `Buy: ${item.name}`,
       entries: [
         { icon: '🛒', label: 'Buy Item', text: isFree ? `${costText} After buying, the item goes to your inventory.` : `Costs ${costText}. After buying, the item goes to your inventory.` },
-        { icon: '🖱️', label: 'How to buy', text: 'Click the Buy button or drag the item to the drop zone at the bottom.' },
-        { icon: '🗡️', label: 'Equip It', text: 'Open your character details (avatar button) and use the Equip button.' },
+        { icon: '🖱️', label: 'How to buy', text: 'Click the Buy button or drag the item onto your character panel.' },
+        { icon: '🗡️', label: 'Equip It', text: 'Open your character details (avatar button) and use the Equip button or drag the item to a slot.' },
       ],
     };
-  }
-
-  getBuyingTooltip() {
-    if (!this.canBuyItem(this.draggedCard)) return 'Not enough money!';
-    const label = this.draggedCard?.upgradePreview ? 'Upgrade for ' : 'Buy for ';
-    return this.draggedCard && this.isFreeLuckyFind(this.draggedCard)
-      ? label + 'FREE'
-      : label + this.draggedCard?.price;
   }
 
 
@@ -161,39 +134,12 @@ export class ShopComponent {
       itemId: item.itemId,
     });
     this.soundsService.playSound(SoundOptions.BUY);
-    this.previewBuyItem = false;
-    this.tempCard?.remove();
-    this.tempCard = null;
     this.characterDetailsService.showTalentPicker.set(false);
     this.characterDetailsService.notifyPurchase();
   }
 
   resetDrag(_item: Item) {
     this.draggingCard = false;
-    this.dragPosition = { x: 0, y: 0 };
-    this.tempCard?.remove();
-    this.tempCard = null;
-  }
-
-  canBuyItemPredicate = () => {
-    return this.canBuyItem(this.draggedCard);
-  };
-
-  onDragExited(_event: CdkDragExit, cardElementRef: HTMLElement, gridRef: HTMLElement) {
-    if (this.tempCard) return;
-    const cardElement = cardElementRef.childNodes[0].cloneNode(true);
-    gridRef.insertBefore(cardElement, gridRef.childNodes[this.dragIndex * 2]);
-    this.tempCard = cardElement as HTMLElement;
-  }
-
-  onDragExitFromBuyZone() {
-    this.previewBuyItem = false;
-    this.tempCard?.remove();
-    this.tempCard = null;
-  }
-
-  preventDropBack(): boolean {
-    return false;
   }
 
 }

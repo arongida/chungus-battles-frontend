@@ -452,6 +452,25 @@ body {
   z-index: 9999 !important;
 }
 
+/* Drag ghost for inventory items — square icon matching the equipment slot look */
+.cd-item-drag-preview {
+  width: 72px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(10, 10, 15, 0.97);
+  border: 1px solid #f59e0b;
+  border-radius: 4px;
+  box-shadow: 0 4px 16px rgba(180, 120, 30, 0.5), 0 2px 8px rgba(0, 0, 0, 0.8);
+
+  img {
+    max-width: 58px;
+    max-height: 58px;
+    object-fit: contain;
+  }
+}
+
 .cdk-overlay-backdrop{
   background: #00000080 !important;
 }

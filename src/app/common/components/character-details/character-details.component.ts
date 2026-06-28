@@ -30,6 +30,13 @@ import { CharacterDetailsService } from '../../services/character-details.servic
 import { InfoBoxService } from '../../services/info-box.service';
 import { PanelLayoutService } from '../../services/panel-layout.service';
 import { SoundOptions, SoundsService } from '../../services/sounds.service';
+import {
+  CdkDrag,
+  CdkDragDrop,
+  CdkDropList,
+  CdkDropListGroup,
+  DragDropModule,
+} from '@angular/cdk/drag-drop';
 
 
 @Component({
@@ -45,6 +52,10 @@ import { SoundOptions, SoundsService } from '../../services/sounds.service';
     InfoHintDirective,
     InfoHoverCardDirective,
     SkillIconsComponent,
+    CdkDrag,
+    CdkDropList,
+    CdkDropListGroup,
+    DragDropModule,
   ],
   templateUrl: './character-details.component.html',
   styleUrl: './character-details.component.scss',
@@ -162,6 +173,52 @@ export class CharacterDetailsComponent implements OnInit, OnDestroy {
   ];
 
   selectedCategory = 'all';
+
+  /** Tracks which inventory item is currently being dragged (cleared on release/drop). */
+  draggedItem: Item | null = null;
+
+  /** The slot the user is currently hovering over during a drag (null when not hovering). */
+  hoveredSlot: EquipSlot | null = null;
+
+  /** Delay before drag starts: long enough on touch that a quick tap still opens the
+   *  hover card, but short enough that an intentional press-and-drag feels responsive. */
+  readonly touchDragDelay = { touch: 150, mouse: 0 };
+
+  /** Prevents anything from being dropped back into the inventory list. */
+  readonly noDropPredicate = () => false;
+
+  /** Allows dropping onto a slot only if the dragged item lists that slot in its equipOptions. */
+  readonly slotDropPredicate = (drag: CdkDrag, drop: CdkDropList): boolean => {
+    const item = drag.data as Item;
+    const slot = drop.data as string;
+    if (!item?.equipOptions) return false;
+    return Array.from(item.equipOptions.values()).includes(slot);
+  };
+
+  onInventoryDragStarted(item: Item): void {
+    this.draggedItem = item;
+  }
+
+  isSlotDragTarget(slot: EquipSlot): boolean {
+    if (!this.draggedItem) return false;
+    const validSlot = Array.from(this.draggedItem.equipOptions.values()).includes(slot as string);
+    if (this.hoveredSlot !== null) return this.hoveredSlot === slot;
+    return validSlot;
+  }
+
+  onSlotEntered(slot: EquipSlot): void {
+    this.hoveredSlot = slot;
+  }
+
+  onSlotDrop(event: CdkDragDrop<EquipSlot>): void {
+    this.draggedItem = null;
+    this.hoveredSlot = null;
+    const item = event.item.data as Item;
+    const slot = event.container.data as EquipSlot;
+    if (!item?.equipOptions) return;
+    if (!Array.from(item.equipOptions.values()).includes(slot as string)) return;
+    this.equip(item, slot);
+  }
 
   constructor(
     public draftService: DraftService,

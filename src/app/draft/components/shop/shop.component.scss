@@ -5,3 +5,9 @@
 ::ng-deep .cdk-drag-preview button {
   display: none;
 }
+
+/* CDK appends its placeholder at the end of the list when sorting is disabled.
+   Hiding it prevents a phantom extra grid cell from appearing on re-entry. */
+.shop-grid .cdk-drag-placeholder {
+  display: none !important;
+}

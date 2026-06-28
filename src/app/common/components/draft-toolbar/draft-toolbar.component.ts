@@ -1,4 +1,6 @@
 import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, effect, inject, signal } from '@angular/core';
+import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
+import Item from '../../../models/colyseus-schema/ItemSchema';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -43,6 +45,7 @@ import { NextFightPickerComponent } from '../next-fight-picker/next-fight-picker
     InfoHintDirective,
     DraggablePanelDirective,
     NextFightPickerComponent,
+    DragDropModule,
   ],
   templateUrl: './draft-toolbar.component.html',
   styleUrl: './draft-toolbar.component.scss',
@@ -219,6 +222,17 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     if (this.levelCheckTimeoutId) clearTimeout(this.levelCheckTimeoutId);
+  }
+
+  shopItemOverPanel = false;
+
+  onShopItemDrop(event: CdkDragDrop<unknown>): void {
+    const item = event.item.data as Item;
+    if (!item || item.sold) return;
+    this.draftService.sendMessage('buy', { itemId: item.itemId });
+    this.soundsService.playSound(SoundOptions.BUY);
+    this.characterDetailsService.showTalentPicker.set(false);
+    this.characterDetailsService.notifyPurchase();
   }
 
   toggleTalentPicker(): void {

@@ -100,7 +100,13 @@
 
 </mat-toolbar>
 @if (!isFighting()) {
-<div appDraggablePanel [dragHandleSelector]="'.cd-header'" class="fixed z-10 top-16 left-0 max-w-fit">
+<div appDraggablePanel [dragHandleSelector]="'.cd-header'"
+     class="fixed z-10 top-16 left-0 max-w-fit char-panel-drop-zone"
+     [class.shop-item-over]="shopItemOverPanel"
+     cdkDropList [cdkDropListSortingDisabled]="true" id="character-panel-buy-zone"
+     (cdkDropListEntered)="shopItemOverPanel = true"
+     (cdkDropListExited)="shopItemOverPanel = false"
+     (cdkDropListDropped)="onShopItemDrop($event); shopItemOverPanel = false">
   <app-character-details [player]="player" [combat]="false">
   </app-character-details>
 </div>

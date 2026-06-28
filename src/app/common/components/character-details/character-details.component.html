@@ -3,7 +3,7 @@
 <!-- ══════════════════════════════════════════════
      DETAILED VIEW  (full panel — click ◀ to collapse)
      ══════════════════════════════════════════════ -->
-<div class="details-panel" [class.combat-mode]="combat">
+<div class="details-panel" [class.combat-mode]="combat" cdkDropListGroup>
 
   <!-- Header — drag handle; click anywhere on it (or the ◀ button) to collapse -->
   <div class="cd-header-wrap">
@@ -94,6 +94,12 @@
             @if (getItemAtSlot(slot); as equippedItem) {
               <div id="equipped-slot-{{slot}}-{{player.playerId}}"
                    class="cd-slot"
+                   [class.cd-slot--drag-target]="isSlotDragTarget(slot)"
+                   cdkDropList [cdkDropListSortingDisabled]="true" [cdkDropListData]="slot"
+                   [cdkDropListEnterPredicate]="slotDropPredicate"
+                   (cdkDropListEntered)="onSlotEntered(slot)"
+                   (cdkDropListExited)="hoveredSlot = null"
+                   (cdkDropListDropped)="onSlotDrop($event)"
                    (click)="onEquippedSlotClick(equippedItem, slot)">
                 <div [appItemHoverCard]="equippedItem" [hoverPlayer]="player" [showBuyInOverlay]="false"
                      [showUnequipInOverlay]="true" (unequipFromPopup)="unequip(equippedItem, slot)"
@@ -102,7 +108,13 @@
                 </div>
               </div>
             } @else {
-              <div class="cd-slot cd-slot--empty">
+              <div class="cd-slot cd-slot--empty"
+                   [class.cd-slot--drag-target]="isSlotDragTarget(slot)"
+                   cdkDropList [cdkDropListSortingDisabled]="true" [cdkDropListData]="slot"
+                   [cdkDropListEnterPredicate]="slotDropPredicate"
+                   (cdkDropListEntered)="onSlotEntered(slot)"
+                   (cdkDropListExited)="hoveredSlot = null"
+                   (cdkDropListDropped)="onSlotDrop($event)">
                 <span class="cd-slot-icon select-none">{{ slotIcons[slot] }}</span>
               </div>
             }
@@ -132,11 +144,21 @@
         </button>
       }
     </div>
-    <div class="cd-inventory">
+    <div class="cd-inventory"
+         cdkDropList [cdkDropListSortingDisabled]="true" [cdkDropListEnterPredicate]="noDropPredicate">
       @for (item of getInventoryFiltered(); track $index) {
-        <div class="cd-inv-row" [style.border-left]="getRarityBorder(item.rarity)">
+        <div class="cd-inv-row" [style.border-left]="getRarityBorder(item.rarity)"
+             cdkDrag [cdkDragData]="item" [cdkDragStartDelay]="touchDragDelay"
+             (cdkDragStarted)="onInventoryDragStarted(item)"
+             (cdkDragReleased)="draggedItem = null">
+          <ng-template cdkDragPreview>
+            <div class="cd-item-drag-preview">
+              <img [src]="item.image" />
+            </div>
+          </ng-template>
           <span class="flex items-center gap-1.5 flex-1 min-w-0"
-                [appItemHoverCard]="item" [hoverPlayer]="player" [showBuyInOverlay]="false">
+                [appItemHoverCard]="item" [hoverPlayer]="player" [showBuyInOverlay]="false"
+                [hoverCardDisabled]="draggedItem !== null">
             <img alt="" [src]="item.image" class="w-5 h-5 sm:w-7 sm:h-7 object-contain shrink-0" />
             <span class="flex-1 text-xs sm:text-sm truncate"
                   [ngClass]="{'text-blue-400': item.rarity === ItemRarity.RARE,

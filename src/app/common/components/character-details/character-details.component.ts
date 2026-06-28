@@ -1,4 +1,4 @@
-import { Component, inject, input, Input, OnInit, PLATFORM_ID, signal } from '@angular/core';
+import { Component, effect, ElementRef, inject, input, Input, OnDestroy, OnInit, PLATFORM_ID, signal } from '@angular/core';
 import {
   Player,
 } from '../../../models/colyseus-schema/PlayerSchema';
@@ -30,6 +30,13 @@ import { CharacterDetailsService } from '../../services/character-details.servic
 import { InfoBoxService } from '../../services/info-box.service';
 import { PanelLayoutService } from '../../services/panel-layout.service';
 import { SoundOptions, SoundsService } from '../../services/sounds.service';
+import {
+  CdkDrag,
+  CdkDragDrop,
+  CdkDropList,
+  CdkDropListGroup,
+  DragDropModule,
+} from '@angular/cdk/drag-drop';
 
 
 @Component({
@@ -45,14 +52,24 @@ import { SoundOptions, SoundsService } from '../../services/sounds.service';
     InfoHintDirective,
     InfoHoverCardDirective,
     SkillIconsComponent,
+    CdkDrag,
+    CdkDropList,
+    CdkDropListGroup,
+    DragDropModule,
   ],
   templateUrl: './character-details.component.html',
   styleUrl: './character-details.component.scss',
 })
-export class CharacterDetailsComponent implements OnInit {
+export class CharacterDetailsComponent implements OnInit, OnDestroy {
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly el = inject(ElementRef);
   private readonly infoBoxService = inject(InfoBoxService);
   private readonly panelLayoutService = inject(PanelLayoutService);
+
+  private readonly _expandClampEffect = effect(() => {
+    if (!this.expanded() || !isPlatformBrowser(this.platformId)) return;
+    requestAnimationFrame(() => this.clampExpandedToViewport());
+  });
 
   @Input({ required: true }) player: Player = new Player();
   @Input() enemy: boolean = false;
@@ -63,6 +80,18 @@ export class CharacterDetailsComponent implements OnInit {
   @Input() panelId?: string;
   playerBeingHit = input(false);
   enemyBeingHit = input(false);
+
+  /** Collapse the panel when the user taps outside it on touch devices. */
+  private readonly onDocumentPointerDown = (e: PointerEvent): void => {
+    if (!this.expanded()) return;
+    const target = e.target as HTMLElement | null;
+    if (!target) return;
+    // Tap inside the panel itself — keep expanded.
+    if (this.el.nativeElement.contains(target)) return;
+    // Tap inside a CDK overlay (item card, comparison card, hint modal) — keep expanded.
+    if (target.closest('.cdk-overlay-container')) return;
+    this.collapse();
+  };
 
   /** Compact ↔ detailed toggle. Default: detailed in battle on desktop, compact otherwise. */
   expanded = signal(false);
@@ -85,6 +114,31 @@ export class CharacterDetailsComponent implements OnInit {
       // back to the width-based default: detailed on desktop (≥640 px), compact on mobile.
       const saved = this.panelId ? this.panelLayoutService.getExpanded(this.panelId) : undefined;
       this.expanded.set(saved ?? window.innerWidth >= 640);
+
+      // On touch devices, collapse the panel when the user taps anywhere outside it.
+      if (this.infoBoxService.isTouch) {
+        document.addEventListener('pointerdown', this.onDocumentPointerDown, true);
+      }
+    }
+  }
+
+  ngOnDestroy(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      document.removeEventListener('pointerdown', this.onDocumentPointerDown, true);
+    }
+  }
+
+  /** When the panel has been dragged (style.top set), ensure switching to detailed view
+   *  doesn't push it below the viewport bottom. Only applies to the fight/replay context
+   *  where the panel has a draggable fixed-positioned wrapper. */
+  private clampExpandedToViewport(): void {
+    const wrapper = (this.el.nativeElement as HTMLElement).parentElement;
+    if (!wrapper || !wrapper.style.top) return;
+    const top = parseFloat(wrapper.style.top);
+    const height = wrapper.offsetHeight;
+    const maxTop = window.innerHeight - height - 4;
+    if (top > maxTop) {
+      wrapper.style.top = `${Math.max(0, maxTop)}px`;
     }
   }
 
@@ -119,6 +173,52 @@ export class CharacterDetailsComponent implements OnInit {
   ];
 
   selectedCategory = 'all';
+
+  /** Tracks which inventory item is currently being dragged (cleared on release/drop). */
+  draggedItem: Item | null = null;
+
+  /** The slot the user is currently hovering over during a drag (null when not hovering). */
+  hoveredSlot: EquipSlot | null = null;
+
+  /** Delay before drag starts: long enough on touch that a quick tap still opens the
+   *  hover card, but short enough that an intentional press-and-drag feels responsive. */
+  readonly touchDragDelay = { touch: 150, mouse: 0 };
+
+  /** Prevents anything from being dropped back into the inventory list. */
+  readonly noDropPredicate = () => false;
+
+  /** Allows dropping onto a slot only if the dragged item lists that slot in its equipOptions. */
+  readonly slotDropPredicate = (drag: CdkDrag, drop: CdkDropList): boolean => {
+    const item = drag.data as Item;
+    const slot = drop.data as string;
+    if (!item?.equipOptions) return false;
+    return Array.from(item.equipOptions.values()).includes(slot);
+  };
+
+  onInventoryDragStarted(item: Item): void {
+    this.draggedItem = item;
+  }
+
+  isSlotDragTarget(slot: EquipSlot): boolean {
+    if (!this.draggedItem) return false;
+    const validSlot = Array.from(this.draggedItem.equipOptions.values()).includes(slot as string);
+    if (this.hoveredSlot !== null) return this.hoveredSlot === slot;
+    return validSlot;
+  }
+
+  onSlotEntered(slot: EquipSlot): void {
+    this.hoveredSlot = slot;
+  }
+
+  onSlotDrop(event: CdkDragDrop<EquipSlot>): void {
+    this.draggedItem = null;
+    this.hoveredSlot = null;
+    const item = event.item.data as Item;
+    const slot = event.container.data as EquipSlot;
+    if (!item?.equipOptions) return;
+    if (!Array.from(item.equipOptions.values()).includes(slot as string)) return;
+    this.equip(item, slot);
+  }
 
   constructor(
     public draftService: DraftService,
@@ -159,23 +259,21 @@ export class CharacterDetailsComponent implements OnInit {
   }
 
   sellSelectedItem(item: Item) {
-    if (!this.infoBoxService.gateAction(this.sellHint)) return;
-    this.draftService.sendMessage('sell', {
-      itemId: item.itemId,
+    this.infoBoxService.runGated(this.sellHint, () => {
+      this.draftService.sendMessage('sell', { itemId: item.itemId });
     });
   }
 
   undoSell(): void {
-    if (!this.infoBoxService.gateAction(this.undoSellHint)) return;
-    this.soundsService.playSound(SoundOptions.BUY);
-    this.draftService.sendMessage('undo_sell', {});
+    this.infoBoxService.runGated(this.undoSellHint, () => {
+      this.soundsService.playSound(SoundOptions.BUY);
+      this.draftService.sendMessage('undo_sell', {});
+    });
   }
 
   equip(item: Item, slot: EquipSlot | string) {
-    if (!this.infoBoxService.gateAction(this.equipHint)) return;
-    this.draftService.sendMessage('equip', {
-      itemId: item.itemId,
-      slot: slot,
+    this.infoBoxService.runGated(this.equipHint, () => {
+      this.draftService.sendMessage('equip', { itemId: item.itemId, slot: slot });
     });
   }
 

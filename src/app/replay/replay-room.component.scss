@@ -1,46 +1,30 @@
 /* ── Fight panel positioning (mirrors fight-room.component.scss) ───────── */
-
-.fight-panel-top {
-  top: 60px;
-  left: 50%;
-  transform: translateX(-50%);
-}
+/* Row 1: player (left of center) and enemy (right of center) side by side.
+   Row 2: combat log at bottom-right. Applies at every screen width. */
 
 .fight-panel-bottom {
-  bottom: 72px;
+  top: 20vh;
+  right: 50%;
+  left: auto;
+  margin-right: 4px;
+  bottom: auto;
+  transform: none;
+}
+
+.fight-panel-top {
+  top: 20vh;
   left: 50%;
-  transform: translateX(-50%);
+  right: auto;
+  margin-left: 4px;
+  transform: none;
 }
 
 .fight-panel-log {
   bottom: 16px;
   right: 16px;
-}
-
-@media (max-width: 639px) {
-  /* Row 1: player (left) and enemy (right) side by side; row 2: combat log, centered. */
-  .fight-panel-bottom {
-    top: 56px;
-    left: 4px;
-    right: auto;
-    bottom: auto;
-    transform: none;
-  }
-
-  .fight-panel-top {
-    top: 56px;
-    left: auto;
-    right: 4px;
-    transform: none;
-  }
-
-  .fight-panel-log {
-    top: 290px;
-    left: 50%;
-    right: auto;
-    bottom: auto;
-    transform: translateX(-50%);
-  }
+  top: auto;
+  left: auto;
+  transform: none;
 }
 
 .replay-bar {

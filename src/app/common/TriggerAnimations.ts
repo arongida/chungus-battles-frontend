@@ -82,14 +82,12 @@ const luckyFindRaritySuffix: Record<number, string> = {
   5: 'mythic',
 };
 
-/** Higher rarities get a bigger fireworks celebration — more bursts staggered across the
- *  lucky-find text's 3.5s float (see `shopFloatUp` in styles.scss). Anything not listed here
- *  (common/rare/epic) falls back to DEFAULT_FIREWORKS_BURST_COUNT. */
+/** Only legendary and mythic lucky finds get fireworks — lower rarities just show the
+ *  floating text. Legendary gets 2 overlapping bursts, mythic gets 3. */
 const fireworksBurstCountByRaritySuffix: Record<string, number> = {
   legendary: 2,
   mythic: 3,
 };
-const DEFAULT_FIREWORKS_BURST_COUNT = 1;
 
 /** Stagger is shorter than the burst's own playtime (FIREWORKS_BURST_DURATION_MS) so
  *  consecutive bursts overlap — the next one starts while the previous is still fading. */
@@ -116,6 +114,25 @@ function spawnFireworksBurst(renderer: Renderer2, container: HTMLElement, rarity
   setTimeout(() => { if (fireworks.parentNode === container) renderer.removeChild(container, fireworks); }, FIREWORKS_BURST_DURATION_MS);
 }
 
+/** Draft-phase event notification — floats a message up from the bottom of the screen
+ *  (the full-width `#draft-log-floats` fixed container) instead of a Material snackbar
+ *  toast. Uses the same amber lucky-find aesthetic. */
+export function triggerDraftLogFloatingText(renderer: Renderer2, platformId: Object, text: string): void {
+  if (!isPlatformBrowser(platformId)) return;
+  const container = document.getElementById('draft-log-floats');
+  if (!container) {
+    console.warn('[TriggerAnimations] #draft-log-floats container not found');
+    return;
+  }
+  const el = renderer.createElement('div');
+  renderer.addClass(el, 'draft-log-float');
+  renderer.appendChild(el, renderer.createText(text));
+  // Randomise horizontal position so stacked messages don't overlap exactly.
+  renderer.setStyle(el, 'left', `${10 + Math.random() * 70}%`);
+  renderer.appendChild(container, el);
+  setTimeout(() => { if (el.parentNode === container) renderer.removeChild(container, el); }, 4000);
+}
+
 /** Draft-phase equivalent of the battle damage numbers — floats a message up from the
  *  specific shop card (see `#item-{{$index}}` in shop.component.html) instead of queuing
  *  a Material snackbar toast for lucky shop-roll upgrades.
@@ -140,12 +157,13 @@ export function triggerShopFloatingText(renderer: Renderer2, platformId: Object,
   renderer.appendChild(container, el);
   setTimeout(() => { if (el.parentNode === container) renderer.removeChild(container, el); }, 3500);
 
-  // Lucky-find fireworks — one or more overlapping bursts (more for rarer finds), tinted to
-  // match the rarity color (falls back to the text's default gold for common finds).
-  const fireworksClass = raritySuffix ? `vfx-fireworks--${raritySuffix}` : undefined;
-  const burstCount = raritySuffix ? (fireworksBurstCountByRaritySuffix[raritySuffix] ?? DEFAULT_FIREWORKS_BURST_COUNT) : DEFAULT_FIREWORKS_BURST_COUNT;
-  for (let i = 0; i < burstCount; i++) {
-    setTimeout(() => spawnFireworksBurst(renderer, container, fireworksClass, onFireworksBurst), i * FIREWORKS_BURST_STAGGER_MS);
+  // Lucky-find fireworks — legendary and mythic only; lower rarities just show the text.
+  const burstCount = raritySuffix ? (fireworksBurstCountByRaritySuffix[raritySuffix] ?? 0) : 0;
+  if (burstCount > 0) {
+    const fireworksClass = `vfx-fireworks--${raritySuffix}`;
+    for (let i = 0; i < burstCount; i++) {
+      setTimeout(() => spawnFireworksBurst(renderer, container, fireworksClass, onFireworksBurst), i * FIREWORKS_BURST_STAGGER_MS);
+    }
   }
 
   return true;
@@ -226,6 +244,41 @@ export function triggerGoldBurst(renderer: Renderer2, platformId: Object, player
   const container = document.getElementById(`damage-numbers-${playerId}`);
   if (!container) return;
   spawnFireworksBurst(renderer, container, undefined);
+}
+
+/** Full-screen fireworks celebration for major win events (version win, all-time win). Mounts
+ *  a temporary fixed overlay on `document.body`, scatters `burstCount` fireworks bursts at
+ *  random screen positions (staggered so they don't all land at once), then removes the overlay
+ *  once the last burst finishes. `onBurst` fires in the same tick each burst starts so the
+ *  caller can play a matching sound per burst rather than once for the whole sequence. */
+export function triggerCelebrationFireworks(renderer: Renderer2, platformId: Object, burstCount: number, onBurst?: () => void): void {
+  if (!isPlatformBrowser(platformId)) return;
+  const overlay = renderer.createElement('div');
+  renderer.addClass(overlay, 'celebration-vfx-layer');
+  renderer.appendChild(document.body, overlay);
+
+  const totalDuration = (burstCount - 1) * FIREWORKS_BURST_STAGGER_MS + FIREWORKS_BURST_DURATION_MS;
+  for (let i = 0; i < burstCount; i++) {
+    setTimeout(() => {
+      if (!overlay.isConnected) return;
+      const burst = renderer.createElement('div');
+      renderer.addClass(burst, 'vfx');
+      renderer.addClass(burst, 'vfx-fireworks');
+      // Random position across the viewport so bursts scatter rather than stacking
+      const left = 10 + Math.random() * 80; // 10%–90% from left
+      const top = 10 + Math.random() * 70;  // 10%–80% from top
+      renderer.setStyle(burst, 'left', `${left.toFixed(1)}%`);
+      renderer.setStyle(burst, 'top', `${top.toFixed(1)}%`);
+      // The existing sprite is centered via translate(-50%,-50%) in styles.scss; no extra
+      // transform needed here — position is absolute within the fixed overlay.
+      renderer.setStyle(burst, 'transform', 'translate(-50%, -50%)');
+      renderer.appendChild(overlay, burst);
+      onBurst?.();
+      setTimeout(() => { if (burst.parentNode === overlay) renderer.removeChild(overlay, burst); }, FIREWORKS_BURST_DURATION_MS);
+    }, i * FIREWORKS_BURST_STAGGER_MS);
+  }
+
+  setTimeout(() => { if (overlay.parentNode === document.body) renderer.removeChild(document.body, overlay); }, totalDuration + 100);
 }
 
 export type VfxKind = 'slash' | 'fire' | 'poison' | 'heal';

@@ -7,6 +7,9 @@ import { buildItemFromData } from '../../../common/utils/player-schema-builder';
 import { Player } from '../../../models/colyseus-schema/PlayerSchema';
 import { ItemCardComponent } from '../../../common/components/item-card/item-card.component';
 import { ItemHoverCardDirective } from '../../../common/directives/item-hover-card.directive';
+import { SeasonsService, SeasonInfo } from '../../../common/services/seasons.service';
+
+export type ActiveTab = 'items' | 'talents' | 'seasons';
 
 @Component({
   selector: 'app-encyclopedia',
@@ -20,7 +23,9 @@ export class EncyclopediaComponent implements OnInit {
   talentsData: TalentPreview[] = [];
   displayedItems: Item[] = [];
   displayedTalents: TalentPreview[] = [];
-  isItemsView = true;
+  seasonsData: SeasonInfo[] = [];
+  currentSeason = 0;
+  activeTab: ActiveTab = 'items';
   selectedClass: string | null = null;
   selectedTier: string | null = null;
   dummyPlayer: Player = new Player();
@@ -28,17 +33,21 @@ export class EncyclopediaComponent implements OnInit {
   constructor(
     @Inject(MAT_DIALOG_DATA) public dialogData: any,
     private cdr: ChangeDetectorRef,
+    private seasonsService: SeasonsService,
   ) {}
 
   async ngOnInit(): Promise<void> {
-    const [items, talents] = await Promise.all([
+    const [items, talents, seasons] = await Promise.all([
       this.fetchItems(),
       this.fetchTalents(),
+      this.fetchSeasons(),
     ]);
     this.itemsData = items;
     this.displayedItems = [...items];
     this.talentsData = talents;
     this.displayedTalents = [...talents];
+    this.seasonsData = seasons.seasons;
+    this.currentSeason = seasons.currentSeason;
     this.cdr.detectChanges();
   }
 
@@ -69,12 +78,16 @@ export class EncyclopediaComponent implements OnInit {
     }
   }
 
+  async fetchSeasons() {
+    return this.seasonsService.getSeasons();
+  }
+
   getItemImage(item: Item): string {
     return item.image ? item.image : 'assets/Item_ID_0_Empty.png';
   }
 
-  switchTab(isItems: boolean): void {
-    this.isItemsView = isItems;
+  switchTab(tab: ActiveTab): void {
+    this.activeTab = tab;
     this.applyFilters();
   }
 
@@ -89,14 +102,14 @@ export class EncyclopediaComponent implements OnInit {
   }
 
   applyFilters(): void {
-    if (this.isItemsView) {
+    if (this.activeTab === 'items') {
       this.displayedItems = this.itemsData.filter(item => {
         const matchesClass = !this.selectedClass ||
           item.tags.map((t: string) => t.toLowerCase()).includes(this.selectedClass!.toLowerCase());
         const matchesTier = !this.selectedTier || item.tier.toString() === this.selectedTier;
         return matchesClass && matchesTier;
       });
-    } else {
+    } else if (this.activeTab === 'talents') {
       this.displayedTalents = this.talentsData.filter(talent => {
         const matchesClass = !this.selectedClass ||
           talent.tags.map(t => t.toLowerCase()).includes(this.selectedClass!.toLowerCase());

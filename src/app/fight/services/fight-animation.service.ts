@@ -14,7 +14,6 @@ import {
 } from '../../models/types/MessageTypes';
 import {
   triggerAvatarHit,
-  triggerGoldBurst,
   triggerHpDamageFlash,
   triggerHpHealFlash,
   triggerItemActivation,
@@ -57,11 +56,6 @@ export class FightAnimationService {
    *  uses for the weapon-swing sound. */
   private lastEffectTime = new Map<string, number>();
   private readonly EFFECT_THROTTLE_MS = 120;
-  /** Gold gains at or above this amount get a celebratory fireworks burst in addition to
-   *  the floating number — reserved for bigger payouts (fight-end income, loss bonus,
-   *  jackpot-style talents) so routine +1 talent procs don't spam a burst every tick. */
-  private readonly GOLD_BURST_THRESHOLD = 5;
-
   private throttled(key: string): boolean {
     const now = performance.now();
     const last = this.lastEffectTime.get(key) ?? 0;
@@ -148,9 +142,6 @@ export class FightAnimationService {
 
     if (msg.gold && !this.throttled(`reward:${msg.playerId}`)) {
       this.sounds.playSound(SoundOptions.GOLD);
-      if (msg.gold >= this.GOLD_BURST_THRESHOLD) {
-        triggerGoldBurst(ctx.renderer, ctx.platformId, msg.playerId);
-      }
     }
   }
 

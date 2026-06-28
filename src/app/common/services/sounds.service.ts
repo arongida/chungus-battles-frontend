@@ -176,6 +176,8 @@ export enum SoundOptions {
   HEAL = 'HEAL',
   FIREWORK = 'FIREWORK',
   GOLD = 'GOLD',
+  CHEER = 'CHEER',
+  JEER = 'JEER',
 }
 
 /** Per-category volume multiplier on top of the master volume, to balance clips that
@@ -187,9 +189,11 @@ const SOUND_GAIN: Record<SoundOptions, number> = {
   [SoundOptions.HIT]: 1,
   [SoundOptions.BURN]: 1,
   [SoundOptions.POISON]: 1,
-  [SoundOptions.HEAL]: 0.4,
+  [SoundOptions.HEAL]: 0.28,
   [SoundOptions.FIREWORK]: 1,
   [SoundOptions.GOLD]: 0.6,
+  [SoundOptions.CHEER]: 0.8,
+  [SoundOptions.JEER]: 0.8,
 };
 
 /** Variant file pools per sound. Multiple entries are randomized on each `playSound`. */
@@ -219,9 +223,16 @@ const SOUND_FILES: Record<SoundOptions, string[]> = {
     'assets/sound/poison-bubble-3.mp3',
   ],
   [SoundOptions.HEAL]: ['assets/sound/heal-harp.mp3'],
-  [SoundOptions.FIREWORK]: ['assets/sound/firework-sparkle.mp3'],
+  [SoundOptions.FIREWORK]: [
+    'assets/sound/firework-bang-1.mp3',
+    'assets/sound/firework-bang-2.mp3',
+    'assets/sound/firework-bang-3.mp3',
+    'assets/sound/firework-bang-4.mp3',
+  ],
   [SoundOptions.GOLD]: [
     'assets/sound/coin-handle-1.mp3',
     'assets/sound/coin-handle-2.mp3',
   ],
+  [SoundOptions.CHEER]: ['assets/sound/crowd-cheer.mp3'],
+  [SoundOptions.JEER]: ['assets/sound/crowd-jeer.mp3'],
 };

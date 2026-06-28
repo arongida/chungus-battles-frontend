@@ -7,12 +7,16 @@ import { InfoContent } from '../../models/info-content';
 
 export interface HintModalResult {
   dontShowAgain: boolean;
+  /** True when the user tapped OK on an action-gating modal — caller should proceed with the action. */
+  proceed: boolean;
 }
 
 export interface HintModalData {
   content: InfoContent;
   /** Whether to offer the "Don't show again" checkbox. Omitted for on-demand opens (e.g. a help-icon tap), which re-show every time regardless of this choice. */
   showRemember: boolean;
+  /** When true, the modal gates a pending action: shows Cancel + OK buttons so the user can accept or reject the action. */
+  hasAction: boolean;
 }
 
 /**
@@ -31,6 +35,7 @@ export class HintModalComponent {
   readonly dontShowAgain = signal(false);
   readonly content: InfoContent;
   readonly showRemember: boolean;
+  readonly hasAction: boolean;
 
   constructor(
     @Inject(MAT_DIALOG_DATA) data: HintModalData,
@@ -38,6 +43,7 @@ export class HintModalComponent {
   ) {
     this.content = data.content;
     this.showRemember = data.showRemember;
+    this.hasAction = data.hasAction ?? false;
   }
 
   onDontShowAgainChange(event: MatCheckboxChange): void {
@@ -45,6 +51,10 @@ export class HintModalComponent {
   }
 
   ok(): void {
-    this.dialogRef.close({ dontShowAgain: this.dontShowAgain() });
+    this.dialogRef.close({ dontShowAgain: this.dontShowAgain(), proceed: true });
+  }
+
+  cancel(): void {
+    this.dialogRef.close({ dontShowAgain: false, proceed: false });
   }
 }

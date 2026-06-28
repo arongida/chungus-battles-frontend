@@ -27,7 +27,7 @@ import { Router, RouterLink } from '@angular/router';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { triggerAvatarHit } from '../../../common/TriggerAnimations';
+import { triggerAvatarHit, triggerCelebrationFireworks } from '../../../common/TriggerAnimations';
 import { RoundInfoComponent } from '../../../common/components/round-info/round-info.component';
 import { CharacterDetailsComponent } from '../../../common/components/character-details/character-details.component';
 import { SkillIconsComponent } from '../../../common/components/skill-icons/skill-icons.component';
@@ -85,6 +85,7 @@ export class FightRoomComponent implements OnInit {
   enemyBeingHit = signal(false);
   versionWin = signal(false);
   versionWins = signal(0);
+  versionWinSeason = signal(0);
   versionWinMinimized = signal(false);
   topWin = signal(false);
   topWinMinimized = signal(false);
@@ -96,6 +97,7 @@ export class FightRoomComponent implements OnInit {
   gameOverVisible = signal(false);
   gameOverMessage = signal('');
   gameOverMinimized = signal(false);
+  countdownText = signal<string | null>(null);
 
   // Set true by handleVersionWinContinue so the server's follow-up end_battle
   // navigates directly to draft without showing the battle result modal.
@@ -147,6 +149,8 @@ export class FightRoomComponent implements OnInit {
               if (p) this.endBattle(p.playerId, p.name, false, false);
               return;
             }
+            if (result === 'win') this.soundsService.playSound(SoundOptions.CHEER);
+            else if (result === 'lose') this.soundsService.playSound(SoundOptions.JEER);
             this.lossBonus.set(bonus);
             this.battleReplayId.set(replayId);
             this.battleResult.set(result);
@@ -160,6 +164,9 @@ export class FightRoomComponent implements OnInit {
             this.gameOver = true;
             this.battleOver = true;
             if (message.includes('#1')) {
+              this.soundsService.playSound(SoundOptions.CHEER);
+              triggerCelebrationFireworks(this.renderer, this.platformId, 7,
+                () => this.soundsService.playSound(SoundOptions.FIREWORK));
               this.topWin.set(true);
               this.topWinMinimized.set(false);
               localStorage.setItem('battleEndState', JSON.stringify({ type: 'top_win', message }));
@@ -173,17 +180,28 @@ export class FightRoomComponent implements OnInit {
             }
           },
           onVersionWin: (message) => {
+            this.soundsService.playSound(SoundOptions.CHEER);
+            triggerCelebrationFireworks(this.renderer, this.platformId, 4,
+              () => this.soundsService.playSound(SoundOptions.FIREWORK));
             this.versionWin.set(true);
             this.versionWinMinimized.set(false);
             this.versionWins.set(message.wins);
+            this.versionWinSeason.set(message.season ?? 0);
             this.battleOver = true;
-            localStorage.setItem('battleEndState', JSON.stringify({ type: 'version_win', wins: message.wins }));
+            localStorage.setItem('battleEndState', JSON.stringify({ type: 'version_win', wins: message.wins, season: message.season }));
             this.infoBoxService.setPageDefault(versionWinHint);
           },
         };
 
         room.onMessage('combat_log', (msg: CombatLogEntry) => {
           this.fightAnimationService.applyCombatLog(animCtx, msg);
+          if (msg.kind === 'countdown') {
+            const n = msg.text.match(/\d+/)?.[0];
+            if (n) this.countdownText.set(n);
+          } else if (msg.kind === 'fight_start') {
+            this.countdownText.set('Fight!');
+            setTimeout(() => this.countdownText.set(null), 800);
+          }
         });
 
         room.onMessage('attack', (message: number) => {
@@ -284,7 +302,7 @@ export class FightRoomComponent implements OnInit {
     const raw = localStorage.getItem('battleEndState');
     if (!raw) return;
     try {
-      const state = JSON.parse(raw) as { type: string; message?: string; wins?: number; result?: string; lossBonus?: number; replayId?: string | null };
+      const state = JSON.parse(raw) as { type: string; message?: string; wins?: number; season?: number; result?: string; lossBonus?: number; replayId?: string | null };
       const player = this.player();
       if (!player) return;
       if (state.type === 'game_over') {
@@ -309,6 +327,7 @@ export class FightRoomComponent implements OnInit {
         this.battleOver = true;
         this.versionWin.set(true);
         this.versionWins.set(state.wins ?? 0);
+        this.versionWinSeason.set(state.season ?? 0);
         this.infoBoxService.setPageDefault(versionWinHint);
       } else if (state.type === 'top_win') {
         this.gameOver = true;

@@ -23,7 +23,7 @@
       class="leaderboard-tab"
       [class.leaderboard-tab-active]="filterCurrentVersionOnly()"
       (click)="setVersionFilter(true)">
-      Latest Version
+      Season {{ currentSeason() || 'Current' }}
     </button>
     <button
       class="leaderboard-tab"

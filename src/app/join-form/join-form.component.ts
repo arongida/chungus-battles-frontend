@@ -8,6 +8,7 @@ import {
   PLATFORM_ID,
   Inject,
   OnInit,
+  signal,
 } from '@angular/core';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -24,6 +25,7 @@ import { ItemTrackingService } from '../common/services/item-tracking.service';
 import { MusicOptions, SoundsService } from '../common/services/sounds.service';
 import { InfoBoxService } from '../common/services/info-box.service';
 import { InfoEntry } from '../common/models/info-content';
+import { SeasonsService } from '../common/services/seasons.service';
 
 @Component({
   selector: 'app-join-form',
@@ -57,6 +59,7 @@ export class JoinFormComponent implements AfterViewInit, OnDestroy, OnInit {
     { icon: '💡', label: 'Tip', text: 'Your class picks a starting bonus and weapon — items can take you any direction.' },
   ];
   loading = false;
+  currentSeason = signal(0);
   intervalId: any;
   @ViewChild('fallingItemsContainer', { static: false })
   fallingItemsContainer!: ElementRef<HTMLDivElement>;
@@ -72,6 +75,7 @@ export class JoinFormComponent implements AfterViewInit, OnDestroy, OnInit {
     private itemTrackingService: ItemTrackingService,
     private soundsService: SoundsService,
     private infoBoxService: InfoBoxService,
+    private seasonsService: SeasonsService,
     @Inject(PLATFORM_ID) private platformId: Object,
   ) {}
 
@@ -82,6 +86,7 @@ export class JoinFormComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   ngOnInit() {
+    this.seasonsService.getSeasons().then(data => this.currentSeason.set(data.currentSeason));
     this.soundsService.playMusic(MusicOptions.DRAFT);
     this.infoBoxService.clearContent();
     this.infoBoxService.setPageDefault({

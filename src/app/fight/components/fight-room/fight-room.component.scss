@@ -1,51 +1,32 @@
 /* ── Fight panel positioning ─────────────────────────────── */
-
-.fight-panel-top {
-  top: 72px;
-  left: 50%;
-  transform: translateX(-50%);
-}
+/* Row 1: player (left of center) and enemy (right of center) side by side.
+   Row 2: combat log, centered below the pair.
+   Anchored with vh so the cluster sits near the viewport's vertical center
+   and scales sensibly across screen sizes. */
 
 .fight-panel-bottom {
-  bottom: 72px;
+  top: 20vh;
+  right: 50%;
+  left: auto;
+  margin-right: 4px;
+  bottom: auto;
+  transform: none;
+}
+
+.fight-panel-top {
+  top: 20vh;
   left: 50%;
-  transform: translateX(-50%);
+  right: auto;
+  margin-left: 4px;
+  transform: none;
 }
 
 .fight-panel-log {
   bottom: 16px;
   right: 16px;
-}
-
-@media (max-width: 639px) {
-  /* Row 1: player and enemy side by side, centered as a pair; row 2: combat log, centered.
-     Anchored with vh (not a fixed px) so the whole cluster sits nearer the vertical
-     center of the viewport instead of hugging the toolbar, while still scaling
-     sensibly across short and tall phones. */
-  .fight-panel-bottom {
-    top: 20vh;
-    right: 50%;
-    left: auto;
-    margin-right: 4px;
-    bottom: auto;
-    transform: none;
-  }
-
-  .fight-panel-top {
-    top: 20vh;
-    left: 50%;
-    right: auto;
-    margin-left: 4px;
-    transform: none;
-  }
-
-  .fight-panel-log {
-    top: 53vh;
-    left: 50%;
-    right: auto;
-    bottom: auto;
-    transform: translateX(-50%);
-  }
+  top: auto;
+  left: auto;
+  transform: none;
 }
 
 /* ── Game Over icon pulse ─────────────────────────────────── */
@@ -174,6 +155,23 @@
   }
 }
 
+/* ── Fight-start countdown overlay ───────────────────────── */
+
+.countdown-number {
+  font-size: clamp(6rem, 22vw, 14rem);
+  font-weight: 900;
+  color: #fde68a;
+  text-shadow: 0 0 24px rgba(245, 158, 11, 0.8), 0 4px 12px rgba(0, 0, 0, 0.7);
+  animation: countdownPop 0.9s ease-out;
+  user-select: none;
+}
+
+@keyframes countdownPop {
+  0%   { transform: scale(0.4); opacity: 0; }
+  30%  { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.9; }
+}
+
 /* ── Existing layout helpers ──────────────────────────────── */
 
 #round-info {
@@ -185,28 +183,16 @@
 
 #active-collections-player {
   position: fixed;
-  top: 1rem;
-  right: 50%;
+  top: 4rem;
+  right: auto;
+  left: 0.5rem;
   z-index: 1000;
 }
 
 #active-collections-enemy {
   position: fixed;
-  bottom: 1rem;
-  right: 50%;
+  bottom: 4rem;
+  right: auto;
+  left: 0.5rem;
   z-index: 1000;
-}
-
-@media (max-width: 640px) {
-  #active-collections-player {
-    right: auto;
-    left: 0.5rem;
-    top: 4rem;
-  }
-
-  #active-collections-enemy {
-    right: auto;
-    left: 0.5rem;
-    bottom: 4rem;
-  }
 }

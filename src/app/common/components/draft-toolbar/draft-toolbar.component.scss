@@ -2,6 +2,21 @@
   overflow: hidden !important;
 }
 
+/* Highlight the character panel when a shop item is dragged over it.
+   cdk-drop-list-receiving fires while approaching; shop-item-over tracks actual entry
+   since CDK removes cdk-drop-list-receiving once the item physically enters the list. */
+.char-panel-drop-zone.cdk-drop-list-receiving,
+.char-panel-drop-zone.shop-item-over {
+  outline: 2px solid #f59e0b;
+  border-radius: 6px;
+  box-shadow: 0 0 16px rgba(245, 158, 11, 0.4);
+}
+
+/* Suppress CDK's phantom placeholder element inside the buy-zone drop list */
+.char-panel-drop-zone ::ng-deep .cdk-drag-placeholder {
+  display: none !important;
+}
+
 /* 3-column grid: keeps the center column truly centered in the toolbar's
    full width regardless of how wide the gold/icon groups on either side are,
    without resorting to position:absolute (which fought the toolbar's own layout). */
@@ -54,6 +69,7 @@
   box-shadow: 0 2px 12px rgba(180, 120, 30, 0.3) !important;
   transition: box-shadow 0.2s ease, transform 0.1s ease !important;
   min-width: 48px !important;
+  min-height: 40px !important;
   width: auto;
   height: auto !important;
   padding: 4px 6px !important;

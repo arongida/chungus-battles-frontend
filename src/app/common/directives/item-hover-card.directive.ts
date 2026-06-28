@@ -17,6 +17,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { Overlay, OverlayRef } from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
 import { ItemCardComponent } from '../components/item-card/item-card.component';
+import { ItemComparisonOverlayComponent } from '../components/item-comparison-overlay/item-comparison-overlay.component';
 import Item from '../../models/colyseus-schema/ItemSchema';
 import { Player } from '../../models/colyseus-schema/PlayerSchema';
 import { InfoBoxService } from '../services/info-box.service';
@@ -39,6 +40,8 @@ export class ItemHoverCardDirective implements OnChanges, OnDestroy {
   @Input({ required: false }) isFreeLuckyFind = false;
   /** Optional hint to gate the touch overlay behind — first tap shows the hint once, later taps open the overlay. */
   @Input() hintContent?: InfoContent;
+  /** When true, the popped-out ItemCardComponent shows a "vs equipped" stat comparison. */
+  @Input() showComparison = false;
   @Output() buyFromPopup = new EventEmitter<void>();
   @Output() unequipFromPopup = new EventEmitter<void>();
 
@@ -98,8 +101,12 @@ export class ItemHoverCardDirective implements OnChanges, OnDestroy {
     if (this.overlayRef?.hasAttached()) {
       if (this.showGlow) this.restoreImage();
       this.closeOverlay();
+    } else if (this.hintContent) {
+      this.infoBoxService.runGated(this.hintContent, () => {
+        if (this.showGlow) this.applyGlow();
+        this.openTouchOverlay();
+      });
     } else {
-      if (this.hintContent && !this.infoBoxService.gateAction(this.hintContent)) return;
       if (this.showGlow) this.applyGlow();
       this.openTouchOverlay();
     }
@@ -109,7 +116,62 @@ export class ItemHoverCardDirective implements OnChanges, OnDestroy {
     if (this.overlayRef?.hasAttached()) return;
 
     const tier = this.item.tier < 10 ? this.item.tier : this.item.tier - 90;
+    const hasEquipped = this.showComparison && this.hasAnyEquippedInSlots();
 
+    if (hasEquipped) {
+      this.openComparisonOverlay();
+    } else {
+      this.openSingleCardOverlay(tier);
+    }
+  }
+
+  /**
+   * Comparison overlay — starts at single-card size showing the shop item + slot buttons.
+   * The ItemComparisonOverlayComponent resizes the CDK overlay when the user picks a slot.
+   */
+  private openComparisonOverlay(): void {
+    const vw = window.innerWidth;
+    const mainW = Math.min(260, Math.floor(vw * 0.52));
+    const mainH = Math.round(mainW * 340 / 260);
+    // Both cards are the same width in comparison mode; fit two in 96vw with a 10px gap.
+    const compW = Math.min(mainW, Math.floor((Math.min(vw * 0.96, 530) - 10) / 2));
+    const { BUTTON_AREA_H } = ItemComparisonOverlayComponent;
+    const singlePaneH = mainH + BUTTON_AREA_H;
+
+    this.overlayRef = this.overlay.create({
+      positionStrategy: this.overlay.position().global().centerHorizontally().centerVertically(),
+      scrollStrategy: this.overlay.scrollStrategies.reposition(),
+      hasBackdrop: true,
+      backdropClass: 'cdk-overlay-transparent-backdrop',
+      width: `${mainW}px`,
+      height: `${singlePaneH}px`,
+    });
+
+    this.overlayRef.backdropClick().subscribe(() => {
+      if (this.showGlow) this.restoreImage();
+      this.closeOverlay();
+    });
+
+    const portal = new ComponentPortal(ItemComparisonOverlayComponent, this.viewContainerRef);
+    const componentRef = this.overlayRef.attach(portal);
+    componentRef.setInput('item', this.item);
+    componentRef.setInput('player', this.hoverPlayer);
+    componentRef.setInput('isFreeLuckyFind', this.isFreeLuckyFind);
+    componentRef.setInput('mainCardWidth', mainW);
+    componentRef.setInput('comparisonCardWidth', compW);
+    componentRef.setInput('overlayRef', this.overlayRef);
+    componentRef.changeDetectorRef.detectChanges();
+    this.activeScrollEl = componentRef.location.nativeElement.querySelector('.item-card-details-scroll');
+
+    const buySub = componentRef.instance.buyClicked.subscribe(() => {
+      this.buyFromPopup.emit();
+      this.closeOverlay();
+    });
+    this.overlayRef.detachments().subscribe(() => buySub.unsubscribe());
+  }
+
+  /** Original single-card touch overlay. */
+  private openSingleCardOverlay(tier: number): void {
     this.overlayRef = this.overlay.create({
       positionStrategy: this.overlay.position().global().centerHorizontally().centerVertically(),
       scrollStrategy: this.overlay.scrollStrategies.reposition(),
@@ -149,6 +211,15 @@ export class ItemHoverCardDirective implements OnChanges, OnDestroy {
       buySub.unsubscribe();
       unequipSub.unsubscribe();
     });
+  }
+
+  /** True when at least one of the item's possible equip slots already has an item equipped. */
+  private hasAnyEquippedInSlots(): boolean {
+    if (this.item.equipped || !this.item.equipOptions) return false;
+    for (const slot of this.item.equipOptions) {
+      if (this.hoverPlayer.equippedItems.get(slot)) return true;
+    }
+    return false;
   }
 
   private openOverlay() {

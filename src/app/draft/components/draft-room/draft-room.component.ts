@@ -21,7 +21,6 @@ import {
 import {
   Talent,
 } from '../../../models/colyseus-schema/TalentSchema';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import {
   ItemCollection,
 } from '../../../models/colyseus-schema/ItemCollectionSchema';
@@ -40,7 +39,7 @@ import {
   SoundsService,
 } from '../../../common/services/sounds.service';
 import { RewardGainMessage, ShopFloatingMessage, TriggerItemMessage, TriggerTalentMessage } from '../../../models/types/MessageTypes';
-import { triggerGoldBurst, triggerShopFloatingText, triggerShowGoldNumber, triggerShowXpNumber } from '../../../common/TriggerAnimations';
+import { triggerDraftLogFloatingText, triggerGoldBurst, triggerShopFloatingText, triggerShowGoldNumber, triggerShowXpNumber } from '../../../common/TriggerAnimations';
 
 // Creates a typed Player from any schema object (typed or reflection-decoded generic).
 // Copies primitive backing fields and collection references; skips `baseStats` because
@@ -96,7 +95,6 @@ export class DraftRoomComponent implements OnInit {
 
   constructor(
     public draftService: DraftService,
-    private snackBar: MatSnackBar,
     private soundsService: SoundsService,
     private renderer: Renderer2,
     @Inject(PLATFORM_ID) private platformId: Object,
@@ -114,7 +112,7 @@ export class DraftRoomComponent implements OnInit {
         });
         room.onMessage('draft_log', (message: string) => {
           console.log('draft_log', message);
-          this.snackBar.open(message, 'Close', { duration: 5000, panelClass: 'chungus-snackbar' });
+          triggerDraftLogFloatingText(this.renderer, this.platformId, message);
         });
 
         // Lucky shop-roll upgrades float over the affected card instead of toasting. The

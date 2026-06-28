@@ -10,6 +10,9 @@
         Don't show again
       </mat-checkbox>
     }
+    @if (hasAction) {
+      <button mat-button class="chungus-modal-btn" (click)="cancel()">Cancel</button>
+    }
     <button mat-raised-button class="ok-button chungus-modal-btn" (click)="ok()">OK</button>
   </div>
 </div>

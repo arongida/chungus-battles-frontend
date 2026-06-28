@@ -1,63 +1,41 @@
-<div cdkDropListGroup
-     class="flex flex-col items-center h-full justify-evenly">
-  <div #gridRef cdkDropList
+<div class="flex flex-col items-center h-full justify-evenly">
+  <div cdkDropList
        [cdkDropListSortingDisabled]="true"
-       [cdkDropListEnterPredicate]="preventDropBack" class="shop-grid grid-cols-2 sm:grid-cols-3 gap-2 grid p-2 sm:p-4">
+       [cdkDropListConnectedTo]="['character-panel-buy-zone']"
+       class="shop-grid grid-cols-2 sm:grid-cols-3 gap-2 grid p-2 sm:p-4">
 
     @for (item of shop; track $index) {
-      <div #cardRef cdkDrag [cdkDragDisabled]="item.sold"
-           (cdkDragStarted)="cardDragStarted(item)"
-           (cdkDragReleased)="resetDrag(item)"
-           [cdkDragFreeDragPosition]="dragPosition"
-           (cdkDragExited)="onDragExited($event, cardRef, gridRef)"
-           class="overflow-hidden"
-      >
-
-        <div
-          [ngClass]="{'opacity-0':item.sold,'pointer-events-none':item.sold}"
-          [style.background-image]="'url(' + (isItemHovered(item) ? getGlowImage(item) : getItemImage(item)) + ')'"
-          id="item-{{ $index }}"
-          class="relative w-32 h-44 sm:w-44 sm:h-60 md:w-52 md:h-72 lg:w-60 lg:h-80 items-center bg-cover bg-center shadow-amber-700"
-          [appItemHoverCard]="item" [hoverPlayer]="player"
-          [touchOnly]="true"
-          [hoverCardDisabled]="draggingCard || buyingItem === item"
-          [hintContent]="getItemInfoHint(item)"
-          [isFreeLuckyFind]="isFreeLuckyFind(item)"
-          (buyFromPopup)="buyItem(item)"
-          [appInfoHint]="getItemInfoHint(item)" [gatesAction]="true"
-          (mouseenter)="hoveredItem = item" (mouseleave)="hoveredItem = null">
-
-<app-item-card [item]="item" [player]="player"
-                         [setTooltipBasedOnInventory]="true"
-                         [showDetails]="isItemHovered(item)"
-                         [showBuyButton]="isItemHovered(item)"
-[isFreeLuckyFind]="isFreeLuckyFind(item)"
-                         (buyClicked)="buyItem(item)"></app-item-card>
-
-
+      <!-- Wrapper preserves the grid cell when CDK sets display:none on the cdkDrag element -->
+      <div class="w-32 h-44 sm:w-44 sm:h-60 md:w-52 md:h-72 lg:w-60 lg:h-80">
+        <div cdkDrag [cdkDragData]="item" [cdkDragDisabled]="item.sold"
+             (cdkDragStarted)="cardDragStarted(item)"
+             (cdkDragReleased)="resetDrag(item)"
+             class="overflow-hidden w-full h-full"
+        >
+          <div
+            [ngClass]="{'opacity-0':item.sold,'pointer-events-none':item.sold}"
+            [style.background-image]="'url(' + (isItemHovered(item) ? getGlowImage(item) : getItemImage(item)) + ')'"
+            id="item-{{ $index }}"
+            class="relative w-full h-full items-center bg-cover bg-center shadow-amber-700"
+            [appItemHoverCard]="item" [hoverPlayer]="player"
+            [touchOnly]="true"
+            [hoverCardDisabled]="draggingCard || buyingItem === item"
+            [hintContent]="getItemInfoHint(item)"
+            [isFreeLuckyFind]="isFreeLuckyFind(item)"
+            [showComparison]="true"
+            (buyFromPopup)="buyItem(item)"
+            [appInfoHint]="getItemInfoHint(item)" [gatesAction]="true"
+            (mouseenter)="hoveredItem = item" (mouseleave)="hoveredItem = null">
+            <app-item-card [item]="item" [player]="player"
+                           [setTooltipBasedOnInventory]="true"
+                           [showDetails]="isItemHovered(item)"
+                           [showBuyButton]="isItemHovered(item)"
+                           [isFreeLuckyFind]="isFreeLuckyFind(item)"
+                           (buyClicked)="buyItem(item)"></app-item-card>
+          </div>
         </div>
-
       </div>
     }
-  </div>
-
-  <div
-    class="fixed -bottom-20 md:-bottom-30 lg:-bottom-40 items-center justify-center w-screen opacity-0 flex flex-col"
-    [ngClass]="{'opacity-80':draggingCard}">
-
-    <div id="drop-zone" [cdkDropListSortingDisabled]="true"
-         (cdkDropListExited)="onDragExitFromBuyZone()"
-         class="rounded-full shadow-yellow-300 transition-colors w-3/4 h-40 md:h-48 lg:h-64 flex justify-center items-center z-10 flex-col relative"
-         cdkDropList
-         [cdkDropListEnterPredicate]="canBuyItemPredicate"
-         [ngClass]="{'shadow-2xl': tempCard, 'bg-green-600': canBuyItem(draggedCard), 'bg-red-600': !canBuyItem(draggedCard)}"
-         (cdkDropListDropped)="onDrop($event)">
-
-      <div
-        class="absolute top-8 md:top-10 lg:top-12 text-center bg-black text-white px-2 py-1 rounded"> {{ getBuyingTooltip() }}
-      </div>
-
-    </div>
   </div>
 
 

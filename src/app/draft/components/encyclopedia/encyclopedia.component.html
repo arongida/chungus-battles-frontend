@@ -6,36 +6,40 @@
   <div class="enc-divider"></div>
 
   <div class="enc-tabs">
-    <button class="enc-tab" [class.active]="isItemsView"
-      (click)="switchTab(true)">Items</button>
-    <button class="enc-tab" [class.active]="!isItemsView"
-      (click)="switchTab(false)">Talents</button>
+    <button class="enc-tab" [class.active]="activeTab === 'items'"
+      (click)="switchTab('items')">Items</button>
+    <button class="enc-tab" [class.active]="activeTab === 'talents'"
+      (click)="switchTab('talents')">Talents</button>
+    <button class="enc-tab" [class.active]="activeTab === 'seasons'"
+      (click)="switchTab('seasons')">Seasons</button>
   </div>
   <div class="enc-divider"></div>
 
-  <div class="enc-filters">
-    <select #classSelect class="enc-select"
-      (change)="filterByClass(classSelect.value)">
-      <option value="">All classes</option>
-      <option value="warrior">Warrior</option>
-      <option value="rogue">Rogue</option>
-      <option value="merchant">Merchant</option>
-    </select>
-    <select #tierSelect class="enc-select"
-      (change)="filterByTier(tierSelect.value)">
-      <option value="">All tiers</option>
-      <option value="1">Tier 1</option>
-      <option value="2">Tier 2</option>
-      <option value="3">Tier 3</option>
-      <option value="4">Tier 4</option>
-      <option value="5">Tier 5</option>
-    </select>
-  </div>
-  <div class="enc-divider"></div>
+  @if (activeTab !== 'seasons') {
+    <div class="enc-filters">
+      <select #classSelect class="enc-select"
+        (change)="filterByClass(classSelect.value)">
+        <option value="">All classes</option>
+        <option value="warrior">Warrior</option>
+        <option value="rogue">Rogue</option>
+        <option value="merchant">Merchant</option>
+      </select>
+      <select #tierSelect class="enc-select"
+        (change)="filterByTier(tierSelect.value)">
+        <option value="">All tiers</option>
+        <option value="1">Tier 1</option>
+        <option value="2">Tier 2</option>
+        <option value="3">Tier 3</option>
+        <option value="4">Tier 4</option>
+        <option value="5">Tier 5</option>
+      </select>
+    </div>
+    <div class="enc-divider"></div>
+  }
 
   <div class="enc-content">
 
-    @if (isItemsView) {
+    @if (activeTab === 'items') {
       <div class="enc-items-grid">
         @for (item of displayedItems; track $index) {
           <div class="enc-item-wrapper"
@@ -46,7 +50,7 @@
           </div>
         }
       </div>
-    } @else {
+    } @else if (activeTab === 'talents') {
       <div class="enc-talents-list">
         @for (talent of displayedTalents; track $index) {
           <div class="enc-talent-card">
@@ -64,6 +68,32 @@
               <div class="enc-talent-tier">Tier {{ talent.tier }}</div>
             </div>
           </div>
+        }
+      </div>
+    } @else {
+      <div class="enc-seasons-list">
+        @for (season of seasonsData; track season.number) {
+          <div class="enc-season-card" [class.enc-season-card--current]="season.number === currentSeason">
+            <div class="enc-season-header">
+              <span class="enc-season-number">Season {{ season.number }}</span>
+              <span class="enc-season-name">{{ season.name }}</span>
+              @if (season.number === currentSeason) {
+                <span class="enc-season-badge">Current</span>
+              }
+            </div>
+            @if (season.changes.length > 0) {
+              <ul class="enc-season-changes">
+                @for (change of season.changes; track $index) {
+                  <li>{{ change }}</li>
+                }
+              </ul>
+            } @else {
+              <p class="enc-season-empty">Season just started — check back for balance notes.</p>
+            }
+          </div>
+        }
+        @if (seasonsData.length === 0) {
+          <p class="enc-talent-desc" style="padding: 1rem;">Loading seasons…</p>
         }
       </div>
     }

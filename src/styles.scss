@@ -297,6 +297,16 @@ body {
   filter: hue-rotate(0deg) saturate(1.5);
 }
 
+/** Fixed full-viewport overlay for end-of-run fireworks celebrations (version win, all-time win).
+ *  Mounted on document.body by triggerCelebrationFireworks() so it appears above everything. */
+.celebration-vfx-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  overflow: hidden;
+}
+
 .vfx-poison {
   width: 110px;
   height: 110px;
@@ -352,6 +362,23 @@ body {
     opacity: 0;
     transform: translate(-50%, -40px);
   }
+}
+
+// Draft-phase event text — floats up from the bottom of the screen (full-width
+// fixed container), matching the amber lucky-find aesthetic.
+.draft-log-float {
+  @apply absolute text-amber-300 text-sm font-extrabold whitespace-nowrap pointer-events-none z-20;
+  bottom: 0;
+  animation: draftLogFloatUp 4s ease-in forwards;
+  text-shadow: 0 0 6px rgba(0, 0, 0, 0.9), 0 1px 4px #000;
+  -webkit-text-stroke: 0.5px #d97706;
+}
+
+@keyframes draftLogFloatUp {
+  0%   { opacity: 0;   transform: translateY(0); }
+  12%  { opacity: 1;   transform: translateY(-12px); }
+  75%  { opacity: 1; }
+  100% { opacity: 0;   transform: translateY(-40vh); }
 }
 
 @keyframes weapon-flash {
@@ -423,6 +450,25 @@ body {
 
 .cdk-drag-preview {
   z-index: 9999 !important;
+}
+
+/* Drag ghost for inventory items — square icon matching the equipment slot look */
+.cd-item-drag-preview {
+  width: 72px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(10, 10, 15, 0.97);
+  border: 1px solid #f59e0b;
+  border-radius: 4px;
+  box-shadow: 0 4px 16px rgba(180, 120, 30, 0.5), 0 2px 8px rgba(0, 0, 0, 0.8);
+
+  img {
+    max-width: 58px;
+    max-height: 58px;
+    object-fit: contain;
+  }
 }
 
 .cdk-overlay-backdrop{

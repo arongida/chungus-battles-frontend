@@ -82,14 +82,12 @@ const luckyFindRaritySuffix: Record<number, string> = {
   5: 'mythic',
 };
 
-/** Higher rarities get a bigger fireworks celebration — more bursts staggered across the
- *  lucky-find text's 3.5s float (see `shopFloatUp` in styles.scss). Anything not listed here
- *  (common/rare/epic) falls back to DEFAULT_FIREWORKS_BURST_COUNT. */
+/** Only legendary and mythic lucky finds get fireworks — lower rarities just show the
+ *  floating text. Legendary gets 2 overlapping bursts, mythic gets 3. */
 const fireworksBurstCountByRaritySuffix: Record<string, number> = {
   legendary: 2,
   mythic: 3,
 };
-const DEFAULT_FIREWORKS_BURST_COUNT = 1;
 
 /** Stagger is shorter than the burst's own playtime (FIREWORKS_BURST_DURATION_MS) so
  *  consecutive bursts overlap — the next one starts while the previous is still fading. */
@@ -140,12 +138,13 @@ export function triggerShopFloatingText(renderer: Renderer2, platformId: Object,
   renderer.appendChild(container, el);
   setTimeout(() => { if (el.parentNode === container) renderer.removeChild(container, el); }, 3500);
 
-  // Lucky-find fireworks — one or more overlapping bursts (more for rarer finds), tinted to
-  // match the rarity color (falls back to the text's default gold for common finds).
-  const fireworksClass = raritySuffix ? `vfx-fireworks--${raritySuffix}` : undefined;
-  const burstCount = raritySuffix ? (fireworksBurstCountByRaritySuffix[raritySuffix] ?? DEFAULT_FIREWORKS_BURST_COUNT) : DEFAULT_FIREWORKS_BURST_COUNT;
-  for (let i = 0; i < burstCount; i++) {
-    setTimeout(() => spawnFireworksBurst(renderer, container, fireworksClass, onFireworksBurst), i * FIREWORKS_BURST_STAGGER_MS);
+  // Lucky-find fireworks — legendary and mythic only; lower rarities just show the text.
+  const burstCount = raritySuffix ? (fireworksBurstCountByRaritySuffix[raritySuffix] ?? 0) : 0;
+  if (burstCount > 0) {
+    const fireworksClass = `vfx-fireworks--${raritySuffix}`;
+    for (let i = 0; i < burstCount; i++) {
+      setTimeout(() => spawnFireworksBurst(renderer, container, fireworksClass, onFireworksBurst), i * FIREWORKS_BURST_STAGGER_MS);
+    }
   }
 
   return true;

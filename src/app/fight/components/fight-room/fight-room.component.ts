@@ -96,6 +96,7 @@ export class FightRoomComponent implements OnInit {
   gameOverVisible = signal(false);
   gameOverMessage = signal('');
   gameOverMinimized = signal(false);
+  countdownText = signal<string | null>(null);
 
   // Set true by handleVersionWinContinue so the server's follow-up end_battle
   // navigates directly to draft without showing the battle result modal.
@@ -192,6 +193,13 @@ export class FightRoomComponent implements OnInit {
 
         room.onMessage('combat_log', (msg: CombatLogEntry) => {
           this.fightAnimationService.applyCombatLog(animCtx, msg);
+          if (msg.kind === 'countdown') {
+            const n = msg.text.match(/\d+/)?.[0];
+            if (n) this.countdownText.set(n);
+          } else if (msg.kind === 'fight_start') {
+            this.countdownText.set('Fight!');
+            setTimeout(() => this.countdownText.set(null), 800);
+          }
         });
 
         room.onMessage('attack', (message: number) => {

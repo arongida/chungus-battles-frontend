@@ -52,6 +52,13 @@
 <app-round-info [player]="player()!"></app-round-info>
 }
 
+<!-- Fight-start countdown overlay -->
+@if (countdownText()) {
+  <div class="fixed inset-0 z-[9998] flex items-center justify-center pointer-events-none">
+    <span class="countdown-number">{{ countdownText() }}</span>
+  </div>
+}
+
 <!-- Battle result (win / loss / draw) -->
 @if (battleResultVisible() && !battleResultMinimized()) {
 <div class="fixed inset-0 z-[9999] flex items-center justify-center chungus-backdrop">

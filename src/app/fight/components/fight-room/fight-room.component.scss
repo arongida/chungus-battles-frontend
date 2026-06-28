@@ -155,6 +155,23 @@
   }
 }
 
+/* ── Fight-start countdown overlay ───────────────────────── */
+
+.countdown-number {
+  font-size: clamp(6rem, 22vw, 14rem);
+  font-weight: 900;
+  color: #fde68a;
+  text-shadow: 0 0 24px rgba(245, 158, 11, 0.8), 0 4px 12px rgba(0, 0, 0, 0.7);
+  animation: countdownPop 0.9s ease-out;
+  user-select: none;
+}
+
+@keyframes countdownPop {
+  0%   { transform: scale(0.4); opacity: 0; }
+  30%  { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.9; }
+}
+
 /* ── Existing layout helpers ──────────────────────────────── */
 
 #round-info {

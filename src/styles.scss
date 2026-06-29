@@ -367,18 +367,25 @@ body {
 // Draft-phase event text — floats up from the bottom of the screen (full-width
 // fixed container), matching the amber lucky-find aesthetic.
 .draft-log-float {
-  @apply absolute text-amber-300 text-sm font-extrabold whitespace-nowrap pointer-events-none z-20;
+  @apply absolute text-amber-300 font-extrabold pointer-events-none z-20;
   bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: clamp(0.65rem, 3vw, 0.875rem);
+  white-space: nowrap;
+  max-width: 90vw;
+  overflow: hidden;
+  text-overflow: ellipsis;
   animation: draftLogFloatUp 4s ease-in forwards;
   text-shadow: 0 0 6px rgba(0, 0, 0, 0.9), 0 1px 4px #000;
   -webkit-text-stroke: 0.5px #d97706;
 }
 
 @keyframes draftLogFloatUp {
-  0%   { opacity: 0;   transform: translateY(0); }
-  12%  { opacity: 1;   transform: translateY(-12px); }
-  75%  { opacity: 1; }
-  100% { opacity: 0;   transform: translateY(-40vh); }
+  0%   { opacity: 0;   transform: translateX(-50%) translateY(0); }
+  12%  { opacity: 1;   transform: translateX(-50%) translateY(-12px); }
+  75%  { opacity: 1;   transform: translateX(-50%) translateY(-30vh); }
+  100% { opacity: 0;   transform: translateX(-50%) translateY(-40vh); }
 }
 
 @keyframes weapon-flash {

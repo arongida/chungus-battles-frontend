@@ -127,8 +127,6 @@ export function triggerDraftLogFloatingText(renderer: Renderer2, platformId: Obj
   const el = renderer.createElement('div');
   renderer.addClass(el, 'draft-log-float');
   renderer.appendChild(el, renderer.createText(text));
-  // Randomise horizontal position so stacked messages don't overlap exactly.
-  renderer.setStyle(el, 'left', `${10 + Math.random() * 70}%`);
   renderer.appendChild(container, el);
   setTimeout(() => { if (el.parentNode === container) renderer.removeChild(container, el); }, 4000);
 }

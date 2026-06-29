@@ -39,7 +39,7 @@ import {
   SoundsService,
 } from '../../../common/services/sounds.service';
 import { RewardGainMessage, ShopFloatingMessage, TriggerItemMessage, TriggerTalentMessage } from '../../../models/types/MessageTypes';
-import { triggerDraftLogFloatingText, triggerGoldBurst, triggerShopFloatingText, triggerShowGoldNumber, triggerShowXpNumber } from '../../../common/TriggerAnimations';
+import { triggerDraftLogFloatingText, triggerShopFloatingText, triggerShowGoldNumber, triggerShowXpNumber } from '../../../common/TriggerAnimations';
 
 // Creates a typed Player from any schema object (typed or reflection-decoded generic).
 // Copies primitive backing fields and collection references; skips `baseStats` because
@@ -91,7 +91,6 @@ export class DraftRoomComponent implements OnInit {
    *  The floating number itself is never throttled — each one carries the real amount gained. */
   private lastRewardSoundTime = new Map<number, number>();
   private static readonly REWARD_SOUND_THROTTLE_MS = 120;
-  private static readonly GOLD_BURST_THRESHOLD = 5;
 
   constructor(
     public draftService: DraftService,
@@ -185,9 +184,6 @@ export class DraftRoomComponent implements OnInit {
     this.lastRewardSoundTime.set(message.playerId, now);
 
     this.soundsService.playSound(SoundOptions.GOLD);
-    if (message.gold >= DraftRoomComponent.GOLD_BURST_THRESHOLD) {
-      triggerGoldBurst(this.renderer, this.platformId, message.playerId);
-    }
   }
 
   /** Retries queued shop_floating messages once per state change (deferred one frame so the

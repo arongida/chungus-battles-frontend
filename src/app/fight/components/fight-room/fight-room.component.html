@@ -47,6 +47,31 @@
   <button class="reset-layout-btn" (click)="resetPanelLayout()" title="Reset panel layout">⤢</button>
 }
 
+<!-- Active skill — player charge bar + cast button -->
+@if (player() && !battleOver) {
+  <div class="active-skill-dock">
+    <div class="skill-charge-wrap">
+      <div class="skill-charge-track">
+        <div class="skill-charge-fill" [style.width.%]="playerSkillCharge()"></div>
+        @if (skillReady()) {
+          <span class="skill-charge-label ready">READY</span>
+        } @else {
+          <span class="skill-charge-label">{{ playerSkillCharge() }}%</span>
+        }
+      </div>
+    </div>
+    <button
+      class="active-skill-btn"
+      [class.skill-ready]="skillReady()"
+      [disabled]="!skillReady()"
+      [matTooltip]="activeSkillTooltip()"
+      matTooltipPosition="above"
+      (click)="useActiveSkill()">
+      ⚡ {{ activeSkillName() }}
+    </button>
+  </div>
+}
+
 
 @if (player()) {
 <app-round-info [player]="player()!"></app-round-info>

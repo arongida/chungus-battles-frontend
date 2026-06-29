@@ -79,6 +79,26 @@
     </div>
   }
 
+  <!-- Active-skill charge bars (read-only in replay) -->
+  @if (player()) {
+    <div class="replay-skill-dock">
+      <div class="replay-skill-row">
+        <span class="replay-skill-name">{{ player()?.avatarUrl?.includes('warrior') ? 'Iron Shield' : player()?.avatarUrl?.includes('thief') ? 'Venom Burst' : 'Golden Mend' }}</span>
+        <div class="replay-charge-track">
+          <div class="replay-charge-fill" [style.width.%]="playerSkillCharge()"></div>
+        </div>
+        <span class="replay-charge-pct">{{ playerSkillCharge() }}%</span>
+      </div>
+      <div class="replay-skill-row enemy">
+        <span class="replay-skill-name enemy">{{ enemy()?.avatarUrl?.includes('warrior') ? 'Iron Shield' : enemy()?.avatarUrl?.includes('thief') ? 'Venom Burst' : 'Golden Mend' }}</span>
+        <div class="replay-charge-track enemy">
+          <div class="replay-charge-fill enemy" [style.width.%]="enemySkillCharge()"></div>
+        </div>
+        <span class="replay-charge-pct">{{ enemySkillCharge() }}%</span>
+      </div>
+    </div>
+  }
+
   <!-- Version mismatch banner -->
   @if (versionMismatch()) {
     <div class="version-banner fixed bottom-16 left-1/2 -translate-x-1/2 z-30">

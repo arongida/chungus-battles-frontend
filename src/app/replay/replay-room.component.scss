@@ -114,3 +114,68 @@
   font-size: 0.75rem;
   padding: 6px 14px;
 }
+
+/* ── Replay active-skill charge bars ───────────────────────────── */
+
+.replay-skill-dock {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1050;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.replay-skill-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  .replay-skill-name {
+    font-size: 0.6rem;
+    font-weight: 700;
+    color: #fbbf24;
+    letter-spacing: 0.05em;
+    width: 74px;
+    text-align: right;
+
+    &.enemy {
+      color: var(--cm-text-muted);
+    }
+  }
+
+  .replay-charge-track {
+    position: relative;
+    width: 120px;
+    height: 8px;
+    background: rgba(0, 0, 0, 0.55);
+    border: 1px solid var(--cm-border);
+    border-radius: 4px;
+    overflow: hidden;
+
+    &.enemy {
+      opacity: 0.6;
+    }
+  }
+
+  .replay-charge-fill {
+    position: absolute;
+    inset: 0;
+    height: 100%;
+    background: linear-gradient(90deg, #b45309, #f59e0b);
+    border-radius: 4px;
+    transition: width 120ms linear;
+
+    &.enemy {
+      background: linear-gradient(90deg, #6b21a8, #a855f7);
+    }
+  }
+
+  .replay-charge-pct {
+    font-size: 0.55rem;
+    color: var(--cm-text-muted);
+    width: 24px;
+  }
+}

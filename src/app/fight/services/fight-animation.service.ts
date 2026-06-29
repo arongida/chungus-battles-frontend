@@ -8,6 +8,8 @@ import {
   InvulnerableMessage,
   InvulnerableStateMessage,
   RewardGainMessage,
+  SkillChargeMessage,
+  SkillUsedMessage,
   TriggerItemMessage,
   TriggerTalentMessage,
   VersionWinMessage,
@@ -45,6 +47,10 @@ export interface AnimationContext {
   applyHpDelta?: (playerId: number, damage: number, healing: number) => void;
   /** Replay-only: mutates the Player signal's invincible flag, since there is no Colyseus schema sync. */
   setInvincible?: (playerId: number, invincible: boolean) => void;
+  /** Called on every skill_charge broadcast to update the charge bar UI (live and replay). */
+  onSkillCharge?: (playerId: number, charge: number) => void;
+  /** Called when a skill fires so the UI can play a cast flash. */
+  onSkillUsed?: (playerId: number, skillName: string) => void;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -161,6 +167,14 @@ export class FightAnimationService {
     triggerAvatarHit(playerId);
   }
 
+  applySkillCharge(ctx: AnimationContext, msg: SkillChargeMessage): void {
+    ctx.onSkillCharge?.(msg.playerId, msg.charge);
+  }
+
+  applySkillUsed(ctx: AnimationContext, msg: SkillUsedMessage): void {
+    ctx.onSkillUsed?.(msg.playerId, msg.skillName);
+  }
+
   /** Routes a raw replay event to the correct apply method. */
   dispatch(ctx: AnimationContext, type: string, payload: any): void {
     switch (type) {
@@ -173,6 +187,8 @@ export class FightAnimationService {
       case 'reward_gain':     this.applyReward(ctx, payload as RewardGainMessage); break;
       case 'trigger_talent':  this.applyTriggerTalent(ctx, payload as TriggerTalentMessage); break;
       case 'trigger_item':    this.applyTriggerItem(ctx, payload as TriggerItemMessage); break;
+      case 'skill_charge':    this.applySkillCharge(ctx, payload as SkillChargeMessage); break;
+      case 'skill_used':      this.applySkillUsed(ctx, payload as SkillUsedMessage); break;
       case 'end_battle':      ctx.onEndBattle?.(payload as EndBattleMessage); break;
       case 'game_over':       ctx.onGameOver?.(payload as string); break;
       case 'version_win':     ctx.onVersionWin?.(payload as VersionWinMessage); break;

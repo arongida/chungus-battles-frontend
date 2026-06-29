@@ -112,6 +112,8 @@ export class ReplayRoomComponent implements OnInit, AfterViewInit, OnDestroy {
   entries = signal<CombatLogEntry[]>([]);
   playerBeingHit = signal(false);
   enemyBeingHit = signal(false);
+  playerSkillCharge = signal(0);
+  enemySkillCharge  = signal(0);
 
   loading = signal(true);
   error = signal<string | null>(null);
@@ -238,6 +240,18 @@ export class ReplayRoomComponent implements OnInit, AfterViewInit, OnDestroy {
           e.invincible = invincible;
           this.enemy.set(e);
         }
+      },
+      onSkillCharge: (playerId, charge) => {
+        const p = this.player();
+        if (p && p.playerId === playerId) {
+          this.playerSkillCharge.set(charge);
+        } else {
+          this.enemySkillCharge.set(charge);
+        }
+      },
+      onSkillUsed: (_playerId, _skillName) => {
+        // Replay: charge bars already reset via the 0 skill_charge broadcast.
+        // No sounds in replay mode.
       },
     };
   }

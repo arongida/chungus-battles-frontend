@@ -57,6 +57,20 @@ export type EndBattleMessage = {
   replayId?: string;
 };
 
+/** Broadcast every ~100ms during a fight so the client can animate the
+ *  active-skill charge bar for both the player and the enemy. */
+export type SkillChargeMessage = {
+  playerId: number;
+  /** Integer 0-100. */
+  charge: number;
+};
+
+/** Broadcast once when a player's active skill fires. */
+export type SkillUsedMessage = {
+  playerId: number;
+  skillName: string;
+};
+
 /** Draft-phase lucky shop-roll announcement — floats over the shop card at `slot`
  *  instead of a snackbar toast (see TriggerAnimations.triggerShopFloatingText). */
 export type ShopFloatingMessage = {

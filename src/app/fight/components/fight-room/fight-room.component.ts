@@ -1,5 +1,6 @@
 import {
   Component,
+  computed,
   effect,
   Inject,
   OnInit,
@@ -16,6 +17,8 @@ import {
   DamageMessage,
   InvulnerableMessage,
   RewardGainMessage,
+  SkillChargeMessage,
+  SkillUsedMessage,
   TriggerTalentMessage,
   TriggerItemMessage,
 } from '../../../models/types/MessageTypes';
@@ -99,6 +102,29 @@ export class FightRoomComponent implements OnInit {
   gameOverMinimized = signal(false);
   countdownText = signal<string | null>(null);
 
+  // ── Active-skill charge bars ────────────────────────────────────────────────
+  playerSkillCharge = signal(0);
+  enemySkillCharge  = signal(0);
+  /** True when the player's charge bar is full and the button should glow. */
+  skillReady = computed(() => this.playerSkillCharge() >= 100);
+  /** Display name of the active skill, derived from the player's avatar/class. */
+  activeSkillName = computed(() => {
+    const p = this.player();
+    if (!p) return 'Active Skill';
+    if (p.avatarUrl?.includes('warrior')) return 'Iron Shield';
+    if (p.avatarUrl?.includes('thief'))   return 'Venom Burst';
+    if (p.avatarUrl?.includes('merchant')) return 'Golden Mend';
+    return 'Active Skill';
+  });
+  activeSkillTooltip = computed(() => {
+    const p = this.player();
+    if (!p) return '';
+    if (p.avatarUrl?.includes('warrior'))  return 'Become invincible for 2s';
+    if (p.avatarUrl?.includes('thief'))    return 'Poison the enemy for 20 stacks';
+    if (p.avatarUrl?.includes('merchant')) return 'Heal based on your current gold';
+    return '';
+  });
+
   // Set true by handleVersionWinContinue so the server's follow-up end_battle
   // navigates directly to draft without showing the battle result modal.
   private suppressNextBattleResult = false;
@@ -136,6 +162,23 @@ export class FightRoomComponent implements OnInit {
           entries: this.entries,
           triggerAttack: (id) => this.triggerAttack(id),
           triggerDamagedAvatar: (id) => this.triggerDamagedAvatarImage(id),
+          onSkillCharge: (playerId, charge) => {
+            const p = this.player();
+            if (p && p.playerId === playerId) {
+              this.playerSkillCharge.set(charge);
+            } else {
+              this.enemySkillCharge.set(charge);
+            }
+          },
+          onSkillUsed: (playerId, skillName) => {
+            const p = this.player();
+            if (p && p.playerId === playerId) {
+              this.playerSkillCharge.set(0);
+              this.soundsService.playSound(SoundOptions.CLICK);
+            }
+            // enemy skill_used: bar already reset via the 0 skill_charge broadcast from server
+            console.log(`[ActiveSkill] ${playerId === p?.playerId ? 'Player' : 'Enemy'} used ${skillName}`);
+          },
           onEndBattle: (msg) => {
             const result = msg?.result ?? 'win';
             const bonus = msg?.lossBonus ?? 0;
@@ -234,6 +277,14 @@ export class FightRoomComponent implements OnInit {
 
         room.onMessage('trigger_item', (message: TriggerItemMessage) => {
           this.fightAnimationService.applyTriggerItem(animCtx, message);
+        });
+
+        room.onMessage('skill_charge', (message: SkillChargeMessage) => {
+          this.fightAnimationService.applySkillCharge(animCtx, message);
+        });
+
+        room.onMessage('skill_used', (message: SkillUsedMessage) => {
+          this.fightAnimationService.applySkillUsed(animCtx, message);
         });
 
         room.onMessage('game_over', (message: string) => {
@@ -383,5 +434,11 @@ export class FightRoomComponent implements OnInit {
 
   resetPanelLayout(): void {
     this.panelLayoutService.reset();
+  }
+
+  useActiveSkill(): void {
+    if (!this.skillReady() || this.battleOver) return;
+    const room = this.fightService.room();
+    if (room) room.send('use_active_skill');
   }
 }

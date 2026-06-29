@@ -34,7 +34,7 @@
         [showDetails]="true"
         [showPrice]="false"
         [showBuyButton]="true"
-        [showName]="false"
+        [showName]="showCardNames"
         [isFreeLuckyFind]="isFreeLuckyFind"
         (buyClicked)="buyClicked.emit()">
       </app-item-card>
@@ -50,7 +50,7 @@
           [player]="player"
           [showDetails]="true"
           [showPrice]="false"
-          [showName]="false">
+          [showName]="showCardNames">
         </app-item-card>
       </div>
     }

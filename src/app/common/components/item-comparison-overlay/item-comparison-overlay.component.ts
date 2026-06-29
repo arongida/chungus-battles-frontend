@@ -22,6 +22,8 @@ export class ItemComparisonOverlayComponent {
   @Input() comparisonCardWidth = 260;
   /** Passed from the directive so this component can resize the overlay on slot selection. */
   @Input() overlayRef: OverlayRef | null = null;
+  /** Hide item names in comparison mode on narrow screens to save vertical space. */
+  @Input() showCardNames = true;
   @Output() buyClicked = new EventEmitter<void>();
 
   readonly selectedSlot = signal<string | null>(null);

@@ -161,6 +161,7 @@ export class ItemHoverCardDirective implements OnChanges, OnDestroy {
     componentRef.setInput('mainCardWidth', mainW);
     componentRef.setInput('comparisonCardWidth', compW);
     componentRef.setInput('overlayRef', this.overlayRef);
+    componentRef.setInput('showCardNames', vw >= 640);
     componentRef.changeDetectorRef.detectChanges();
     this.activeScrollEl = componentRef.location.nativeElement.querySelector('.item-card-details-scroll');
 

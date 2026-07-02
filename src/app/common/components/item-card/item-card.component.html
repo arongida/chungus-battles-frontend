@@ -1,9 +1,11 @@
 <div class="relative flex flex-col h-full w-full overflow-hidden">
   
+  @if (showName) {
   <div class="mb-2 mt-2 pt-5 px-1 text-center text-xs sm:text-sm md:text-xl text-white flex-none">
     <mat-card-title [ngClass]="titleColorClass" [class.animate-pulse]="item.rarity > 1">{{ item.name | titlecase }}
     </mat-card-title>
   </div>
+  }
 
   @if (item.showDetails || showDetails) {
   <div class="item-card-details-scroll flex-1 overflow-y-auto text-center">

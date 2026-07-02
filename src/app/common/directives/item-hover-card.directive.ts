@@ -131,9 +131,10 @@ export class ItemHoverCardDirective implements OnChanges, OnDestroy {
    */
   private openComparisonOverlay(): void {
     const vw = window.innerWidth;
-    const mainW = Math.min(260, Math.floor(vw * 0.52));
+    // Single-card initial display: same size as the no-comparison overlay.
+    const mainW = Math.min(260, Math.floor(vw * 0.9));
     const mainH = Math.round(mainW * 340 / 260);
-    // Both cards are the same width in comparison mode; fit two in 96vw with a 10px gap.
+    // Comparison mode: fit two cards in 96vw with a 10px gap (narrower than mainW on small screens).
     const compW = Math.min(mainW, Math.floor((Math.min(vw * 0.96, 530) - 10) / 2));
     const { BUTTON_AREA_H } = ItemComparisonOverlayComponent;
     const singlePaneH = mainH + BUTTON_AREA_H;
@@ -160,6 +161,7 @@ export class ItemHoverCardDirective implements OnChanges, OnDestroy {
     componentRef.setInput('mainCardWidth', mainW);
     componentRef.setInput('comparisonCardWidth', compW);
     componentRef.setInput('overlayRef', this.overlayRef);
+    componentRef.setInput('showCardNames', vw >= 640);
     componentRef.changeDetectorRef.detectChanges();
     this.activeScrollEl = componentRef.location.nativeElement.querySelector('.item-card-details-scroll');
 

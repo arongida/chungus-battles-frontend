@@ -220,11 +220,13 @@ export class ReplayRoomComponent implements OnInit, AfterViewInit, OnDestroy {
       applyHpDelta: (playerId, damage, healing) => {
         const p = this.player();
         const e = this.enemy();
+        // Clamp at maxHp: old replays recorded overheal events (healing sent
+        // while already at full HP), which would otherwise grow hp unbounded.
         if (p && p.playerId === playerId) {
-          p.hp = p.hp - damage + healing;
+          p.hp = Math.min(p.hp - damage + healing, p.maxHp);
           this.player.set(p);
         } else if (e && e.playerId === playerId) {
-          e.hp = e.hp - damage + healing;
+          e.hp = Math.min(e.hp - damage + healing, e.maxHp);
           this.enemy.set(e);
         }
       },

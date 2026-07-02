@@ -79,8 +79,30 @@
       @if (battleResult() === 'lose') { You lost this round, but your run continues. Regroup in the draft. }
       @if (battleResult() === 'draw') { Both fighters fell at the same moment. Head back to the draft. }
     </p>
-    @if (battleResult() === 'lose' && lossBonus() > 0) {
-      <p class="chungus-modal-body" style="color: #f59e0b; font-weight: 600;">+{{ lossBonus() }} bonus gold</p>
+    @if (lossChoicePending()) {
+      <p class="chungus-modal-body" style="color: #f59e0b; font-weight: 600;">Choose your consolation reward:</p>
+      <div class="flex flex-col gap-2 items-stretch mb-3">
+        <button mat-stroked-button class="version-win-secondary-btn" [disabled]="lossRewardChoiceSending()" (click)="selectLossReward('gold')">
+          💰 +{{ lossRewardOptions()!.goldAmount }} Gold
+        </button>
+        <button mat-stroked-button class="version-win-secondary-btn" [disabled]="lossRewardChoiceSending()" (click)="selectLossReward('xp')">
+          ⭐ +{{ lossRewardOptions()!.xpAmount }} XP
+        </button>
+        @if (lossRewardOptions()!.itemUpgradeAvailable) {
+          <button mat-stroked-button class="version-win-secondary-btn" [disabled]="lossRewardChoiceSending()" (click)="selectLossReward('item_upgrade')">
+            ❓ Upgrade a random item's rarity
+          </button>
+        }
+      </div>
+    }
+    @if (battleResult() === 'lose' && lossRewardOutcome(); as outcome) {
+      <p class="chungus-modal-body" style="color: #f59e0b; font-weight: 600;">
+        @if (outcome.choice === 'gold') { +{{ outcome.gold }} bonus gold }
+        @if (outcome.choice === 'xp') { +{{ outcome.xp }} bonus XP }
+        @if (outcome.choice === 'item_upgrade' && outcome.item) {
+          Your {{ outcome.item.name }} was upgraded to {{ rarityName(outcome.item.rarity) }}!
+        }
+      </p>
     }
     <div class="flex flex-col sm:flex-row gap-3 justify-center">
       @if (battleReplayId()) {
@@ -88,7 +110,7 @@
           Watch Replay
         </a>
       }
-      <button mat-raised-button class="chungus-modal-btn" (click)="handleBattleResultExit()">
+      <button mat-raised-button class="chungus-modal-btn" [disabled]="lossChoicePending()" (click)="handleBattleResultExit()">
         Back to Draft
       </button>
     </div>

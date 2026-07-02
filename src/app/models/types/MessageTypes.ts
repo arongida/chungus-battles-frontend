@@ -51,9 +51,27 @@ export type VersionWinMessage = {
   season: number;
 };
 
+export type LossRewardChoice = 'gold' | 'xp' | 'item_upgrade';
+
+/** Offered to the losing player on end_battle — pick one via select_loss_reward. */
+export type LossRewardOptions = {
+  goldAmount: number;
+  xpAmount: number; // 20% more than gold — gold is the more flexible pick
+  itemUpgradeAvailable: boolean;
+};
+
+/** Resolution of the loss-reward choice; for item_upgrade reveals which item got upgraded. */
+export type LossRewardResultMessage = {
+  choice: LossRewardChoice;
+  gold?: number;
+  xp?: number;
+  item?: { itemId: number; name: string; rarity: number };
+};
+
 export type EndBattleMessage = {
   result: 'win' | 'lose' | 'draw';
-  lossBonus?: number;
+  lossBonus?: number; // legacy (old replays)
+  lossReward?: LossRewardOptions & { outcome?: LossRewardResultMessage };
   replayId?: string;
 };
 

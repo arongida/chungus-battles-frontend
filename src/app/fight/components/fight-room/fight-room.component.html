@@ -47,6 +47,15 @@
   <button class="reset-layout-btn" (click)="resetPanelLayout()" title="Reset panel layout">⤢</button>
 }
 
+<!-- Fight speed toggle -->
+@if (player()) {
+  <div class="speed-group" title="Fight speed">
+    @for (s of fightSpeeds; track s) {
+      <button (click)="setSpeed(s)" [class.active]="fightSpeed() === s">{{ s }}×</button>
+    }
+  </div>
+}
+
 
 @if (player()) {
 <app-round-info [player]="player()!"></app-round-info>

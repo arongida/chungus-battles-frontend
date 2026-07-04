@@ -103,6 +103,8 @@ export class FightRoomComponent implements OnInit {
   gameOverMessage = signal('');
   gameOverMinimized = signal(false);
   countdownText = signal<string | null>(null);
+  fightSpeed = signal(1);
+  readonly fightSpeeds = FightService.ALLOWED_FIGHT_SPEEDS;
 
   // Set true by handleVersionWinContinue so the server's follow-up end_battle
   // navigates directly to draft without showing the battle result modal.
@@ -131,6 +133,7 @@ export class FightRoomComponent implements OnInit {
         room.onStateChange((state) => {
           this.player.set(coercePlayer(state.player));
           this.enemy.set(coercePlayer(state.enemy));
+          this.fightSpeed.set(state.timeScale ?? 1);
         });
 
         const animCtx: AnimationContext = {
@@ -280,11 +283,17 @@ export class FightRoomComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
+    this.fightSpeed.set(this.fightService.getStoredFightSpeed());
     this.soundsService.playMusic(MusicOptions.BATTLE);
     const room = this.fightService.room();
     if (!room) {
       await this.fightService.reconnect(localStorage.getItem('reconnectToken') as string);
     }
+  }
+
+  setSpeed(speed: number): void {
+    // Button highlight follows the server-synced timeScale via onStateChange.
+    this.fightService.setFightSpeed(speed);
   }
 
   handleVersionWinContinue(): void {

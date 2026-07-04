@@ -9,9 +9,9 @@
   <div class="flex-1"></div>
   <!-- Speed buttons -->
   <div class="speed-group">
+    <button (click)="setSpeed(0.5)" [class.active]="speed() === 0.5">0.5×</button>
     <button (click)="setSpeed(1)" [class.active]="speed() === 1">1×</button>
     <button (click)="setSpeed(2)" [class.active]="speed() === 2">2×</button>
-    <button (click)="setSpeed(4)" [class.active]="speed() === 4">4×</button>
   </div>
   <!-- Play / Pause / Restart -->
   <button mat-icon-button class="replay-ctrl-btn" (click)="togglePlay()" [title]="done ? 'Restart' : playing() ? 'Pause' : 'Play'">

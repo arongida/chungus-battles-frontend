@@ -19,6 +19,9 @@ export class FightService {
 
   static isLocalStorageAvailable = typeof localStorage !== 'undefined';
 
+  static readonly ALLOWED_FIGHT_SPEEDS = [0.5, 1, 2];
+  private static readonly FIGHT_SPEED_STORAGE_KEY = 'fightSpeed';
+
   constructor(private router: Router) {
     this.client = new Colyseus.Client(environment.gameServer);
     console.log(`[FightService] client created server=${environment.gameServer}`);
@@ -46,10 +49,30 @@ export class FightService {
         localStorage.setItem('reconnectToken', room.reconnectionToken);
       }
 
+      // On reconnect the synced timeScale is authoritative, so only new rooms get this.
+      const storedSpeed = this.getStoredFightSpeed();
+      if (storedSpeed !== 1) {
+        room?.send('set_fight_speed', { speed: storedSpeed });
+      }
+
       this.router.navigate(['/fight', room!.sessionId]);
     } catch (e) {
       console.error('[FightService] joinOrCreate error', e);
     }
+  }
+
+  public setFightSpeed(speed: number) {
+    if (!FightService.ALLOWED_FIGHT_SPEEDS.includes(speed)) return;
+    if (FightService.isLocalStorageAvailable) {
+      localStorage.setItem(FightService.FIGHT_SPEED_STORAGE_KEY, String(speed));
+    }
+    this.room()?.send('set_fight_speed', { speed });
+  }
+
+  public getStoredFightSpeed(): number {
+    if (!FightService.isLocalStorageAvailable) return 1;
+    const stored = Number(localStorage.getItem(FightService.FIGHT_SPEED_STORAGE_KEY));
+    return FightService.ALLOWED_FIGHT_SPEEDS.includes(stored) ? stored : 1;
   }
 
   public async reconnect(reconnectionToken: string) {

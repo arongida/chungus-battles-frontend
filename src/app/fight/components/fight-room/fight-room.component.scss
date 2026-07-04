@@ -155,6 +155,45 @@
   }
 }
 
+/* ── Fight speed toggle (mirrors the replay player's speed-group) ── */
+
+.speed-group {
+  position: fixed;
+  top: 76px;
+  right: 16px;
+  z-index: 1100;
+
+  @media (max-width: 639px) {
+    top: 60px;
+  }
+  display: flex;
+  gap: 2px;
+  background: rgba(10, 10, 15, 0.75);
+  border-radius: 6px;
+  padding: 2px;
+
+  button {
+    background: transparent;
+    border: 1px solid var(--cm-border);
+    color: var(--cm-text-muted);
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 100ms, color 100ms;
+    &.active {
+      background: rgba(180, 120, 30, 0.18);
+      color: var(--cm-amber);
+      border-color: var(--cm-amber);
+    }
+    &:hover:not(.active) {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--cm-text);
+    }
+  }
+}
+
 /* ── Fight-start countdown overlay ───────────────────────── */
 
 .countdown-number {

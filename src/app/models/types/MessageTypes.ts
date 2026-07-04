@@ -68,6 +68,11 @@ export type LossRewardResultMessage = {
   item?: { itemId: number; name: string; rarity: number };
 };
 
+/** Client → server: set the fight time scale (0.5, 1 or 2); synced back as FightState.timeScale. */
+export type SetFightSpeedMessage = {
+  speed: number;
+};
+
 export type EndBattleMessage = {
   result: 'win' | 'lose' | 'draw';
   lossBonus?: number; // legacy (old replays)

@@ -11,6 +11,9 @@ export type CombatLogKind =
 export interface CombatLogEntry {
   text: string;
   kind: CombatLogKind;
+  // Monotonic sequence number stamped by the server — used to reorder entries that
+  // may arrive out of order (mix of broadcast + per-client send).
+  seq?: number;
   attackerId?: number;
   defenderId?: number;
   weaponItemId?: number;

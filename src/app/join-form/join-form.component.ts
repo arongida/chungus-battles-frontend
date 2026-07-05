@@ -27,6 +27,14 @@ import { InfoBoxService } from '../common/services/info-box.service';
 import { InfoEntry } from '../common/models/info-content';
 import { SeasonsService } from '../common/services/seasons.service';
 
+interface ClassOption {
+  avatar: string;
+  icon: string;
+  name: string;
+  tagline: string;
+  effect: string;
+}
+
 @Component({
   selector: 'app-join-form',
   standalone: true,
@@ -44,20 +52,23 @@ import { SeasonsService } from '../common/services/seasons.service';
 })
 export class JoinFormComponent implements AfterViewInit, OnDestroy, OnInit {
   nameControl = new FormControl('', Validators.compose([Validators.maxLength(20), Validators.required]));
-  avatarOptions = [
-    'assets/warrior_01.png',
-    'assets/thief_01.png',
-    'assets/merchant_01.png',
+
+  private readonly classOptions: ClassOption[] = [
+    { avatar: 'assets/warrior_01.png', icon: '⚔️', name: 'Warrior', tagline: 'Value', effect: '4 lives instead of 3 — more chances' },
+    { avatar: 'assets/thief_01.png', icon: '🗡️', name: 'Thief', tagline: 'Tempo', effect: 'Starts at lvl 2, extra talent + tier-2 shop' },
+    { avatar: 'assets/merchant_01.png', icon: '💰', name: 'Merchant', tagline: 'Flexibility', effect: '+3 income every round' },
   ];
   fallingItems = itemPictures;
-  avatarSelected = this.avatarOptions[1];
+  selectedIndex = signal(1);
 
-  private readonly classInfoEntries: InfoEntry[] = [
-    { icon: '⚔️', label: 'Warrior - Value', text: '4 lives instead of 3 - more chances.' },
-    { icon: '🗡️', label: 'Thief - Tempo', text: 'Starts at level 2 with an extra talent point and tier-2 shop access — snowballs fast.' },
-    { icon: '💰', label: 'Merchant - Flexibility', text: '+3 income — refresh more, build any direction.' },
-    { icon: '💡', label: 'Tip', text: 'Your class picks a starting bonus and weapon — items can take you any direction.' },
-  ];
+  get selectedClass(): ClassOption {
+    return this.classOptions[this.selectedIndex()];
+  }
+
+  get avatarSelected(): string {
+    return this.selectedClass.avatar;
+  }
+
   loading = false;
   currentSeason = signal(0);
   intervalId: any;
@@ -89,10 +100,14 @@ export class JoinFormComponent implements AfterViewInit, OnDestroy, OnInit {
     this.seasonsService.getSeasons().then(data => this.currentSeason.set(data.currentSeason));
     this.soundsService.playMusic(MusicOptions.DRAFT);
     this.infoBoxService.clearContent();
+    const entries: InfoEntry[] = [
+      ...this.classOptions.map(c => ({ icon: c.icon, label: `${c.name} - ${c.tagline}`, text: c.effect })),
+      { icon: '💡', label: 'Tip', text: 'Your class picks a starting bonus and weapon — items can take you any direction.' },
+    ];
     this.infoBoxService.setPageDefault({
       id: 'choose-character',
       title: 'Choose Your Character',
-      entries: this.classInfoEntries,
+      entries,
     });
   }
 
@@ -126,15 +141,11 @@ export class JoinFormComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   onNextButton() {
-    const currentIndex = this.avatarOptions.indexOf(this.avatarSelected);
-    const nextIndex = (currentIndex + 1) % this.avatarOptions.length;
-    this.avatarSelected = this.avatarOptions[nextIndex];
+    this.selectedIndex.set((this.selectedIndex() + 1) % this.classOptions.length);
   }
 
   onPrevButton() {
-    const currentIndex = this.avatarOptions.indexOf(this.avatarSelected);
-    const prevIndex = (currentIndex - 1 + this.avatarOptions.length) % this.avatarOptions.length;
-    this.avatarSelected = this.avatarOptions[prevIndex];
+    this.selectedIndex.set((this.selectedIndex() - 1 + this.classOptions.length) % this.classOptions.length);
   }
 
   getInputErrorMessage() {

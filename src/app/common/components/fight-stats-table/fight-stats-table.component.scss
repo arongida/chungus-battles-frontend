@@ -1,0 +1,53 @@
+.fst-wrap {
+  width: 100%;
+  text-align: left;
+}
+
+.fst-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding-bottom: 10px;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.fst-name {
+  color: rgba(255, 255, 255, 0.85);
+  &--enemy { color: #f87171; }
+}
+
+.fst-vs {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.8rem;
+  font-weight: 400;
+}
+
+.fst-row {
+  display: grid;
+  grid-template-columns: 1fr 80px 80px;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 4px;
+  border-bottom: 1px solid rgba(180, 120, 30, 0.1);
+  font-size: 0.85rem;
+
+  &--head {
+    font-weight: 700;
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    color: rgba(255, 255, 255, 0.4);
+    border-bottom-color: rgba(180, 120, 30, 0.25);
+  }
+}
+
+.fst-label {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.fst-col {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: #f59e0b;
+}

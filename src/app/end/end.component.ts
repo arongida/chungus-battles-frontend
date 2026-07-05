@@ -13,6 +13,8 @@ import { itemPictures } from '../common/item-image-links';
 import { buildPlayerFromData } from '../common/utils/player-schema-builder';
 import { DraggablePanelDirective } from '../common/directives/draggable-panel.directive';
 import { PlayerBuildCardComponent } from '../common/components/player-build-card/player-build-card.component';
+import { MatDialog } from '@angular/material/dialog';
+import { FightStatsDialogComponent } from '../common/components/fight-stats-dialog/fight-stats-dialog.component';
 
 @Component({
   selector: 'app-end',
@@ -76,6 +78,7 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
     private renderer: Renderer2,
     @Inject(PLATFORM_ID) private platformId: Object,
     private seasonsService: SeasonsService,
+    private dialog: MatDialog,
   ) {}
 
   get infoBoxVisible() {
@@ -292,6 +295,17 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
     if (result === 'win') return '⚔️ Win';
     if (result === 'lose' || result === 'loose') return '🛡️ Loss';
     return '⚡ Draw';
+  }
+
+  openStats(r: ReplayListItem, event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+    if (!r.stats) return;
+    this.dialog.open(FightStatsDialogComponent, {
+      data: { playerName: r.playerName, enemyName: r.enemyName, stats: r.stats },
+      backdropClass: 'chungus-dialog-backdrop',
+      autoFocus: false,
+    });
   }
 
   jumpToMe(): void {

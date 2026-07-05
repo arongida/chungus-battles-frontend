@@ -21,7 +21,9 @@ import {
   LossRewardChoice,
   LossRewardOptions,
   LossRewardResultMessage,
+  FightStatsMessage,
 } from '../../../models/types/MessageTypes';
+import { FightStatsTableComponent } from '../../../common/components/fight-stats-table/fight-stats-table.component';
 import { CombatLogEntry } from '../../../models/types/CombatLogEntry';
 import { CombatLogComponent } from '../combat-log/combat-log.component';
 import { DraftService } from '../../../draft/services/draft.service';
@@ -74,6 +76,7 @@ function coercePlayer(src: any): Player {
     CharacterDetailsComponent,
     DraggablePanelDirective,
     RouterLink,
+    FightStatsTableComponent,
   ],
   templateUrl: './fight-room.component.html',
   styleUrl: './fight-room.component.scss',
@@ -99,6 +102,7 @@ export class FightRoomComponent implements OnInit {
   lossRewardOutcome = signal<LossRewardResultMessage | null>(null);
   lossRewardChoiceSending = signal(false);
   battleReplayId = signal<string | null>(null);
+  battleStats = signal<FightStatsMessage | null>(null);
   gameOverVisible = signal(false);
   gameOverMessage = signal('');
   gameOverMinimized = signal(false);
@@ -148,9 +152,10 @@ export class FightRoomComponent implements OnInit {
             const result = msg?.result ?? 'win';
             const lossReward = msg?.lossReward ?? null;
             const replayId = msg?.replayId ?? null;
+            const stats = msg?.stats ?? null;
             this.battleOver = true;
             this.versionWin.set(false);
-            localStorage.setItem('battleEndState', JSON.stringify({ type: 'end_battle', result, lossReward, replayId }));
+            localStorage.setItem('battleEndState', JSON.stringify({ type: 'end_battle', result, lossReward, replayId, stats }));
             if (this.suppressNextBattleResult) {
               this.suppressNextBattleResult = false;
               const p = this.player();
@@ -163,6 +168,7 @@ export class FightRoomComponent implements OnInit {
             this.lossRewardOutcome.set(lossReward?.outcome ?? null);
             this.lossRewardChoiceSending.set(false);
             this.battleReplayId.set(replayId);
+            this.battleStats.set(stats);
             this.battleResult.set(result);
             this.battleResultMinimized.set(false);
             this.battleResultVisible.set(true);
@@ -348,7 +354,7 @@ export class FightRoomComponent implements OnInit {
     const raw = localStorage.getItem('battleEndState');
     if (!raw) return;
     try {
-      const state = JSON.parse(raw) as { type: string; message?: string; wins?: number; season?: number; result?: string; lossReward?: LossRewardOptions & { outcome?: LossRewardResultMessage }; replayId?: string | null };
+      const state = JSON.parse(raw) as { type: string; message?: string; wins?: number; season?: number; result?: string; lossReward?: LossRewardOptions & { outcome?: LossRewardResultMessage }; replayId?: string | null; stats?: FightStatsMessage | null };
       const player = this.player();
       if (!player) return;
       if (state.type === 'game_over') {
@@ -364,6 +370,7 @@ export class FightRoomComponent implements OnInit {
         this.lossRewardOutcome.set(state.lossReward?.outcome ?? null);
         this.lossRewardChoiceSending.set(false);
         this.battleReplayId.set(state.replayId ?? null);
+        this.battleStats.set(state.stats ?? null);
         const result = (state.result as 'win' | 'lose' | 'draw') ?? 'win';
         this.battleResult.set(result);
         this.battleResultMinimized.set(false);
@@ -389,6 +396,7 @@ export class FightRoomComponent implements OnInit {
   async endBattle(playerId: number, name: string, gameOver = false, won = false) {
     localStorage.removeItem('battleEndState');
     this.battleReplayId.set(null);
+    this.battleStats.set(null);
     this.fightService.leave(false);
     this.soundsService.stopMusic();
     if (gameOver) {

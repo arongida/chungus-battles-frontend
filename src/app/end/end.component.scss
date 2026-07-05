@@ -385,6 +385,18 @@
   text-align: right;
 }
 
+.replay-row-stats {
+  background: none;
+  border: none;
+  font-size: 0.95rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 2px;
+  opacity: 0.6;
+  flex-shrink: 0;
+  &:hover { opacity: 1; }
+}
+
 .replay-row-icon {
   font-size: 18px;
   width: 18px;

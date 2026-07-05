@@ -2,12 +2,20 @@
   position: fixed;
   bottom: 0.5rem;
   left: 0.5rem;
-  z-index: 1000;
+  /* Below the draft-toolbar host (z-10) so the character-details panel draws
+     over this card instead of the other way around. */
+  z-index: 5;
 
   @media (min-width: 640px) {
     bottom: 1rem;
     left: 1rem;
   }
+}
+
+/* In the fight view there is no draggable draft panel, but the combat panels
+   sit at z-40/z-50 — keep the round card above them there. */
+:host-context(app-fight-room) #round-info {
+  z-index: 60;
 }
 
 .hud-card {

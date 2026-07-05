@@ -66,7 +66,11 @@ export class FightAnimationService {
 
   applyCombatLog(ctx: AnimationContext, msg: CombatLogEntry): void {
     ctx.entries.update(prev => {
-      const next = [...prev, msg];
+      // Entries can arrive out of order (mix of broadcast + per-client send on the
+      // server) — sort by seq so the log always reads in emission order. Array.sort
+      // is stable, so entries with a missing/equal seq (e.g. legacy replays) keep
+      // their relative insertion order.
+      const next = [...prev, msg].sort((a, b) => (a.seq ?? 0) - (b.seq ?? 0));
       return next.length > 200 ? next.slice(-200) : next;
     });
     if (msg.kind === 'dodge' && msg.defenderId != null && ctx.player() && ctx.enemy()) {

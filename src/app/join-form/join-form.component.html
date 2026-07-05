@@ -7,26 +7,33 @@
     }
   </header>
 
-  <div class="flex flex-col gap-2 lg:gap-8 max-h-full overflow-hidden" (keyup.enter)="onFormSubmit()">
+  <div class="flex flex-col gap-2 lg:gap-8 max-h-full overflow-hidden w-[300px] max-w-[80vw] mx-auto" (keyup.enter)="onFormSubmit()">
 
     <div #fallingItemsContainer class="max-w-full min-w-full fixed top-0 left-0 -z-10">
     </div>
 
-    <div class="flex flex-row items-center max-w-[80vw] sm:max-w-sm md:max-w-md mx-auto">
+    <div class="flex flex-row items-center justify-center w-full">
       <button mat-icon-button class="size-10 p-2 rounded-l-xl flex items-center justify-center" (click)="onNextButton()">
         <mat-icon>arrow_back</mat-icon>
       </button>
-      <img [src]="avatarSelected" alt="player portrait" class="player-portrait" style="width: 100%; height: auto" />
+      <img [src]="avatarSelected" alt="player portrait" class="player-portrait w-[180px] h-auto" />
       <button mat-icon-button class="size-10 p-2 rounded-r-xl flex items-center justify-center" (click)="onPrevButton()">
         <mat-icon>arrow_forward</mat-icon>
       </button>
+    </div>
+    <div class="text-center -mt-2 w-[28rem] max-w-[90vw] relative left-1/2 -translate-x-1/2">
+      <div class="text-lg lg:text-xl font-semibold">
+        {{ selectedClass.icon }} {{ selectedClass.name }}
+        <span class="text-amber-400">· {{ selectedClass.tagline }}</span>
+      </div>
+      <div class="text-sm text-gray-400 mt-1">{{ selectedClass.effect }}</div>
     </div>
     <mat-form-field class="m-4">
       <mat-label>Name</mat-label>
       <input matInput [formControl]="nameControl" />
       @if (nameControl.invalid && nameControl.touched) {<mat-error>{{getInputErrorMessage()}}</mat-error>}
     </mat-form-field>
-    <button (click)="onFormSubmit()" [disabled]="loading" mat-raised-button class="chungus-modal-btn">
+    <button (click)="onFormSubmit()" [disabled]="loading" mat-raised-button class="chungus-modal-btn w-full">
       @if (loading) {<mat-spinner diameter="24"></mat-spinner>}
       @else {Start!}
     </button>

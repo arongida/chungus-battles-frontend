@@ -1,0 +1,10 @@
+<div class="fsd-modal">
+  <div class="fsd-modal-header">
+    <span>Fight Stats</span>
+    <button class="fsd-close-btn" (click)="close()">×</button>
+  </div>
+  <div class="fsd-modal-body">
+    <app-fight-stats-table [playerName]="data.playerName" [enemyName]="data.enemyName" [stats]="data.stats">
+    </app-fight-stats-table>
+  </div>
+</div>

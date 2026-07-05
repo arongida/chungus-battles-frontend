@@ -1,10 +1,11 @@
 import { Component, Inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
 import { ReplaysService } from '../../services/replays.service';
 import { ReplayListItem } from '../../../replay/replay-room.component';
+import { FightStatsDialogComponent } from '../fight-stats-dialog/fight-stats-dialog.component';
 
 export interface ReplaysDialogData {
   originalPlayerId: number;
@@ -29,6 +30,7 @@ export class ReplaysDialogComponent {
     @Inject(MAT_DIALOG_DATA) data: ReplaysDialogData,
     private dialogRef: MatDialogRef<ReplaysDialogComponent>,
     private replaysService: ReplaysService,
+    private dialog: MatDialog,
   ) {
     this.replaysService.getReplays(data.originalPlayerId).then(list => {
       this.replays.set(list);
@@ -44,5 +46,16 @@ export class ReplaysDialogComponent {
     if (result === 'win') return '⚔️ Win';
     if (result === 'lose' || result === 'loose') return '🛡️ Loss';
     return '⚡ Draw';
+  }
+
+  openStats(r: ReplayListItem, event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+    if (!r.stats) return;
+    this.dialog.open(FightStatsDialogComponent, {
+      data: { playerName: r.playerName, enemyName: r.enemyName, stats: r.stats },
+      backdropClass: 'chungus-dialog-backdrop',
+      autoFocus: false,
+    });
   }
 }

@@ -17,6 +17,9 @@
             {{ replayResultLabel(r.result) }}
           </span>
           <span class="replay-row-date">{{ r.createdAt | date:'MMM d' }}</span>
+          @if (r.stats) {
+            <button class="replay-row-stats" (click)="openStats(r, $event)" title="Fight stats">📊</button>
+          }
           <mat-icon class="replay-row-icon">play_circle</mat-icon>
         </a>
       }

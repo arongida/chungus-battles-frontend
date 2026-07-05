@@ -1,0 +1,49 @@
+<div class="fst-wrap">
+  <div class="fst-header">
+    <span class="fst-name">{{ playerName }}</span>
+    <span class="fst-vs">vs</span>
+    <span class="fst-name fst-name--enemy">{{ enemyName }}</span>
+  </div>
+
+  <div class="fst-row fst-row--head">
+    <span></span>
+    <span class="fst-col">{{ playerName }}</span>
+    <span class="fst-col">{{ enemyName }}</span>
+  </div>
+
+  <div class="fst-row">
+    <span class="fst-label">⚔️ Weapon damage</span>
+    <span class="fst-col">{{ fmt(stats.player.damageDealt.weapon) }}</span>
+    <span class="fst-col">{{ fmt(stats.enemy.damageDealt.weapon) }}</span>
+  </div>
+  <div class="fst-row">
+    <span class="fst-label">🔥 Burn damage</span>
+    <span class="fst-col">{{ fmt(stats.player.damageDealt.burn) }}</span>
+    <span class="fst-col">{{ fmt(stats.enemy.damageDealt.burn) }}</span>
+  </div>
+  <div class="fst-row">
+    <span class="fst-label">☠️ Poison damage</span>
+    <span class="fst-col">{{ fmt(stats.player.damageDealt.poison) }}</span>
+    <span class="fst-col">{{ fmt(stats.enemy.damageDealt.poison) }}</span>
+  </div>
+  <div class="fst-row">
+    <span class="fst-label">❤️ HP healed</span>
+    <span class="fst-col">{{ fmt(stats.player.healingReceived) }}</span>
+    <span class="fst-col">{{ fmt(stats.enemy.healingReceived) }}</span>
+  </div>
+  <div class="fst-row">
+    <span class="fst-label">🛡️ Reduced by armor</span>
+    <span class="fst-col">{{ fmt(stats.player.damageReducedByDefense) }}</span>
+    <span class="fst-col">{{ fmt(stats.enemy.damageReducedByDefense) }}</span>
+  </div>
+  <div class="fst-row">
+    <span class="fst-label">🧱 Reduced flat</span>
+    <span class="fst-col">{{ fmt(stats.player.damageReducedByFlat) }}</span>
+    <span class="fst-col">{{ fmt(stats.enemy.damageReducedByFlat) }}</span>
+  </div>
+  <div class="fst-row">
+    <span class="fst-label">💨 Attacks dodged</span>
+    <span class="fst-col">{{ stats.player.attacksDodged }}</span>
+    <span class="fst-col">{{ stats.enemy.attacksDodged }}</span>
+  </div>
+</div>

@@ -24,6 +24,9 @@ import { DraggablePanelDirective } from '../common/directives/draggable-panel.di
 import { FightAnimationService, AnimationContext } from '../fight/services/fight-animation.service';
 import { InfoBoxService } from '../common/services/info-box.service';
 import { environment } from '../../environments/environment';
+import { FightStatsMessage } from '../models/types/MessageTypes';
+import { MatDialog } from '@angular/material/dialog';
+import { FightStatsDialogComponent } from '../common/components/fight-stats-dialog/fight-stats-dialog.component';
 
 // Mirrors backend playerToPlainObject → rehydrates a plain snapshot into a typed Player.
 function rehydrateItem(raw: any): Item {
@@ -91,6 +94,7 @@ export interface ReplayListItem {
   durationMs: number;
   createdAt: string;
   truncated: boolean;
+  stats?: FightStatsMessage;
 }
 
 @Component({
@@ -119,6 +123,7 @@ export class ReplayRoomComponent implements OnInit, AfterViewInit, OnDestroy {
   truncated = signal(false);
   versionMismatch = signal(false);
   showResultBanner = signal(false);
+  battleStats = signal<FightStatsMessage | null>(null);
 
   playing = signal(true);
   speed = signal(1);
@@ -140,6 +145,7 @@ export class ReplayRoomComponent implements OnInit, AfterViewInit, OnDestroy {
     private fightAnimationService: FightAnimationService,
     private infoBoxService: InfoBoxService,
     @Inject(PLATFORM_ID) private platformId: Object,
+    private dialog: MatDialog,
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -157,6 +163,7 @@ export class ReplayRoomComponent implements OnInit, AfterViewInit, OnDestroy {
       const rawResult = replay.result ?? null;
       this.battleResult.set(rawResult === 'loose' ? 'lose' : rawResult);
       this.truncated.set(replay.truncated ?? false);
+      this.battleStats.set(replay.stats ?? null);
       const replayVersion = replay.gameVersion ?? 0;
       const playerVersion = replay.initialState?.player?.gameVersion ?? replayVersion;
       this.versionMismatch.set(replayVersion !== playerVersion && replayVersion > 0);
@@ -304,6 +311,16 @@ export class ReplayRoomComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.rafId === null && isPlatformBrowser(this.platformId)) {
       this.rafId = requestAnimationFrame(this.tick);
     }
+  }
+
+  openStats(): void {
+    const stats = this.battleStats();
+    if (!stats) return;
+    this.dialog.open(FightStatsDialogComponent, {
+      data: { playerName: this.player()?.name ?? 'Player', enemyName: this.enemy()?.name ?? 'Enemy', stats },
+      backdropClass: 'chungus-dialog-backdrop',
+      autoFocus: false,
+    });
   }
 
   /** Closes this replay tab so the browser returns focus to the live game tab beneath it. */

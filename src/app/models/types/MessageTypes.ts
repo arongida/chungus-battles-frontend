@@ -73,11 +73,25 @@ export type SetFightSpeedMessage = {
   speed: number;
 };
 
+export type FightSideStats = {
+  damageDealt: { weapon: number; burn: number; poison: number };
+  healingReceived: number;
+  damageReducedByDefense: number;
+  damageReducedByFlat: number;
+  attacksDodged: number;
+};
+
+export type FightStatsMessage = {
+  player: FightSideStats;
+  enemy: FightSideStats;
+};
+
 export type EndBattleMessage = {
   result: 'win' | 'lose' | 'draw';
   lossBonus?: number; // legacy (old replays)
   lossReward?: LossRewardOptions & { outcome?: LossRewardResultMessage };
   replayId?: string;
+  stats?: FightStatsMessage;
 };
 
 /** Draft-phase lucky shop-roll announcement — floats over the shop card at `slot`

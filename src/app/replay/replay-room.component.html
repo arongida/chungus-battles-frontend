@@ -114,6 +114,11 @@
           <button mat-raised-button class="chungus-modal-btn" (click)="restart()">
             Watch Again
           </button>
+          @if (battleStats()) {
+            <button mat-stroked-button class="chungus-modal-btn" (click)="openStats()">
+              Stats
+            </button>
+          }
         </div>
       </div>
     </div>

@@ -7,6 +7,7 @@ export interface FightStatsDialogData {
   playerName: string;
   enemyName: string;
   stats: FightStatsMessage;
+  subtitle?: string;
 }
 
 /**

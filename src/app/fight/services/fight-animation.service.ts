@@ -10,7 +10,7 @@ import {
   RewardGainMessage,
   TriggerItemMessage,
   TriggerTalentMessage,
-  VersionWinMessage,
+  GameWinMessage,
 } from '../../models/types/MessageTypes';
 import {
   triggerAvatarHit,
@@ -40,7 +40,7 @@ export interface AnimationContext {
   triggerDamagedAvatar: (playerId: number) => void;
   onEndBattle?: (msg: EndBattleMessage) => void;
   onGameOver?: (msg: string) => void;
-  onVersionWin?: (msg: VersionWinMessage) => void;
+  onGameWin?: (msg: GameWinMessage) => void;
   /** Replay-only: mutates the Player signal's HP directly, since there is no Colyseus schema sync. */
   applyHpDelta?: (playerId: number, damage: number, healing: number) => void;
   /** Replay-only: mutates the Player signal's invincible flag, since there is no Colyseus schema sync. */
@@ -179,7 +179,10 @@ export class FightAnimationService {
       case 'trigger_item':    this.applyTriggerItem(ctx, payload as TriggerItemMessage); break;
       case 'end_battle':      ctx.onEndBattle?.(payload as EndBattleMessage); break;
       case 'game_over':       ctx.onGameOver?.(payload as string); break;
-      case 'version_win':     ctx.onVersionWin?.(payload as VersionWinMessage); break;
+      case 'game_win':        ctx.onGameWin?.(payload as GameWinMessage); break;
+      // Compat: old replays recorded before Season 16 contain 'version_win' events —
+      // route them to the same win-screen handler so those replays still show a banner.
+      case 'version_win':     ctx.onGameWin?.(payload as GameWinMessage); break;
       default:                break;
     }
   }

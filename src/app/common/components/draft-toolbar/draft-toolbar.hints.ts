@@ -56,6 +56,15 @@ export const fightingHint: InfoContent = {
   title: 'Battle in Progress',
   entries: [
     { icon: '⏳', label: 'Please Wait', text: 'The fight is underway — sit back and watch! The next draft round will begin when it\'s over.' },
+    { icon: '⏩', label: 'Fight Speed', text: 'Use the 0.5×/1×/2× buttons in the top-left corner to slow down or speed up the fight.' },
+  ],
+};
+
+export const fightSpeedHint: InfoContent = {
+  id: 'fight-speed',
+  title: 'Fight Speed',
+  entries: [
+    { icon: '⏩', label: 'Fight Speed', text: 'Slow down or speed up the fight: 0.5× for a leisurely pace, 2× to skip ahead.' },
   ],
 };
 
@@ -135,22 +144,14 @@ export const runOverHint: InfoContent = {
   id: 'run-over',
   title: 'Run Over',
   entries: [
-    { icon: '💀', label: 'Game Over', text: 'Your run has ended. Click "View Your Results" on the panel to see your final score and leaderboard position.' },
+    { icon: '💀', label: 'Game Over', text: 'Your run has ended. Click "View Your Results" on the panel to see your final stats and the Wall of Fame.' },
   ],
 };
 
-export const versionWinHint: InfoContent = {
-  id: 'version-win',
-  title: 'New Record!',
+export const gameWinHint: InfoContent = {
+  id: 'game-win',
+  title: 'Game Won!',
   entries: [
-    { icon: '🌟', label: 'Season Best', text: 'You set a new record for this season! Choose to continue pushing your run or accept this as your result.' },
-  ],
-};
-
-export const topWinHint: InfoContent = {
-  id: 'top-win',
-  title: 'All-Time #1!',
-  entries: [
-    { icon: '👑', label: 'Top of the Leaderboard', text: 'You reached #1 on the all-time leaderboard! Accept your victory to lock in your legendary result.' },
+    { icon: '🏆', label: '12 Wins', text: 'You reached 12 wins and won the game! Your character is added to the Wall of Fame, ranked by fewest losses.' },
   ],
 };

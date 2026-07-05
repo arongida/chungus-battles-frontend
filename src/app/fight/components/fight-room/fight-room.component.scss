@@ -159,12 +159,12 @@
 
 .speed-group {
   position: fixed;
-  top: 76px;
-  right: 16px;
+  top: 120px;
+  left: 16px;
   z-index: 1100;
 
   @media (max-width: 639px) {
-    top: 60px;
+    top: 104px;
   }
   display: flex;
   gap: 2px;

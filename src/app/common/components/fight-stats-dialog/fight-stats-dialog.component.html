@@ -3,6 +3,9 @@
     <span>Fight Stats</span>
     <button class="fsd-close-btn" (click)="close()">×</button>
   </div>
+  @if (data.subtitle) {
+    <div class="fsd-modal-subtitle">{{ data.subtitle }}</div>
+  }
   <div class="fsd-modal-body">
     <app-fight-stats-table [playerName]="data.playerName" [enemyName]="data.enemyName" [stats]="data.stats">
     </app-fight-stats-table>

@@ -3,11 +3,11 @@
     <div class="text-6xl lg:text-9xl mt-2 lg:mt-10">Chungus Battles</div>
     <div class="text-xl mt-2 lg:mt-8">For the chungus!</div>
     @if (currentSeason()) {
-      <div class="text-sm text-amber-400 mt-1 font-semibold tracking-wide" style="text-shadow: none">Season {{ currentSeason() }}</div>
+      <div class="text-sm text-amber-400 mt-1 font-semibold tracking-wide" style="text-shadow: none">Season {{ currentSeason() }} — race to 12 wins</div>
     }
   </header>
 
-  <div class="flex flex-col gap-2 lg:gap-8 max-h-full overflow-hidden w-[300px] max-w-[80vw] mx-auto" (keyup.enter)="onFormSubmit()">
+  <div class="flex flex-col gap-2 lg:gap-8 max-h-full w-[300px] max-w-[80vw] mx-auto" (keyup.enter)="onFormSubmit()">
 
     <div #fallingItemsContainer class="max-w-full min-w-full fixed top-0 left-0 -z-10">
     </div>

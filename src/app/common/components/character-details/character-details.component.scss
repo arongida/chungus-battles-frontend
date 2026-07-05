@@ -7,6 +7,24 @@
   width: 460px;
 }
 
+/* Draft panel: never extend past the bottom of the viewport. The panel sits at
+   top-16 (4rem); everything above the inventory keeps its natural height and the
+   inventory is the flexible region that shrinks and scrolls internally. */
+.details-panel:not(.combat-mode) {
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100dvh - 4.5rem);
+
+  > * {
+    flex-shrink: 0;
+  }
+
+  > .cd-inventory {
+    flex-shrink: 1;
+    min-height: 4rem;
+  }
+}
+
 @keyframes slideDown {
   from { opacity: 0; transform: translateY(-8px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -321,10 +339,6 @@
 @media (max-width: 639px) {
   .details-panel {
     width: 340px;
-  }
-
-  .cd-inventory {
-    max-height: 35dvh;
   }
 
   .cd-slot {

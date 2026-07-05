@@ -2,5 +2,7 @@
   position: fixed;
   bottom: 1rem;
   right: 1rem;
-  z-index: 1000;
+  /* Below the draft-toolbar host (z-10) so the character-details panel draws
+     over this button instead of the other way around. */
+  z-index: 5;
 }

@@ -46,8 +46,9 @@ export type TriggerItemMessage = {
   slot: string;
 };
 
-export type VersionWinMessage = {
+export type GameWinMessage = {
   wins: number;
+  losses: number;
   season: number;
 };
 
@@ -79,11 +80,21 @@ export type FightSideStats = {
   damageReducedByDefense: number;
   damageReducedByFlat: number;
   attacksDodged: number;
+  damageBlockedByInvincible?: number; // optional — absent on pre-Season-16 replays
 };
 
 export type FightStatsMessage = {
   player: FightSideStats;
   enemy: FightSideStats;
+};
+
+/** Cumulative fight stats for a character across the whole run — GET /gameStats. */
+export type GameStatsResult = {
+  fights: number;
+  wins: number;
+  losses: number;
+  draws: number;
+  stats: FightStatsMessage;
 };
 
 export type EndBattleMessage = {

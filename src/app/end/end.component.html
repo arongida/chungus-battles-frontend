@@ -17,41 +17,49 @@
 
   <h2 class="text-xl sm:text-2xl font-semibold text-white mb-4">Leaderboards</h2>
 
-  <!-- Version tabs -->
+  <!-- Tabs -->
   <div class="leaderboard-tabs">
     <button
       class="leaderboard-tab"
-      [class.leaderboard-tab-active]="filterCurrentVersionOnly()"
-      (click)="setVersionFilter(true)">
-      Season {{ currentSeason() || 'Current' }}
+      [class.leaderboard-tab-active]="activeTab() === 'fame'"
+      (click)="setTab('fame')">
+      🏆 Wall of Fame
     </button>
     <button
       class="leaderboard-tab"
-      [class.leaderboard-tab-active]="!filterCurrentVersionOnly()"
-      (click)="setVersionFilter(false)">
-      All Time
+      [class.leaderboard-tab-active]="activeTab() === 'all'"
+      (click)="setTab('all')">
+      All Characters
     </button>
   </div>
 
-  <!-- Filter row -->
-  <div class="leaderboard-filters">
-    <input
-      class="leaderboard-filter-input"
-      type="text"
-      placeholder="Search name…"
-      [value]="filterName()"
-      (input)="onFilterNameInput($any($event.target).value)" />
+  <!-- Filter row (All Characters tab only) -->
+  @if (activeTab() === 'all') {
+    <div class="leaderboard-filters">
+      <input
+        class="leaderboard-filter-input"
+        type="text"
+        placeholder="Search name…"
+        [value]="filterName()"
+        (input)="onFilterNameInput($any($event.target).value)" />
 
-    <select
-      class="leaderboard-filter-select"
-      [value]="filterAvatar()"
-      (change)="setFilterAvatar($any($event.target).value)">
-      @for (opt of avatarOptions; track opt.value) {
-        <option [value]="opt.value">{{ opt.label }}</option>
-      }
-    </select>
-    
-  </div>
+      <select
+        class="leaderboard-filter-select"
+        [value]="filterAvatar()"
+        (change)="setFilterAvatar($any($event.target).value)">
+        @for (opt of avatarOptions; track opt.value) {
+          <option [value]="opt.value">{{ opt.label }}</option>
+        }
+      </select>
+
+      <input
+        class="leaderboard-filter-input leaderboard-filter-round"
+        type="number"
+        min="0"
+        placeholder="Min wins…"
+        (input)="onFilterMinWinsInput($any($event.target).value)" />
+    </div>
+  }
 
   <div class="w-full max-w-md bg-gray-800 bg-opacity-50 rounded-lg shadow-lg p-6">
     @for (Player of leaderboardPlayers(); track Player.playerId) {
@@ -64,14 +72,24 @@
         (mouseenter)="onPlayerHover(Player.playerId)"
         (mouseleave)="onPlayerLeave()"
         (click)="onPlayerClick(Player.playerId)">
-        {{ currentPage() * pageSize + $index + 1 }}. {{ Player.name }} - {{ Player.wins }} wins
+        @if (activeTab() === 'fame') {
+          {{ currentPage() * pageSize + $index + 1 }}. {{ Player.name }} — {{ Player.losses }} losses
+        } @else {
+          {{ currentPage() * pageSize + $index + 1 }}. {{ Player.name }} - {{ Player.wins }} wins
+        }
         @if (isPinned(Player.playerId)) {
           <span class="text-amber-500 text-sm ml-1">📌</span>
         }
       </div>
     }
     @if (leaderboardPlayers().length === 0) {
-      <p class="text-gray-500 text-sm text-center py-2">No players match the current filters.</p>
+      <p class="text-gray-500 text-sm text-center py-2">
+        @if (activeTab() === 'fame') {
+          No one has reached 12 wins yet this season. Be the first!
+        } @else {
+          No players match the current filters.
+        }
+      </p>
     }
   </div>
 
@@ -89,15 +107,17 @@
     </button>
   </div>
 
-  <!-- Rank info for current player -->
-  <div class="leaderboard-rank-row">
-    <span class="text-gray-400 text-sm">Your rank: #{{ playerRank() }} — {{ playerWins() }} wins</span>
-    @if (playerRank() > 0) {
-      <button mat-stroked-button class="jump-to-me-btn" (click)="jumpToMe()">
-        <mat-icon>my_location</mat-icon> Find me
-      </button>
-    }
-  </div>
+  <!-- Rank info for current player (All Characters tab only) -->
+  @if (activeTab() === 'all') {
+    <div class="leaderboard-rank-row">
+      <span class="text-gray-400 text-sm">Your rank: #{{ playerRank() }} — {{ playerWins() }} wins</span>
+      @if (playerRank() > 0) {
+        <button mat-stroked-button class="jump-to-me-btn" (click)="jumpToMe()">
+          <mat-icon>my_location</mat-icon> Find me
+        </button>
+      }
+    </div>
+  }
 
   <div class="flex gap-3 mt-5 flex-wrap justify-center">
     <button mat-raised-button class="chungus-modal-btn text-2xl" (click)="goToHome()">
@@ -105,6 +125,9 @@
     </button>
     <button mat-stroked-button class="replays-btn" (click)="openReplays(originalPlayerId(), 'My')">
       <mat-icon>history</mat-icon> My Replays
+    </button>
+    <button mat-stroked-button class="replays-btn" (click)="openGameStats(originalPlayerId(), playerName())">
+      <mat-icon>insights</mat-icon> My Game Stats
     </button>
   </div>
 </div>
@@ -154,6 +177,9 @@
     <span class="build-panel-title">{{ build.name }} — {{ build.wins }} wins</span>
     <button mat-stroked-button class="replays-btn build-panel-replays-btn" (mousedown)="$event.stopPropagation()" (click)="openReplays(build.originalPlayerId, build.name)">
       <mat-icon>history</mat-icon> Replays
+    </button>
+    <button mat-stroked-button class="replays-btn build-panel-replays-btn" (mousedown)="$event.stopPropagation()" (click)="openGameStats(build.originalPlayerId, build.name)">
+      <mat-icon>insights</mat-icon> Game Stats
     </button>
     @if (pinnedId !== undefined) {
       <button class="build-panel-close" (mousedown)="$event.stopPropagation()" (click)="unpinPlayer(pinnedId)" title="Unpin">×</button>

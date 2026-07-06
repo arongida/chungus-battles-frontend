@@ -16,7 +16,7 @@ import {
 import { isPlatformBrowser } from '@angular/common';
 import { Overlay, OverlayRef } from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
-import { ItemCardComponent } from '../components/item-card/item-card.component';
+import { ItemCardComponent, FreeClaimSource } from '../components/item-card/item-card.component';
 import { ItemComparisonOverlayComponent } from '../components/item-comparison-overlay/item-comparison-overlay.component';
 import Item from '../../models/colyseus-schema/ItemSchema';
 import { Player } from '../../models/colyseus-schema/PlayerSchema';
@@ -38,6 +38,9 @@ export class ItemHoverCardDirective implements OnChanges, OnDestroy {
   /** Forwarded to the popped-out ItemCardComponent's `isFreeLuckyFind` input (see
    *  ItemCardComponent — Black Market Contact's once-per-draft-phase free buy). */
   @Input({ required: false }) isFreeLuckyFind = false;
+  /** Forwarded to the popped-out ItemCardComponent's `freeClaimSource` input — picks which
+   *  talent's badge icon/color to render. */
+  @Input({ required: false }) freeClaimSource: FreeClaimSource = null;
   /** Optional hint to gate the touch overlay behind — first tap shows the hint once, later taps open the overlay. */
   @Input() hintContent?: InfoContent;
   /** When true, the popped-out ItemCardComponent shows a "vs equipped" stat comparison. */
@@ -158,6 +161,7 @@ export class ItemHoverCardDirective implements OnChanges, OnDestroy {
     componentRef.setInput('item', this.item);
     componentRef.setInput('player', this.hoverPlayer);
     componentRef.setInput('isFreeLuckyFind', this.isFreeLuckyFind);
+    componentRef.setInput('freeClaimSource', this.freeClaimSource);
     componentRef.setInput('mainCardWidth', mainW);
     componentRef.setInput('comparisonCardWidth', compW);
     componentRef.setInput('overlayRef', this.overlayRef);
@@ -200,6 +204,7 @@ export class ItemHoverCardDirective implements OnChanges, OnDestroy {
     componentRef.setInput('showBuyButton', this.showBuyInOverlay);
     componentRef.setInput('showUnequipButton', this.showUnequipInOverlay);
     componentRef.setInput('isFreeLuckyFind', this.isFreeLuckyFind);
+    componentRef.setInput('freeClaimSource', this.freeClaimSource);
     this.captureScrollEl(componentRef);
     const buySub = componentRef.instance.buyClicked.subscribe(() => {
       this.buyFromPopup.emit();

@@ -42,6 +42,13 @@ export class Player extends Schema {
   @type('number') private _defense: number = 0;
   @type('number') private _attackSpeed: number = 0;
   @type('boolean') invincible: boolean = false;
+  @type('number') losses: number = 0;
+  // Comrade: true while a free-item claim is available for the current shop (see backend
+  // TalentBehaviors.ts / PlayerSchema.ts) — lets the client present any shop item as claimable-free.
+  @type('boolean') comradeFreeClaim: boolean = false;
+  // Gold Genie: same latch as comradeFreeClaim, but the client only honors it on merchant-class
+  // shop items (see backend TalentBehaviors.ts GOLD_GENIE).
+  @type('boolean') goldGenieFreeClaim: boolean = false;
   // Frontend-only fields not present in backend schema (placed last to preserve index alignment)
   @type([ItemCollection]) activeItemCollections: ArraySchema<ItemCollection> =
     new ArraySchema<ItemCollection>();

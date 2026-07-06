@@ -46,4 +46,9 @@
     <span class="fst-col">{{ stats.player.attacksDodged }}</span>
     <span class="fst-col">{{ stats.enemy.attacksDodged }}</span>
   </div>
+  <div class="fst-row">
+    <span class="fst-label">✨ Blocked by invulnerability</span>
+    <span class="fst-col">{{ fmt(stats.player.damageBlockedByInvincible || 0) }}</span>
+    <span class="fst-col">{{ fmt(stats.enemy.damageBlockedByInvincible || 0) }}</span>
+  </div>
 </div>

@@ -49,7 +49,7 @@
 
 <!-- Fight speed toggle -->
 @if (player()) {
-  <div class="speed-group" title="Fight speed">
+  <div class="speed-group" title="Fight speed" [appInfoHint]="fightSpeedHint">
     @for (s of fightSpeeds; track s) {
       <button (click)="setSpeed(s)" [class.active]="fightSpeed() === s">{{ s }}×</button>
     }
@@ -113,11 +113,12 @@
         }
       </p>
     }
-    @if (battleStats(); as stats) {
-      <app-fight-stats-table class="block mb-3" [playerName]="player()?.name ?? 'You'" [enemyName]="enemy()?.name ?? 'Enemy'" [stats]="stats">
-      </app-fight-stats-table>
-    }
     <div class="flex flex-col sm:flex-row gap-3 justify-center">
+      @if (battleStats()) {
+        <button mat-stroked-button class="version-win-secondary-btn" (click)="openStats()">
+          Stats
+        </button>
+      }
       @if (battleReplayId()) {
         <a mat-stroked-button class="version-win-secondary-btn" [routerLink]="['/replay', battleReplayId()]" target="_blank">
           Watch Replay
@@ -163,58 +164,28 @@
 </div>
 }
 
-<!-- Version record -->
-@if (versionWin() && !versionWinMinimized()) {
+<!-- Game won (12 wins) -->
+@if (gameWin() && !gameWinMinimized()) {
 <div class="fixed inset-0 z-[9999] flex items-center justify-center chungus-backdrop">
   <div class="chungus-card text-center relative">
-    <button class="end-modal-dismiss" (click)="versionWinMinimized.set(true)" title="Dismiss to review combat log">×</button>
-    <div class="chungus-modal-icon">🏆</div>
-    <h2 class="chungus-modal-title">Season {{ versionWinSeason() || '' }} Record!</h2>
+    <button class="end-modal-dismiss" (click)="gameWinMinimized.set(true)" title="Dismiss to review combat log">×</button>
+    <div class="chungus-modal-icon top-win-icon">🏆</div>
+    <h2 class="chungus-modal-title top-win-shimmer">GAME WON!</h2>
+    <p class="top-win-subtitle">12 WINS — A TRUE CHUNGERION!</p>
     <p class="chungus-modal-body">
-      You reached <span style="color: var(--cm-amber-light); font-weight: 700">{{ versionWins() }} wins</span> — the best of Season {{ versionWinSeason() || '' }}!<br>
-      Keep going to challenge the all-time record, or end your run here.
+      {{ gameWinWins() }} wins · {{ gameWinLosses() }} losses<br>
+      You've earned your place on the Wall of Fame.
     </p>
-    <div class="flex flex-col sm:flex-row gap-3 justify-center">
-      <button mat-raised-button class="chungus-modal-btn" (click)="handleVersionWinContinue()">
-        Continue for All-Time
-      </button>
-      <button mat-stroked-button class="version-win-secondary-btn" (click)="handleVersionWinAccept()">
-        End Run Here
-      </button>
-    </div>
-  </div>
-</div>
-}
-@if (versionWin() && versionWinMinimized()) {
-<div class="fixed bottom-4 left-1/2 -translate-x-1/2 z-[9999]">
-  <button class="end-pill" (click)="versionWinMinimized.set(false)">
-    🏆 Season {{ versionWinSeason() || '' }} Record — tap to continue
-  </button>
-</div>
-}
-
-<!-- All-time #1 -->
-@if (topWin() && !topWinMinimized()) {
-<div class="fixed inset-0 z-[9999] flex items-center justify-center chungus-backdrop">
-  <div class="chungus-card text-center relative">
-    <button class="end-modal-dismiss" (click)="topWinMinimized.set(true)" title="Dismiss to review combat log">×</button>
-    <div class="chungus-modal-icon top-win-icon">👑</div>
-    <h2 class="chungus-modal-title top-win-shimmer">ALL-TIME #1 CHUNGERION!</h2>
-    <p class="top-win-subtitle">CHUNGRATULATIONS!</p>
-    <p class="chungus-modal-body">
-      You are the greatest Chungerion to ever live.<br>
-      Your legend is eternal.
-    </p>
-    <button mat-raised-button class="chungus-modal-btn" (click)="handleTopWinExit()">
+    <button mat-raised-button class="chungus-modal-btn" (click)="handleGameWinExit()">
       Claim Your Glory
     </button>
   </div>
 </div>
 }
-@if (topWin() && topWinMinimized()) {
+@if (gameWin() && gameWinMinimized()) {
 <div class="fixed bottom-4 left-1/2 -translate-x-1/2 z-[9999]">
-  <button class="end-pill" (click)="topWinMinimized.set(false)">
-    👑 All-Time #1 — tap to continue
+  <button class="end-pill" (click)="gameWinMinimized.set(false)">
+    🏆 Game Won — tap to continue
   </button>
 </div>
 }

@@ -223,7 +223,7 @@ export class ReplayRoomComponent implements OnInit, AfterViewInit, OnDestroy {
       },
       onEndBattle: (msg) => { this.battleResult.set(msg?.result ?? 'win'); this.showResultBanner.set(true); },
       onGameOver: (msg) => { this.battleResult.set(msg?.includes('lose') || msg?.toLowerCase().includes('lost') ? 'lose' : 'win'); this.showResultBanner.set(true); },
-      onVersionWin: (_msg) => { this.battleResult.set('win'); this.showResultBanner.set(true); },
+      onGameWin: (_msg) => { this.battleResult.set('win'); this.showResultBanner.set(true); },
       applyHpDelta: (playerId, damage, healing) => {
         const p = this.player();
         const e = this.enemy();

@@ -22,6 +22,7 @@ import {
 } from '../../../common/services/sounds.service';
 import {
   ItemCardComponent,
+  FreeClaimSource,
 } from '../../../common/components/item-card/item-card.component';
 import {
   CharacterDetailsService,
@@ -100,10 +101,26 @@ export class ShopComponent {
     return item.luckyFind && item.price === 0;
   }
 
+  /** Which talent (if any) makes this item claimable for free — a Black Market Contact lucky
+   *  find, Gold Genie's per-shop free claim (merchant-class items only), or Comrade's per-shop
+   *  free-item claim (any unsold item). Narrowest/rarest source wins when more than one applies
+   *  to the same item. Server-side logic in TalentBehaviors.ts / DraftRoom.buyItem. */
+  freeClaimSource(item: Item): FreeClaimSource {
+    if (this.isFreeLuckyFind(item)) return 'lucky-find';
+    if (this.player.goldGenieFreeClaim && item.class === 'merchant' && !item.sold) return 'gold-genie';
+    if (this.player.comradeFreeClaim && !item.sold) return 'comrade';
+    return null;
+  }
+
+  /** True if this item is claimable for free by any source — see freeClaimSource. */
+  isFreeClaimable(item: Item): boolean {
+    return this.freeClaimSource(item) !== null;
+  }
+
   getItemInfoHint(item: Item): InfoContent {
     const isUpgrade = item.upgradePreview;
-    const isFree = this.isFreeLuckyFind(item);
-    const costText = isFree ? 'Free — claim your Black Market lucky find!' : `${item.price} gold`;
+    const isFree = this.isFreeClaimable(item);
+    const costText = isFree ? 'Free — claim your item!' : `${item.price} gold`;
     if (isUpgrade) {
       return {
         id: 'upgrade-item',

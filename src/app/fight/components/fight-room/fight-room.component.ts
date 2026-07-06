@@ -22,8 +22,8 @@ import {
   LossRewardOptions,
   LossRewardResultMessage,
   FightStatsMessage,
+  GameWinMessage,
 } from '../../../models/types/MessageTypes';
-import { FightStatsTableComponent } from '../../../common/components/fight-stats-table/fight-stats-table.component';
 import { CombatLogEntry } from '../../../models/types/CombatLogEntry';
 import { CombatLogComponent } from '../combat-log/combat-log.component';
 import { DraftService } from '../../../draft/services/draft.service';
@@ -32,6 +32,8 @@ import { Router, RouterLink } from '@angular/router';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatDialog } from '@angular/material/dialog';
+import { FightStatsDialogComponent } from '../../../common/components/fight-stats-dialog/fight-stats-dialog.component';
 import { triggerAvatarHit, triggerCelebrationFireworks } from '../../../common/TriggerAnimations';
 import { RoundInfoComponent } from '../../../common/components/round-info/round-info.component';
 import { CharacterDetailsComponent } from '../../../common/components/character-details/character-details.component';
@@ -39,6 +41,7 @@ import { SkillIconsComponent } from '../../../common/components/skill-icons/skil
 import { DraftToolbarComponent } from '../../../common/components/draft-toolbar/draft-toolbar.component';
 import { MusicOptions, SoundOptions, SoundsService } from '../../../common/services/sounds.service';
 import { DraggablePanelDirective } from '../../../common/directives/draggable-panel.directive';
+import { InfoHintDirective } from '../../../common/directives/info-hint.directive';
 import { PanelLayoutService } from '../../../common/services/panel-layout.service';
 import { AnimationContext, FightAnimationService } from '../../services/fight-animation.service';
 import { InfoBoxService } from '../../../common/services/info-box.service';
@@ -47,8 +50,8 @@ import {
   battleLostHint,
   battleDrawHint,
   runOverHint,
-  versionWinHint,
-  topWinHint,
+  gameWinHint,
+  fightSpeedHint,
 } from '../../../common/components/draft-toolbar/draft-toolbar.hints';
 
 // Creates a typed Player from any schema object (typed or reflection-decoded generic).
@@ -75,8 +78,8 @@ function coercePlayer(src: any): Player {
     RoundInfoComponent,
     CharacterDetailsComponent,
     DraggablePanelDirective,
+    InfoHintDirective,
     RouterLink,
-    FightStatsTableComponent,
   ],
   templateUrl: './fight-room.component.html',
   styleUrl: './fight-room.component.scss',
@@ -89,12 +92,10 @@ export class FightRoomComponent implements OnInit {
   battleOver = false;
   playerBeingHit = signal(false);
   enemyBeingHit = signal(false);
-  versionWin = signal(false);
-  versionWins = signal(0);
-  versionWinSeason = signal(0);
-  versionWinMinimized = signal(false);
-  topWin = signal(false);
-  topWinMinimized = signal(false);
+  gameWin = signal(false);
+  gameWinWins = signal(0);
+  gameWinLosses = signal(0);
+  gameWinMinimized = signal(false);
   battleResultVisible = signal(false);
   battleResult = signal<'win' | 'lose' | 'draw'>('win');
   battleResultMinimized = signal(false);
@@ -109,10 +110,7 @@ export class FightRoomComponent implements OnInit {
   countdownText = signal<string | null>(null);
   fightSpeed = signal(1);
   readonly fightSpeeds = FightService.ALLOWED_FIGHT_SPEEDS;
-
-  // Set true by handleVersionWinContinue so the server's follow-up end_battle
-  // navigates directly to draft without showing the battle result modal.
-  private suppressNextBattleResult = false;
+  readonly fightSpeedHint = fightSpeedHint;
 
   constructor(
     private fightService: FightService,
@@ -125,6 +123,7 @@ export class FightRoomComponent implements OnInit {
     private fightAnimationService: FightAnimationService,
     private infoBoxService: InfoBoxService,
     private panelLayoutService: PanelLayoutService,
+    private dialog: MatDialog,
   ) {
     effect(() => {
       const room = this.fightService.room();
@@ -154,14 +153,7 @@ export class FightRoomComponent implements OnInit {
             const replayId = msg?.replayId ?? null;
             const stats = msg?.stats ?? null;
             this.battleOver = true;
-            this.versionWin.set(false);
             localStorage.setItem('battleEndState', JSON.stringify({ type: 'end_battle', result, lossReward, replayId, stats }));
-            if (this.suppressNextBattleResult) {
-              this.suppressNextBattleResult = false;
-              const p = this.player();
-              if (p) this.endBattle(p.playerId, p.name, false, false);
-              return;
-            }
             if (result === 'win') this.soundsService.playSound(SoundOptions.CHEER);
             else if (result === 'lose') this.soundsService.playSound(SoundOptions.JEER);
             this.lossRewardOptions.set(lossReward);
@@ -179,33 +171,24 @@ export class FightRoomComponent implements OnInit {
           onGameOver: (message) => {
             this.gameOver = true;
             this.battleOver = true;
-            if (message.includes('#1')) {
-              this.soundsService.playSound(SoundOptions.CHEER);
-              triggerCelebrationFireworks(this.renderer, this.platformId, 7,
-                () => this.soundsService.playSound(SoundOptions.FIREWORK));
-              this.topWin.set(true);
-              this.topWinMinimized.set(false);
-              localStorage.setItem('battleEndState', JSON.stringify({ type: 'top_win', message }));
-              this.infoBoxService.setPageDefault(topWinHint);
-            } else {
-              this.gameOverMessage.set(message);
-              this.gameOverMinimized.set(false);
-              this.gameOverVisible.set(true);
-              localStorage.setItem('battleEndState', JSON.stringify({ type: 'game_over', message }));
-              this.infoBoxService.setPageDefault(runOverHint);
-            }
+            this.gameOverMessage.set(message);
+            this.gameOverMinimized.set(false);
+            this.gameOverVisible.set(true);
+            localStorage.setItem('battleEndState', JSON.stringify({ type: 'game_over', message }));
+            this.infoBoxService.setPageDefault(runOverHint);
           },
-          onVersionWin: (message) => {
+          onGameWin: (message) => {
             this.soundsService.playSound(SoundOptions.CHEER);
-            triggerCelebrationFireworks(this.renderer, this.platformId, 4,
+            triggerCelebrationFireworks(this.renderer, this.platformId, 7,
               () => this.soundsService.playSound(SoundOptions.FIREWORK));
-            this.versionWin.set(true);
-            this.versionWinMinimized.set(false);
-            this.versionWins.set(message.wins);
-            this.versionWinSeason.set(message.season ?? 0);
+            this.gameWin.set(true);
+            this.gameWinMinimized.set(false);
+            this.gameWinWins.set(message.wins);
+            this.gameWinLosses.set(message.losses ?? 0);
+            this.gameOver = true;
             this.battleOver = true;
-            localStorage.setItem('battleEndState', JSON.stringify({ type: 'version_win', wins: message.wins, season: message.season }));
-            this.infoBoxService.setPageDefault(versionWinHint);
+            localStorage.setItem('battleEndState', JSON.stringify({ type: 'game_win', wins: message.wins, losses: message.losses }));
+            this.infoBoxService.setPageDefault(gameWinHint);
           },
         };
 
@@ -276,8 +259,8 @@ export class FightRoomComponent implements OnInit {
           }
         });
 
-        room.onMessage('version_win', (message: any) => {
-          this.fightAnimationService.dispatch(animCtx, 'version_win', message);
+        room.onMessage('game_win', (message: any) => {
+          this.fightAnimationService.dispatch(animCtx, 'game_win', message);
         });
 
         // All handlers registered and initial state applied — safe to restore now.
@@ -302,25 +285,10 @@ export class FightRoomComponent implements OnInit {
     this.fightService.setFightSpeed(speed);
   }
 
-  handleVersionWinContinue(): void {
-    const room = this.fightService.room();
-    if (room) room.send('continue_run');
-    this.suppressNextBattleResult = true;
-    this.versionWin.set(false);
-  }
-
-  handleVersionWinAccept(): void {
-    const room = this.fightService.room();
-    if (room) room.send('accept_win');
-    this.versionWin.set(false);
-    const p = this.player();
-    if (p) this.endBattle(p.playerId, p.name, true, true);
-  }
-
-  handleTopWinExit(): void {
+  handleGameWinExit(): void {
     const player = this.player();
     if (!player) return;
-    this.topWin.set(false);
+    this.gameWin.set(false);
     this.endBattle(player.playerId, player.name, true, true);
   }
 
@@ -344,6 +312,20 @@ export class FightRoomComponent implements OnInit {
     if (p) this.endBattle(p.playerId, p.name, false, false);
   }
 
+  openStats(): void {
+    const stats = this.battleStats();
+    if (!stats) return;
+    this.dialog.open(FightStatsDialogComponent, {
+      data: {
+        playerName: this.player()?.name ?? 'You',
+        enemyName: this.enemy()?.name ?? 'Enemy',
+        stats,
+      },
+      backdropClass: 'chungus-dialog-backdrop',
+      autoFocus: false,
+    });
+  }
+
   handleGameOverExit(): void {
     this.gameOverVisible.set(false);
     const p = this.player();
@@ -354,7 +336,7 @@ export class FightRoomComponent implements OnInit {
     const raw = localStorage.getItem('battleEndState');
     if (!raw) return;
     try {
-      const state = JSON.parse(raw) as { type: string; message?: string; wins?: number; season?: number; result?: string; lossReward?: LossRewardOptions & { outcome?: LossRewardResultMessage }; replayId?: string | null; stats?: FightStatsMessage | null };
+      const state = JSON.parse(raw) as { type: string; message?: string; wins?: number; losses?: number; season?: number; result?: string; lossReward?: LossRewardOptions & { outcome?: LossRewardResultMessage }; replayId?: string | null; stats?: FightStatsMessage | null };
       const player = this.player();
       if (!player) return;
       if (state.type === 'game_over') {
@@ -378,17 +360,16 @@ export class FightRoomComponent implements OnInit {
         this.infoBoxService.setPageDefault(
           result === 'win' ? battleWonHint : result === 'lose' ? battleLostHint : battleDrawHint
         );
-      } else if (state.type === 'version_win') {
-        this.battleOver = true;
-        this.versionWin.set(true);
-        this.versionWins.set(state.wins ?? 0);
-        this.versionWinSeason.set(state.season ?? 0);
-        this.infoBoxService.setPageDefault(versionWinHint);
-      } else if (state.type === 'top_win') {
+      } else if (state.type === 'game_win' || state.type === 'version_win' || state.type === 'top_win') {
+        // 'version_win'/'top_win' are legacy pre-Season-16 localStorage entries that may
+        // survive a deploy across a page refresh — map them onto the new win screen too.
         this.gameOver = true;
         this.battleOver = true;
-        this.topWin.set(true);
-        this.infoBoxService.setPageDefault(topWinHint);
+        this.gameWin.set(true);
+        this.gameWinMinimized.set(false);
+        this.gameWinWins.set(state.wins ?? 0);
+        this.gameWinLosses.set(state.losses ?? 0);
+        this.infoBoxService.setPageDefault(gameWinHint);
       }
     } catch {}
   }

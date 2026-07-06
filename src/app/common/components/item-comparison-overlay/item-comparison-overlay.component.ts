@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, Output, signal } from '@angular/core';
 import { OverlayRef } from '@angular/cdk/overlay';
 import Item from '../../../models/colyseus-schema/ItemSchema';
 import { Player } from '../../../models/colyseus-schema/PlayerSchema';
-import { ItemCardComponent } from '../item-card/item-card.component';
+import { ItemCardComponent, FreeClaimSource } from '../item-card/item-card.component';
 
 interface EquippedSlot { slot: string; item: Item; }
 
@@ -17,6 +17,7 @@ export class ItemComparisonOverlayComponent {
   @Input({ required: true }) item!: Item;
   @Input({ required: true }) player!: Player;
   @Input() isFreeLuckyFind = false;
+  @Input() freeClaimSource: FreeClaimSource = null;
   @Input() mainCardWidth = 260;
   /** Width of each card when two are shown side by side (may differ from mainCardWidth on narrow screens). */
   @Input() comparisonCardWidth = 260;

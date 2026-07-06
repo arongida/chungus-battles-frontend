@@ -15,6 +15,7 @@ import { DraggablePanelDirective } from '../common/directives/draggable-panel.di
 import { PlayerBuildCardComponent } from '../common/components/player-build-card/player-build-card.component';
 import { MatDialog } from '@angular/material/dialog';
 import { FightStatsDialogComponent } from '../common/components/fight-stats-dialog/fight-stats-dialog.component';
+import { GameStatsResult } from '../models/types/MessageTypes';
 
 @Component({
   selector: 'app-end',
@@ -33,7 +34,8 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
 
   filterName = signal<string>('');
   filterAvatar = signal<string>('');
-  filterCurrentVersionOnly = signal<boolean>(true);
+  filterMinWins = signal<number | null>(null);
+  activeTab = signal<'fame' | 'all'>('fame');
   currentSeason = signal<number>(0);
 
   readonly avatarOptions: { label: string; value: string }[] = [
@@ -68,6 +70,7 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
   fallingItems = itemPictures;
 
   private buildCache = new Map<number, Player>();
+  private gameStatsCache = new Map<number, GameStatsResult>();
   private pinnedPanelLeftMap = new Map<number, number>();
   private intervalId: any;
   private fallingItemsIntervalId: any;
@@ -193,19 +196,31 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
       id: 'end-of-run',
       title: 'End of Run',
       entries: [
-        { icon: '🏆', label: 'Top Fighters', text: 'Hover or click a player to inspect their build.' },
-        { icon: '⭐', label: 'Your Rank', text: 'Your rank is based on total wins. Keep playing to climb higher!' },
+        { icon: '🏆', label: 'Wall of Fame', text: 'Characters who reached 12 wins, ranked by fewest losses.' },
+        { icon: '🔍', label: 'All Characters', text: 'Search every character by name, class, or minimum wins, and inspect their build.' },
+        { icon: '📈', label: 'Game Stats', text: 'Click Game Stats next to a Replays button to see a character\'s cumulative stats across the whole run.' },
         { icon: '🔄', label: 'Play Again', text: 'Hit RESTART to try a new run with a different character or strategy.' },
       ],
     });
   }
 
   private nameDebounceTimer: any;
+  private minWinsDebounceTimer: any;
 
   onFilterNameInput(value: string): void {
     this.filterName.set(value);
     clearTimeout(this.nameDebounceTimer);
     this.nameDebounceTimer = setTimeout(() => {
+      this.currentPage.set(0);
+      this.fetchLeaderboard();
+    }, 300);
+  }
+
+  onFilterMinWinsInput(value: string): void {
+    const n = value.trim() === '' ? null : Number(value);
+    this.filterMinWins.set(n !== null && Number.isFinite(n) ? n : null);
+    clearTimeout(this.minWinsDebounceTimer);
+    this.minWinsDebounceTimer = setTimeout(() => {
       this.currentPage.set(0);
       this.fetchLeaderboard();
     }, 300);
@@ -217,9 +232,8 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
     this.fetchLeaderboard();
   }
 
-
-  setVersionFilter(currentOnly: boolean): void {
-    this.filterCurrentVersionOnly.set(currentOnly);
+  setTab(tab: 'fame' | 'all'): void {
+    this.activeTab.set(tab);
     this.currentPage.set(0);
     this.fetchLeaderboard();
   }
@@ -241,9 +255,17 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
   private async fetchLeaderboard(rankForOriginalPlayerId?: number): Promise<void> {
     try {
       const params = new URLSearchParams({ limit: String(this.pageSize), skip: String(this.currentPage() * this.pageSize) });
-      if (this.filterCurrentVersionOnly()) params.set('currentVersion', 'true');
+
+      if (this.activeTab() === 'fame') {
+        const result = await fetch(`${environment.gameServer}/wallOfFame?${params}`).then(r => r.json());
+        this.leaderboardPlayers.set(Array.isArray(result.players) ? result.players : []);
+        this.totalCount.set(typeof result.total === 'number' ? result.total : 0);
+        return;
+      }
+
       if (this.filterName()) params.set('name', this.filterName());
       if (this.filterAvatar()) params.set('avatar', this.filterAvatar());
+      if (this.filterMinWins() !== null) params.set('minWins', String(this.filterMinWins()));
       const origId = rankForOriginalPlayerId ?? this.originalPlayerId();
       if (origId) params.set('rankForOriginalPlayerId', String(origId));
       const result = await fetch(`${environment.gameServer}/leaderboard?${params}`).then(r => r.json());
@@ -313,8 +335,33 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
     if (rank <= 0) return;
     this.filterName.set('');
     this.filterAvatar.set('');
+    this.filterMinWins.set(null);
     this.currentPage.set(Math.floor((rank - 1) / this.pageSize));
     this.fetchLeaderboard();
+  }
+
+  async openGameStats(originalPlayerId: number, name: string): Promise<void> {
+    let result = this.gameStatsCache.get(originalPlayerId);
+    if (!result) {
+      try {
+        result = await fetch(`${environment.gameServer}/gameStats?originalPlayerId=${originalPlayerId}`).then(r => r.json());
+        this.gameStatsCache.set(originalPlayerId, result!);
+      } catch (e) {
+        console.error('Error loading game stats:', e);
+        return;
+      }
+    }
+    if (!result || result.fights === 0) return;
+    this.dialog.open(FightStatsDialogComponent, {
+      data: {
+        playerName: name,
+        enemyName: 'All Opponents',
+        stats: result.stats,
+        subtitle: `${result.fights} fights — ${result.wins}W / ${result.losses}L / ${result.draws}D`,
+      },
+      backdropClass: 'chungus-dialog-backdrop',
+      autoFocus: false,
+    });
   }
 
   goToHome() {
@@ -353,6 +400,7 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.intervalId) clearInterval(this.intervalId);
     if (this.fallingItemsIntervalId) clearInterval(this.fallingItemsIntervalId);
     clearTimeout(this.nameDebounceTimer);
+    clearTimeout(this.minWinsDebounceTimer);
     this.infoBoxService.clearPageDefault();
     this.infoBoxService.clearContent();
   }

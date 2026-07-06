@@ -54,7 +54,7 @@ function coercePlayer(src: any): Player {
   });
   // Plain @type('number') fields without user-defined backing properties are stored via
   // Colyseus prototype getters/setters and won't appear in Object.keys — copy them explicitly.
-  const plainFields: (keyof Player)[] = ['lives', 'playerId', 'originalPlayerId', 'xp', 'maxXp', 'round', 'wins', 'maxHp', 'income', 'hpRegen', 'dodgeRate', 'flatDmgReduction', 'refreshShopCost', 'gameVersion'];
+  const plainFields: (keyof Player)[] = ['lives', 'playerId', 'originalPlayerId', 'xp', 'maxXp', 'round', 'wins', 'maxHp', 'income', 'hpRegen', 'dodgeRate', 'flatDmgReduction', 'refreshShopCost', 'gameVersion', 'comradeFreeClaim', 'goldGenieFreeClaim'];
   for (const field of plainFields) {
     const val = (src as any)[field];
     if (val !== undefined) (dest as any)[field] = val;

@@ -21,7 +21,8 @@
             [touchOnly]="true"
             [hoverCardDisabled]="draggingCard || buyingItem === item"
             [hintContent]="getItemInfoHint(item)"
-            [isFreeLuckyFind]="isFreeLuckyFind(item)"
+            [isFreeLuckyFind]="isFreeClaimable(item)"
+            [freeClaimSource]="freeClaimSource(item)"
             [showComparison]="true"
             (buyFromPopup)="buyItem(item)"
             [appInfoHint]="getItemInfoHint(item)" [gatesAction]="true"
@@ -30,7 +31,8 @@
                            [setTooltipBasedOnInventory]="true"
                            [showDetails]="isItemHovered(item)"
                            [showBuyButton]="isItemHovered(item)"
-                           [isFreeLuckyFind]="isFreeLuckyFind(item)"
+                           [isFreeLuckyFind]="isFreeClaimable(item)"
+                           [freeClaimSource]="freeClaimSource(item)"
                            (buyClicked)="buyItem(item)"></app-item-card>
           </div>
         </div>

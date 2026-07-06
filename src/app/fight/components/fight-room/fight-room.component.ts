@@ -24,7 +24,6 @@ import {
   FightStatsMessage,
   GameWinMessage,
 } from '../../../models/types/MessageTypes';
-import { FightStatsTableComponent } from '../../../common/components/fight-stats-table/fight-stats-table.component';
 import { CombatLogEntry } from '../../../models/types/CombatLogEntry';
 import { CombatLogComponent } from '../combat-log/combat-log.component';
 import { DraftService } from '../../../draft/services/draft.service';
@@ -33,6 +32,8 @@ import { Router, RouterLink } from '@angular/router';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatDialog } from '@angular/material/dialog';
+import { FightStatsDialogComponent } from '../../../common/components/fight-stats-dialog/fight-stats-dialog.component';
 import { triggerAvatarHit, triggerCelebrationFireworks } from '../../../common/TriggerAnimations';
 import { RoundInfoComponent } from '../../../common/components/round-info/round-info.component';
 import { CharacterDetailsComponent } from '../../../common/components/character-details/character-details.component';
@@ -79,7 +80,6 @@ function coercePlayer(src: any): Player {
     DraggablePanelDirective,
     InfoHintDirective,
     RouterLink,
-    FightStatsTableComponent,
   ],
   templateUrl: './fight-room.component.html',
   styleUrl: './fight-room.component.scss',
@@ -123,6 +123,7 @@ export class FightRoomComponent implements OnInit {
     private fightAnimationService: FightAnimationService,
     private infoBoxService: InfoBoxService,
     private panelLayoutService: PanelLayoutService,
+    private dialog: MatDialog,
   ) {
     effect(() => {
       const room = this.fightService.room();
@@ -309,6 +310,20 @@ export class FightRoomComponent implements OnInit {
     this.battleResultVisible.set(false);
     const p = this.player();
     if (p) this.endBattle(p.playerId, p.name, false, false);
+  }
+
+  openStats(): void {
+    const stats = this.battleStats();
+    if (!stats) return;
+    this.dialog.open(FightStatsDialogComponent, {
+      data: {
+        playerName: this.player()?.name ?? 'You',
+        enemyName: this.enemy()?.name ?? 'Enemy',
+        stats,
+      },
+      backdropClass: 'chungus-dialog-backdrop',
+      autoFocus: false,
+    });
   }
 
   handleGameOverExit(): void {

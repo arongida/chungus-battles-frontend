@@ -113,11 +113,12 @@
         }
       </p>
     }
-    @if (battleStats(); as stats) {
-      <app-fight-stats-table class="block mb-3" [playerName]="player()?.name ?? 'You'" [enemyName]="enemy()?.name ?? 'Enemy'" [stats]="stats">
-      </app-fight-stats-table>
-    }
     <div class="flex flex-col sm:flex-row gap-3 justify-center">
+      @if (battleStats()) {
+        <button mat-stroked-button class="version-win-secondary-btn" (click)="openStats()">
+          Stats
+        </button>
+      }
       @if (battleReplayId()) {
         <a mat-stroked-button class="version-win-secondary-btn" [routerLink]="['/replay', battleReplayId()]" target="_blank">
           Watch Replay

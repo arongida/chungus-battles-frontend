@@ -14,6 +14,10 @@ import {
 } from '../../../models/colyseus-schema/PlayerSchema';
 import { ItemRarity, ItemType } from '../../../models/types/ItemTypes';
 
+/** Which talent granted a shop item's free claim — drives the icon/color of the "FREE" badge
+ *  (see ItemCardComponent.FREE_CLAIM_META). `null` falls back to the default clover/green look. */
+export type FreeClaimSource = 'lucky-find' | 'gold-genie' | 'comrade' | null;
+
 @Component({
   selector: 'app-item-card',
   standalone: true,
@@ -33,6 +37,9 @@ export class ItemCardComponent {
   /** True when this is a lucky-find shop slot the player can claim via their
    *  once-per-draft-phase Black Market Contact free buy (see DraftState.hasFreeLuckyFind). */
   @Input({ required: false }) isFreeLuckyFind = false;
+  /** Which talent granted the free claim above — picks the badge icon/color. `null` (e.g. when
+   *  a caller sets isFreeLuckyFind without specifying a source) falls back to the clover. */
+  @Input({ required: false }) freeClaimSource: FreeClaimSource = null;
   @Output() buyClicked = new EventEmitter<void>();
   @Output() unequipClicked = new EventEmitter<void>();
 
@@ -52,6 +59,22 @@ export class ItemCardComponent {
     dodgeRate:        { label: 'Dodge',            emoji: '🦵', colorClass: 'text-green-400',  decimals: 0 },
     hpRegen:          { label: 'Regen',            emoji: '🧪', colorClass: 'text-orange-500', decimals: 2 },
   };
+
+  // Icon/color per free-claim source — Black Market Contact keeps the original clover/green;
+  // Comrade and Gold Genie get their own badge so overlapping free-item talents are distinguishable.
+  private static readonly FREE_CLAIM_META: Record<Exclude<FreeClaimSource, null>, { icon: string; colorClass: string }> = {
+    'lucky-find': { icon: '🍀', colorClass: 'text-green-400' },
+    'gold-genie': { icon: '🪙', colorClass: 'text-amber-400' },
+    'comrade':    { icon: '★',  colorClass: 'text-red-500' },
+  };
+
+  get freeClaimIcon(): string {
+    return this.freeClaimSource ? ItemCardComponent.FREE_CLAIM_META[this.freeClaimSource].icon : '🍀';
+  }
+
+  get freeClaimColorClass(): string {
+    return this.freeClaimSource ? ItemCardComponent.FREE_CLAIM_META[this.freeClaimSource].colorClass : 'text-green-400';
+  }
 
   get previewRows(): { label: string; valueText: string; colorClass: string }[] {
     const rp = this.item.rollPreview;

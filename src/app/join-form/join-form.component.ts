@@ -56,7 +56,7 @@ export class JoinFormComponent implements AfterViewInit, OnDestroy, OnInit {
   private readonly classOptions: ClassOption[] = [
     { avatar: 'assets/warrior_01.png', icon: '⚔️', name: 'Warrior', tagline: 'Value', effect: '4 lives instead of 3 — more chances' },
     { avatar: 'assets/thief_01.png', icon: '🗡️', name: 'Thief', tagline: 'Tempo', effect: 'Starts at lvl 2, extra talent + tier-2 shop' },
-    { avatar: 'assets/merchant_01.png', icon: '💰', name: 'Merchant', tagline: 'Flexibility', effect: '+3 income every round' },
+    { avatar: 'assets/merchant_01.png', icon: '💰', name: 'Merchant', tagline: 'Flexibility', effect: '+3 income' },
   ];
   fallingItems = itemPictures;
   selectedIndex = signal(1);

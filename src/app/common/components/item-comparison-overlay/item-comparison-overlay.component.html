@@ -12,6 +12,7 @@
       [showPrice]="false"
       [showBuyButton]="true"
       [isFreeLuckyFind]="isFreeLuckyFind"
+      [freeClaimSource]="freeClaimSource"
       (buyClicked)="buyClicked.emit()">
     </app-item-card>
   </div>
@@ -36,6 +37,7 @@
         [showBuyButton]="true"
         [showName]="showCardNames"
         [isFreeLuckyFind]="isFreeLuckyFind"
+        [freeClaimSource]="freeClaimSource"
         (buyClicked)="buyClicked.emit()">
       </app-item-card>
     </div>

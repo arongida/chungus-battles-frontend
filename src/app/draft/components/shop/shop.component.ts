@@ -95,10 +95,11 @@ export class ShopComponent {
     this.draggedCard = item;
   }
 
-  /** True if this lucky-find slot has been flipped to free by Black Market Contact's aura
-   *  behavior (server-side; see TalentBehaviors.ts) — once-per-draft-phase, until bought. */
+  /** True while Black Market Contact's per-shop free lucky-find claim is available and this is
+   *  an unsold lucky-find slot (server-side claim; see backend TalentBehaviors.ts MERCHANT_5B
+   *  and DraftRoom.buyItem). */
   isFreeLuckyFind(item: Item): boolean {
-    return item.luckyFind && item.price === 0;
+    return this.player.luckyFindFreeClaim && item.luckyFind && !item.sold;
   }
 
   /** Which talent (if any) makes this item claimable for free — a Black Market Contact lucky

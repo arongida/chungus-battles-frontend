@@ -175,7 +175,7 @@
               {{ itemEquipOption | titlecase }}
             </button>
           }
-          @if (!item.tags.includes('quest')) {
+          @if (!item.tags.includes('quest') && !item.tags.includes('martial_fist') && !item.tags.includes('dual_wield_copy')) {
             <button mat-button class="cd-inv-btn" [appInfoHint]="sellHint" [gatesAction]="true"
                     (click)="sellSelectedItem(item)">
               +{{ item.sellPrice }}🟡

@@ -49,6 +49,9 @@ export class Player extends Schema {
   // Gold Genie: same latch as comradeFreeClaim, but the client only honors it on merchant-class
   // shop items (see backend TalentBehaviors.ts GOLD_GENIE).
   @type('boolean') goldGenieFreeClaim: boolean = false;
+  // Black Market Contact: same latch as comradeFreeClaim, but the client only honors it on
+  // lucky-find shop items (see backend TalentBehaviors.ts MERCHANT_5B).
+  @type('boolean') luckyFindFreeClaim: boolean = false;
   // Frontend-only fields not present in backend schema (placed last to preserve index alignment)
   @type([ItemCollection]) activeItemCollections: ArraySchema<ItemCollection> =
     new ArraySchema<ItemCollection>();

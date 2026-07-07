@@ -34,8 +34,8 @@ export class ItemCardComponent {
   @Input({ required: false }) showPrice = true;
   @Input({ required: false }) showBuyButton = false;
   @Input({ required: false }) showUnequipButton = false;
-  /** True when this is a lucky-find shop slot the player can claim via their
-   *  once-per-draft-phase Black Market Contact free buy (see DraftState.hasFreeLuckyFind). */
+  /** True when this is a lucky-find shop slot the player can claim via Black Market Contact's
+   *  per-shop free buy (see Player.luckyFindFreeClaim). */
   @Input({ required: false }) isFreeLuckyFind = false;
   /** Which talent granted the free claim above — picks the badge icon/color. `null` (e.g. when
    *  a caller sets isFreeLuckyFind without specifying a source) falls back to the clover. */

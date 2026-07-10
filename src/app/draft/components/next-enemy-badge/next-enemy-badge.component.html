@@ -1,0 +1,10 @@
+@if (visible) {
+  <div class="next-enemy-badge" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()" (click)="onClick()">
+    <span class="badge-sword select-none">⚔</span>
+    <span class="badge-portrait" [style.background-image]="'url(' + getBadgeAvatar() + ')'"></span>
+    <span class="badge-name">vs {{ enemy.name }}</span>
+    @if (devPickerEnabled && fightService.selectedEnemyName()) {
+      <span class="badge-dev-tag">(dev override)</span>
+    }
+  </div>
+}

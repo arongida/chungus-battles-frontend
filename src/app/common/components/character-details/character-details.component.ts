@@ -75,6 +75,18 @@ export class CharacterDetailsComponent implements OnInit, OnDestroy {
   @Input() enemy: boolean = false;
   @Input() combat: boolean = false;
   @Input() showStats: boolean = true;
+  /** Next-Enemy Preview: identity-only reveal — hide stats/talents/equipped slots and show a
+   *  "??? — stats unknown" placeholder (plus talent/item class chips) instead. The server
+   *  already sends the preview Player with the hidden fields empty (server-side redaction);
+   *  this input only shapes the UI. Name, portrait and level DO sync at this reveal level. */
+  @Input() redacted: boolean = false;
+  /** Talent/item classes (rogue/warrior/merchant) of the redacted next opponent, duplicates
+   *  kept — deduped into ×N chips by getClassChips(). Only rendered while redacted. */
+  @Input() talentClasses: string[] = [];
+  @Input() itemClasses: string[] = [];
+  /** Forces the initial compact/detailed state (e.g. always-detailed inside the next-enemy
+   *  hover overlay/dialog), overriding the saved panel state and viewport-width default. */
+  @Input() initialExpanded?: boolean;
   /** When set, the minimized/maximized state below is persisted under this key
    *  (via PanelLayoutService) so it survives across fights and reloads. */
   @Input() panelId?: string;
@@ -113,7 +125,7 @@ export class CharacterDetailsComponent implements OnInit, OnDestroy {
       // Prefer a previously saved minimized/maximized state for this panel; otherwise fall
       // back to the width-based default: detailed on desktop (≥640 px), compact on mobile.
       const saved = this.panelId ? this.panelLayoutService.getExpanded(this.panelId) : undefined;
-      this.expanded.set(saved ?? window.innerWidth >= 640);
+      this.expanded.set(this.initialExpanded ?? saved ?? window.innerWidth >= 640);
 
       // On touch devices, collapse the panel when the user taps anywhere outside it.
       if (this.infoBoxService.isTouch) {
@@ -245,6 +257,28 @@ export class CharacterDetailsComponent implements OnInit, OnDestroy {
 
   isShowingCringe(): boolean {
     return (this.enemy && this.enemyBeingHit()) || this.playerBeingHit();
+  }
+
+  /** Dedupes a class list ("warrior","warrior","rogue") into chips with ×N counts,
+   *  preserving first-seen order. Used by the redacted next-enemy preview rows. */
+  getClassChips(classes: string[]): { name: string; count: number }[] {
+    const chips: { name: string; count: number }[] = [];
+    for (const name of classes ?? []) {
+      const existing = chips.find((c) => c.name === name);
+      if (existing) existing.count++;
+      else chips.push({ name, count: 1 });
+    }
+    return chips;
+  }
+
+  /** Class → text color, matching the game's class palette. */
+  getClassChipColor(name: string): string {
+    switch (name) {
+      case 'warrior': return 'text-red-400';
+      case 'rogue': return 'text-green-400';
+      case 'merchant': return 'text-yellow-400';
+      default: return 'text-gray-300';
+    }
   }
 
   getPlayerHp(): number {

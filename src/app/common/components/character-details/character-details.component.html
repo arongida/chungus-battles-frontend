@@ -42,7 +42,7 @@
       <div class="absolute" id="attack-{{ player.playerId }}"></div>
     </div>
 
-    @if (showStats) {
+    @if (showStats && !redacted) {
       <div id="stats" class="cd-stats" [appInfoHoverCard]="allStatsHint">
 
         <div class="col-span-2">
@@ -73,15 +73,45 @@
         <div class="cd-stat"><span class="text-green-400">🦵 {{ player.dodgeRate | number:'1.0-2' }}</span></div>
 
       </div>
+    } @else if (redacted) {
+      <!-- Next-Enemy Preview, identity-only reveal: the server never sent stats or the
+           concrete talents/items — only their classes (talentClasses/itemClasses). -->
+      <div class="cd-stats-redacted flex-1 flex flex-col items-center justify-center gap-1.5 text-slate-400 text-xs">
+        <span class="italic">??? — stats unknown</span>
+        @if (getClassChips(talentClasses).length) {
+          <div class="flex items-center justify-center gap-1 flex-wrap">
+            <span class="text-slate-500">Talents:</span>
+            @for (chip of getClassChips(talentClasses); track chip.name) {
+              <span class="px-1.5 py-0.5 rounded-full border border-slate-600 bg-slate-800 whitespace-nowrap"
+                    [ngClass]="getClassChipColor(chip.name)">
+                {{ chip.name | titlecase }}@if (chip.count > 1) { ×{{ chip.count }}}
+              </span>
+            }
+          </div>
+        }
+        @if (getClassChips(itemClasses).length) {
+          <div class="flex items-center justify-center gap-1 flex-wrap">
+            <span class="text-slate-500">Items:</span>
+            @for (chip of getClassChips(itemClasses); track chip.name) {
+              <span class="px-1.5 py-0.5 rounded-full border border-slate-600 bg-slate-800 whitespace-nowrap"
+                    [ngClass]="getClassChipColor(chip.name)">
+                {{ chip.name | titlecase }}@if (chip.count > 1) { ×{{ chip.count }}}
+              </span>
+            }
+          </div>
+        }
+      </div>
     }
   </div>
 
-  @if (player.talents.length) {
+  @if (player.talents.length && !redacted) {
     <div class="cd-divider"></div>
     <div class="cd-talents">
       <app-skill-icons [player]="player" [row]="true" [iconSizePx]="80"></app-skill-icons>
     </div>
   }
+
+  @if (!redacted) {
 
   <div class="cd-divider"></div>
 
@@ -123,6 +153,8 @@
       }
     </div>
   </div>
+
+  }
 
   <!-- Inventory (draft only) -->
   @if (!combat) {

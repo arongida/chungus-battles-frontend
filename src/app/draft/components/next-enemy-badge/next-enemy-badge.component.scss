@@ -1,0 +1,47 @@
+:host {
+  display: block;
+}
+
+.next-enemy-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  margin-bottom: 0.375rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: 9999px;
+  background: rgba(15, 23, 42, 0.85); /* slate-900-ish, matches the dark game UI */
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  color: #e2e8f0;
+  font-size: 0.75rem;
+  line-height: 1;
+  cursor: pointer;
+  user-select: none;
+}
+
+.badge-sword {
+  color: #f87171;
+}
+
+.badge-portrait {
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 9999px;
+  background-size: cover;
+  background-position: center top;
+  flex-shrink: 0;
+  border: 1px solid rgba(148, 163, 184, 0.5);
+}
+
+.badge-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 10rem;
+}
+
+.badge-dev-tag {
+  color: #fbbf24;
+  font-size: 0.625rem;
+  white-space: nowrap;
+}

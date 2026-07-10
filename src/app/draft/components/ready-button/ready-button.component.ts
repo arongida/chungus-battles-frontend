@@ -6,10 +6,11 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Talent } from '../../../models/colyseus-schema/TalentSchema';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Player } from '../../../models/colyseus-schema/PlayerSchema';
+import { NextEnemyBadgeComponent } from '../next-enemy-badge/next-enemy-badge.component';
 @Component({
   selector: 'app-ready-button',
   standalone: true,
-  imports: [MatButtonModule, MatProgressSpinnerModule, MatTooltipModule],
+  imports: [MatButtonModule, MatProgressSpinnerModule, MatTooltipModule, NextEnemyBadgeComponent],
   templateUrl: './ready-button.component.html',
   styleUrl: './ready-button.component.scss',
 })
@@ -26,6 +27,15 @@ export class ReadyButtonComponent {
   availableTalents: Talent[] = [];
   @Input({ required: true })
   player: Player = new Player();
+  /** Next-Enemy Preview pass-throughs (see DraftState.nextEnemy / next-enemy-badge). */
+  @Input({ required: false })
+  nextEnemy: Player = new Player();
+  @Input({ required: false })
+  nextEnemyRevealLevel = -1;
+  @Input({ required: false })
+  nextEnemyTalentClasses: string[] = [];
+  @Input({ required: false })
+  nextEnemyItemClasses: string[] = [];
 
   async startFight() {
     if (this.loading) return;
@@ -36,8 +46,6 @@ export class ReadyButtonComponent {
     await this.fightService.joinOrCreate(parseInt(playerId));
     this.loading = false;
   }
-
-  openCharacterDetails() {}
 
   shouldShowEquipmentWarning(): boolean {
     this.missingEquipment = false;

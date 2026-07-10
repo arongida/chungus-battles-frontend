@@ -80,6 +80,12 @@ export class DraftRoomComponent implements OnInit {
   shop = signal<Item[]>([]);
   availableTalents = signal<Talent[]>([]);
   availableCollections = signal<ItemCollection[]>([]);
+  /** Server-side-redacted preview of the locked-in next opponent (Next-Enemy Preview). */
+  nextEnemy = signal<Player>(new Player(), { equal: () => false });
+  nextEnemyRevealLevel = signal(-1);
+  /** Talent/item classes of the next opponent (duplicates kept — ×N counts derived in UI). */
+  nextEnemyTalentClasses = signal<string[]>([]);
+  nextEnemyItemClasses = signal<string[]>([]);
 
   /** Queued `shop_floating` messages whose shop card wasn't in the DOM yet — retried on every
    *  subsequent state change (see comment at the `shop_floating` handler below). */
@@ -160,6 +166,10 @@ export class DraftRoomComponent implements OnInit {
     this.availableTalents.set([...(state.availableTalents ?? [])] as unknown as Talent[]);
     this.availableCollections.set([...(state.player?.availableItemCollections ?? [])] as unknown as ItemCollection[]);
     this.draftService.canUndoSell.set(!!state.canUndoSell);
+    this.nextEnemy.set(coercePlayer(state.nextEnemy));
+    this.nextEnemyRevealLevel.set(state.nextEnemyRevealLevel ?? -1);
+    this.nextEnemyTalentClasses.set([...(state.nextEnemyTalentClasses ?? [])]);
+    this.nextEnemyItemClasses.set([...(state.nextEnemyItemClasses ?? [])]);
   }
 
   /** Gold/xp gains during the shop round (sells, buying xp/leveling, talent procs). Floats

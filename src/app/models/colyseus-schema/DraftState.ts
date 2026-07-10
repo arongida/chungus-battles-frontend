@@ -21,6 +21,14 @@ export class DraftState extends Schema {
   @type([Item]) questItems: ArraySchema<Item> = new ArraySchema<Item>();
   // Drives the "Undo sell" button — true while the most recent sale can still be reverted.
   @type('boolean') canUndoSell: boolean = false;
+  // Next-Enemy Preview: server-side-redacted preview of the locked-in next opponent.
+  // Must stay in the exact same declaration order as the backend DraftState (skipHandshake).
+  @type(Player) nextEnemy: Player = new Player();
+  @type('number') nextEnemyRevealLevel: number = -1; // -1 = not populated → badge hidden
+  // Talent/item CLASSES (rogue/warrior/merchant) of the next opponent — classes only,
+  // duplicates kept so ×N counts are visible. Same order as backend (skipHandshake).
+  @type(['string']) nextEnemyTalentClasses: ArraySchema<string> = new ArraySchema<string>();
+  @type(['string']) nextEnemyItemClasses: ArraySchema<string> = new ArraySchema<string>();
   // Not synced from server — kept for potential future use
   availableItemCollections: ArraySchema<ItemCollection> = new ArraySchema<ItemCollection>();
 }

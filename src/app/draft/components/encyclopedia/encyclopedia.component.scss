@@ -31,6 +31,7 @@
 
 .enc-tabs {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   padding: 8px 12px;
   flex-shrink: 0;
@@ -48,6 +49,11 @@
   border-radius: 4px;
   cursor: pointer;
   transition: all 120ms;
+
+  @media (max-width: 480px) {
+    padding: 5px 12px;
+    font-size: 0.75rem;
+  }
 
   &.active {
     background: rgba(245, 158, 11, 0.15);

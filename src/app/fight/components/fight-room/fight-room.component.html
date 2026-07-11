@@ -70,7 +70,8 @@
 
 <!-- Battle result (win / loss / draw) -->
 @if (battleResultVisible() && !battleResultMinimized()) {
-<div class="fixed inset-0 z-[9999] flex items-center justify-center chungus-backdrop">
+<div class="fixed inset-0 z-[9999] flex items-center justify-center chungus-backdrop"
+     (click)="$event.target === $event.currentTarget && battleResultMinimized.set(true)">
   <div class="chungus-card text-center relative">
     <button class="end-modal-dismiss" (click)="battleResultMinimized.set(true)" title="Dismiss to review combat log">×</button>
     <div class="chungus-modal-icon">
@@ -144,7 +145,8 @@
 
 <!-- Run over (game_over) -->
 @if (gameOverVisible() && !gameOverMinimized()) {
-<div class="fixed inset-0 z-[9999] flex items-center justify-center chungus-backdrop">
+<div class="fixed inset-0 z-[9999] flex items-center justify-center chungus-backdrop"
+     (click)="$event.target === $event.currentTarget && gameOverMinimized.set(true)">
   <div class="chungus-card text-center relative">
     <button class="end-modal-dismiss" (click)="gameOverMinimized.set(true)" title="Dismiss to review combat log">×</button>
     <div class="chungus-modal-icon game-over-icon">💀</div>
@@ -166,7 +168,8 @@
 
 <!-- Game won (12 wins) -->
 @if (gameWin() && !gameWinMinimized()) {
-<div class="fixed inset-0 z-[9999] flex items-center justify-center chungus-backdrop">
+<div class="fixed inset-0 z-[9999] flex items-center justify-center chungus-backdrop"
+     (click)="$event.target === $event.currentTarget && gameWinMinimized.set(true)">
   <div class="chungus-card text-center relative">
     <button class="end-modal-dismiss" (click)="gameWinMinimized.set(true)" title="Dismiss to review combat log">×</button>
     <div class="chungus-modal-icon top-win-icon">🏆</div>

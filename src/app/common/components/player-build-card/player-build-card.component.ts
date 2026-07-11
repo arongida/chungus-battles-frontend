@@ -4,7 +4,7 @@ import { Player } from '../../../models/colyseus-schema/PlayerSchema';
 import Item from '../../../models/colyseus-schema/ItemSchema';
 import { EquipSlot, ItemRarity } from '../../../models/types/ItemTypes';
 import { InfoContent } from '../../models/info-content';
-import { InfoHintDirective } from '../../directives/info-hint.directive';
+import { InfoHoverCardDirective } from '../../directives/info-hover-card.directive';
 import { ItemHoverCardDirective } from '../../directives/item-hover-card.directive';
 import { SkillIconsComponent } from '../skill-icons/skill-icons.component';
 
@@ -16,7 +16,7 @@ import { SkillIconsComponent } from '../skill-icons/skill-icons.component';
 @Component({
   selector: 'app-player-build-card',
   standalone: true,
-  imports: [DecimalPipe, InfoHintDirective, ItemHoverCardDirective, SkillIconsComponent],
+  imports: [DecimalPipe, InfoHoverCardDirective, ItemHoverCardDirective, SkillIconsComponent],
   templateUrl: './player-build-card.component.html',
   styleUrl: './player-build-card.component.scss',
 })

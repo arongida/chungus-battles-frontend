@@ -3,7 +3,7 @@
   <div class="build-portrait">
     <img [src]="build.avatarUrl" alt="Portrait" />
   </div>
-  <div class="bp-stats" [appInfoHint]="buildStatsHint(build)">
+  <div class="bp-stats" [appInfoHoverCard]="buildStatsHint(build)">
     <div class="col-span-2">
       <div class="bp-stat"><span class="text-pink-500">❤️ {{ build.maxHp | number:'1.0-0' }}</span></div>
     </div>

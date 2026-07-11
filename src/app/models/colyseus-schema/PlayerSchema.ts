@@ -52,6 +52,9 @@ export class Player extends Schema {
   // Black Market Contact: same latch as comradeFreeClaim, but the client only honors it on
   // lucky-find shop items (see backend TalentBehaviors.ts MERCHANT_5B).
   @type('boolean') luckyFindFreeClaim: boolean = false;
+  // Health Flask (itemId 6): hpRegen bonus banked in the draft for the wearer's next fight only
+  // (see backend PlayerSchema.ts / statsUtils.recalculatePlayerStats).
+  @type('number') pendingRegenBuff: number = 0;
   // Frontend-only fields not present in backend schema (placed last to preserve index alignment)
   @type([ItemCollection]) activeItemCollections: ArraySchema<ItemCollection> =
     new ArraySchema<ItemCollection>();

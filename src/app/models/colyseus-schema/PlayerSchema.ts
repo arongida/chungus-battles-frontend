@@ -62,6 +62,10 @@ export class Player extends Schema {
     new ArraySchema<ItemCollection>();
   // Not synced — server-only computation, no @type
   private _poisonStack: number = 0;
+  // Leaderboard-only display field: ISO timestamp of this character's last-saved snapshot,
+  // returned by /leaderboard and /wallOfFame (derived from the snapshot doc's _id on the
+  // backend). Not present on live draft/fight room state, so it's left undecorated (no @type).
+  lastPlayedAt?: string;
 
   get gold(): number {
     return this._gold;

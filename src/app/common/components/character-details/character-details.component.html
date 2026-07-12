@@ -45,18 +45,17 @@
     @if (showStats && !redacted) {
       <div id="stats" class="cd-stats" [appInfoHoverCard]="allStatsHint">
 
-        <div class="col-span-2">
-          <div class="cd-stat">
-            <span class="text-pink-500">❤️ {{ getPlayerHp() | number:'1.0-0' }}</span>
-            <span class="text-slate-600 text-[9px] ml-1">/ {{ player.maxHp | number:'1.0-0' }}</span>
-          </div>
-          @if (combat) {
-            <div id="hp-{{ player.playerId }}" class="hp-bar-wrapper">
-              <mat-progress-bar class="red-progress-bar" mode="determinate"
-                [value]="(player.hp / player.maxHp) * 100"></mat-progress-bar>
-            </div>
-          }
+        <div class="cd-stat">
+          <span class="text-pink-500">❤️ {{ getPlayerHp() | number:'1.0-0' }}</span>
+          <span class="text-slate-600 text-[9px] ml-1">/ {{ player.maxHp | number:'1.0-0' }}</span>
         </div>
+        <div class="cd-stat"><span class="text-orange-400">🧪 {{ player.hpRegen | number:'1.0-3' }}</span></div>
+        @if (combat) {
+          <div id="hp-{{ player.playerId }}" class="hp-bar-wrapper col-span-2">
+            <mat-progress-bar class="red-progress-bar" mode="determinate"
+              [value]="(player.hp / player.maxHp) * 100"></mat-progress-bar>
+          </div>
+        }
 
         <div class="cd-stat"><span class="text-red-400">🎯 +{{ player.accuracy | number:'1.0-1' }}</span></div>
         <div class="cd-stat"><span class="text-red-400">⚔️ +{{ player.strength | number:'1.0-1' }}</span></div>
@@ -65,8 +64,6 @@
           <span class="text-blue-400">⏩ {{ (player.attackSpeed - 1) >= 0 ? '+' : '' }}{{ (player.attackSpeed - 1) * 100 | number:'1.0-0' }}%</span>
         </div>
         <div class="cd-stat"><span class="text-yellow-400">💰 +{{ player.income | number:'1.0-0' }}</span></div>
-
-        <div class="cd-stat"><span class="text-orange-400">🧪 {{ player.hpRegen | number:'1.0-3' }}</span></div>
 
         <div class="cd-stat"><span class="text-green-600">🛡️ {{ player.defense | number:'1.0-2' }}</span></div>
         <div class="cd-stat"><span class="text-green-400">🦵 {{ player.dodgeRate | number:'1.0-2' }}</span></div>

@@ -54,7 +54,6 @@ export class ItemCardComponent {
     attackSpeed:      { label: 'A.speed',          emoji: '⏩', colorClass: 'text-blue-500',   percent: true, decimals: 0 },
     defense:          { label: 'Defense',          emoji: '🛡️', colorClass: 'text-green-600',  decimals: 0 },
     maxHp:            { label: 'Health',           emoji: '❤️', colorClass: 'text-pink-500',   decimals: 0 },
-    flatDmgReduction: { label: 'Damage Reduction', emoji: '🔰', colorClass: 'text-green-600',  decimals: 2 },
     income:           { label: 'Income',           emoji: '💰', colorClass: 'text-yellow-300', decimals: 0 },
     dodgeRate:        { label: 'Dodge',            emoji: '🦵', colorClass: 'text-green-400',  decimals: 0 },
     hpRegen:          { label: 'Regen',            emoji: '🧪', colorClass: 'text-orange-500', decimals: 2 },

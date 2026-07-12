@@ -16,7 +16,6 @@ export class Player extends Schema {
   @type('string') name: string = 'name';
   @type('number') xp: number = 0;
   @type('string') sessionId: string = 'sessionId';
-  @type('number') flatDmgReduction: number = 0;
   @type('number') maxXp: number = 0;
   @type('number') round: number = 1;
   @type('number') lives: number = 3;

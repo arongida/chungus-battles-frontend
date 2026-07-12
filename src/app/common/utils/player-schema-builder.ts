@@ -24,7 +24,7 @@ export function buildPlayerFromData(data: any): Player {
   const primitiveFields = ['playerId', 'originalPlayerId', 'name', 'gold', 'xp', 'level',
     'sessionId', 'maxXp', 'round', 'lives', 'wins', 'avatarUrl', 'gameVersion',
     'income', 'hpRegen', 'dodgeRate', 'refreshShopCost', 'maxHp', 'hp',
-    'strength', 'accuracy', 'defense', 'attackSpeed', 'flatDmgReduction', 'comradeFreeClaim', 'goldGenieFreeClaim', 'luckyFindFreeClaim'];
+    'strength', 'accuracy', 'defense', 'attackSpeed', 'comradeFreeClaim', 'goldGenieFreeClaim', 'luckyFindFreeClaim'];
   primitiveFields.forEach(f => { if (data[f] !== undefined) try { (player as any)[f] = data[f]; } catch {} });
   if (data.baseStats) Object.assign(player.baseStats, data.baseStats);
   const equippedMap = new MapSchema<Item>();
@@ -60,7 +60,6 @@ function calculatePlayerStats(player: Player): void {
   player.maxHp           = b.maxHp           ?? 100;
   player.defense         = b.defense         ?? 0;
   player.dodgeRate       = b.dodgeRate       ?? 0;
-  player.flatDmgReduction = b.flatDmgReduction ?? 0;
   player.income          = b.income          ?? 0;
   player.hpRegen         = b.hpRegen         ?? 0;
   let speedMult          = b.attackSpeed      ?? 1;
@@ -71,7 +70,6 @@ function calculatePlayerStats(player: Player): void {
     player.maxHp            += src.maxHp            ?? 0;
     player.defense          += src.defense          ?? 0;
     player.dodgeRate        += src.dodgeRate        ?? 0;
-    player.flatDmgReduction += src.flatDmgReduction ?? 0;
     player.income           += src.income           ?? 0;
     player.hpRegen          += src.hpRegen          ?? 0;
     const spd = src.attackSpeed;

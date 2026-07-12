@@ -16,11 +16,12 @@ import { PlayerBuildCardComponent } from '../common/components/player-build-card
 import { MatDialog } from '@angular/material/dialog';
 import { FightStatsDialogComponent } from '../common/components/fight-stats-dialog/fight-stats-dialog.component';
 import { GameStatsResult } from '../models/types/MessageTypes';
+import { TimeAgoPipe } from '../common/pipes/time-ago.pipe';
 
 @Component({
   selector: 'app-end',
   standalone: true,
-  imports: [MatButtonModule, MatIconModule, DatePipe, NgTemplateOutlet, DraggablePanelDirective, RouterLink, PlayerBuildCardComponent],
+  imports: [MatButtonModule, MatIconModule, DatePipe, NgTemplateOutlet, DraggablePanelDirective, RouterLink, PlayerBuildCardComponent, TimeAgoPipe],
   templateUrl: './end.component.html',
   styleUrl: './end.component.scss',
 })

@@ -14,13 +14,13 @@ export class TalentCardComponent {
   hasSelfStats(s: AffectedStats): boolean {
     if (!s) return false;
     return !!(s.strength || s.accuracy || (s.attackSpeed && s.attackSpeed !== 1) ||
-              s.maxHp || s.defense || s.dodgeRate || s.flatDmgReduction || s.income || s.hpRegen);
+              s.maxHp || s.defense || s.dodgeRate || s.income || s.hpRegen);
   }
 
   hasEnemyStats(e: AffectedStats): boolean {
     if (!e) return false;
     return !!(e.strength || e.accuracy || (e.attackSpeed && e.attackSpeed !== 1) ||
-              e.maxHp || e.defense || e.dodgeRate || e.flatDmgReduction);
+              e.maxHp || e.defense || e.dodgeRate);
   }
 
   fmt(v: number): string {

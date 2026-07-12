@@ -46,10 +46,11 @@
     @if (playerLevel() < 6) {
       <div class="tp-bonus-row">🛒 Shop: up to tier {{ playerLevel() }} items</div>
     }
+    <div class="tp-bonus-row">❤️ +{{ levelStatBonus().maxHp }} max HP</div>
     @if (playerLevel() >= 6) {
       <div class="tp-bonus-row">
         💪 This level: ⚔️ +{{ levelStatBonus().strength }} · 🎯 +{{ levelStatBonus().accuracy }} ·
-        ❤️ +{{ levelStatBonus().maxHp }} · 🛡️ +{{ levelStatBonus().defense }} · ⏩ +{{ levelStatBonus().attackSpeed * 100 }}%
+        🛡️ +{{ levelStatBonus().defense }} · ⏩ +{{ levelStatBonus().attackSpeed * 100 }}%
       </div>
     }
   </div>

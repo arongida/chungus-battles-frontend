@@ -61,7 +61,6 @@ export class PlayerBuildCardComponent {
         { icon: '⏩', label: 'Speed Bonus',           text: `${((p.attackSpeed - 1) * 100)?.toFixed(0)}% multiplier applied to all weapon attack speeds.`,   color: 'text-blue-400' },
         { icon: '💰', label: 'Income',               text: `${p.income} gold earned per fight. Grows by 1 automatically each fight.`,                    color: 'text-yellow-400' },
         { icon: '🧪', label: 'HP Regen',             text: `Recover ${p.hpRegen?.toFixed(3)} HP every second during battle.`,                               color: 'text-orange-400' },
-        { icon: '🔰', label: 'Flat Damage Reduction',text: `Reduces all incoming damage by ${p.flatDmgReduction?.toFixed(3)} flat.`,                        color: 'text-green-400' },
         { icon: '🛡️', label: 'Defense',              text: `Reduces incoming damage by ${defenseReduction}% (DR formula, ${p.defense?.toFixed(2)} defense).`, color: 'text-green-400' },
         { icon: '🦵', label: 'Dodge',                text: `${dodgeChance}% chance to completely dodge an incoming attack.`,                                 color: 'text-green-400' },
       ],

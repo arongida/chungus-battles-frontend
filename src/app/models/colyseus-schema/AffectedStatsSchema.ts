@@ -7,7 +7,6 @@ export class AffectedStats extends Schema {
     @type('number') maxHp: number = 0;
     @type('number') defense: number = 0;
     @type('number') dodgeRate: number = 0;
-    @type('number') flatDmgReduction: number = 0;
     @type('number') income: number = 0;
     @type('number') hpRegen: number = 0;
 }

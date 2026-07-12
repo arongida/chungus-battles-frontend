@@ -88,7 +88,6 @@ export class TalentsComponent implements OnDestroy {
     if (s?.maxHp)            entries.push({ icon: '❤️', label: 'Max HP',       text: `${fmt(s.maxHp)} max health`,                     color: 'text-pink-400' });
     if (s?.defense)          entries.push({ icon: '🛡️', label: 'Defense',      text: `${fmt(s.defense)} defense`,                      color: 'text-green-400' });
     if (s?.dodgeRate)        entries.push({ icon: '🦵', label: 'Dodge',        text: `${fmt(s.dodgeRate)} dodge rating`,               color: 'text-green-400' });
-    if (s?.flatDmgReduction) entries.push({ icon: '🔰', label: 'Flat DR',      text: `${fmt(s.flatDmgReduction)} flat damage reduction`, color: 'text-green-400' });
     if (s?.income)           entries.push({ icon: '💰', label: 'Income',       text: `${fmt(s.income)} gold per fight`,                color: 'text-yellow-400' });
     if (s?.hpRegen)          entries.push({ icon: '🧪', label: 'HP Regen',     text: `${fmt(s.hpRegen)} HP per second`,                color: 'text-orange-400' });
 
@@ -113,13 +112,14 @@ export class TalentsComponent implements OnDestroy {
     return Math.round(base * multiplier * 100);
   }
 
-  /** This level's stat gain (not cumulative), mirroring DraftRoom.ts levelUp: rank = level - 5. */
+  /** This level's stat gain (not cumulative), mirroring DraftRoom.ts levelUp: rank = level - 5.
+   *  maxHp always includes the flat +10/level bonus on top of the rank-scaled bonus. */
   levelStatBonus(): { strength: number; accuracy: number; maxHp: number; defense: number; attackSpeed: number } {
     const rank = Math.max(0, this.playerLevel() - 5);
     return {
       strength: rank * 4,
       accuracy: rank * 2,
-      maxHp: rank * 40,
+      maxHp: 10 + rank * 40,
       defense: rank * 4,
       attackSpeed: Math.round(rank * 0.2 * 10) / 10,
     };

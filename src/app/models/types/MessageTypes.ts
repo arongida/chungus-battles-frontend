@@ -78,7 +78,6 @@ export type FightSideStats = {
   damageDealt: { weapon: number; burn: number; poison: number };
   healingReceived: number;
   damageReducedByDefense: number;
-  damageReducedByFlat: number;
   attacksDodged: number;
   damageBlockedByInvincible?: number; // optional — absent on pre-Season-16 replays
 };

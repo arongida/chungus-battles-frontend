@@ -47,11 +47,16 @@
       <div class="tp-bonus-row">🛒 Shop: up to tier {{ playerLevel() }} items</div>
     }
     <div class="tp-bonus-row">❤️ +{{ levelStatBonus().maxHp }} max HP</div>
-    @if (playerLevel() >= 6) {
+    @if (levelStatBonus().strength) {
+      <div class="tp-bonus-row">⚔️ +{{ levelStatBonus().strength }} strength</div>
+    }
+    @if (levelStatBonus().attackSpeed || levelStatBonus().dodgeRate) {
       <div class="tp-bonus-row">
-        💪 This level: ⚔️ +{{ levelStatBonus().strength }} · 🎯 +{{ levelStatBonus().accuracy }} ·
-        🛡️ +{{ levelStatBonus().defense }} · ⏩ +{{ levelStatBonus().attackSpeed * 100 }}%
+        ⏩ +{{ levelStatBonus().attackSpeed }}% attack speed · 🦵 +{{ levelStatBonus().dodgeRate }} dodge
       </div>
+    }
+    @if (levelStatBonus().income) {
+      <div class="tp-bonus-row">💰 +{{ levelStatBonus().income }} income</div>
     }
   </div>
 

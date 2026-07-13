@@ -13,6 +13,7 @@ export class CharacterDetailsService {
    *  when the player rerolls while the dialog is open. */
   public availableTalents = signal<Talent[]>([]);
   public talentPlayerLevel = signal<number>(1);
+  public talentPlayerAvatarUrl = signal<string>('');
 
   /** True when the player has picked Black Market Contact — doubles the displayed lucky-find %. */
   public hasBlackMarketTalent = signal<boolean>(false);

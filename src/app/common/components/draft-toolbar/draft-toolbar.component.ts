@@ -106,12 +106,28 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
     return this.player.gold >= this.goldToLevelUp;
   }
 
+  /** Per-level stat bonus for the player's class, mirroring DraftRoom.ts levelUp:
+   *  +10 max HP baseline for everyone, plus a class-specific bonus (Season 18). */
+  get classLevelBonusText(): string {
+    switch (this.player.avatarUrl) {
+      case 'assets/warrior_01.png':
+        return '+30 HP, +4 strength';
+      case 'assets/thief_01.png':
+        return '+10 HP, +10% attack speed, +10 dodge';
+      case 'assets/merchant_01.png':
+        return '+10 HP, +2 income';
+      default:
+        return '+10 HP';
+    }
+  }
+
   get levelUpHint(): InfoContent {
     return {
       id: 'level-up',
       title: 'Level Up!',
       entries: [
         { icon: '⬆️', label: 'Level Up', text: `Spend ${this.goldToLevelUp} gold to level up to level ${this.player.level + 1} in one click.` },
+        { icon: '📈', label: 'This Level', text: `Level ${this.player.level + 1} grants: ${this.classLevelBonusText}` },
       ],
     };
   }
@@ -162,6 +178,7 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
     // input binding path back to this template.
     this.characterDetailsService.availableTalents.set(this.availableTalents ?? []);
     this.characterDetailsService.talentPlayerLevel.set(this.player.level);
+    this.characterDetailsService.talentPlayerAvatarUrl.set(this.player.avatarUrl);
     // talentId 504 = Black Market Contact (doubles the displayed lucky-find %).
     this.characterDetailsService.hasBlackMarketTalent.set(
       this.player.talents?.some((t) => t.talentId === 504) ?? false

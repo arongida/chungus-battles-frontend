@@ -33,6 +33,20 @@
     </button>
   </div>
 
+  <!-- Season selector (Wall of Fame tab only) -->
+  @if (activeTab() === 'fame') {
+    <div class="leaderboard-filters">
+      <select
+        class="leaderboard-filter-select"
+        [value]="fameSeason()"
+        (change)="setFameSeason($any($event.target).value)">
+        @for (opt of fameSeasonOptions(); track opt.value) {
+          <option [value]="opt.value">{{ opt.label }}</option>
+        }
+      </select>
+    </div>
+  }
+
   <!-- Filter row (All Characters tab only) -->
   @if (activeTab() === 'all') {
     <div class="leaderboard-filters">

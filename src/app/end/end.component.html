@@ -38,10 +38,9 @@
     <div class="leaderboard-filters">
       <select
         class="leaderboard-filter-select"
-        [value]="fameSeason()"
         (change)="setFameSeason($any($event.target).value)">
         @for (opt of fameSeasonOptions(); track opt.value) {
-          <option [value]="opt.value">{{ opt.label }}</option>
+          <option [value]="opt.value" [selected]="opt.value === fameSeason()">{{ opt.label }}</option>
         }
       </select>
     </div>

@@ -39,6 +39,10 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
   activeTab = signal<'fame' | 'all'>('fame');
   currentSeason = signal<number>(0);
 
+  /** Wall of Fame season filter — defaults to the current season once /seasons resolves. */
+  fameSeasonOptions = signal<{ label: string; value: number }[]>([]);
+  fameSeason = signal<number>(0);
+
   readonly avatarOptions: { label: string; value: string }[] = [
     { label: 'All classes', value: '' },
     { label: 'Thief', value: 'assets/thief_01.png' },
@@ -188,7 +192,18 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
     if (isPlatformBrowser(this.platformId)) {
       this.playerId = Number(localStorage.getItem('playerId')) ?? 0;
     }
-    this.seasonsService.getSeasons().then(data => this.currentSeason.set(data.currentSeason));
+    this.seasonsService.getSeasons().then(data => {
+      this.currentSeason.set(data.currentSeason);
+      const fameSeasons = data.seasons
+        .filter(s => s.number >= 16) // Wall of Fame was introduced in Season 16
+        .map(s => ({ label: `Season ${s.number} — ${s.name}`, value: s.number }));
+      this.fameSeasonOptions.set([{ label: 'All Seasons', value: 0 }, ...fameSeasons]);
+      this.fameSeason.set(data.currentSeason);
+      if (this.activeTab() === 'fame') {
+        this.currentPage.set(0);
+        this.fetchLeaderboard();
+      }
+    });
     this.fetchPlayerData();
     this.intervalId = setInterval(() => this.fetchPlayerData(), 5000);
 
@@ -233,6 +248,12 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
     this.fetchLeaderboard();
   }
 
+  setFameSeason(value: string): void {
+    this.fameSeason.set(Number(value));
+    this.currentPage.set(0);
+    this.fetchLeaderboard();
+  }
+
   setTab(tab: 'fame' | 'all'): void {
     this.activeTab.set(tab);
     this.currentPage.set(0);
@@ -258,6 +279,7 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
       const params = new URLSearchParams({ limit: String(this.pageSize), skip: String(this.currentPage() * this.pageSize) });
 
       if (this.activeTab() === 'fame') {
+        if (this.fameSeason()) params.set('season', String(this.fameSeason()));
         const result = await fetch(`${environment.gameServer}/wallOfFame?${params}`).then(r => r.json());
         this.leaderboardPlayers.set(Array.isArray(result.players) ? result.players : []);
         this.totalCount.set(typeof result.total === 'number' ? result.total : 0);

@@ -27,6 +27,7 @@ import { InfoContent } from '../../../common/models/info-content';
 export class TalentsComponent implements OnDestroy {
   talents = computed(() => this.characterDetailsService.availableTalents());
   playerLevel = computed(() => this.characterDetailsService.talentPlayerLevel());
+  playerAvatarUrl = computed(() => this.characterDetailsService.talentPlayerAvatarUrl());
 
   hoverTelentRefresh = false;
   talentRerollCost = signal<number>(0);
@@ -112,17 +113,24 @@ export class TalentsComponent implements OnDestroy {
     return Math.round(base * multiplier * 100);
   }
 
-  /** This level's stat gain (not cumulative), mirroring DraftRoom.ts levelUp: rank = level - 5.
-   *  maxHp always includes the flat +10/level bonus on top of the rank-scaled bonus. */
-  levelStatBonus(): { strength: number; accuracy: number; maxHp: number; defense: number; attackSpeed: number } {
-    const rank = Math.max(0, this.playerLevel() - 5);
-    return {
-      strength: rank * 4,
-      accuracy: rank * 2,
-      maxHp: 10 + rank * 40,
-      defense: rank * 4,
-      attackSpeed: Math.round(rank * 0.2 * 10) / 10,
-    };
+  /** Every level's stat gain, mirroring DraftRoom.ts levelUp: a flat +10 max HP baseline plus a
+   *  class-specific bonus (Season 18). */
+  levelStatBonus(): { maxHp: number; strength: number; attackSpeed: number; dodgeRate: number; income: number } {
+    const bonus = { maxHp: 10, strength: 0, attackSpeed: 0, dodgeRate: 0, income: 0 };
+    switch (this.playerAvatarUrl()) {
+      case 'assets/warrior_01.png':
+        bonus.maxHp += 20;
+        bonus.strength += 4;
+        break;
+      case 'assets/thief_01.png':
+        bonus.attackSpeed += 10;
+        bonus.dodgeRate += 10;
+        break;
+      case 'assets/merchant_01.png':
+        bonus.income += 2;
+        break;
+    }
+    return bonus;
   }
 
   onMouseEnterTalent(talent: Talent) {

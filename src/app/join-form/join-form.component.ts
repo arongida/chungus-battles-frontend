@@ -71,6 +71,7 @@ export class JoinFormComponent implements AfterViewInit, OnDestroy, OnInit {
 
   loading = false;
   currentSeason = signal(0);
+  currentSeasonName = signal('');
   intervalId: any;
   @ViewChild('fallingItemsContainer', { static: false })
   fallingItemsContainer!: ElementRef<HTMLDivElement>;
@@ -97,7 +98,10 @@ export class JoinFormComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   ngOnInit() {
-    this.seasonsService.getSeasons().then(data => this.currentSeason.set(data.currentSeason));
+    this.seasonsService.getSeasons().then(data => {
+      this.currentSeason.set(data.currentSeason);
+      this.currentSeasonName.set(data.seasons.find(s => s.number === data.currentSeason)?.name ?? '');
+    });
     this.soundsService.playMusic(MusicOptions.DRAFT);
     this.infoBoxService.clearContent();
     const entries: InfoEntry[] = [

@@ -86,9 +86,9 @@
         (mouseleave)="onPlayerLeave()"
         (click)="onPlayerClick(Player.playerId)">
         @if (activeTab() === 'fame') {
-          {{ currentPage() * pageSize + $index + 1 }}. {{ Player.name }} — {{ Player.losses }} losses
+          {{ currentPage() * pageSize + $index + 1 }}. {{ Player.name }} — {{ Player.losses }} losses · 💀 {{ Player.runsEnded || 0 }} ended
         } @else {
-          {{ currentPage() * pageSize + $index + 1 }}. {{ Player.name }} - {{ Player.wins }} wins
+          {{ currentPage() * pageSize + $index + 1 }}. {{ Player.name }} - {{ Player.wins }} wins · 💀 {{ Player.runsEnded || 0 }} ended
         }
         @if (isPinned(Player.playerId)) {
           <span class="text-amber-500 text-sm ml-1">📌</span>
@@ -203,6 +203,10 @@
       <mat-icon class="build-panel-pin">push_pin</mat-icon>
     }
   </div>
+
+  @if (build.killedByName) {
+    <div class="text-gray-400 text-sm px-2 -mt-1 mb-1">💀 Fell to {{ build.killedByName }}</div>
+  }
 
   <div class="build-divider"></div>
 

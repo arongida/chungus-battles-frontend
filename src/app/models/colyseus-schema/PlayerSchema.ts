@@ -66,6 +66,14 @@ export class Player extends Schema {
   // returned by /leaderboard and /wallOfFame (derived from the snapshot doc's _id on the
   // backend). Not present on live draft/fight room state, so it's left undecorated (no @type).
   lastPlayedAt?: string;
+  // "Runs ended" leaderboard stat: how many other characters' final loss this character
+  // delivered. Returned by /leaderboard and /wallOfFame. Not present on live room state.
+  runsEnded?: number;
+  // This character's nemesis — set once at this character's own game-over. Returned by
+  // /leaderboard, /wallOfFame and /playerBuild. Not present on live room state.
+  killedByPlayerId?: number;
+  killedByOriginalPlayerId?: number;
+  killedByName?: string;
 
   get gold(): number {
     return this._gold;

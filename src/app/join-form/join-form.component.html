@@ -46,6 +46,9 @@
 </div>
 
 <div class="fixed top-5 right-5 flex items-center">
+  <button mat-icon-button class="text-gray-400" [routerLink]="['/end']">
+    <mat-icon>leaderboard</mat-icon>
+  </button>
   <button mat-icon-button (click)="toggleInfoBox()"
     [class.text-amber-400]="infoBoxHighlighted()"
     [class.text-gray-400]="!infoBoxHighlighted()"

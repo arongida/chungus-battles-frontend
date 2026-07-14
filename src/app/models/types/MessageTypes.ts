@@ -102,6 +102,7 @@ export type EndBattleMessage = {
   lossReward?: LossRewardOptions & { outcome?: LossRewardResultMessage };
   replayId?: string;
   stats?: FightStatsMessage;
+  wins?: number;
 };
 
 /** Draft-phase lucky shop-roll announcement — floats over the shop card at `slot`

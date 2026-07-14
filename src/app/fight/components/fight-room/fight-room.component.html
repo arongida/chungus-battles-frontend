@@ -2,6 +2,14 @@
 <app-draft-toolbar class="fixed w-screen top-0 z-30" [player]="player()!"></app-draft-toolbar>
 }
 
+<!-- End-of-fight burn progress bar — sits at the bottom edge of the header -->
+@if (player()) {
+  <div class="burn-progress-track">
+    <div class="burn-progress-fill" [class.urgent]="burnActive() || burnCountdownMs() <= 10000"
+         [style.width.%]="burnProgressPercent()"></div>
+  </div>
+}
+
 
 
 <div class="w-screen h-screen bg-amber-950 flex flex-col items-center justify-center game-bg">
@@ -61,6 +69,17 @@
 <app-round-info [player]="player()!"></app-round-info>
 }
 
+<!-- End-of-fight burn timer -->
+@if (player()) {
+  <div class="burn-timer" [class.urgent]="burnActive() || burnCountdownMs() <= 10000">
+    @if (burnActive()) {
+      <span>🔥 BURNING −{{ burnDamage() }}/s</span>
+    } @else {
+      <span>🔥 {{ formatBurnClock(burnCountdownMs()) }}</span>
+    }
+  </div>
+}
+
 <!-- Fight-start countdown overlay -->
 @if (countdownText()) {
   <div class="fixed inset-0 z-[9998] flex items-center justify-center pointer-events-none">
@@ -89,6 +108,18 @@
       @if (battleResult() === 'lose') { You lost this round, but your run continues. Regroup in the draft. }
       @if (battleResult() === 'draw') { Both fighters fell at the same moment. Head back to the draft. }
     </p>
+    @if (battleResult() === 'win') {
+      <div class="win-track">
+        @for (filled of winPips(); track $index) {
+          <span class="win-pip" [class.filled]="filled"></span>
+        }
+        <span class="win-pip-goal">🏆</span>
+      </div>
+      <p class="win-track-caption">
+        {{ roundWinWins() }} / {{ winsToWin }} wins
+        @if (roundWinWins() < winsToWin) { · {{ winsToWin - roundWinWins() }} wins to go }
+      </p>
+    }
     @if (lossChoicePending()) {
       <p class="chungus-modal-body" style="color: #f59e0b; font-weight: 600;">Choose your consolation reward:</p>
       <div class="flex flex-col gap-2 items-stretch mb-3">

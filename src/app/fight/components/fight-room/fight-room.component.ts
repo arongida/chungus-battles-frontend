@@ -53,6 +53,7 @@ import {
   gameWinHint,
   fightSpeedHint,
 } from '../../../common/components/draft-toolbar/draft-toolbar.hints';
+import { END_BURN_START_MS, WINS_TO_WIN } from '../../../common/constants/game';
 
 // Creates a typed Player from any schema object (typed or reflection-decoded generic).
 // Skips `baseStats` to avoid assertInstanceType failures in production minified builds.
@@ -111,6 +112,11 @@ export class FightRoomComponent implements OnInit {
   fightSpeed = signal(1);
   readonly fightSpeeds = FightService.ALLOWED_FIGHT_SPEEDS;
   readonly fightSpeedHint = fightSpeedHint;
+  burnCountdownMs = signal(END_BURN_START_MS);
+  burnActive = signal(false);
+  burnDamage = signal(0);
+  roundWinWins = signal(0);
+  readonly winsToWin = WINS_TO_WIN;
 
   constructor(
     private fightService: FightService,
@@ -137,6 +143,9 @@ export class FightRoomComponent implements OnInit {
           this.player.set(coercePlayer(state.player));
           this.enemy.set(coercePlayer(state.enemy));
           this.fightSpeed.set(state.timeScale ?? 1);
+          this.burnCountdownMs.set(state.endBurnCountdownMs ?? END_BURN_START_MS);
+          this.burnActive.set(state.endBurnActive ?? false);
+          this.burnDamage.set(state.endBurnDamage ?? 0);
         });
 
         const animCtx: AnimationContext = {
@@ -152,8 +161,9 @@ export class FightRoomComponent implements OnInit {
             const lossReward = msg?.lossReward ?? null;
             const replayId = msg?.replayId ?? null;
             const stats = msg?.stats ?? null;
+            const wins = msg?.wins ?? this.player()?.wins ?? 0;
             this.battleOver = true;
-            localStorage.setItem('battleEndState', JSON.stringify({ type: 'end_battle', result, lossReward, replayId, stats }));
+            localStorage.setItem('battleEndState', JSON.stringify({ type: 'end_battle', result, lossReward, replayId, stats, wins }));
             if (result === 'win') this.soundsService.playSound(SoundOptions.CHEER);
             else if (result === 'lose') this.soundsService.playSound(SoundOptions.JEER);
             this.lossRewardOptions.set(lossReward);
@@ -162,6 +172,7 @@ export class FightRoomComponent implements OnInit {
             this.battleReplayId.set(replayId);
             this.battleStats.set(stats);
             this.battleResult.set(result);
+            if (result === 'win') this.roundWinWins.set(wins);
             this.battleResultMinimized.set(false);
             this.battleResultVisible.set(true);
             this.infoBoxService.setPageDefault(
@@ -355,6 +366,7 @@ export class FightRoomComponent implements OnInit {
         this.battleStats.set(state.stats ?? null);
         const result = (state.result as 'win' | 'lose' | 'draw') ?? 'win';
         this.battleResult.set(result);
+        if (result === 'win') this.roundWinWins.set(state.wins ?? player.wins ?? 0);
         this.battleResultMinimized.set(false);
         this.battleResultVisible.set(true);
         this.infoBoxService.setPageDefault(
@@ -420,5 +432,23 @@ export class FightRoomComponent implements OnInit {
 
   resetPanelLayout(): void {
     this.panelLayoutService.reset();
+  }
+
+  formatBurnClock(ms: number): string {
+    const totalSeconds = Math.max(0, Math.ceil(ms / 1000));
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  }
+
+  winPips(): boolean[] {
+    const wins = this.roundWinWins();
+    return Array.from({ length: this.winsToWin }, (_, i) => i < wins);
+  }
+
+  burnProgressPercent(): number {
+    if (this.burnActive()) return 100;
+    const elapsed = END_BURN_START_MS - this.burnCountdownMs();
+    return Math.min(100, Math.max(0, (elapsed / END_BURN_START_MS) * 100));
   }
 }

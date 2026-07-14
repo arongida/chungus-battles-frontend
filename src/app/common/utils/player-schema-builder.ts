@@ -24,7 +24,8 @@ export function buildPlayerFromData(data: any): Player {
   const primitiveFields = ['playerId', 'originalPlayerId', 'name', 'gold', 'xp', 'level',
     'sessionId', 'maxXp', 'round', 'lives', 'wins', 'avatarUrl', 'gameVersion',
     'income', 'hpRegen', 'dodgeRate', 'refreshShopCost', 'maxHp', 'hp',
-    'strength', 'accuracy', 'defense', 'attackSpeed', 'comradeFreeClaim', 'goldGenieFreeClaim', 'luckyFindFreeClaim'];
+    'strength', 'accuracy', 'defense', 'attackSpeed', 'comradeFreeClaim', 'goldGenieFreeClaim', 'luckyFindFreeClaim',
+    'killedByPlayerId', 'killedByOriginalPlayerId', 'killedByName'];
   primitiveFields.forEach(f => { if (data[f] !== undefined) try { (player as any)[f] = data[f]; } catch {} });
   if (data.baseStats) Object.assign(player.baseStats, data.baseStats);
   const equippedMap = new MapSchema<Item>();

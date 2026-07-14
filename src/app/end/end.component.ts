@@ -302,12 +302,14 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
 
   async fetchPlayerData(): Promise<void> {
     try {
-      const playerRankResult = await fetch(`${environment.gameServer}/rank?playerId=${this.playerId}`).then(res => res.json());
-      this.playerName.set(playerRankResult.name);
-      this.playerWins.set(playerRankResult.wins);
-      const origId = playerRankResult.originalPlayerId ?? this.originalPlayerId();
-      if (playerRankResult.originalPlayerId) this.originalPlayerId.set(playerRankResult.originalPlayerId);
-      await this.fetchLeaderboard(origId);
+      const response = await fetch(`${environment.gameServer}/rank?playerId=${this.playerId}`);
+      if (response.ok) {
+        const playerRankResult = await response.json();
+        this.playerName.set(playerRankResult.name);
+        this.playerWins.set(playerRankResult.wins);
+        if (playerRankResult.originalPlayerId) this.originalPlayerId.set(playerRankResult.originalPlayerId);
+      }
+      await this.fetchLeaderboard(this.originalPlayerId());
     } catch (error) {
       console.error('Error fetching player data:', error);
     }

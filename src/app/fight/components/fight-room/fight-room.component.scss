@@ -83,6 +83,45 @@
   border-color: var(--cm-border) !important;
 }
 
+/* ── Win-progress milestone track (Round-Won modal) ───────── */
+
+.win-track {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(4px, 1vw, 6px);
+  margin: 0.75rem 0;
+}
+
+.win-pip {
+  width: clamp(12px, 2.6vw, 16px);
+  height: clamp(12px, 2.6vw, 16px);
+  border-radius: 50%;
+  border: 1px solid var(--cm-border);
+  background: rgba(255, 255, 255, 0.05);
+  transition: background 150ms, border-color 150ms, box-shadow 150ms;
+
+  &.filled {
+    background: #fbbf24;
+    border-color: #f59e0b;
+    box-shadow: 0 0 6px rgba(245, 158, 11, 0.7);
+  }
+}
+
+.win-pip-goal {
+  margin-left: 4px;
+  font-size: clamp(1rem, 3vw, 1.3rem);
+  line-height: 1;
+}
+
+.win-track-caption {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--cm-amber-light);
+  margin-bottom: 0.75rem;
+}
+
 /* ── End-of-battle dismiss / pill ────────────────────────── */
 
 .end-modal-dismiss {
@@ -192,6 +231,71 @@
       color: var(--cm-text);
     }
   }
+}
+
+/* ── End-of-fight burn progress bar (bottom edge of the header) ── */
+
+.burn-progress-track {
+  position: fixed;
+  top: 64px;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  z-index: 1050;
+  background: rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+
+  @media (max-width: 639px) {
+    top: 56px;
+  }
+}
+
+.burn-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #f59e0b, #fbbf24);
+  transition: width 200ms linear, background 200ms;
+
+  &.urgent {
+    background: linear-gradient(90deg, #dc2626, #ef4444);
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.8);
+  }
+}
+
+/* ── End-of-fight burn timer ─────────────────────────────── */
+
+.burn-timer {
+  position: fixed;
+  top: 76px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1100;
+
+  @media (max-width: 639px) {
+    top: 60px;
+  }
+
+  background: rgba(10, 10, 15, 0.75);
+  border: 1px solid var(--cm-border);
+  border-radius: 6px;
+  padding: 4px 12px;
+  font-size: clamp(0.8rem, 2.4vw, 1rem);
+  font-weight: 700;
+  color: var(--cm-text-muted);
+  white-space: nowrap;
+  pointer-events: none;
+  transition: color 200ms, border-color 200ms, background 200ms;
+
+  &.urgent {
+    color: #fca5a5;
+    border-color: #ef4444;
+    background: rgba(60, 10, 10, 0.85);
+    animation: burnPulse 1s ease-in-out infinite;
+  }
+}
+
+@keyframes burnPulse {
+  0%, 100% { box-shadow: 0 0 0 rgba(239, 68, 68, 0); }
+  50%       { box-shadow: 0 0 14px rgba(239, 68, 68, 0.7); }
 }
 
 /* ── Fight-start countdown overlay ───────────────────────── */

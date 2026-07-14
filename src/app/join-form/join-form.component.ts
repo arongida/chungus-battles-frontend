@@ -26,6 +26,7 @@ import { MusicOptions, SoundsService } from '../common/services/sounds.service';
 import { InfoBoxService } from '../common/services/info-box.service';
 import { InfoEntry } from '../common/models/info-content';
 import { SeasonsService } from '../common/services/seasons.service';
+import { RouterLink } from '@angular/router';
 
 interface ClassOption {
   avatar: string;
@@ -46,6 +47,7 @@ interface ClassOption {
     MatCardModule,
     MatIconModule,
     MatProgressSpinnerModule,
+    RouterLink,
   ],
   templateUrl: './join-form.component.html',
   styleUrl: './join-form.component.scss',

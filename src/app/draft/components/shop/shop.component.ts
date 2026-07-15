@@ -96,7 +96,7 @@ export class ShopComponent {
   }
 
   /** True while Black Market Contact's per-shop free lucky-find claim is available and this is
-   *  an unsold lucky-find slot (server-side claim; see backend TalentBehaviors.ts MERCHANT_5B
+   *  an unsold lucky-find slot (server-side claim; see backend TalentBehaviors.ts BLACK MARKET CONTRACT
    *  and DraftRoom.buyItem). */
   isFreeLuckyFind(item: Item): boolean {
     return this.player.luckyFindFreeClaim && item.luckyFind && !item.sold;

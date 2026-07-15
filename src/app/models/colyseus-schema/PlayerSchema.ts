@@ -49,7 +49,7 @@ export class Player extends Schema {
   // shop items (see backend TalentBehaviors.ts GOLD_GENIE).
   @type('boolean') goldGenieFreeClaim: boolean = false;
   // Black Market Contact: same latch as comradeFreeClaim, but the client only honors it on
-  // lucky-find shop items (see backend TalentBehaviors.ts MERCHANT_5B).
+  // lucky-find shop items (see backend TalentBehaviors.ts BLACK MARKET CONTRACT).
   @type('boolean') luckyFindFreeClaim: boolean = false;
   // Health Flask (itemId 6): hpRegen bonus banked in the draft for the wearer's next fight only
   // (see backend PlayerSchema.ts / statsUtils.recalculatePlayerStats).

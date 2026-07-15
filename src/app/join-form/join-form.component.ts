@@ -56,8 +56,8 @@ export class JoinFormComponent implements AfterViewInit, OnDestroy, OnInit {
   nameControl = new FormControl('', Validators.compose([Validators.maxLength(20), Validators.required]));
 
   private readonly classOptions: ClassOption[] = [
-    { avatar: 'assets/warrior_01.png', icon: '⚔️', name: 'Warrior', tagline: 'Value', effect: '4 lives instead of 3 — more chances. Every level: +30 HP, +4 strength' },
-    { avatar: 'assets/thief_01.png', icon: '🗡️', name: 'Rogue', tagline: 'Tempo', effect: 'Starts at lvl 2, extra talent + tier-2 shop. Every level: +10 HP, +10% attack speed, +10 dodge' },
+    { avatar: 'assets/warrior_01.png', icon: '⚔️', name: 'Warrior', tagline: 'Value', effect: '4 lives instead of 3 — more chances. Every level: +40 HP, +6 strength' },
+    { avatar: 'assets/thief_01.png', icon: '🗡️', name: 'Rogue', tagline: 'Tempo', effect: 'Starts at lvl 2, extra talent + tier-2 shop. Every level: +10 HP, +20% attack speed, +10 dodge' },
     { avatar: 'assets/merchant_01.png', icon: '💰', name: 'Merchant', tagline: 'Flexibility', effect: '+3 income. Every level: +10 HP, +2 income' },
   ];
   fallingItems = itemPictures;

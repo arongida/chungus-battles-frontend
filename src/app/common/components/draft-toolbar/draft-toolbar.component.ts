@@ -111,9 +111,9 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
   get classLevelBonusText(): string {
     switch (this.player.avatarUrl) {
       case 'assets/warrior_01.png':
-        return '+30 HP, +4 strength';
+        return '+40 HP, +6 strength';
       case 'assets/thief_01.png':
-        return '+10 HP, +10% attack speed, +10 dodge';
+        return '+10 HP, +20% attack speed, +10 dodge';
       case 'assets/merchant_01.png':
         return '+10 HP, +2 income';
       default:

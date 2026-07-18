@@ -1,6 +1,9 @@
 <div #fallingItemsContainer class="max-w-full min-w-full fixed top-0 left-0 -z-10"></div>
 
 <div class="fixed top-4 right-4">
+  <button mat-icon-button (click)="cycleVolume()">
+    <mat-icon>{{ volumeIcon }}</mat-icon>
+  </button>
   <button mat-icon-button (click)="toggleInfoBox()"
     [class.text-amber-400]="infoBoxVisible()"
     [class.text-gray-400]="!infoBoxVisible()"
@@ -86,9 +89,9 @@
         (mouseleave)="onPlayerLeave()"
         (click)="onPlayerClick(Player.playerId)">
         @if (activeTab() === 'fame') {
-          {{ currentPage() * pageSize + $index + 1 }}. {{ Player.name }} — {{ Player.losses }} losses · 💀 {{ Player.runsEnded || 0 }} ended
+          {{ currentPage() * pageSize + $index + 1 }}. {{ Player.name }} — 💀 {{ Player.runsEnded || 0 }} ended
         } @else {
-          {{ currentPage() * pageSize + $index + 1 }}. {{ Player.name }} - {{ Player.wins }} wins · 💀 {{ Player.runsEnded || 0 }} ended
+          {{ currentPage() * pageSize + $index + 1 }}. {{ Player.name }} - {{ Player.wins }} wins
         }
         @if (isPinned(Player.playerId)) {
           <span class="text-amber-500 text-sm ml-1">📌</span>

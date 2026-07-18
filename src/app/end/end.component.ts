@@ -17,6 +17,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { FightStatsDialogComponent } from '../common/components/fight-stats-dialog/fight-stats-dialog.component';
 import { GameStatsResult } from '../models/types/MessageTypes';
 import { TimeAgoPipe } from '../common/pipes/time-ago.pipe';
+import { SoundsService } from '../common/services/sounds.service';
 
 @Component({
   selector: 'app-end',
@@ -87,6 +88,7 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
     @Inject(PLATFORM_ID) private platformId: Object,
     private seasonsService: SeasonsService,
     private dialog: MatDialog,
+    private soundsService: SoundsService,
   ) {}
 
   get infoBoxVisible() {
@@ -95,6 +97,14 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
 
   toggleInfoBox() {
     this.infoBoxService.toggle();
+  }
+
+  get volumeIcon(): string {
+    return this.soundsService.volumeIcon;
+  }
+
+  cycleVolume(): void {
+    this.soundsService.cycleVolume();
   }
 
   isPanelVisible(): boolean {
@@ -212,7 +222,7 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
       id: 'end-of-run',
       title: 'End of Run',
       entries: [
-        { icon: '🏆', label: 'Wall of Fame', text: 'Characters who reached 12 wins, ranked by fewest losses.' },
+        { icon: '🏆', label: 'Wall of Fame', text: 'Characters who reached 12 wins, ranked by most runs ended (most recent breaks ties).' },
         { icon: '🔍', label: 'All Characters', text: 'Search every character by name, class, or minimum wins, and inspect their build.' },
         { icon: '📈', label: 'Game Stats', text: 'Click Game Stats next to a Replays button to see a character\'s cumulative stats across the whole run.' },
         { icon: '🔄', label: 'Play Again', text: 'Hit RESTART to try a new run with a different character or strategy.' },

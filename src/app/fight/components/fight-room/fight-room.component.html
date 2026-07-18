@@ -132,6 +132,7 @@
         @if (lossRewardOptions()!.itemUpgradeAvailable) {
           <button mat-stroked-button class="version-win-secondary-btn" [disabled]="lossRewardChoiceSending()" (click)="selectLossReward('item_upgrade')">
             ❓ Upgrade a random item's rarity
+            @if (lossRewardOptions()!.itemUpgradeCount > 1) { &nbsp;x{{ lossRewardOptions()!.itemUpgradeCount }} }
           </button>
         }
       </div>
@@ -140,7 +141,11 @@
       <p class="chungus-modal-body" style="color: #f59e0b; font-weight: 600;">
         @if (outcome.choice === 'gold') { +{{ outcome.gold }} bonus gold }
         @if (outcome.choice === 'xp') { +{{ outcome.xp }} bonus XP }
-        @if (outcome.choice === 'item_upgrade' && outcome.item) {
+        @if (outcome.choice === 'item_upgrade' && outcome.items?.length) {
+          @for (upgradedItem of outcome.items; track upgradedItem.itemId + '-' + $index) {
+            <span class="block">Your {{ upgradedItem.name }} was upgraded to {{ rarityName(upgradedItem.rarity) }}!</span>
+          }
+        } @else if (outcome.choice === 'item_upgrade' && outcome.item) {
           Your {{ outcome.item.name }} was upgraded to {{ rarityName(outcome.item.rarity) }}!
         }
       </p>

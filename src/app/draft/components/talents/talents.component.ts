@@ -1,14 +1,13 @@
-import { Component, OnDestroy, computed, signal } from '@angular/core';
+import { Component, computed } from '@angular/core';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { Talent } from '../../../models/colyseus-schema/TalentSchema';
-import { MatButtonModule } from '@angular/material/button';
-import { NgClass } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { DraftService } from '../../services/draft.service';
 import { SoundOptions, SoundsService } from '../../../common/services/sounds.service';
 import { CharacterDetailsService } from '../../../common/services/character-details.service';
 import { InfoHintDirective } from '../../../common/directives/info-hint.directive';
 import { InfoContent } from '../../../common/models/info-content';
+import { environment } from '../../../../environments/environment';
 
 /**
  * Opened via MatDialog from DraftToolbarComponent (rather than taking talentsList/playerLevel
@@ -20,19 +19,18 @@ import { InfoContent } from '../../../common/models/info-content';
 @Component({
   selector: 'app-talents',
   standalone: true,
-  imports: [MatDialogModule, MatButtonModule, MatIconModule, NgClass, InfoHintDirective],
+  imports: [MatDialogModule, MatIconModule, InfoHintDirective],
   templateUrl: './talents.component.html',
   styleUrl: './talents.component.scss',
 })
-export class TalentsComponent implements OnDestroy {
+export class TalentsComponent {
   talents = computed(() => this.characterDetailsService.availableTalents());
+  talentRerollUsed = computed(() => this.characterDetailsService.talentRerollUsed());
+  /** Dev/staging builds get unlimited talent rerolls — mirrors the backend's
+   *  NODE_ENV !== 'production' bypass in DraftRoom.handleRefreshTalentSlot. */
+  readonly unlimitedReroll = environment.enemyPicker;
   playerLevel = computed(() => this.characterDetailsService.talentPlayerLevel());
   playerAvatarUrl = computed(() => this.characterDetailsService.talentPlayerAvatarUrl());
-
-  hoverTelentRefresh = false;
-  talentRerollCost = signal<number>(0);
-
-  private stateCallback: ((state: any) => void) | undefined;
 
   constructor(
     public draftService: DraftService,
@@ -40,27 +38,12 @@ export class TalentsComponent implements OnDestroy {
     private characterDetailsService: CharacterDetailsService,
     private dialogRef: MatDialogRef<TalentsComponent>,
   ) {
-    const currentState = this.draftService.room()?.state;
-    if (currentState) {
-      this.talentRerollCost.set(currentState.talentRerollCost ?? 0);
-    }
-    this.stateCallback = (state: any) => {
-      this.talentRerollCost.set(state.talentRerollCost ?? 0);
-    };
-    this.draftService.room()?.onStateChange(this.stateCallback);
   }
 
-  ngOnDestroy() {
-    if (this.stateCallback) {
-      (this.draftService.room()?.onStateChange as any).remove?.(this.stateCallback);
-    }
-  }
-
-  getTalentHint(talent: Talent): InfoContent {
-    const cost = this.talentRerollCost();
-    const rerollText = cost === 0
-      ? 'Free reroll available — use the button below.'
-      : `Reroll for ${cost} 🟡 using the button below.`;
+  getTalentHint(talent: Talent, index: number): InfoContent {
+    const rerollText = this.talentRerollUsed()[index] && !this.unlimitedReroll
+      ? 'Reroll already used for this slot.'
+      : 'Free reroll available — use the arrow on this row.';
 
     const statEntries = this.buildStatEntries(talent);
 
@@ -141,10 +124,6 @@ export class TalentsComponent implements OnDestroy {
     talent.showDetails = false;
   }
 
-  switchTalentRefreshAnimate() {
-    this.hoverTelentRefresh = !this.hoverTelentRefresh;
-  }
-
   selectTalent(talentId: number) {
     this.draftService.sendMessage('select_talent', { talentId });
     this.dialogRef.close();
@@ -154,8 +133,11 @@ export class TalentsComponent implements OnDestroy {
     this.dialogRef.close();
   }
 
-  refreshTalents() {
+  /** Rerolls a single offered talent slot — free, once per slot. Stops propagation so it
+   *  doesn't also trigger the row's own (click)="selectTalent(...)". */
+  rerollSlot(talentId: number, event: MouseEvent) {
+    event.stopPropagation();
     this.soundsService.playSound(SoundOptions.CLICK);
-    this.draftService.sendMessage('refresh_talents', {});
+    this.draftService.sendMessage('refresh_talent_slot', { talentId });
   }
 }

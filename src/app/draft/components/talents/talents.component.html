@@ -22,7 +22,7 @@
             <div class="tp-card-trigger">⚡ {{ talent.triggerTypes.join(', ') }}</div>
           </div>
           <button class="tp-slot-reroll"
-            [disabled]="talentRerollUsed()[$index]"
+            [disabled]="talentRerollUsed()[$index] && !unlimitedReroll"
             (click)="rerollSlot(talent.talentId, $event)">
             <mat-icon>refresh</mat-icon>
           </button>

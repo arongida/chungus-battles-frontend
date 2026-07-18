@@ -7,6 +7,7 @@ import { SoundOptions, SoundsService } from '../../../common/services/sounds.ser
 import { CharacterDetailsService } from '../../../common/services/character-details.service';
 import { InfoHintDirective } from '../../../common/directives/info-hint.directive';
 import { InfoContent } from '../../../common/models/info-content';
+import { environment } from '../../../../environments/environment';
 
 /**
  * Opened via MatDialog from DraftToolbarComponent (rather than taking talentsList/playerLevel
@@ -25,6 +26,9 @@ import { InfoContent } from '../../../common/models/info-content';
 export class TalentsComponent {
   talents = computed(() => this.characterDetailsService.availableTalents());
   talentRerollUsed = computed(() => this.characterDetailsService.talentRerollUsed());
+  /** Dev/staging builds get unlimited talent rerolls — mirrors the backend's
+   *  NODE_ENV !== 'production' bypass in DraftRoom.handleRefreshTalentSlot. */
+  readonly unlimitedReroll = environment.enemyPicker;
   playerLevel = computed(() => this.characterDetailsService.talentPlayerLevel());
   playerAvatarUrl = computed(() => this.characterDetailsService.talentPlayerAvatarUrl());
 
@@ -37,7 +41,7 @@ export class TalentsComponent {
   }
 
   getTalentHint(talent: Talent, index: number): InfoContent {
-    const rerollText = this.talentRerollUsed()[index]
+    const rerollText = this.talentRerollUsed()[index] && !this.unlimitedReroll
       ? 'Reroll already used for this slot.'
       : 'Free reroll available — use the arrow on this row.';
 

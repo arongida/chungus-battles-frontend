@@ -164,6 +164,7 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
 
   @Input({ required: true }) player: Player = new Player();
   @Input({ required: false }) availableTalents?: Talent[] = [];
+  @Input({ required: false }) talentRerollUsed?: boolean[] = [];
   isLocked : Boolean = false;
 
 
@@ -177,6 +178,7 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
     // TalentsComponent reads these instead of @Inputs since MatDialog content has no
     // input binding path back to this template.
     this.characterDetailsService.availableTalents.set(this.availableTalents ?? []);
+    this.characterDetailsService.talentRerollUsed.set(this.talentRerollUsed ?? []);
     this.characterDetailsService.talentPlayerLevel.set(this.player.level);
     this.characterDetailsService.talentPlayerAvatarUrl.set(this.player.avatarUrl);
     // talentId 504 = Black Market Contact (doubles the displayed lucky-find %).

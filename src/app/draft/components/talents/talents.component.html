@@ -13,28 +13,21 @@
 
   @if (talents().length > 0) {
     <div class="tp-list">
-      @for (talent of talents(); track $index) {
-        <div class="tp-card" (click)="selectTalent(talent.talentId)" [appInfoHint]="getTalentHint(talent)">
+      @for (talent of talents(); track talent.talentId) {
+        <div class="tp-card" (click)="selectTalent(talent.talentId)" [appInfoHint]="getTalentHint(talent, $index)">
           <img class="tp-icon" [src]="talent.image" [alt]="talent.name" />
           <div class="tp-card-body">
             <div class="tp-card-name">{{ talent.name }}</div>
             <div class="tp-card-desc">{{ talent.description }}</div>
             <div class="tp-card-trigger">⚡ {{ talent.triggerTypes.join(', ') }}</div>
           </div>
+          <button class="tp-slot-reroll"
+            [disabled]="talentRerollUsed()[$index]"
+            (click)="rerollSlot(talent.talentId, $event)">
+            <mat-icon>refresh</mat-icon>
+          </button>
         </div>
       }
-    </div>
-
-    <div class="tp-divider"></div>
-
-    <div class="tp-footer">
-      <button mat-button class="tp-reroll-btn"
-        (click)="refreshTalents()"
-        (mouseenter)="switchTalentRefreshAnimate()"
-        (mouseleave)="switchTalentRefreshAnimate()">
-        <mat-icon [ngClass]="{'animate-spin': hoverTelentRefresh}">refresh</mat-icon>
-        {{ talentRerollCost() === 0 ? 'Free!' : talentRerollCost() + ' 🟡' }}
-      </button>
     </div>
 
     <div class="tp-divider"></div>

@@ -12,6 +12,8 @@ export class CharacterDetailsService {
    *  MatDialog — can read the current options/level reactively, including live updates
    *  when the player rerolls while the dialog is open. */
   public availableTalents = signal<Talent[]>([]);
+  // Per-slot reroll-used tracker, aligned by index with availableTalents.
+  public talentRerollUsed = signal<boolean[]>([]);
   public talentPlayerLevel = signal<number>(1);
   public talentPlayerAvatarUrl = signal<string>('');
 

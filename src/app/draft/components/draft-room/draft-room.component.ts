@@ -79,6 +79,8 @@ export class DraftRoomComponent implements OnInit {
   player = signal<Player | undefined>(new Player(), { equal: () => false });
   shop = signal<Item[]>([]);
   availableTalents = signal<Talent[]>([]);
+  // Per-slot reroll-used tracker, aligned by index with availableTalents.
+  talentRerollUsed = signal<boolean[]>([]);
   availableCollections = signal<ItemCollection[]>([]);
   /** Server-side-redacted preview of the locked-in next opponent (Next-Enemy Preview). */
   nextEnemy = signal<Player>(new Player(), { equal: () => false });
@@ -164,6 +166,7 @@ export class DraftRoomComponent implements OnInit {
     this.player.set(coercePlayer(state.player));
     this.shop.set([...(state.shop ?? [])] as unknown as Item[]);
     this.availableTalents.set([...(state.availableTalents ?? [])] as unknown as Talent[]);
+    this.talentRerollUsed.set([...(state.talentRerollUsed ?? [])] as unknown as boolean[]);
     this.availableCollections.set([...(state.player?.availableItemCollections ?? [])] as unknown as ItemCollection[]);
     this.draftService.canUndoSell.set(!!state.canUndoSell);
     this.nextEnemy.set(coercePlayer(state.nextEnemy));

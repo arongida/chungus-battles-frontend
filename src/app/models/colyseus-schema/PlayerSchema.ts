@@ -54,6 +54,9 @@ export class Player extends Schema {
   // Health Flask (itemId 6): hpRegen bonus banked in the draft for the wearer's next fight only
   // (see backend PlayerSchema.ts / statsUtils.recalculatePlayerStats).
   @type('number') pendingRegenBuff: number = 0;
+  // Hidden shop-roll stat, synced so the client can display it next to gold/income (see backend
+  // PlayerSchema.ts comment). Boosted permanently by the Ring of Immortality (itemId 47).
+  @type('number') luckyFindChance: number = 0;
   // Frontend-only fields not present in backend schema (placed last to preserve index alignment)
   @type([ItemCollection]) activeItemCollections: ArraySchema<ItemCollection> =
     new ArraySchema<ItemCollection>();

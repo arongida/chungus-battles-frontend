@@ -19,6 +19,11 @@ export class CharacterDetailsService {
 
   /** True when the player has picked Black Market Contact — doubles the displayed lucky-find %. */
   public hasBlackMarketTalent = signal<boolean>(false);
+  /** Mirrors the authoritative Player.luckyFindChance (base + level scaling + the permanent
+   *  Lucky Find Mythic-buy bonus + any talent/item multipliers already applied server-side) so
+   *  the talent-picker dialog's displayed % always matches the toolbar badge instead of
+   *  recomputing (and drifting from) the formula on the frontend. */
+  public talentPlayerLuckyFindChance = signal<number>(0);
 
   /** True when an item has been bought since the panel was last opened — drives the
    * "open me" glow on the minimized character panel in the shop. */

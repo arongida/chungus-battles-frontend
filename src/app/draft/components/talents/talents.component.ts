@@ -88,12 +88,12 @@ export class TalentsComponent {
     return 'assets/talent_tablet_01_horizontal.png';
   }
 
-  /** Mirrors the backend lucky-find formula: 10% base + 2% per level above 1 (ShopUpgradeUtils.ts).
-   *  Black Market Contact doubles this rate. */
+  /** Reads the authoritative Player.luckyFindChance (base + level scaling + the permanent Lucky
+   *  Find Mythic-buy bonus + Black Market Contact's doubling, all applied server-side — see
+   *  ShopUpgradeUtils.ts / DraftAuraTriggerCommand) instead of recomputing the formula here,
+   *  so this always matches the toolbar badge (draft-toolbar.component.html). */
   luckyFindPercent(): number {
-    const base = 0.10 + 0.02 * (this.playerLevel() - 1);
-    const multiplier = this.characterDetailsService.hasBlackMarketTalent() ? 2 : 1;
-    return Math.round(base * multiplier * 100);
+    return Math.round(this.characterDetailsService.talentPlayerLuckyFindChance() * 100);
   }
 
   /** Every level's stat gain, mirroring DraftRoom.ts levelUp: a flat +10 max HP baseline plus a

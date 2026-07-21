@@ -17,11 +17,13 @@ import {
   triggerHpDamageFlash,
   triggerHpHealFlash,
   triggerItemActivation,
+  triggerLuckyFindBonusFireworks,
   triggerShowDamageNumber,
   triggerShowDodgeText,
   triggerShowGoldNumber,
   triggerShowHealingNumber,
   triggerShowInvulnerableText,
+  triggerShowLuckyFindBonusNumber,
   triggerShowXpNumber,
   triggerSpriteVfx,
   triggerTalentActivation,
@@ -142,6 +144,10 @@ export class FightAnimationService {
     }
     if (msg.xp) {
       triggerShowXpNumber(ctx.renderer, ctx.platformId, Math.round(msg.xp), msg.playerId);
+    }
+    if (msg.luckyFind) {
+      triggerShowLuckyFindBonusNumber(ctx.renderer, ctx.platformId, msg.playerId);
+      triggerLuckyFindBonusFireworks(ctx.renderer, ctx.platformId, msg.playerId, () => this.sounds.playSound(SoundOptions.FIREWORK));
     }
 
     if (msg.gold && !this.throttled(`reward:${msg.playerId}`)) {

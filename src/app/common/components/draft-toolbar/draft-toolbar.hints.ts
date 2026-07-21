@@ -5,8 +5,8 @@ export const goldHint: InfoContent = {
   title: 'Gold & Income',
   entries: [
     { icon: '🟡', label: 'Gold', text: 'Your current gold. Spend it to buy and upgrade items in the shop.' },
-    { icon: '💰', label: 'Income', text: 'Your income is the gold you earn at the end of each fight. It grows automatically by 1 after every fight, and items or talents can raise it further.' },
-    { icon: '🍀', label: 'Lucky Find', text: 'Chance for each shop item to roll up a rarity (can chain into higher rarities).' },
+    { icon: '💰', label: 'Income', text: 'Your income is the gold you earn at the end of each fight. It grows automatically by 1 after every fight..' },
+    { icon: '🍀', label: 'Lucky Find', text: 'Chance for each shop item to roll up a rarity (can chain into higher rarities). Every time you buy or upgrade an item to Mythic, permanently gain +1% Lucky Find chance for the rest of the run.' },
   ],
 };
 

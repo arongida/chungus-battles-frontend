@@ -215,6 +215,14 @@ body {
   -webkit-text-stroke: 1px #0369a1;
 }
 
+// Lucky Find mastery gain (see triggerShowLuckyFindBonusNumber) — same avatar overlay and
+// float pattern as gold/xp above, tinted to match the 🍀 clover.
+.lucky-find-bonus-number {
+  @apply absolute text-lime-400 text-lg font-bold whitespace-nowrap transition-all;
+  animation: floatUp 3s ease-in forwards;
+  -webkit-text-stroke: 1px #4d7c0f;
+}
+
 .animate-weapon-attack {
   animation: weapon-flash 0.4s ease-out forwards;
 }

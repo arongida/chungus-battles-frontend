@@ -115,7 +115,7 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
       case 'assets/thief_01.png':
         return '+10 HP, +20% attack speed, +10 dodge';
       case 'assets/merchant_01.png':
-        return '+10 HP, +2 income';
+        return '+20 HP, +2 income';
       default:
         return '+10 HP';
     }
@@ -181,6 +181,7 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
     this.characterDetailsService.talentRerollUsed.set(this.talentRerollUsed ?? []);
     this.characterDetailsService.talentPlayerLevel.set(this.player.level);
     this.characterDetailsService.talentPlayerAvatarUrl.set(this.player.avatarUrl);
+    this.characterDetailsService.talentPlayerLuckyFindChance.set(this.player.luckyFindChance);
     // talentId 504 = Black Market Contact (doubles the displayed lucky-find %).
     this.characterDetailsService.hasBlackMarketTalent.set(
       this.player.talents?.some((t) => t.talentId === 504) ?? false

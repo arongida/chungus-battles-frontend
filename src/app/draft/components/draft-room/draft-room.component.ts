@@ -39,7 +39,7 @@ import {
   SoundsService,
 } from '../../../common/services/sounds.service';
 import { RewardGainMessage, ShopFloatingMessage, TriggerItemMessage, TriggerTalentMessage } from '../../../models/types/MessageTypes';
-import { triggerDraftLogFloatingText, triggerShopFloatingText, triggerShowGoldNumber, triggerShowXpNumber } from '../../../common/TriggerAnimations';
+import { triggerDraftLogFloatingText, triggerShopFloatingText, triggerShowGoldNumber, triggerShowXpNumber, triggerShowLuckyFindBonusNumber, triggerLuckyFindBonusFireworks } from '../../../common/TriggerAnimations';
 
 // Creates a typed Player from any schema object (typed or reflection-decoded generic).
 // Copies primitive backing fields and collection references; skips `baseStats` because
@@ -188,6 +188,10 @@ export class DraftRoomComponent implements OnInit {
     }
     if (message.xp) {
       triggerShowXpNumber(this.renderer, this.platformId, Math.round(message.xp), message.playerId);
+    }
+    if (message.luckyFind) {
+      triggerShowLuckyFindBonusNumber(this.renderer, this.platformId, message.playerId);
+      triggerLuckyFindBonusFireworks(this.renderer, this.platformId, message.playerId, () => this.soundsService.playSound(SoundOptions.FIREWORK));
     }
 
     if (!message.gold) return;

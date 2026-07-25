@@ -219,6 +219,7 @@
 <!-- Hover panel (single, hides when hovered player is already pinned) -->
 @if (isPanelVisible()) {
   <div appDraggablePanel [dragHandleSelector]="'.build-panel-header'"
+       [raiseZIndexBase]="1100" [raiseGroup]="'build'"
        class="build-panel"
        (mouseenter)="onPanelEnter()"
        (mouseleave)="onPanelLeave()">
@@ -234,6 +235,7 @@
   @if (pinnedBuild) {
     <div appDraggablePanel [dragHandleSelector]="'.build-panel-header'"
          [initialLeft]="pinnedPanelInitialLeft(pinnedId)"
+         [raiseZIndexBase]="1100" [raiseGroup]="'build'"
          class="build-panel"
          style="top: 50%; transform: translateY(-50%)">
       <ng-container [ngTemplateOutlet]="panelContent"

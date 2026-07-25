@@ -106,6 +106,12 @@
   padding: 5px 9px;
   outline: none;
   cursor: pointer;
+  /* A native select sizes to its widest option (season names can be long); without
+     min-width: 0 it can't shrink below that and blows past the panel on narrow screens. */
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
 
   option { background: #0d0d10; color: #f59e0b; }
   &:focus { border-color: #f59e0b; }
@@ -208,6 +214,10 @@
   background: rgba(180, 120, 30, 0.1);
   cursor: grab;
   transition: background 150ms, box-shadow 150ms;
+  touch-action: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
 
   &::before {
     content: '⠿';

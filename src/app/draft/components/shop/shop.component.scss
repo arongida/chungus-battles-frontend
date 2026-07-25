@@ -11,3 +11,15 @@
 .shop-grid .cdk-drag-placeholder {
   display: none !important;
 }
+
+/* Unaffordable shop slot: desaturate + dim the whole card so it reads as out of reach at a
+   glance (the disabled Buy button only appears on desktop hover). Eases back toward full color
+   on hover so the stat details stay legible while inspecting. */
+.item-unaffordable {
+  filter: grayscale(0.65) brightness(0.8);
+  transition: filter 150ms ease;
+
+  &:hover {
+    filter: grayscale(0.25) brightness(0.95);
+  }
+}

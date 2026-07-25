@@ -1,8 +1,11 @@
-import { AfterViewInit, Directive, effect, ElementRef, inject, Input, OnDestroy, PLATFORM_ID } from '@angular/core';
+import { AfterViewInit, Directive, effect, ElementRef, inject, Input, NgZone, OnDestroy, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { PanelLayoutService } from '../services/panel-layout.service';
 
-let topZIndex = 1200;
+/** Per-group ordering counter driving the persistent "last-touched panel on top" raise.
+ *  Module-level so sibling panels in the same group order against each other. Kept bounded
+ *  by renormalizeGroup() — it never grows past MAX_RAISE_STEPS. */
+const raiseCounters = new Map<string, number>();
 
 @Directive({
   selector: '[appDraggablePanel]',
@@ -13,17 +16,45 @@ export class DraggablePanelDirective implements AfterViewInit, OnDestroy {
   @Input() initialLeft?: number;
   @Input() panelId?: string;
 
+  /** Enables the persistent raise ("last-touched panel on top"). While raised, the panel's
+   *  z-index stays inside [base + 1, base + MAX_RAISE_STEPS]. Leave undefined to opt out
+   *  (the directive never writes z-index at all). */
+  @Input() raiseZIndexBase?: number;
+  /** Panels sharing a group are ordered against each other. Every panel in a group must pass
+   *  the same raiseZIndexBase — renormalizeGroup() assumes a single shared base. Defaults to
+   *  a group keyed off the base itself, so panels sharing a base without an explicit group
+   *  still order correctly. */
+  @Input() raiseGroup?: string;
+
   private readonly el = inject(ElementRef);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly panelLayoutService = inject(PanelLayoutService);
+  private readonly zone = inject(NgZone);
 
-  private isDragging = false;
+  /** The one pointer we are following. null = no drag in flight. */
+  private activePointerId: number | null = null;
   private hasMoved = false;
   private startX = 0;
   private startY = 0;
   private startLeft = 0;
   private startTop = 0;
-  private static readonly DRAG_THRESHOLD = 4;
+  private threshold = DraggablePanelDirective.DRAG_THRESHOLD_MOUSE;
+
+  /** rAF batching so we write layout at most once per frame during a drag. */
+  private pendingX = 0;
+  private pendingY = 0;
+  private rafId = 0;
+
+  /** performance.now() deadline before which a click on this panel gets swallowed, once. */
+  private suppressClickUntil = 0;
+
+  private static readonly DRAG_THRESHOLD_MOUSE = 4;
+  private static readonly DRAG_THRESHOLD_TOUCH = 10;
+  private static readonly CLICK_SUPPRESS_MS = 400;
+  /** Width of the z-index band above raiseZIndexBase. Small on purpose: it caps how far a
+   *  raised panel can ever climb, which is what keeps it safely under the CDK overlay
+   *  container (z-index 800) for panels raised at low bases. */
+  private static readonly MAX_RAISE_STEPS = 9;
 
   constructor() {
     // Watch for layout resets and un-pin this panel so it falls back to default CSS.
@@ -39,6 +70,7 @@ export class DraggablePanelDirective implements AfterViewInit, OnDestroy {
       panel.style.bottom = '';
       panel.style.right = '';
       panel.style.zIndex = '';
+      this.forgetRaise();
     });
   }
 
@@ -64,74 +96,119 @@ export class DraggablePanelDirective implements AfterViewInit, OnDestroy {
       panel.style.left = `${this.initialLeft}px`;
     }
 
-    // Event delegation: listeners on the panel root so they survive inner DOM swaps
-    // (e.g. compact ↔ detailed toggle that replaces the .cd-header child).
-    panel.addEventListener('mousedown', this.onMouseDown);
-    panel.addEventListener('touchstart', this.onTouchStart, { passive: false });
+    // Outside the zone: a drag fires pointermove at display rate and none of these handlers
+    // write Angular state, so there's nothing to change-detect. This alone removes most of
+    // the drag jank on mobile during combat, where CD is already expensive.
+    this.zone.runOutsideAngular(() => {
+      // Event delegation: listeners on the panel root so they survive inner DOM swaps
+      // (e.g. compact ↔ detailed toggle that replaces the .cd-header child). Pointer capture
+      // (set in onPointerDown) routes move/up/cancel here too, so no document-level listeners
+      // are needed and none can leak.
+      panel.addEventListener('pointerdown', this.onPointerDown);
+      panel.addEventListener('pointermove', this.onPointerMove);
+      panel.addEventListener('pointerup', this.onPointerEnd);
+      panel.addEventListener('pointercancel', this.onPointerEnd);
+      panel.addEventListener('lostpointercapture', this.onPointerEnd);
+      // Capture phase so this runs before the inner (click)="expand()" / (click)="collapse()".
+      panel.addEventListener('click', this.onClickCapture, true);
 
-    // Re-clamp on resize so a saved panel never ends up off-screen.
-    window.addEventListener('resize', this.onWindowResize);
+      // Re-clamp on resize so a saved panel never ends up off-screen.
+      window.addEventListener('resize', this.onWindowResize);
+    });
   }
 
   ngOnDestroy(): void {
     const panel = this.el.nativeElement as HTMLElement;
-    panel.removeEventListener('mousedown', this.onMouseDown);
-    panel.removeEventListener('touchstart', this.onTouchStart);
-    document.removeEventListener('mousemove', this.onMouseMove);
-    document.removeEventListener('mouseup', this.onMouseUp);
-    document.removeEventListener('touchmove', this.onTouchMove);
-    document.removeEventListener('touchend', this.onTouchEnd);
+    panel.removeEventListener('pointerdown', this.onPointerDown);
+    panel.removeEventListener('pointermove', this.onPointerMove);
+    panel.removeEventListener('pointerup', this.onPointerEnd);
+    panel.removeEventListener('pointercancel', this.onPointerEnd);
+    panel.removeEventListener('lostpointercapture', this.onPointerEnd);
+    panel.removeEventListener('click', this.onClickCapture, true);
     window.removeEventListener('resize', this.onWindowResize);
-    window.removeEventListener('click', this.suppressNextClick, true);
+    if (this.rafId) cancelAnimationFrame(this.rafId);
+    this.forgetRaise();
   }
 
-  /** Returns true when the event target is within the designated drag handle. */
+  /** Returns true when the event target is within the designated drag handle.
+   *  dragHandleSelector may be a comma-separated selector list (e.g. '.cd-header,
+   *  .compact-card'), which is how the compact card gets a full-card handle while the
+   *  detailed view keeps a header-only one — .compact-card simply doesn't exist in the
+   *  detailed DOM, so the handle narrows back down automatically on expand. */
   private isInHandle(target: HTMLElement): boolean {
     if (!this.dragHandleSelector) return true;
     return !!target.closest(this.dragHandleSelector);
   }
 
-  private onMouseDown = (e: MouseEvent): void => {
-    if (e.button !== 0) return;
-    if (!this.isInHandle(e.target as HTMLElement)) return;
-    if ((e.target as HTMLElement).closest('button, a, input, select, textarea')) return;
+  // ── Pointer handling ──────────────────────────────────────────────────────
+
+  private onPointerDown = (e: PointerEvent): void => {
+    // Raising has no visible side effect beyond a possible z-index bump, so do it for ANY
+    // press on the panel — including presses on the body (inventory, buttons) that will
+    // never start a panel drag. Tapping a panel brings it forward, which is what
+    // "last-touched panel on top" means to a user.
+    this.raise();
+
+    if (this.activePointerId !== null) return; // a second finger while a drag is already live
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+
+    const target = e.target as HTMLElement;
+    if (!this.isInHandle(target)) return;
+    if (target.closest('button, a, input, select, textarea')) return;
+
+    // Mouse/pen only: kill text selection and native image drag. NEVER on touch — some
+    // engines drop the follow-up click when pointerdown is defaultPrevented, which would
+    // break tap-to-expand. On touch, touch-action: none on the handle does this job instead.
+    if (e.pointerType !== 'touch') e.preventDefault();
+
+    this.activePointerId = e.pointerId;
+    this.threshold = e.pointerType === 'mouse'
+      ? DraggablePanelDirective.DRAG_THRESHOLD_MOUSE
+      : DraggablePanelDirective.DRAG_THRESHOLD_TOUCH;
+
+    const panel = this.el.nativeElement as HTMLElement;
+    // Capture redirects every subsequent event for this pointer to the panel, so the drag
+    // survives the finger leaving the panel, leaving the window, or the panel's inner DOM
+    // being swapped mid-gesture.
+    try {
+      panel.setPointerCapture(e.pointerId);
+    } catch {
+      // Pointer already gone (e.g. synthetic/test events) — safe to ignore.
+    }
+
+    const rect = panel.getBoundingClientRect();
+    this.hasMoved = false;
+    this.startX = e.clientX;
+    this.startY = e.clientY;
+    this.startLeft = rect.left;
+    this.startTop = rect.top;
+  };
+
+  private onPointerMove = (e: PointerEvent): void => {
+    if (e.pointerId !== this.activePointerId) return;
+    this.pendingX = e.clientX;
+    this.pendingY = e.clientY;
+    if (this.rafId) return;
+    this.rafId = requestAnimationFrame(this.flushMove);
+  };
+
+  private flushMove = (): void => {
+    this.rafId = 0;
+    this.moveDrag(this.pendingX, this.pendingY);
+  };
+
+  /** pointerup, pointercancel (browser stole the gesture) and lostpointercapture all land
+   *  here. endDrag() is idempotent, so the normal up -> lostpointercapture pair is harmless. */
+  private onPointerEnd = (e: PointerEvent): void => {
+    if (e.pointerId !== this.activePointerId) return;
+    this.endDrag();
+  };
+
+  private onClickCapture = (e: MouseEvent): void => {
+    if (performance.now() >= this.suppressClickUntil) return;
+    this.suppressClickUntil = 0; // one-shot: consume the guard immediately
+    e.stopPropagation();
     e.preventDefault();
-    this.beginDrag(e.clientX, e.clientY);
-    document.addEventListener('mousemove', this.onMouseMove);
-    document.addEventListener('mouseup', this.onMouseUp);
-  };
-
-  private onMouseMove = (e: MouseEvent): void => this.moveDrag(e.clientX, e.clientY);
-
-  private onMouseUp = (): void => {
-    this.endDrag();
-    document.removeEventListener('mousemove', this.onMouseMove);
-    document.removeEventListener('mouseup', this.onMouseUp);
-  };
-
-  private onTouchStart = (e: TouchEvent): void => {
-    if (!this.isInHandle(e.target as HTMLElement)) return;
-    if ((e.target as HTMLElement).closest('button, a, input, select, textarea')) return;
-    // Don't preventDefault here: doing so suppresses the compatibility click event the
-    // browser would otherwise fire on touchend, breaking tap-to-expand on mobile. We only
-    // preventDefault once movement crosses the drag threshold (see onTouchMove), so a still
-    // tap behaves like a normal click while a real drag still blocks page scroll.
-    const t = e.touches[0];
-    this.beginDrag(t.clientX, t.clientY);
-    document.addEventListener('touchmove', this.onTouchMove, { passive: false });
-    document.addEventListener('touchend', this.onTouchEnd);
-  };
-
-  private onTouchMove = (e: TouchEvent): void => {
-    const t = e.touches[0];
-    this.moveDrag(t.clientX, t.clientY);
-    if (this.hasMoved) e.preventDefault();
-  };
-
-  private onTouchEnd = (): void => {
-    this.endDrag();
-    document.removeEventListener('touchmove', this.onTouchMove);
-    document.removeEventListener('touchend', this.onTouchEnd);
   };
 
   private onWindowResize = (): void => {
@@ -144,6 +221,8 @@ export class DraggablePanelDirective implements AfterViewInit, OnDestroy {
     panel.style.left = `${left}px`;
     panel.style.top = `${top}px`;
   };
+
+  // ── Drag mechanics ────────────────────────────────────────────────────────
 
   /** Clamp left/top to keep the panel fully within the viewport. */
   private clamp(left: number, top: number): { left: number; top: number } {
@@ -167,36 +246,21 @@ export class DraggablePanelDirective implements AfterViewInit, OnDestroy {
     panel.style.right = 'auto';
   }
 
-  /** Just records the press origin — no visible side effects yet. A plain click/tap that
-   *  never crosses DRAG_THRESHOLD should leave the panel (and the page) untouched so the
-   *  header's own click handler (e.g. minimize/maximize) can fire normally. */
-  private beginDrag(x: number, y: number): void {
-    const panel = this.el.nativeElement as HTMLElement;
-    const rect = panel.getBoundingClientRect();
-
-    this.isDragging = true;
-    this.hasMoved = false;
-    this.startX = x;
-    this.startY = y;
-    this.startLeft = rect.left;
-    this.startTop = rect.top;
-  }
-
   private moveDrag(x: number, y: number): void {
-    if (!this.isDragging) return;
+    if (this.activePointerId === null) return;
     const panel = this.el.nativeElement as HTMLElement;
 
     if (!this.hasMoved) {
       const dx = x - this.startX;
       const dy = y - this.startY;
-      if (Math.abs(dx) <= DraggablePanelDirective.DRAG_THRESHOLD && Math.abs(dy) <= DraggablePanelDirective.DRAG_THRESHOLD) {
-        return; // still within the click threshold — don't pin or move anything yet
+      // Radial threshold (not per-axis) so a diagonal wobble behaves the same as an axial one.
+      if (dx * dx + dy * dy <= this.threshold * this.threshold) {
+        return; // still within the tap threshold — don't pin or move anything yet
       }
       // Crossing the threshold turns this into a real drag: pin the panel at the rect it
-      // had when the press started, then raise it above everything else.
+      // had when the press started.
       this.hasMoved = true;
       this.applyFixedPosition(this.startLeft, this.startTop);
-      panel.style.zIndex = String(++topZIndex);
       panel.style.cursor = 'grabbing';
       document.body.style.userSelect = 'none';
     }
@@ -210,17 +274,30 @@ export class DraggablePanelDirective implements AfterViewInit, OnDestroy {
   }
 
   private endDrag(): void {
-    this.isDragging = false;
+    if (this.activePointerId === null) return; // idempotent — already ended
+
+    // Flush any coordinate still queued for the next frame so the panel lands exactly where
+    // the finger/cursor left it.
+    if (this.rafId) {
+      cancelAnimationFrame(this.rafId);
+      this.rafId = 0;
+      this.moveDrag(this.pendingX, this.pendingY);
+    }
+
+    this.activePointerId = null;
     if (!this.hasMoved) return; // pure click/tap — nothing was pinned, nothing to persist
 
     document.body.style.userSelect = '';
     const panel = this.el.nativeElement as HTMLElement;
-    // Reset inline cursor/z-index so CSS class values take over again.
+    // Reset inline cursor so the CSS class value takes over again. z-index is deliberately
+    // NOT cleared here — the "last-touched panel on top" raise is meant to persist.
     panel.style.cursor = '';
-    panel.style.zIndex = '';
 
-    // Suppress the click that the browser fires after mouseup/touchend when a real drag occurred.
-    window.addEventListener('click', this.suppressNextClick, { capture: true, once: true });
+    // Arm the click guard by timestamp instead of a one-shot window listener. On touch the
+    // browser often fires no compatibility click at all after a drag, which would leave a
+    // {once:true} window listener armed forever, silently swallowing the user's next,
+    // completely unrelated tap anywhere on the page.
+    this.suppressClickUntil = performance.now() + DraggablePanelDirective.CLICK_SUPPRESS_MS;
 
     // Persist the final position.
     if (this.panelId) {
@@ -230,8 +307,58 @@ export class DraggablePanelDirective implements AfterViewInit, OnDestroy {
     }
   }
 
-  private suppressNextClick = (e: MouseEvent): void => {
-    e.stopPropagation();
-    e.preventDefault();
-  };
+  // ── Bounded z-index raise ("last-touched panel on top") ─────────────────────
+
+  /** Moves this panel to the top of its group. The resulting z-index is always in
+   *  [base + 1, base + MAX_RAISE_STEPS], so it can never cross into a neighbouring layer
+   *  (e.g. the CDK overlay container at 800, cdk-drag-preview at 9999). */
+  private raise(): void {
+    if (this.raiseZIndexBase === undefined) return;
+    const panel = this.el.nativeElement as HTMLElement;
+    const group = this.raiseGroup ?? `z${this.raiseZIndexBase}`;
+
+    // Already on top of the group: skip, so repeated taps don't needlessly churn the counter.
+    if (
+      panel.dataset['raiseGroup'] === group &&
+      Number(panel.dataset['raiseOrder']) === raiseCounters.get(group)
+    ) {
+      return;
+    }
+
+    let next = (raiseCounters.get(group) ?? 0) + 1;
+    if (next > DraggablePanelDirective.MAX_RAISE_STEPS) {
+      this.renormalizeGroup(group);
+      next = (raiseCounters.get(group) ?? 0) + 1;
+    }
+    // Defensive clamp in case a group ever holds more panels than there are steps.
+    next = Math.min(next, DraggablePanelDirective.MAX_RAISE_STEPS);
+
+    raiseCounters.set(group, next);
+    panel.dataset['raiseGroup'] = group;
+    panel.dataset['raiseOrder'] = String(next);
+    panel.style.zIndex = String(this.raiseZIndexBase + next);
+  }
+
+  /** Compacts a group's orders back to 1..n so the counter can never grow without bound.
+   *  Relative stacking is preserved; only the absolute numbers shrink. Panels removed from
+   *  the DOM (e.g. by navigation) drop out of the query naturally, so the counter effectively
+   *  resets between screens. */
+  private renormalizeGroup(group: string): void {
+    const raised = Array.from(
+      document.querySelectorAll<HTMLElement>(`[data-raise-group="${group}"]`),
+    ).sort((a, b) => Number(a.dataset['raiseOrder'] ?? 0) - Number(b.dataset['raiseOrder'] ?? 0));
+
+    raised.forEach((el, i) => {
+      const order = i + 1;
+      el.dataset['raiseOrder'] = String(order);
+      el.style.zIndex = String(this.raiseZIndexBase! + order);
+    });
+    raiseCounters.set(group, raised.length);
+  }
+
+  private forgetRaise(): void {
+    const panel = this.el.nativeElement as HTMLElement;
+    delete panel.dataset['raiseGroup'];
+    delete panel.dataset['raiseOrder'];
+  }
 }

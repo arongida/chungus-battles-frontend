@@ -150,11 +150,16 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
     this.hoveredPlayerId.set(null);
   }
 
+  /** Desktop only. On mobile a tap inside the panel synthesizes a mouseenter with no
+   *  matching mouseleave ever following, which would otherwise latch panelHovered() true
+   *  forever and keep isPanelVisible() true even after closeMobilePanel() runs. */
   onPanelEnter() {
+    if (this.isMobileViewport()) return;
     this.panelHovered.set(true);
   }
 
   onPanelLeave() {
+    if (this.isMobileViewport()) return;
     this.panelHovered.set(false);
   }
 
@@ -178,6 +183,19 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
   closeMobilePanel(): void {
     this.hoveredPlayerId.set(null);
   }
+
+  /** Mobile only: tapping anywhere outside the preview panel (and outside the row that
+   *  opened it — that tap is handled by onRowActivate) closes it. Mirrors the same
+   *  tap-outside-to-collapse pattern used by CharacterDetailsComponent. */
+  private readonly onDocumentPointerDown = (e: PointerEvent): void => {
+    if (!this.isMobileViewport()) return;
+    if (this.hoveredPlayerId() === null) return;
+    const target = e.target as HTMLElement | null;
+    if (!target) return;
+    if (target.closest('.build-panel')) return;
+    if (target.closest('.player-row')) return;
+    this.closeMobilePanel();
+  };
 
   private async onPlayerClick(playerId: number) {
     if (this.isPinned(playerId)) {
@@ -232,6 +250,7 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit() {
     if (isPlatformBrowser(this.platformId)) {
       this.playerId = Number(localStorage.getItem('playerId')) ?? 0;
+      document.addEventListener('pointerdown', this.onDocumentPointerDown, true);
     }
     this.seasonsService.getSeasons().then(data => {
       this.currentSeason.set(data.currentSeason);
@@ -469,5 +488,8 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
     clearTimeout(this.minWinsDebounceTimer);
     this.infoBoxService.clearPageDefault();
     this.infoBoxService.clearContent();
+    if (isPlatformBrowser(this.platformId)) {
+      document.removeEventListener('pointerdown', this.onDocumentPointerDown, true);
+    }
   }
 }

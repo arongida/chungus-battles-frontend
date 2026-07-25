@@ -87,7 +87,7 @@
         [class.player-row-pinned]="isPinned(Player.playerId)"
         (mouseenter)="onPlayerHover(Player.playerId)"
         (mouseleave)="onPlayerLeave()"
-        (click)="onPlayerClick(Player.playerId)">
+        (click)="onRowActivate(Player.playerId)">
         @if (activeTab() === 'fame') {
           {{ currentPage() * pageSize + $index + 1 }}. {{ Player.name }} — 💀 {{ Player.runsEnded || 0 }} ended
         } @else {
@@ -202,6 +202,8 @@
     </button>
     @if (pinnedId !== undefined) {
       <button class="build-panel-close" (mousedown)="$event.stopPropagation()" (click)="unpinPlayer(pinnedId)" title="Unpin">×</button>
+    } @else if (isMobileViewport()) {
+      <button class="build-panel-close" (mousedown)="$event.stopPropagation()" (click)="closeMobilePanel()" title="Close">×</button>
     } @else {
       <mat-icon class="build-panel-pin">push_pin</mat-icon>
     }
@@ -219,6 +221,7 @@
 <!-- Hover panel (single, hides when hovered player is already pinned) -->
 @if (isPanelVisible()) {
   <div appDraggablePanel [dragHandleSelector]="'.build-panel-header'"
+       [raiseZIndexBase]="1100" [raiseGroup]="'build'"
        class="build-panel"
        (mouseenter)="onPanelEnter()"
        (mouseleave)="onPanelLeave()">
@@ -228,14 +231,16 @@
   </div>
 }
 
-<!-- Pinned panels — one per pinned player, each draggable -->
+<!-- Pinned panels — desktop only (see onRowActivate: pinning has no mouse-hover
+     counterpart on mobile, so a tap there drives the single hover-preview panel above
+     instead and this list stays empty). Each pinned panel is independently draggable. -->
 @for (pinnedId of pinnedPlayerIds(); track pinnedId) {
   @let pinnedBuild = getPinnedBuild(pinnedId);
   @if (pinnedBuild) {
     <div appDraggablePanel [dragHandleSelector]="'.build-panel-header'"
          [initialLeft]="pinnedPanelInitialLeft(pinnedId)"
-         class="build-panel"
-         style="top: 50%; transform: translateY(-50%)">
+         [raiseZIndexBase]="1100" [raiseGroup]="'build'"
+         class="build-panel">
       <ng-container [ngTemplateOutlet]="panelContent"
                     [ngTemplateOutletContext]="{ build: pinnedBuild, pinnedId: pinnedId }">
       </ng-container>

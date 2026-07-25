@@ -118,6 +118,13 @@ export class ShopComponent {
     return this.freeClaimSource(item) !== null;
   }
 
+  /** True when the player can't pay for this item — drives the desaturated shop-card look.
+   *  Free-claimable slots (Black Market Contact / Gold Genie / Comrade) cost nothing, so they
+   *  never dim. Sold slots already fade out via `opacity-0`. */
+  isUnaffordable(item: Item): boolean {
+    return !item.sold && !this.isFreeClaimable(item) && this.player.gold < item.price;
+  }
+
   getItemInfoHint(item: Item): InfoContent {
     const isUpgrade = item.upgradePreview;
     const isFree = this.isFreeClaimable(item);

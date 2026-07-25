@@ -39,6 +39,14 @@
   background: var(--cm-header-bg);
   cursor: grab;
   transition: background 150ms, box-shadow 150ms;
+  /* Drag handle: the browser must not claim this gesture for panning. Without
+     touch-action: none it delivers a couple of pointermoves and then cancels the
+     gesture, silently killing the drag — preventDefault() alone can't stop native
+     scrolling. */
+  touch-action: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 /* Grip-dots affordance — shown only on the detailed header (not the compact card) */
@@ -484,6 +492,11 @@
   border-radius: 6px;
   box-shadow: var(--cm-shadow);
   animation: slideDown 0.18s ease-out;
+  /* The whole compact card is a drag handle (see [dragHandleSelector] in the fight/replay
+     templates), so it needs the same touch-action treatment as .cd-header. */
+  touch-action: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
   user-select: none;
   width: 140px;
 

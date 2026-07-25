@@ -212,13 +212,20 @@
   padding: 2px;
 
   button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     background: transparent;
     border: 1px solid var(--cm-border);
     color: var(--cm-text-muted);
     border-radius: 4px;
     padding: 2px 8px;
+    min-width: 34px;
     font-size: 0.75rem;
     font-weight: 600;
+    line-height: 1;
+    letter-spacing: normal;
+    text-shadow: none;
     cursor: pointer;
     transition: background 100ms, color 100ms;
     &.active {

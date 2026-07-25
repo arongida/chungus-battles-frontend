@@ -63,19 +63,25 @@
 }
 
 .equip-slot {
-  width: 80px;
-  height: 80px;
+  /* Flexible square: fills the row and shrinks to fit a narrow panel instead of
+     overflowing past the panel edge — a fixed 80px width + flex-shrink: 0 let this
+     overflow (and get visually clipped by .build-panel's overflow: hidden) whenever
+     the panel is narrower than four 80px slots plus gaps/padding, e.g. on mobile. */
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 80px;
+  aspect-ratio: 1;
   border: 1px solid;
   border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: rgba(255, 255, 255, 0.03);
-  flex-shrink: 0;
+  overflow: hidden;
 
   img {
-    width: 72px;
-    height: 72px;
+    width: 90%;
+    height: 90%;
     object-fit: contain;
   }
 

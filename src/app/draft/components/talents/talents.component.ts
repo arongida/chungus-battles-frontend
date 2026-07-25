@@ -43,7 +43,7 @@ export class TalentsComponent {
   getTalentHint(talent: Talent, index: number): InfoContent {
     const rerollText = this.talentRerollUsed()[index] && !this.unlimitedReroll
       ? 'Reroll already used for this slot.'
-      : 'Free reroll available — use the arrow on this row.';
+      : 'Free reroll available — use the reroll panel on the right.';
 
     const statEntries = this.buildStatEntries(talent);
 
@@ -111,6 +111,7 @@ export class TalentsComponent {
         break;
       case 'assets/merchant_01.png':
         bonus.income += 2;
+        bonus.maxHp += 10;
         break;
     }
     return bonus;

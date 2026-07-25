@@ -56,6 +56,10 @@ class Item extends Schema {
   @type('boolean') upgradePreview: boolean = false;
   // True for shop slots that rolled a lucky-find rarity-up (see applyLuckyShopUpgrades).
   @type('boolean') luckyFind: boolean = false;
+  // Rarity of the owned item this preview was built from — 0 when not a preview.
+  @type('number') previewBaseRarity: number = 0;
+  // Free rarity steps this slot rolled via applyLuckyShopUpgrades.
+  @type('number') luckyFindSteps: number = 0;
   // Frontend-only display state — not synced, must stay after all backend fields
   imageCache: string = '';
   rollPreview: ItemRollPreview | null = null;

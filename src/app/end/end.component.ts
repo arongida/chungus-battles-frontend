@@ -135,7 +135,10 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
     return isPlatformBrowser(this.platformId) && window.innerWidth <= 900;
   }
 
+  /** Desktop only: touch devices have no real hover, so a synthesized mouseenter right
+   *  before a tap's click would otherwise race onRowActivate's explicit toggle. */
   async onPlayerHover(playerId: number) {
+    if (this.isMobileViewport()) return;
     this.hoveredPlayerId.set(playerId);
     if (!this.isPinned(playerId)) {
       await this.loadPanelBuild(playerId);
@@ -143,6 +146,7 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onPlayerLeave() {
+    if (this.isMobileViewport()) return;
     this.hoveredPlayerId.set(null);
   }
 
@@ -154,15 +158,31 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
     this.panelHovered.set(false);
   }
 
-  async onPlayerClick(playerId: number) {
+  /** Routes a row tap/click to the right interaction model: mobile has no hover and no
+   *  room for side-by-side panels, so pinning is desktop-only there — a tap just opens or
+   *  closes a single preview panel instead. */
+  async onRowActivate(playerId: number): Promise<void> {
+    if (this.isMobileViewport()) {
+      if (this.hoveredPlayerId() === playerId) {
+        this.hoveredPlayerId.set(null);
+      } else {
+        this.hoveredPlayerId.set(playerId);
+        await this.loadPanelBuild(playerId);
+      }
+      return;
+    }
+    await this.onPlayerClick(playerId);
+  }
+
+  /** Closes the mobile single-preview panel (its equivalent of "unpin"). */
+  closeMobilePanel(): void {
+    this.hoveredPlayerId.set(null);
+  }
+
+  private async onPlayerClick(playerId: number) {
     if (this.isPinned(playerId)) {
       this.unpinPlayer(playerId);
     } else {
-      if (this.isMobileViewport()) {
-        // A phone screen has no room for multiple side-by-side build panels — only the
-        // one currently being checked should be visible; opening a new one replaces it.
-        for (const id of this.pinnedPlayerIds()) this.unpinPlayer(id);
-      }
       this.pinnedPanelLeftMap.set(playerId, 16 + this.pinnedPlayerIds().length * 356);
       this.pinnedPlayerIds.update(ids => [...ids, playerId]);
       await this.loadPinnedBuild(playerId);

@@ -87,7 +87,7 @@
         [class.player-row-pinned]="isPinned(Player.playerId)"
         (mouseenter)="onPlayerHover(Player.playerId)"
         (mouseleave)="onPlayerLeave()"
-        (click)="onPlayerClick(Player.playerId)">
+        (click)="onRowActivate(Player.playerId)">
         @if (activeTab() === 'fame') {
           {{ currentPage() * pageSize + $index + 1 }}. {{ Player.name }} — 💀 {{ Player.runsEnded || 0 }} ended
         } @else {
@@ -202,6 +202,8 @@
     </button>
     @if (pinnedId !== undefined) {
       <button class="build-panel-close" (mousedown)="$event.stopPropagation()" (click)="unpinPlayer(pinnedId)" title="Unpin">×</button>
+    } @else if (isMobileViewport()) {
+      <button class="build-panel-close" (mousedown)="$event.stopPropagation()" (click)="closeMobilePanel()" title="Close">×</button>
     } @else {
       <mat-icon class="build-panel-pin">push_pin</mat-icon>
     }
@@ -229,14 +231,14 @@
   </div>
 }
 
-<!-- Pinned panels — one per pinned player, each draggable. On mobile only one is ever
-     pinned at a time (see onPlayerClick), so initialLeft is skipped there and the CSS
-     mobile centering in end.component.scss takes over. -->
+<!-- Pinned panels — desktop only (see onRowActivate: pinning has no mouse-hover
+     counterpart on mobile, so a tap there drives the single hover-preview panel above
+     instead and this list stays empty). Each pinned panel is independently draggable. -->
 @for (pinnedId of pinnedPlayerIds(); track pinnedId) {
   @let pinnedBuild = getPinnedBuild(pinnedId);
   @if (pinnedBuild) {
     <div appDraggablePanel [dragHandleSelector]="'.build-panel-header'"
-         [initialLeft]="isMobileViewport() ? undefined : pinnedPanelInitialLeft(pinnedId)"
+         [initialLeft]="pinnedPanelInitialLeft(pinnedId)"
          [raiseZIndexBase]="1100" [raiseGroup]="'build'"
          class="build-panel">
       <ng-container [ngTemplateOutlet]="panelContent"

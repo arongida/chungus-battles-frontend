@@ -195,9 +195,15 @@
   animation: panelSlideIn 0.18s ease-out;
   text-shadow: 0 2px 3px rgba(100, 100, 100, 0.9);
 
+  /* Below this width there's no room for multiple side-by-side panels (isMobileViewport()
+     in end.component.ts gates pinning to one panel at a time here) — center the single
+     panel and size it to the viewport instead of the old fixed 280px, which was too
+     narrow to fit the equipment row without clipping it. */
   @media (max-width: 900px) {
-    left: 8px;
-    width: 280px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: calc(100vw - 24px);
+    max-width: 380px;
   }
 }
 

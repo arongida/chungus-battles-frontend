@@ -229,15 +229,16 @@
   </div>
 }
 
-<!-- Pinned panels — one per pinned player, each draggable -->
+<!-- Pinned panels — one per pinned player, each draggable. On mobile only one is ever
+     pinned at a time (see onPlayerClick), so initialLeft is skipped there and the CSS
+     mobile centering in end.component.scss takes over. -->
 @for (pinnedId of pinnedPlayerIds(); track pinnedId) {
   @let pinnedBuild = getPinnedBuild(pinnedId);
   @if (pinnedBuild) {
     <div appDraggablePanel [dragHandleSelector]="'.build-panel-header'"
-         [initialLeft]="pinnedPanelInitialLeft(pinnedId)"
+         [initialLeft]="isMobileViewport() ? undefined : pinnedPanelInitialLeft(pinnedId)"
          [raiseZIndexBase]="1100" [raiseGroup]="'build'"
-         class="build-panel"
-         style="top: 50%; transform: translateY(-50%)">
+         class="build-panel">
       <ng-container [ngTemplateOutlet]="panelContent"
                     [ngTemplateOutletContext]="{ build: pinnedBuild, pinnedId: pinnedId }">
       </ng-container>

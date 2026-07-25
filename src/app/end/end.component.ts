@@ -129,6 +129,12 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
     return this.pinnedPanelLeftMap.get(pinnedId) ?? 16;
   }
 
+  /** Below this width there's no room for multiple side-by-side build panels — matches
+   *  the breakpoint in .build-panel's mobile media query in end.component.scss. */
+  isMobileViewport(): boolean {
+    return isPlatformBrowser(this.platformId) && window.innerWidth <= 900;
+  }
+
   async onPlayerHover(playerId: number) {
     this.hoveredPlayerId.set(playerId);
     if (!this.isPinned(playerId)) {
@@ -152,6 +158,11 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.isPinned(playerId)) {
       this.unpinPlayer(playerId);
     } else {
+      if (this.isMobileViewport()) {
+        // A phone screen has no room for multiple side-by-side build panels — only the
+        // one currently being checked should be visible; opening a new one replaces it.
+        for (const id of this.pinnedPlayerIds()) this.unpinPlayer(id);
+      }
       this.pinnedPanelLeftMap.set(playerId, 16 + this.pinnedPlayerIds().length * 356);
       this.pinnedPlayerIds.update(ids => [...ids, playerId]);
       await this.loadPinnedBuild(playerId);

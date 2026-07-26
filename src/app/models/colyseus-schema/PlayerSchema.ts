@@ -51,6 +51,9 @@ export class Player extends Schema {
   // Black Market Contact: same latch as comradeFreeClaim, but the client only honors it on
   // lucky-find shop items (see backend TalentBehaviors.ts BLACK MARKET CONTRACT).
   @type('boolean') luckyFindFreeClaim: boolean = false;
+  // Misconduct: same latch as comradeFreeClaim (any unsold shop item), but the claimed item
+  // also gets a rarity upgrade + full-price sell value (see backend TalentBehaviors.ts MISCONDUCT).
+  @type('boolean') misconductFreeClaim: boolean = false;
   // Health Flask (itemId 6): hpRegen bonus banked in the draft for the wearer's next fight only
   // (see backend PlayerSchema.ts / statsUtils.recalculatePlayerStats).
   @type('number') pendingRegenBuff: number = 0;

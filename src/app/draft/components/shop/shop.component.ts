@@ -103,13 +103,14 @@ export class ShopComponent {
   }
 
   /** Which talent (if any) makes this item claimable for free — a Black Market Contact lucky
-   *  find, Gold Genie's per-shop free claim (merchant-class items only), or Comrade's per-shop
-   *  free-item claim (any unsold item). Narrowest/rarest source wins when more than one applies
-   *  to the same item. Server-side logic in TalentBehaviors.ts / DraftRoom.buyItem. */
+   *  find, Gold Genie's per-shop free claim (merchant-class items only), or Comrade's/Misconduct's
+   *  per-shop free-item claim (any unsold item). Narrowest/rarest source wins when more than one
+   *  applies to the same item. Server-side logic in TalentBehaviors.ts / DraftRoom.buyItem. */
   freeClaimSource(item: Item): FreeClaimSource {
     if (this.isFreeLuckyFind(item)) return 'lucky-find';
     if (this.player.goldGenieFreeClaim && item.class === 'merchant' && !item.sold) return 'gold-genie';
     if (this.player.comradeFreeClaim && !item.sold) return 'comrade';
+    if (this.player.misconductFreeClaim && !item.sold) return 'misconduct';
     return null;
   }
 

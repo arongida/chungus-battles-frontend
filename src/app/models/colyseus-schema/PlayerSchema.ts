@@ -60,6 +60,11 @@ export class Player extends Schema {
   // Hidden shop-roll stat, synced so the client can display it next to gold/income (see backend
   // PlayerSchema.ts comment). Boosted permanently by the Ring of Immortality (itemId 47).
   @type('number') luckyFindChance: number = 0;
+  // Store Credit (item skill): same latch as comradeFreeClaim, but the client only honors it on
+  // shop items priced at or below storeCreditFreeClaimCap (see backend ItemSkillBehaviors.ts
+  // STORE_CREDIT).
+  @type('boolean') storeCreditFreeClaim: boolean = false;
+  @type('number') storeCreditFreeClaimCap: number = 0;
   // Frontend-only fields not present in backend schema (placed last to preserve index alignment)
   @type([ItemCollection]) activeItemCollections: ArraySchema<ItemCollection> =
     new ArraySchema<ItemCollection>();

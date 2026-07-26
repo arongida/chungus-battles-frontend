@@ -109,6 +109,7 @@ export class ShopComponent {
   freeClaimSource(item: Item): FreeClaimSource {
     if (this.isFreeLuckyFind(item)) return 'lucky-find';
     if (this.player.goldGenieFreeClaim && item.class === 'merchant' && !item.sold) return 'gold-genie';
+    if (this.player.storeCreditFreeClaim && !item.sold && item.price <= this.player.storeCreditFreeClaimCap) return 'store-credit';
     if (this.player.comradeFreeClaim && !item.sold) return 'comrade';
     if (this.player.misconductFreeClaim && !item.sold) return 'misconduct';
     return null;

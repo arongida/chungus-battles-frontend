@@ -9,7 +9,8 @@ export function buildItemFromData(itemData: any): Item {
   const item = new Item();
   const primitiveFields = ['itemId', 'name', 'description', 'price', 'sellPrice',
     'tier', 'rarity', 'image', 'sold', 'equipped', 'type', 'class', 'showDetails',
-    'baseMinDamage', 'baseMaxDamage', 'baseAttackSpeed'];
+    'baseMinDamage', 'baseMaxDamage', 'baseAttackSpeed',
+    'skillId', 'skillName', 'skillDescription'];
   primitiveFields.forEach(f => { if (primitives[f] !== undefined) try { (item as any)[f] = primitives[f]; } catch {} });
   if (affectedStats) { const s = new AffectedStats(); Object.assign(s, affectedStats); item.affectedStats = s; }
   if (affectedEnemyStats) { const s = new AffectedStats(); Object.assign(s, affectedEnemyStats); item.affectedEnemyStats = s; }
@@ -25,6 +26,7 @@ export function buildPlayerFromData(data: any): Player {
     'sessionId', 'maxXp', 'round', 'lives', 'wins', 'avatarUrl', 'gameVersion',
     'income', 'hpRegen', 'dodgeRate', 'refreshShopCost', 'maxHp', 'hp',
     'strength', 'accuracy', 'defense', 'attackSpeed', 'comradeFreeClaim', 'goldGenieFreeClaim', 'luckyFindFreeClaim', 'misconductFreeClaim',
+    'storeCreditFreeClaim', 'storeCreditFreeClaimCap',
     'killedByPlayerId', 'killedByOriginalPlayerId', 'killedByName'];
   primitiveFields.forEach(f => { if (data[f] !== undefined) try { (player as any)[f] = data[f]; } catch {} });
   if (data.baseStats) Object.assign(player.baseStats, data.baseStats);

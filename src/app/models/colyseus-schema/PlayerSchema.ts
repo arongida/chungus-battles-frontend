@@ -58,7 +58,7 @@ export class Player extends Schema {
   // (see backend PlayerSchema.ts / statsUtils.recalculatePlayerStats).
   @type('number') pendingRegenBuff: number = 0;
   // Hidden shop-roll stat, synced so the client can display it next to gold/income (see backend
-  // PlayerSchema.ts comment). Boosted permanently by the Ring of Immortality (itemId 47).
+  // PlayerSchema.ts comment).
   @type('number') luckyFindChance: number = 0;
   // Store Credit (item skill): same latch as comradeFreeClaim, but the client only honors it on
   // shop items priced at or below storeCreditFreeClaimCap (see backend ItemSkillBehaviors.ts

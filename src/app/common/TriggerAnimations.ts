@@ -246,7 +246,7 @@ export function triggerShowLuckyFindBonusNumber(renderer: Renderer2, platformId:
   }
   const el = renderer.createElement('div');
   renderer.addClass(el, 'lucky-find-bonus-number');
-  renderer.appendChild(el, renderer.createText('+1% 🍀'));
+  renderer.appendChild(el, renderer.createText('+3% 🍀'));
   renderer.setStyle(el, 'left', `${Math.random() * 100}%`);
   renderer.appendChild(container, el);
   setTimeout(() => { if (el.parentNode === container) renderer.removeChild(container, el); }, 3000);

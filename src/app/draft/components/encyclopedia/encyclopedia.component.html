@@ -78,7 +78,11 @@
       <div class="enc-talents-list">
         @for (skill of displayedItemSkills; track $index) {
           <div class="enc-talent-card">
-            <div class="enc-talent-icon-placeholder"></div>
+            @if (getSkillIcon(skill.class); as skillIcon) {
+              <img class="enc-talent-icon" [src]="skillIcon" [alt]="skill.class" />
+            } @else {
+              <div class="enc-talent-icon-placeholder"></div>
+            }
             <div class="enc-talent-body">
               <div class="enc-talent-name">{{ skill.name }}</div>
               @if (skill.triggerTypes.length > 0) {

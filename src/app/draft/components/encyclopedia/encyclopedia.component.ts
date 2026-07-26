@@ -103,6 +103,18 @@ export class EncyclopediaComponent implements OnInit {
     return this.seasonsService.getSeasons();
   }
 
+  // Item skills have no per-skill artwork (they're code-defined, not DB records) — one generic
+  // icon per class, reusing the same placeholder set talents fall back to.
+  private static readonly SKILL_CLASS_ICONS: Record<string, string> = {
+    warrior: 'assets/talents/Icon_Warrior_basic_01.png',
+    rogue: 'assets/talents/Icon_Rogue_basic_01.png',
+    merchant: 'assets/talents/Icon_Merchant_basic_01.png',
+  };
+
+  getSkillIcon(skillClass: string): string {
+    return EncyclopediaComponent.SKILL_CLASS_ICONS[skillClass?.toLowerCase()] ?? '';
+  }
+
   getItemImage(item: Item): string {
     return item.image ? item.image : 'assets/Item_ID_0_Empty.png';
   }

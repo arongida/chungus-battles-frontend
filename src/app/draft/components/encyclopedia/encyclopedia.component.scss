@@ -211,6 +211,17 @@
   letter-spacing: 0.05em;
 }
 
+/* Item skill rarity labels — matches the Legendary/Mythic color convention on the item card. */
+.enc-skill-legendary {
+  color: #f97316;
+  font-weight: 600;
+}
+
+.enc-skill-mythic {
+  color: #ef4444;
+  font-weight: 600;
+}
+
 /* Seasons list */
 .enc-seasons-list {
   display: flex;

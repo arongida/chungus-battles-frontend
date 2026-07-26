@@ -9,7 +9,7 @@ import { ItemCardComponent } from '../../../common/components/item-card/item-car
 import { ItemHoverCardDirective } from '../../../common/directives/item-hover-card.directive';
 import { SeasonsService, SeasonInfo } from '../../../common/services/seasons.service';
 
-export type ActiveTab = 'items' | 'talents' | 'seasons';
+export type ActiveTab = 'items' | 'talents' | 'itemSkills' | 'seasons';
 
 @Component({
   selector: 'app-encyclopedia',
@@ -21,8 +21,10 @@ export type ActiveTab = 'items' | 'talents' | 'seasons';
 export class EncyclopediaComponent implements OnInit {
   itemsData: Item[] = [];
   talentsData: TalentPreview[] = [];
+  itemSkillsData: ItemSkillPreview[] = [];
   displayedItems: Item[] = [];
   displayedTalents: TalentPreview[] = [];
+  displayedItemSkills: ItemSkillPreview[] = [];
   seasonsData: SeasonInfo[] = [];
   currentSeason = 0;
   activeTab: ActiveTab = 'items';
@@ -37,15 +39,18 @@ export class EncyclopediaComponent implements OnInit {
   ) {}
 
   async ngOnInit(): Promise<void> {
-    const [items, talents, seasons] = await Promise.all([
+    const [items, talents, itemSkills, seasons] = await Promise.all([
       this.fetchItems(),
       this.fetchTalents(),
+      this.fetchItemSkills(),
       this.fetchSeasons(),
     ]);
     this.itemsData = items;
     this.displayedItems = [...items];
     this.talentsData = talents;
     this.displayedTalents = [...talents];
+    this.itemSkillsData = itemSkills;
+    this.displayedItemSkills = [...itemSkills];
     this.seasonsData = seasons.seasons;
     this.currentSeason = seasons.currentSeason;
     this.cdr.detectChanges();
@@ -74,6 +79,22 @@ export class EncyclopediaComponent implements OnInit {
       }));
     } catch (e) {
       console.error('Error loading talents:', e);
+      return [];
+    }
+  }
+
+  async fetchItemSkills(): Promise<ItemSkillPreview[]> {
+    try {
+      const data: any[] = await fetch(`${environment.gameServer}/itemSkills`).then(r => r.json());
+      return data.map(e => ({
+        name: e.name,
+        class: e.class ?? '',
+        legendaryDescription: e.legendaryDescription,
+        mythicDescription: e.mythicDescription,
+        triggerTypes: e.triggerTypes ?? [],
+      }));
+    } catch (e) {
+      console.error('Error loading item skills:', e);
       return [];
     }
   }
@@ -116,6 +137,10 @@ export class EncyclopediaComponent implements OnInit {
         const matchesTier = !this.selectedTier || talent.tier === this.selectedTier;
         return matchesClass && matchesTier;
       });
+    } else if (this.activeTab === 'itemSkills') {
+      this.displayedItemSkills = this.itemSkillsData.filter(skill =>
+        !this.selectedClass || skill.class.toLowerCase() === this.selectedClass!.toLowerCase()
+      );
     }
   }
 }
@@ -126,5 +151,13 @@ export type TalentPreview = {
   tier: string;
   tags: string[];
   image: string;
+  triggerTypes: string[];
+};
+
+export type ItemSkillPreview = {
+  name: string;
+  class: string;
+  legendaryDescription: string;
+  mythicDescription: string;
   triggerTypes: string[];
 };

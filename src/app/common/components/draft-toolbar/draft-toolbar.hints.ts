@@ -81,7 +81,7 @@ export const encyclopediaHint: InfoContent = {
   id: 'encyclopedia',
   title: 'Encyclopedia',
   entries: [
-    { icon: '📖', label: 'Browse', text: 'Browse all items, talents, and collections in the game. Great for planning your build or looking up what a specific item does.' },
+    { icon: '📖', label: 'Browse', text: 'Browse all items, talents, item skills, and collections in the game. Great for planning your build or looking up what a specific item does.' },
   ],
 };
 

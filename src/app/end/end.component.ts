@@ -194,6 +194,9 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!target) return;
     if (target.closest('.build-panel')) return;
     if (target.closest('.player-row')) return;
+    // Tap inside a CDK overlay (item card, talent card, stats info card, dialogs) — these are
+    // portalled to document.body, outside .build-panel, so keep the panel open.
+    if (target.closest('.cdk-overlay-container')) return;
     this.closeMobilePanel();
   };
 

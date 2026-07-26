@@ -67,7 +67,7 @@ export class TalentsComponent {
     const fmt = (v: number) => (v > 0 ? `+${v}` : `${v}`);
 
     if (s?.strength)         entries.push({ icon: '⚔️', label: 'Strength',     text: `${fmt(s.strength)} to max damage roll`,          color: 'text-red-400' });
-    if (s?.accuracy)         entries.push({ icon: '🎯', label: 'Accuracy',     text: `${fmt(s.accuracy)} to min damage roll`,          color: 'text-red-400' });
+    if (s?.accuracy)         entries.push({ icon: '🎯', label: 'Accuracy',     text: `${fmt(s.accuracy)} to min damage roll and enemy dodge reduction`, color: 'text-red-400' });
     if (s?.attackSpeed && s.attackSpeed !== 1) entries.push({ icon: '⏩', label: 'Attack Speed', text: `${fmt(Math.round((s.attackSpeed - 1) * 100))}% speed bonus`, color: 'text-blue-400' });
     if (s?.maxHp)            entries.push({ icon: '❤️', label: 'Max HP',       text: `${fmt(s.maxHp)} max health`,                     color: 'text-pink-400' });
     if (s?.defense)          entries.push({ icon: '🛡️', label: 'Defense',      text: `${fmt(s.defense)} defense`,                      color: 'text-green-400' });

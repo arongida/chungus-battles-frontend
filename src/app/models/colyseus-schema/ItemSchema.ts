@@ -60,6 +60,17 @@ class Item extends Schema {
   @type('number') previewBaseRarity: number = 0;
   // Free rarity steps this slot rolled via applyLuckyShopUpgrades.
   @type('number') luckyFindSteps: number = 0;
+  // Class-item skill (rolled at Legendary, restated at Mythic — see backend
+  // items/skills/itemSkillRoller.ts). 0/empty when no skill has been granted.
+  @type('number') skillId: number = 0;
+  @type('string') skillName: string = '';
+  @type('string') skillDescription: string = '';
+  // Dynamic skill output only, never persisted — mirrors item.affectedStats but driven by the
+  // skill's own behavior (see backend ItemSkillBehaviors.ts). Not typically read directly by the
+  // frontend (the final combined stat already shows via character stats), kept for parity with
+  // the backend schema's field order.
+  @type(AffectedStats) skillAffectedStats: AffectedStats = new AffectedStats();
+  @type(AffectedStats) skillAffectedEnemyStats: AffectedStats = new AffectedStats();
   // Frontend-only display state — not synced, must stay after all backend fields
   imageCache: string = '';
   rollPreview: ItemRollPreview | null = null;

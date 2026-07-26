@@ -16,7 +16,7 @@ import { ItemRarity, ItemType } from '../../../models/types/ItemTypes';
 
 /** Which talent granted a shop item's free claim — drives the icon/color of the "FREE" badge
  *  (see ItemCardComponent.FREE_CLAIM_META). `null` falls back to the default clover/green look. */
-export type FreeClaimSource = 'lucky-find' | 'gold-genie' | 'comrade' | null;
+export type FreeClaimSource = 'lucky-find' | 'gold-genie' | 'store-credit' | 'comrade' | 'misconduct' | null;
 
 @Component({
   selector: 'app-item-card',
@@ -60,11 +60,14 @@ export class ItemCardComponent {
   };
 
   // Icon/color per free-claim source — Black Market Contact keeps the original clover/green;
-  // Comrade and Gold Genie get their own badge so overlapping free-item talents are distinguishable.
+  // Comrade, Gold Genie and Misconduct get their own badge so overlapping free-item talents
+  // are distinguishable.
   private static readonly FREE_CLAIM_META: Record<Exclude<FreeClaimSource, null>, { icon: string; colorClass: string }> = {
-    'lucky-find': { icon: '🍀', colorClass: 'text-green-400' },
-    'gold-genie': { icon: '🪙', colorClass: 'text-amber-400' },
-    'comrade':    { icon: '★',  colorClass: 'text-red-500' },
+    'lucky-find':   { icon: '🍀', colorClass: 'text-green-400' },
+    'gold-genie':   { icon: '🪙', colorClass: 'text-amber-400' },
+    'store-credit': { icon: '💳', colorClass: 'text-orange-400' },
+    'comrade':      { icon: '★',  colorClass: 'text-red-500' },
+    'misconduct':   { icon: '🥷', colorClass: 'text-purple-400' },
   };
 
   get freeClaimIcon(): string {

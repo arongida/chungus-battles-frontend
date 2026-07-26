@@ -13,6 +13,12 @@
     <p class="px-3 pb-1 text-xs italic text-slate-300 leading-snug">{{ (item.description | slice:0:1 |
       uppercase) + (item.description | slice:1) }}</p>
     }
+    @if (item.skillId) {
+    <p class="px-3 pb-1 text-xs font-semibold" [ngClass]="item.rarity >= ItemRarity.MYTHIC ? 'text-red-500' : 'text-orange-500'">
+      {{ item.skillName }}
+    </p>
+    <p class="px-3 pb-1 text-xs italic text-slate-300 leading-snug">{{ item.skillDescription }}</p>
+    }
     <div class="flex flex-col items-center justify-start p-1">
       @if (showPrice && !showBuyButton) {
       <div class="p-1">

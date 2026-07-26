@@ -51,12 +51,23 @@ export class Player extends Schema {
   // Black Market Contact: same latch as comradeFreeClaim, but the client only honors it on
   // lucky-find shop items (see backend TalentBehaviors.ts BLACK MARKET CONTRACT).
   @type('boolean') luckyFindFreeClaim: boolean = false;
+  // Misconduct: same latch as comradeFreeClaim (any unsold shop item), but the claimed item
+  // also gets a rarity upgrade + full-price sell value (see backend TalentBehaviors.ts MISCONDUCT).
+  @type('boolean') misconductFreeClaim: boolean = false;
   // Health Flask (itemId 6): hpRegen bonus banked in the draft for the wearer's next fight only
   // (see backend PlayerSchema.ts / statsUtils.recalculatePlayerStats).
   @type('number') pendingRegenBuff: number = 0;
   // Hidden shop-roll stat, synced so the client can display it next to gold/income (see backend
-  // PlayerSchema.ts comment). Boosted permanently by the Ring of Immortality (itemId 47).
+  // PlayerSchema.ts comment).
   @type('number') luckyFindChance: number = 0;
+  // Store Credit (item skill): same latch as comradeFreeClaim, but the client only honors it on
+  // shop items priced at or below storeCreditFreeClaimCap (see backend ItemSkillBehaviors.ts
+  // STORE_CREDIT).
+  @type('boolean') storeCreditFreeClaim: boolean = false;
+  @type('number') storeCreditFreeClaimCap: number = 0;
+  // Haggler (item skill): remaining free shop rerolls for the current shop phase (see backend
+  // ItemSkillBehaviors.ts HAGGLER / PlayerSchema.ts).
+  @type('number') hagglerFreeRerolls: number = 0;
   // Frontend-only fields not present in backend schema (placed last to preserve index alignment)
   @type([ItemCollection]) activeItemCollections: ArraySchema<ItemCollection> =
     new ArraySchema<ItemCollection>();

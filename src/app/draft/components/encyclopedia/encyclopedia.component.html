@@ -10,6 +10,8 @@
       (click)="switchTab('items')">Items</button>
     <button class="enc-tab" [class.active]="activeTab === 'talents'"
       (click)="switchTab('talents')">Talents</button>
+    <button class="enc-tab" [class.active]="activeTab === 'itemSkills'"
+      (click)="switchTab('itemSkills')">Item Skills</button>
     <button class="enc-tab" [class.active]="activeTab === 'seasons'"
       (click)="switchTab('seasons')">Seasons</button>
   </div>
@@ -24,15 +26,17 @@
         <option value="rogue">Rogue</option>
         <option value="merchant">Merchant</option>
       </select>
-      <select #tierSelect class="enc-select"
-        (change)="filterByTier(tierSelect.value)">
-        <option value="">All tiers</option>
-        <option value="1">Tier 1</option>
-        <option value="2">Tier 2</option>
-        <option value="3">Tier 3</option>
-        <option value="4">Tier 4</option>
-        <option value="5">Tier 5</option>
-      </select>
+      @if (activeTab === 'items' || activeTab === 'talents') {
+        <select #tierSelect class="enc-select"
+          (change)="filterByTier(tierSelect.value)">
+          <option value="">All tiers</option>
+          <option value="1">Tier 1</option>
+          <option value="2">Tier 2</option>
+          <option value="3">Tier 3</option>
+          <option value="4">Tier 4</option>
+          <option value="5">Tier 5</option>
+        </select>
+      }
     </div>
     <div class="enc-divider"></div>
   }
@@ -66,6 +70,27 @@
                 <div class="enc-talent-trigger">⚡ {{ talent.triggerTypes.join(', ') }}</div>
               }
               <div class="enc-talent-tier">Tier {{ talent.tier }}</div>
+            </div>
+          </div>
+        }
+      </div>
+    } @else if (activeTab === 'itemSkills') {
+      <div class="enc-talents-list">
+        @for (skill of displayedItemSkills; track $index) {
+          <div class="enc-talent-card">
+            @if (getSkillIcon(skill.class); as skillIcon) {
+              <img class="enc-talent-icon" [src]="skillIcon" [alt]="skill.class" />
+            } @else {
+              <div class="enc-talent-icon-placeholder"></div>
+            }
+            <div class="enc-talent-body">
+              <div class="enc-talent-name">{{ skill.name }}</div>
+              @if (skill.triggerTypes.length > 0) {
+                <div class="enc-talent-trigger">⚡ {{ skill.triggerTypes.join(', ') }}</div>
+              }
+              <p class="enc-talent-desc"><span class="enc-skill-legendary">Legendary:</span> {{ skill.legendaryDescription }}</p>
+              <p class="enc-talent-desc"><span class="enc-skill-mythic">Mythic:</span> {{ skill.mythicDescription }}</p>
+              <div class="enc-talent-tier">{{ skill.class }}</div>
             </div>
           </div>
         }

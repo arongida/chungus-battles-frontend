@@ -28,7 +28,7 @@
        [raiseZIndexBase]="40" [raiseGroup]="'fight'"
        class="fixed z-40 fight-panel-top">
     <app-character-details [combat]="true" [player]="enemy()!" [enemy]="true" [panelId]="'enemy'"
-      [playerBeingHit]="playerBeingHit()" [enemyBeingHit]="enemyBeingHit()">
+      [opponent]="player()" [playerBeingHit]="playerBeingHit()" [enemyBeingHit]="enemyBeingHit()">
     </app-character-details>
   </div>
 }
@@ -39,7 +39,7 @@
        [raiseZIndexBase]="40" [raiseGroup]="'fight'"
        class="fixed z-40 fight-panel-bottom">
     <app-character-details [combat]="true" [player]="player()!" [panelId]="'player'"
-      [playerBeingHit]="playerBeingHit()" [enemyBeingHit]="enemyBeingHit()">
+      [opponent]="enemy()" [playerBeingHit]="playerBeingHit()" [enemyBeingHit]="enemyBeingHit()">
     </app-character-details>
   </div>
 }

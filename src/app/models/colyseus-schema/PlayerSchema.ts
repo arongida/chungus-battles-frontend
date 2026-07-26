@@ -65,6 +65,9 @@ export class Player extends Schema {
   // STORE_CREDIT).
   @type('boolean') storeCreditFreeClaim: boolean = false;
   @type('number') storeCreditFreeClaimCap: number = 0;
+  // Haggler (item skill): remaining free shop rerolls for the current shop phase (see backend
+  // ItemSkillBehaviors.ts HAGGLER / PlayerSchema.ts).
+  @type('number') hagglerFreeRerolls: number = 0;
   // Frontend-only fields not present in backend schema (placed last to preserve index alignment)
   @type([ItemCollection]) activeItemCollections: ArraySchema<ItemCollection> =
     new ArraySchema<ItemCollection>();

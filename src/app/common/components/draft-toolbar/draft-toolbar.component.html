@@ -74,10 +74,14 @@
       </span>
     </button>
 
-    <button [disabled]="player.gold < player.refreshShopCost" [appInfoHint]="refreshShopHint" [gatesAction]="true"
+    <button [disabled]="player.hagglerFreeRerolls <= 0 && player.gold < player.refreshShopCost" [appInfoHint]="refreshShopHint" [gatesAction]="true"
       mat-button class="chungus-icon-btn m-1 sm:m-2" (click)="refreshShop()">
       <span class="btn-content">
+        @if (player.hagglerFreeRerolls > 0) {
+        <span class="btn-label text-orange-400">FREE 💳</span>
+        } @else {
         <span class="btn-label">{{ player.refreshShopCost }}🟡</span>
+        }
         <span class="btn-label">Refresh</span>
       </span>
     </button>

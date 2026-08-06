@@ -39,7 +39,7 @@ import {
   SoundsService,
 } from '../../../common/services/sounds.service';
 import { RewardGainMessage, ShopFloatingMessage, TriggerItemMessage, TriggerTalentMessage } from '../../../models/types/MessageTypes';
-import { triggerDraftLogFloatingText, triggerShopFloatingText, triggerShowGoldNumber, triggerShowXpNumber, triggerShowLuckyFindBonusNumber, triggerLuckyFindBonusFireworks } from '../../../common/TriggerAnimations';
+import { triggerDraftLogFloatingText, triggerShopFloatingText, triggerShowGoldNumber, triggerShowXpNumber, triggerShowLuckyFindBonusNumber, triggerLuckyFindBonusFireworks, triggerTalentActivation, triggerItemActivation } from '../../../common/TriggerAnimations';
 
 // Creates a typed Player from any schema object (typed or reflection-decoded generic).
 // Copies primitive backing fields and collection references; skips `baseStats` because
@@ -141,13 +141,13 @@ export class DraftRoomComponent implements OnInit {
 
         room.onMessage('trigger_talent', (message: TriggerTalentMessage) => {
           if (this.player()) {
-            //triggerTalentActivation(message.talentId, message.playerId);
+            triggerTalentActivation(message.talentId, message.playerId);
           }
         });
 
         room.onMessage('trigger_item', (message: TriggerItemMessage) => {
           if (this.player()) {
-            //triggerItemActivation(message.playerId, message.slot);
+            triggerItemActivation(message.playerId, message.slot);
           }
         });
       }

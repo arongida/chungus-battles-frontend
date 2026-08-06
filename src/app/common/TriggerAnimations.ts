@@ -232,7 +232,7 @@ export function triggerShowXpNumber(renderer: Renderer2, platformId: Object, amo
   setTimeout(() => { if (el.parentNode === container) renderer.removeChild(container, el); }, 3000);
 }
 
-/** Draft-phase "Lucky Find mastery" gain — floats "+1% 🍀" over the buyer's avatar (the same
+/** Draft-phase "Lucky Find mastery" gain — floats "+2% 🍀" over the buyer's avatar (the same
  *  `damage-numbers-{playerId}` overlay used by gold/xp numbers) when a Mythic buy/upgrade grants
  *  the permanent Lucky Find bonus. Anchored to the avatar rather than the shop card, since an
  *  upgrade-preview buy destroys and recreates the item's DOM node — a card-anchored celebration
@@ -246,7 +246,7 @@ export function triggerShowLuckyFindBonusNumber(renderer: Renderer2, platformId:
   }
   const el = renderer.createElement('div');
   renderer.addClass(el, 'lucky-find-bonus-number');
-  renderer.appendChild(el, renderer.createText('+3% 🍀'));
+  renderer.appendChild(el, renderer.createText('+2% 🍀'));
   renderer.setStyle(el, 'left', `${Math.random() * 100}%`);
   renderer.appendChild(container, el);
   setTimeout(() => { if (el.parentNode === container) renderer.removeChild(container, el); }, 3000);

@@ -88,7 +88,9 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
   readonly volumeHint = volumeHint;
 
   get refreshShopHint(): InfoContent {
-    const text = this.player.hagglerFreeRerolls > 0
+    const text = this.player.freeRerolls
+      ? `Free reroll (Fortune's Fool) — roll a new set of items in the shop at no cost, but you'll start your next fight with less HP.`
+      : this.player.hagglerFreeRerolls > 0
       ? `Free reroll available (Haggler) — roll a new set of items in the shop at no cost.`
       : `Spend ${this.player.refreshShopCost} gold to roll a new set of items in the shop.`;
     return {

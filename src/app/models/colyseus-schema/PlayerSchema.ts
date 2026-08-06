@@ -68,6 +68,12 @@ export class Player extends Schema {
   // Haggler (item skill): remaining free shop rerolls for the current shop phase (see backend
   // ItemSkillBehaviors.ts HAGGLER / PlayerSchema.ts).
   @type('number') hagglerFreeRerolls: number = 0;
+  // Fortune's Fool (talent 403): reroll count for the current shop phase (see backend
+  // PlayerSchema.ts / DraftRoom.refreshShop).
+  @type('number') rerollsThisRound: number = 0;
+  // Fortune's Fool (talent 403, aura): true while owned — the shop reroll button should show
+  // FREE instead of the gold cost (see backend PlayerSchema.ts / DraftAuraTriggerCommand).
+  @type('boolean') freeRerolls: boolean = false;
   // Frontend-only fields not present in backend schema (placed last to preserve index alignment)
   @type([ItemCollection]) activeItemCollections: ArraySchema<ItemCollection> =
     new ArraySchema<ItemCollection>();

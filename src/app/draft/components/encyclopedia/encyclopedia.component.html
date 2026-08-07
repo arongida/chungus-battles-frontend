@@ -25,6 +25,9 @@
         <option value="warrior">Warrior</option>
         <option value="rogue">Rogue</option>
         <option value="merchant">Merchant</option>
+        @if (activeTab === 'itemSkills') {
+          <option value="shield">Shield</option>
+        }
       </select>
       @if (activeTab === 'items' || activeTab === 'talents') {
         <select #tierSelect class="enc-select"

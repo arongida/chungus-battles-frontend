@@ -14,7 +14,7 @@
       uppercase) + (item.description | slice:1) }}</p>
     }
     @if (item.skillId) {
-    <p class="px-3 pb-1 text-xs font-semibold" [ngClass]="item.rarity >= ItemRarity.MYTHIC ? 'text-red-500' : 'text-orange-500'">
+    <p class="px-3 pb-1 text-xs font-semibold" [ngClass]="titleColorClass">
       {{ item.skillName }}
     </p>
     <p class="px-3 pb-1 text-xs italic text-slate-300 leading-snug">{{ item.skillDescription }}</p>

@@ -91,8 +91,9 @@
               @if (skill.triggerTypes.length > 0) {
                 <div class="enc-talent-trigger">⚡ {{ skill.triggerTypes.join(', ') }}</div>
               }
-              <p class="enc-talent-desc"><span class="enc-skill-legendary">Legendary:</span> {{ skill.legendaryDescription }}</p>
-              <p class="enc-talent-desc"><span class="enc-skill-mythic">Mythic:</span> {{ skill.mythicDescription }}</p>
+              @for (d of skill.descriptions; track d.rarity) {
+                <p class="enc-talent-desc"><span [class]="rarityDescClass(d.rarity)">{{ d.label }}:</span> {{ d.text }}</p>
+              }
               <div class="enc-talent-tier">{{ skill.class }}</div>
             </div>
           </div>

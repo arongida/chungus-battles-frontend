@@ -211,7 +211,22 @@
   letter-spacing: 0.05em;
 }
 
-/* Item skill rarity labels — matches the Legendary/Mythic color convention on the item card. */
+/* Item skill rarity labels — matches the item card's rarity color convention (item-card.component.ts's titleColorClass). */
+.enc-skill-common {
+  color: #cbd5e1;
+  font-weight: 600;
+}
+
+.enc-skill-rare {
+  color: #3b82f6;
+  font-weight: 600;
+}
+
+.enc-skill-epic {
+  color: #a855f7;
+  font-weight: 600;
+}
+
 .enc-skill-legendary {
   color: #f97316;
   font-weight: 600;

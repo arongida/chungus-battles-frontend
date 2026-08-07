@@ -89,8 +89,7 @@ export class EncyclopediaComponent implements OnInit {
       return data.map(e => ({
         name: e.name,
         class: e.class ?? '',
-        legendaryDescription: e.legendaryDescription,
-        mythicDescription: e.mythicDescription,
+        descriptions: e.descriptions ?? [],
         triggerTypes: e.triggerTypes ?? [],
       }));
     } catch (e) {
@@ -109,10 +108,25 @@ export class EncyclopediaComponent implements OnInit {
     warrior: 'assets/talents/Icon_Warrior_basic_01.png',
     rogue: 'assets/talents/Icon_Rogue_basic_01.png',
     merchant: 'assets/talents/Icon_Merchant_basic_01.png',
+    shield: 'assets/items/Item_ID_76_Buckler_shield.png',
   };
 
   getSkillIcon(skillClass: string): string {
     return EncyclopediaComponent.SKILL_CLASS_ICONS[skillClass?.toLowerCase()] ?? '';
+  }
+
+  // Matches the item card's rarity palette (item-card.component.ts's titleColorClass) so a
+  // skill's rarity-tier label reads consistently wherever rarity color shows up.
+  private static readonly RARITY_DESC_CLASSES: Record<number, string> = {
+    1: 'enc-skill-common',
+    2: 'enc-skill-rare',
+    3: 'enc-skill-epic',
+    4: 'enc-skill-legendary',
+    5: 'enc-skill-mythic',
+  };
+
+  rarityDescClass(rarity: number): string {
+    return EncyclopediaComponent.RARITY_DESC_CLASSES[rarity] ?? '';
   }
 
   getItemImage(item: Item): string {
@@ -166,10 +180,15 @@ export type TalentPreview = {
   triggerTypes: string[];
 };
 
+export type ItemSkillDescription = {
+  rarity: number;
+  label: string;
+  text: string;
+};
+
 export type ItemSkillPreview = {
   name: string;
   class: string;
-  legendaryDescription: string;
-  mythicDescription: string;
+  descriptions: ItemSkillDescription[];
   triggerTypes: string[];
 };

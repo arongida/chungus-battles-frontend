@@ -89,6 +89,8 @@ export type FightSideStats = {
   damageReducedByDefense: number;
   attacksDodged: number;
   damageBlockedByInvincible?: number; // optional — absent on pre-Season-16 replays
+  empoweredAttacks?: number; // optional — absent on pre-Season-22 replays
+  empoweredDamage?: number; // optional — absent on pre-Season-22 replays
 };
 
 export type FightStatsMessage = {

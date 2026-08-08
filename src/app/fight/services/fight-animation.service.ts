@@ -19,6 +19,7 @@ import {
   triggerItemActivation,
   triggerLuckyFindBonusFireworks,
   triggerShowDamageNumber,
+  triggerShowBlockText,
   triggerShowDodgeText,
   triggerShowGoldNumber,
   triggerShowHealingNumber,
@@ -77,6 +78,9 @@ export class FightAnimationService {
     });
     if (msg.kind === 'dodge' && msg.defenderId != null && ctx.player() && ctx.enemy()) {
       triggerShowDodgeText(ctx.renderer, ctx.platformId, msg.defenderId);
+    }
+    if (msg.kind === 'block' && msg.defenderId != null && ctx.player() && ctx.enemy()) {
+      triggerShowBlockText(ctx.renderer, ctx.platformId, msg.defenderId);
     }
   }
 

@@ -58,6 +58,12 @@ export function triggerShowInvulnerableText(renderer: Renderer2, platformId: Obj
   showFloatingText(renderer, platformId, playerId, 'invulnerable-number', '🛡️ Invulnerable!');
 }
 
+/** Brace (shield skill): one hit fully negated. Reuses the invulnerable-number styling — same
+ *  shield motif, no new CSS needed. */
+export function triggerShowBlockText(renderer: Renderer2, platformId: Object, defenderId: number): void {
+  showFloatingText(renderer, platformId, defenderId, 'invulnerable-number', '🛡️ Blocked!');
+}
+
 function showFloatingText(renderer: Renderer2, platformId: Object, playerId: number, cssClass: string, text: string): void {
   if (!isPlatformBrowser(platformId)) return;
   const container = document.getElementById(`damage-numbers-${playerId}`);

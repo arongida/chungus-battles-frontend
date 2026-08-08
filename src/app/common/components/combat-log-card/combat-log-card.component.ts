@@ -62,6 +62,7 @@ export class CombatLogCardComponent {
     switch (this.entry.kind) {
       case 'attack':        return { icon: '⚔️', label: 'Weapon Hit' };
       case 'dodge':         return { icon: '🦵', label: 'Dodge' };
+      case 'block':         return { icon: '🛡️', label: 'Block' };
       case 'talent':        return { icon: '⭐', label: 'Talent' };
       case 'item':          return { icon: '🎒', label: 'Item' };
       case 'heal':          return { icon: '💚', label: 'Heal' };

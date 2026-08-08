@@ -47,6 +47,16 @@
     <span class="fst-col">{{ fmt(stats.enemy.damageBlockedByInvincible || 0) }}</span>
   </div>
   <div class="fst-row">
+    <span class="fst-label">🛡️ Hits braced/blocked</span>
+    <span class="fst-col">{{ stats.player.attacksBlocked || 0 }}</span>
+    <span class="fst-col">{{ stats.enemy.attacksBlocked || 0 }}</span>
+  </div>
+  <div class="fst-row">
+    <span class="fst-label">🛡️ Damage blocked</span>
+    <span class="fst-col">{{ fmt(stats.player.damageBlocked || 0) }}</span>
+    <span class="fst-col">{{ fmt(stats.enemy.damageBlocked || 0) }}</span>
+  </div>
+  <div class="fst-row">
     <span class="fst-label">💥 Empowered attacks</span>
     <span class="fst-col">{{ stats.player.empoweredAttacks || 0 }}</span>
     <span class="fst-col">{{ stats.enemy.empoweredAttacks || 0 }}</span>

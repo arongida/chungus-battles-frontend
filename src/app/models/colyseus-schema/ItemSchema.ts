@@ -71,6 +71,9 @@ class Item extends Schema {
   // the backend schema's field order.
   @type(AffectedStats) skillAffectedStats: AffectedStats = new AffectedStats();
   @type(AffectedStats) skillAffectedEnemyStats: AffectedStats = new AffectedStats();
+  // Live, per-tick skill state as display text (e.g. "+42 / +100 defense"), EQUIPPED items only —
+  // mirrors backend ItemSchema.ts's skillStatus. Never present via the /playerBuild REST path.
+  @type('string') skillStatus: string = '';
   // Frontend-only display state — not synced, must stay after all backend fields
   imageCache: string = '';
   rollPreview: ItemRollPreview | null = null;

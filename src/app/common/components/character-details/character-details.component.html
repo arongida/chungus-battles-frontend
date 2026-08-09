@@ -45,17 +45,19 @@
     @if (showStats && !redacted) {
       <div id="stats" class="cd-stats" [appInfoHoverCard]="allStatsHint">
 
-        <div class="cd-stat">
+        <div class="cd-stat col-span-2">
           <span class="text-pink-500">❤️ {{ getPlayerHp() | number:'1.0-0' }}</span>
           <span class="text-slate-600 text-[9px] ml-1">/ {{ player.maxHp | number:'1.0-0' }}</span>
         </div>
-        <div class="cd-stat"><span class="text-orange-400">🧪 {{ player.hpRegen | number:'1.0-3' }}</span></div>
         @if (combat) {
           <div id="hp-{{ player.playerId }}" class="hp-bar-wrapper col-span-2">
             <mat-progress-bar class="red-progress-bar" mode="determinate"
               [value]="(player.hp / player.maxHp) * 100"></mat-progress-bar>
           </div>
         }
+
+        <div class="cd-stat"><span class="text-orange-400">🧪 {{ player.hpRegen | number:'1.0-3' }}</span></div>
+        <div class="cd-stat"><span class="text-purple-400">⏳ {{ player.cooldownReduction | number:'1.0-0' }}</span></div>
 
         <div class="cd-stat"><span class="text-red-400">🎯 +{{ player.accuracy | number:'1.0-1' }}</span></div>
         <div class="cd-stat"><span class="text-red-400">⚔️ +{{ player.strength | number:'1.0-1' }}</span></div>

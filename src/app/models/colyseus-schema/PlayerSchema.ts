@@ -74,6 +74,10 @@ export class Player extends Schema {
   // Fortune's Fool (talent 403, aura): true while owned — the shop reroll button should show
   // FREE instead of the gold cost (see backend PlayerSchema.ts / DraftAuraTriggerCommand).
   @type('boolean') freeRerolls: boolean = false;
+  // Cooldown reduction: shortens active-skill intervals (see backend common/cooldown.ts /
+  // commands/triggers/ActiveTriggerCommand.ts). Declared here (end of the backend @type block)
+  // so field indices stay stable — same reasoning as freeRerolls and its neighbors above.
+  @type('number') cooldownReduction: number = 0;
   // Frontend-only fields not present in backend schema (placed last to preserve index alignment)
   @type([ItemCollection]) activeItemCollections: ArraySchema<ItemCollection> =
     new ArraySchema<ItemCollection>();

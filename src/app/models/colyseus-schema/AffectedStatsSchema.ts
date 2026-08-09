@@ -9,4 +9,5 @@ export class AffectedStats extends Schema {
     @type('number') dodgeRate: number = 0;
     @type('number') income: number = 0;
     @type('number') hpRegen: number = 0;
+    @type('number') cooldownReduction: number = 0;
 }

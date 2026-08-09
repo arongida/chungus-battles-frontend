@@ -57,6 +57,7 @@ export class ItemCardComponent {
     income:           { label: 'Income',           emoji: '💰', colorClass: 'text-yellow-300', decimals: 0 },
     dodgeRate:        { label: 'Dodge',            emoji: '🦵', colorClass: 'text-green-400',  decimals: 0 },
     hpRegen:          { label: 'Regen',            emoji: '🧪', colorClass: 'text-orange-500', decimals: 2 },
+    cooldownReduction:{ label: 'Cooldown Reduction', emoji: '⏳', colorClass: 'text-purple-400', decimals: 0 },
   };
 
   // Icon/color per free-claim source — Black Market Contact keeps the original clover/green;

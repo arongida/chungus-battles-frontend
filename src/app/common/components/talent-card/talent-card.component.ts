@@ -14,7 +14,7 @@ export class TalentCardComponent {
   hasSelfStats(s: AffectedStats): boolean {
     if (!s) return false;
     return !!(s.strength || s.accuracy || (s.attackSpeed && s.attackSpeed !== 1) ||
-              s.maxHp || s.defense || s.dodgeRate || s.income || s.hpRegen);
+              s.maxHp || s.defense || s.dodgeRate || s.income || s.hpRegen || s.cooldownReduction);
   }
 
   hasEnemyStats(e: AffectedStats): boolean {

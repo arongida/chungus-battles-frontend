@@ -298,6 +298,13 @@
   }
 }
 
+.cd-inv-btn-emoji {
+  padding: 2px 6px !important;
+  min-width: 24px !important;
+  font-size: 0.85rem !important;
+  line-height: 1.2 !important;
+}
+
 /* ── Drag-to-equip (CDK DragDrop) ── */
 
 /* Make the source row invisible while dragging — it "leaves" the inventory */
@@ -413,6 +420,12 @@
   .cd-inv-btn {
     padding: 3px 12px !important;
     font-size: 0.75rem !important;
+  }
+
+  .cd-inv-btn-emoji {
+    padding: 3px 8px !important;
+    min-width: 28px !important;
+    font-size: 0.95rem !important;
   }
 }
 

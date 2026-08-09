@@ -199,10 +199,13 @@
               {{ item.name | titlecase }}
             </span>
           </span>
-          @for (itemEquipOption of item.equipOptions.values(); track $index) {
-            <button mat-button class="cd-inv-btn" [appInfoHint]="equipHint" [gatesAction]="true"
+          @for (itemEquipOption of item.equipOptions.values(); track $index; let equipOptionCount = $count) {
+            <button mat-button class="cd-inv-btn" [class.cd-inv-btn-emoji]="equipOptionCount > 2"
+                    [appInfoHint]="equipHint" [gatesAction]="true"
+                    [attr.aria-label]="'Equip to ' + (itemEquipOption | titlecase)"
+                    [title]="equipOptionCount > 2 ? (itemEquipOption | titlecase) : ''"
                     (click)="equip(item, itemEquipOption)">
-              {{ itemEquipOption | titlecase }}
+              {{ equipOptionCount > 2 ? slotIcons[itemEquipOption] : (itemEquipOption | titlecase) }}
             </button>
           }
           @if (!item.tags.includes('quest') && !item.tags.includes('martial_fist') && !item.tags.includes('dual_wield_copy')) {

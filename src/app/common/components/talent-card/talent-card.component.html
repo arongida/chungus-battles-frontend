@@ -26,6 +26,7 @@
       @if (s.dodgeRate)     { <p class="tc-stat tc-stat--buff">🦵 {{ fmt(s.dodgeRate) }} Dodge</p> }
       @if (s.income)        { <p class="tc-stat tc-stat--buff">💰 {{ fmt(s.income) }} Income</p> }
       @if (s.hpRegen)       { <p class="tc-stat tc-stat--buff">🧪 {{ fmt(s.hpRegen) }} HP Regen</p> }
+      @if (s.cooldownReduction) { <p class="tc-stat tc-stat--buff">⏳ {{ fmt(s.cooldownReduction) }} Cooldown Reduction</p> }
     }
 
     @if (hasEnemyStats(talent.affectedEnemyStats)) {

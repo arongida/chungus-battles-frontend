@@ -9,7 +9,7 @@ export function buildItemFromData(itemData: any): Item {
   const item = new Item();
   const primitiveFields = ['itemId', 'name', 'description', 'price', 'sellPrice',
     'tier', 'rarity', 'image', 'sold', 'equipped', 'type', 'class', 'showDetails',
-    'baseMinDamage', 'baseMaxDamage', 'baseAttackSpeed',
+    'baseMinDamage', 'baseMaxDamage', 'baseAttackSpeed', 'activationRate',
     'skillId', 'skillName', 'skillDescription'];
   primitiveFields.forEach(f => { if (primitives[f] !== undefined) try { (item as any)[f] = primitives[f]; } catch {} });
   if (affectedStats) { const s = new AffectedStats(); Object.assign(s, affectedStats); item.affectedStats = s; }
@@ -24,7 +24,7 @@ export function buildPlayerFromData(data: any): Player {
   const player = new Player();
   const primitiveFields = ['playerId', 'originalPlayerId', 'name', 'gold', 'xp', 'level',
     'sessionId', 'maxXp', 'round', 'lives', 'wins', 'avatarUrl', 'gameVersion',
-    'income', 'hpRegen', 'dodgeRate', 'refreshShopCost', 'maxHp', 'hp',
+    'income', 'hpRegen', 'cooldownReduction', 'dodgeRate', 'refreshShopCost', 'maxHp', 'hp',
     'strength', 'accuracy', 'defense', 'attackSpeed', 'comradeFreeClaim', 'goldGenieFreeClaim', 'luckyFindFreeClaim', 'misconductFreeClaim',
     'storeCreditFreeClaim', 'storeCreditFreeClaimCap', 'hagglerFreeRerolls', 'rerollsThisRound', 'freeRerolls',
     'killedByPlayerId', 'killedByOriginalPlayerId', 'killedByName'];
@@ -65,6 +65,7 @@ function calculatePlayerStats(player: Player): void {
   player.dodgeRate       = b.dodgeRate       ?? 0;
   player.income          = b.income          ?? 0;
   player.hpRegen         = b.hpRegen         ?? 0;
+  player.cooldownReduction = b.cooldownReduction ?? 0;
   let speedMult          = b.attackSpeed      ?? 1;
 
   const addStats = (src: AffectedStats) => {
@@ -75,6 +76,7 @@ function calculatePlayerStats(player: Player): void {
     player.dodgeRate        += src.dodgeRate        ?? 0;
     player.income           += src.income           ?? 0;
     player.hpRegen          += src.hpRegen          ?? 0;
+    player.cooldownReduction += src.cooldownReduction ?? 0;
     const spd = src.attackSpeed;
     if (spd && spd !== 0 && spd !== 1) speedMult += spd - 1;
   };

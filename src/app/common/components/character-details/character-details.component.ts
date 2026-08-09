@@ -25,7 +25,7 @@ import {
 import { InfoHintDirective } from '../../directives/info-hint.directive';
 import { InfoHoverCardDirective } from '../../directives/info-hover-card.directive';
 import { InfoContent } from '../../models/info-content';
-import { dodgeChance } from '../../utils/stat-formulas';
+import { cooldownReductionPct, dodgeChance } from '../../utils/stat-formulas';
 import { SkillIconsComponent } from '../skill-icons/skill-icons.component';
 import { CharacterDetailsService } from '../../services/character-details.service';
 import { InfoBoxService } from '../../services/info-box.service';
@@ -393,6 +393,7 @@ export class CharacterDetailsComponent implements OnInit, OnDestroy {
     const opponentAccuracy = this.opponent?.accuracy ?? 0;
     const dodgePct = Math.round(100 * dodgeChance(this.player.dodgeRate, opponentAccuracy));
     const defenseReduction = Math.round(100 * (1 - 100 / (100 + this.player.defense)));
+    const cooldownReductionPercent = Math.round(100 * cooldownReductionPct(this.player.cooldownReduction));
 
     const accuracyText = this.player.accuracy
       ? `+${this.player.accuracy.toFixed(1)} added to your weapon's minimum damage roll, and cancels ${this.player.accuracy.toFixed(1)} of the enemy's dodge rating.`
@@ -412,6 +413,7 @@ export class CharacterDetailsComponent implements OnInit, OnDestroy {
         { icon: '⏩', label: 'Speed Bonus', text: `${((this.player.attackSpeed - 1) * 100)?.toFixed(0)}% multiplier applied to all weapon attack speeds.`, color: 'text-blue-400' },
         { icon: '💰', label: 'Income', text: `${this.player.income} gold earned at the end of this fight. Grows by 1 each fight.`, color: 'text-yellow-400' },
         { icon: '🧪', label: 'HP Regen', text: `Recover ${this.player.hpRegen?.toFixed(3)} HP every second during battle.`, color: 'text-orange-400' },
+        { icon: '⏳', label: 'Cooldown Reduction', text: `Active skills fire ${cooldownReductionPercent}% faster (${this.player.cooldownReduction?.toFixed(0)} rating applied to a defense-style formula).`, color: 'text-purple-400' },
         { icon: '🛡️', label: 'Defense', text: `Reduces incoming damage by ${defenseReduction}% (DR formula applied to ${this.player.defense?.toFixed(2)} defense).`, color: 'text-green-400' },
         { icon: '🦵', label: 'Dodge', text: dodgeText, color: 'text-green-400' },
       ],

@@ -74,6 +74,7 @@ export class TalentsComponent {
     if (s?.dodgeRate)        entries.push({ icon: '🦵', label: 'Dodge',        text: `${fmt(s.dodgeRate)} dodge rating`,               color: 'text-green-400' });
     if (s?.income)           entries.push({ icon: '💰', label: 'Income',       text: `${fmt(s.income)} gold per fight`,                color: 'text-yellow-400' });
     if (s?.hpRegen)          entries.push({ icon: '🧪', label: 'HP Regen',     text: `${fmt(s.hpRegen)} HP per second`,                color: 'text-orange-400' });
+    if (s?.cooldownReduction) entries.push({ icon: '⏳', label: 'Cooldown Reduction', text: `${fmt(s.cooldownReduction)} rating — active skills fire faster`, color: 'text-purple-400' });
 
     if (e?.strength)         entries.push({ icon: '⚔️', label: 'Enemy Strength',     text: `${fmt(e.strength)} enemy max damage`,    color: 'text-gray-400' });
     if (e?.accuracy)         entries.push({ icon: '🎯', label: 'Enemy Accuracy',     text: `${fmt(e.accuracy)} enemy min damage`,    color: 'text-gray-400' });

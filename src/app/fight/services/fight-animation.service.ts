@@ -11,6 +11,7 @@ import {
   TriggerItemMessage,
   TriggerTalentMessage,
   GameWinMessage,
+  StatsSyncMessage,
 } from '../../models/types/MessageTypes';
 import {
   triggerAvatarHit,
@@ -48,6 +49,9 @@ export interface AnimationContext {
   applyHpDelta?: (playerId: number, damage: number, healing: number) => void;
   /** Replay-only: mutates the Player signal's invincible flag, since there is no Colyseus schema sync. */
   setInvincible?: (playerId: number, invincible: boolean) => void;
+  /** Replay-only: applies a periodic authoritative stat/skill-status sync recorded by the
+   *  server, since playback has no Colyseus schema sync. */
+  applyStatsSync?: (msg: StatsSyncMessage) => void;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -187,6 +191,7 @@ export class FightAnimationService {
       case 'reward_gain':     this.applyReward(ctx, payload as RewardGainMessage); break;
       case 'trigger_talent':  this.applyTriggerTalent(ctx, payload as TriggerTalentMessage); break;
       case 'trigger_item':    this.applyTriggerItem(ctx, payload as TriggerItemMessage); break;
+      case 'stats_sync':      ctx.applyStatsSync?.(payload as StatsSyncMessage); break;
       case 'end_battle':      ctx.onEndBattle?.(payload as EndBattleMessage); break;
       case 'game_over':       ctx.onGameOver?.(payload as string); break;
       case 'game_win':        ctx.onGameWin?.(payload as GameWinMessage); break;

@@ -152,10 +152,11 @@ export class Player extends Schema {
   }
 
   set poisonStack(value: number) {
+    // Clamp mirrors backend PlayerSchema.ts's poisonStack setter (1000, not 50).
     if (value < 0) {
       this._poisonStack = 0;
-    } else if (value > 50) {
-      this._poisonStack = 50;
+    } else if (value > 1000) {
+      this._poisonStack = 1000;
     } else {
       this._poisonStack = value;
     }

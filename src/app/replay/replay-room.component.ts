@@ -24,20 +24,22 @@ import { DraggablePanelDirective } from '../common/directives/draggable-panel.di
 import { FightAnimationService, AnimationContext } from '../fight/services/fight-animation.service';
 import { InfoBoxService } from '../common/services/info-box.service';
 import { environment } from '../../environments/environment';
-import { FightStatsMessage } from '../models/types/MessageTypes';
+import { FightStatsMessage, StatsSyncSide } from '../models/types/MessageTypes';
 import { MatDialog } from '@angular/material/dialog';
 import { FightStatsDialogComponent } from '../common/components/fight-stats-dialog/fight-stats-dialog.component';
 
 // Mirrors backend playerToPlainObject → rehydrates a plain snapshot into a typed Player.
 function rehydrateItem(raw: any): Item {
   const item = new Item();
-  const NESTED = new Set(['affectedStats', 'affectedEnemyStats', 'tags', 'itemCollections', 'triggerTypes', 'equipOptions']);
+  const NESTED = new Set(['affectedStats', 'affectedEnemyStats', 'skillAffectedStats', 'skillAffectedEnemyStats', 'tags', 'itemCollections', 'triggerTypes', 'equipOptions']);
   for (const key of Object.keys(raw ?? {})) {
     if (NESTED.has(key)) continue;
     try { (item as any)[key] = raw[key]; } catch {}
   }
   if (raw?.affectedStats) Object.assign(item.affectedStats, raw.affectedStats);
   if (raw?.affectedEnemyStats) Object.assign(item.affectedEnemyStats, raw.affectedEnemyStats);
+  if (raw?.skillAffectedStats) Object.assign(item.skillAffectedStats, raw.skillAffectedStats);
+  if (raw?.skillAffectedEnemyStats) Object.assign(item.skillAffectedEnemyStats, raw.skillAffectedEnemyStats);
   (raw?.tags ?? []).forEach((t: string) => item.tags.push(t));
   (raw?.itemCollections ?? []).forEach((c: number) => item.itemCollections.push(c));
   (raw?.triggerTypes ?? []).forEach((t: string) => item.triggerTypes.push(t));
@@ -82,6 +84,27 @@ function rehydratePlayer(snapshot: any): Player {
   (snapshot?.talents ?? []).forEach((t: any) => talents.push(rehydrateTalent(t)));
   p.talents = talents;
   return p;
+}
+
+// Applies a StatsSyncSide onto a rehydrated Player in place — replay-only, since playback has no
+// Colyseus schema sync (see backend replay/StatsSyncRecorder.ts). maxHp is assigned before hp so
+// applyHpDelta's existing maxHp clamp (below) clamps against the up-to-date value; the synced hp
+// itself is left unclamped since the server value is authoritative.
+function applySideStats(p: Player, side: StatsSyncSide): void {
+  if (side.maxHp !== undefined) p.maxHp = side.maxHp;
+  if (side.hp !== undefined) p.hp = side.hp;
+  if (side.strength !== undefined) p.strength = side.strength;
+  if (side.accuracy !== undefined) p.accuracy = side.accuracy;
+  if (side.defense !== undefined) p.defense = side.defense;
+  if (side.attackSpeed !== undefined) p.attackSpeed = side.attackSpeed;
+  if (side.dodgeRate !== undefined) p.dodgeRate = side.dodgeRate;
+  if (side.hpRegen !== undefined) p.hpRegen = side.hpRegen;
+  if (side.income !== undefined) p.income = side.income;
+  if (side.cooldownReduction !== undefined) p.cooldownReduction = side.cooldownReduction;
+  for (const it of side.items ?? []) {
+    const item = p.equippedItems.get(it.slot);
+    if (item) item.skillStatus = it.skillStatus;
+  }
 }
 
 export interface ReplayListItem {
@@ -247,6 +270,14 @@ export class ReplayRoomComponent implements OnInit, AfterViewInit, OnDestroy {
           e.invincible = invincible;
           this.enemy.set(e);
         }
+      },
+      applyStatsSync: (msg) => {
+        // Sides are labelled from the room's perspective, exactly like initialState.player /
+        // initialState.enemy which initPlayers() maps onto these two signals.
+        const p = this.player();
+        const e = this.enemy();
+        if (p && msg.player) { applySideStats(p, msg.player); this.player.set(p); }
+        if (e && msg.enemy) { applySideStats(e, msg.enemy); this.enemy.set(e); }
       },
     };
   }

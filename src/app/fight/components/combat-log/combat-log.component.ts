@@ -45,6 +45,17 @@ export class CombatLogComponent implements AfterViewChecked {
     }
   }
 
+  /** Formats fight-elapsed ms as `m:ss.d`. Returns '' for entries with no timestamp (replays
+   *  recorded before `t` existed on both the payload and the replay event). */
+  formatTime(ms?: number): string {
+    if (ms === undefined || ms === null || !isFinite(ms)) return '';
+    const totalDeciseconds = Math.max(0, Math.round(ms / 100));
+    const minutes = Math.floor(totalDeciseconds / 600);
+    const seconds = Math.floor((totalDeciseconds % 600) / 10);
+    const deciseconds = totalDeciseconds % 10;
+    return `${minutes}:${seconds.toString().padStart(2, '0')}.${deciseconds}`;
+  }
+
   private scrollToBottom() {
     try {
       this.scrollEl.nativeElement.scrollTop = this.scrollEl.nativeElement.scrollHeight;

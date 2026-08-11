@@ -69,8 +69,12 @@
             <div class="enc-talent-body">
               <div class="enc-talent-name">{{ talent.name }}</div>
               <div class="enc-talent-desc">{{ talent.description }}</div>
-              @if (talent.triggerTypes.length > 0) {
-                <div class="enc-talent-trigger">⚡ {{ talent.triggerTypes.join(', ') }}</div>
+              @let talentActiveSkill = activeSkillLabel(talent.triggerTypes, talent.activationRate);
+              @if (talentActiveSkill.otherTriggers.length > 0) {
+                <div class="enc-talent-trigger">⚡ {{ talentActiveSkill.otherTriggers.join(', ') }}</div>
+              }
+              @if (talentActiveSkill.activeText) {
+                <div class="enc-talent-active">⏳ {{ talentActiveSkill.activeText }}</div>
               }
               <div class="enc-talent-tier">Tier {{ talent.tier }}</div>
             </div>
@@ -88,8 +92,12 @@
             }
             <div class="enc-talent-body">
               <div class="enc-talent-name">{{ skill.name }}</div>
-              @if (skill.triggerTypes.length > 0) {
-                <div class="enc-talent-trigger">⚡ {{ skill.triggerTypes.join(', ') }}</div>
+              @let skillActiveSkill = activeSkillLabel(skill.triggerTypes);
+              @if (skillActiveSkill.otherTriggers.length > 0) {
+                <div class="enc-talent-trigger">⚡ {{ skillActiveSkill.otherTriggers.join(', ') }}</div>
+              }
+              @if (skillActiveSkill.activeText) {
+                <div class="enc-talent-active">⏳ {{ skillActiveSkill.activeText }}</div>
               }
               @for (d of skill.descriptions; track d.rarity) {
                 <p class="enc-talent-desc"><span [class]="rarityDescClass(d.rarity)">{{ d.label }}:</span> {{ d.text }}</p>

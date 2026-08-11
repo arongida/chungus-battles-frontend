@@ -8,6 +8,7 @@ import { CharacterDetailsService } from '../../../common/services/character-deta
 import { InfoHintDirective } from '../../../common/directives/info-hint.directive';
 import { InfoContent } from '../../../common/models/info-content';
 import { environment } from '../../../../environments/environment';
+import { buildActiveSkillLabel } from '../../../common/utils/active-skill-label';
 
 /**
  * Opened via MatDialog from DraftToolbarComponent (rather than taking talentsList/playerLevel
@@ -31,6 +32,7 @@ export class TalentsComponent {
   readonly unlimitedReroll = environment.enemyPicker;
   playerLevel = computed(() => this.characterDetailsService.talentPlayerLevel());
   playerAvatarUrl = computed(() => this.characterDetailsService.talentPlayerAvatarUrl());
+  playerCooldownReduction = computed(() => this.characterDetailsService.talentPlayerCooldownReduction());
 
   constructor(
     public draftService: DraftService,
@@ -46,17 +48,25 @@ export class TalentsComponent {
       : 'Free reroll available — use the reroll panel on the right.';
 
     const statEntries = this.buildStatEntries(talent);
+    const activeSkill = this.activeSkillLabel(talent);
 
     return {
       id: 'talent-pick',
       title: talent.name,
       entries: [
         { icon: '🌟', text: talent.description },
-        { icon: '⚡', label: 'Triggers', text: talent.triggerTypes.join(', ') || '—' },
+        { icon: '⚡', label: 'Triggers', text: activeSkill.otherTriggers.join(', ') || '—' },
+        ...(activeSkill.activeText ? [{ icon: '⏳', label: 'Active', text: activeSkill.activeText, color: 'text-purple-400' }] : []),
         ...statEntries,
         { icon: '🔄', label: 'Reroll', text: rerollText },
       ],
     };
+  }
+
+  /** ACTIVE-skill cadence line, using the player's live cooldownReduction (talent-picker dialog
+   *  always has player context, unlike the encyclopedia). */
+  activeSkillLabel(talent: Talent) {
+    return buildActiveSkillLabel(talent.triggerTypes, talent.activationRate, this.playerCooldownReduction());
   }
 
   private buildStatEntries(talent: Talent): { icon: string; label: string; text: string; color?: string }[] {

@@ -6,6 +6,7 @@
              [appCombatLogHoverCard]="entry"
              [hoverPlayer]="player"
              [hoverEnemy]="enemy">
+          @if (formatTime(entry.t); as ts) { <span class="cl-time">{{ ts }}</span> }
           {{ entry.text }}
         </div>
       }

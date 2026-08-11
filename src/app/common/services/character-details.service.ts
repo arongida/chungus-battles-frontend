@@ -16,6 +16,9 @@ export class CharacterDetailsService {
   public talentRerollUsed = signal<boolean[]>([]);
   public talentPlayerLevel = signal<number>(1);
   public talentPlayerAvatarUrl = signal<string>('');
+  /** Player's current cooldownReduction rating — lets the talent-picker dialog show an ACTIVE
+   *  talent's real (CDR-shortened) activation cadence instead of just its base rate. */
+  public talentPlayerCooldownReduction = signal<number>(0);
 
   /** True when the player has picked Black Market Contact — doubles the displayed lucky-find %. */
   public hasBlackMarketTalent = signal<boolean>(false);

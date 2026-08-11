@@ -300,7 +300,7 @@ export class ReplayRoomComponent implements OnInit, AfterViewInit, OnDestroy {
         }
         while (this.eventIndex < this.events.length && this.events[this.eventIndex].t <= this.virtualMs) {
           const ev = this.events[this.eventIndex++];
-          this.fightAnimationService.dispatch(this.animCtx, ev.type, ev.payload);
+          this.fightAnimationService.dispatch(this.animCtx, ev.type, ev.payload, ev.t);
         }
         if (this.eventIndex >= this.events.length) {
           this.done = true;

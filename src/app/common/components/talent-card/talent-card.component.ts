@@ -1,6 +1,8 @@
 import { Component, Input } from '@angular/core';
 import { Talent } from '../../../models/colyseus-schema/TalentSchema';
 import { AffectedStats } from '../../../models/colyseus-schema/AffectedStatsSchema';
+import { Player } from '../../../models/colyseus-schema/PlayerSchema';
+import { ActiveSkillLabel, buildActiveSkillLabel } from '../../utils/active-skill-label';
 
 @Component({
   selector: 'app-talent-card',
@@ -10,6 +12,9 @@ import { AffectedStats } from '../../../models/colyseus-schema/AffectedStatsSche
 })
 export class TalentCardComponent {
   @Input({ required: true }) talent!: Talent;
+  /** Owner of this talent, if known — supplies cooldownReduction so the ACTIVE cadence line
+   *  can show the player's actual (shortened) interval, not just the base rate. */
+  @Input() hoverPlayer?: Player;
 
   hasSelfStats(s: AffectedStats): boolean {
     if (!s) return false;
@@ -44,10 +49,7 @@ export class TalentCardComponent {
     return parseFloat(v.toFixed(2)).toString();
   }
 
-  triggerLabel(): string {
-    const arr = this.talent?.triggerTypes;
-    if (!arr) return '—';
-    const joined = typeof arr.join === 'function' ? arr.join(', ') : '';
-    return joined || '—';
+  activeSkillLabel(): ActiveSkillLabel {
+    return buildActiveSkillLabel(this.talent?.triggerTypes, this.talent?.activationRate, this.hoverPlayer?.cooldownReduction);
   }
 }

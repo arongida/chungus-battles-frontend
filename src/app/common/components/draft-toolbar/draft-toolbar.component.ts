@@ -186,6 +186,7 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
     this.characterDetailsService.talentRerollUsed.set(this.talentRerollUsed ?? []);
     this.characterDetailsService.talentPlayerLevel.set(this.player.level);
     this.characterDetailsService.talentPlayerAvatarUrl.set(this.player.avatarUrl);
+    this.characterDetailsService.talentPlayerCooldownReduction.set(this.player.cooldownReduction);
     this.characterDetailsService.talentPlayerLuckyFindChance.set(this.player.luckyFindChance);
     // talentId 504 = Black Market Contact (doubles the displayed lucky-find %).
     this.characterDetailsService.hasBlackMarketTalent.set(

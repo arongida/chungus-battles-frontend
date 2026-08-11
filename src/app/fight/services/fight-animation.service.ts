@@ -71,13 +71,18 @@ export class FightAnimationService {
     return false;
   }
 
-  applyCombatLog(ctx: AnimationContext, msg: CombatLogEntry): void {
+  /** `fallbackT` covers replays recorded before the server stamped `t` on the payload itself —
+   *  ReplayEvent.t has always been recorded (same fight-elapsed-time origin), so passing it
+   *  through here keeps old replays timestamped too. Live messages and new replays already
+   *  carry `msg.t`, which always wins. */
+  applyCombatLog(ctx: AnimationContext, msg: CombatLogEntry, fallbackT?: number): void {
+    const entry: CombatLogEntry = msg.t !== undefined ? msg : { ...msg, t: fallbackT };
     ctx.entries.update(prev => {
       // Entries can arrive out of order (mix of broadcast + per-client send on the
       // server) — sort by seq so the log always reads in emission order. Array.sort
       // is stable, so entries with a missing/equal seq (e.g. legacy replays) keep
       // their relative insertion order.
-      const next = [...prev, msg].sort((a, b) => (a.seq ?? 0) - (b.seq ?? 0));
+      const next = [...prev, entry].sort((a, b) => (a.seq ?? 0) - (b.seq ?? 0));
       return next.length > 200 ? next.slice(-200) : next;
     });
     if (msg.kind === 'dodge' && msg.defenderId != null && ctx.player() && ctx.enemy()) {
@@ -179,10 +184,12 @@ export class FightAnimationService {
     triggerAvatarHit(playerId);
   }
 
-  /** Routes a raw replay event to the correct apply method. */
-  dispatch(ctx: AnimationContext, type: string, payload: any): void {
+  /** Routes a raw replay event to the correct apply method. `t` is the ReplayEvent's own
+   *  fight-elapsed timestamp — only consumed by the combat_log case, as a fallback for replays
+   *  recorded before the server stamped `t` on the payload itself (see applyCombatLog). */
+  dispatch(ctx: AnimationContext, type: string, payload: any, t?: number): void {
     switch (type) {
-      case 'combat_log':      this.applyCombatLog(ctx, payload as CombatLogEntry); break;
+      case 'combat_log':      this.applyCombatLog(ctx, payload as CombatLogEntry, t); break;
       case 'attack':          this.applyAttack(ctx, payload as number); break;
       case 'damage':          this.applyDamage(ctx, payload as DamageMessage); break;
       case 'invulnerable':    this.applyInvulnerable(ctx, payload as InvulnerableMessage); break;

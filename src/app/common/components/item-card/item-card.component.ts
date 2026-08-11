@@ -13,6 +13,7 @@ import {
   Player,
 } from '../../../models/colyseus-schema/PlayerSchema';
 import { ItemRarity, ItemType } from '../../../models/types/ItemTypes';
+import { ActiveSkillLabel, buildActiveSkillLabel } from '../../utils/active-skill-label';
 
 /** Which talent granted a shop item's free claim — drives the icon/color of the "FREE" badge
  *  (see ItemCardComponent.FREE_CLAIM_META). `null` falls back to the default clover/green look. */
@@ -94,6 +95,13 @@ export class ItemCardComponent {
         colorClass: m.colorClass,
       };
     });
+  }
+
+  /** ⏳ cadence line for TriggerType.ACTIVE items (Wand of Fire, Flowering Staff, Magic Ring,
+   *  active item skills) — uses the viewing player's cooldownReduction when known so the shop
+   *  card shows the actual shortened interval, not just the base rate. */
+  activeSkillLabel(): ActiveSkillLabel {
+    return buildActiveSkillLabel(this.item.triggerTypes, this.item.activationRate, this.player?.cooldownReduction);
   }
 
   get titleColorClass(): string {

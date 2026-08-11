@@ -199,7 +199,7 @@
               {{ item.name | titlecase }}
             </span>
           </span>
-          @for (itemEquipOption of item.equipOptions.values(); track $index; let equipOptionCount = $count) {
+          @for (itemEquipOption of orderedEquipOptions(item); track $index; let equipOptionCount = $count) {
             <button mat-button class="cd-inv-btn" [class.cd-inv-btn-emoji]="equipOptionCount > 2"
                     [appInfoHint]="equipHint" [gatesAction]="true"
                     [attr.aria-label]="'Equip to ' + (itemEquipOption | titlecase)"

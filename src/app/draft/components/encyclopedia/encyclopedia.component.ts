@@ -8,6 +8,7 @@ import { Player } from '../../../models/colyseus-schema/PlayerSchema';
 import { ItemCardComponent } from '../../../common/components/item-card/item-card.component';
 import { ItemHoverCardDirective } from '../../../common/directives/item-hover-card.directive';
 import { SeasonsService, SeasonInfo } from '../../../common/services/seasons.service';
+import { ActiveSkillLabel, buildActiveSkillLabel } from '../../../common/utils/active-skill-label';
 
 export type ActiveTab = 'items' | 'talents' | 'itemSkills' | 'seasons';
 
@@ -76,6 +77,7 @@ export class EncyclopediaComponent implements OnInit {
         tags: e.tags ?? [],
         image: e.image ?? '',
         triggerTypes: e.triggerTypes ?? [],
+        activationRate: e.activationRate ?? 0,
       }));
     } catch (e) {
       console.error('Error loading talents:', e);
@@ -113,6 +115,13 @@ export class EncyclopediaComponent implements OnInit {
 
   getSkillIcon(skillClass: string): string {
     return EncyclopediaComponent.SKILL_CLASS_ICONS[skillClass?.toLowerCase()] ?? '';
+  }
+
+  /** No player context in the encyclopedia (browsing the catalog, not an active run), so this
+   *  always shows base cadence, never the CDR-shortened variant. Item skills have no
+   *  activationRate on their catalog entry, so they fall back to a bare "Active" label. */
+  activeSkillLabel(triggerTypes: string[], activationRate?: number): ActiveSkillLabel {
+    return buildActiveSkillLabel(triggerTypes, activationRate);
   }
 
   // Matches the item card's rarity palette (item-card.component.ts's titleColorClass) so a
@@ -178,6 +187,7 @@ export type TalentPreview = {
   tags: string[];
   image: string;
   triggerTypes: string[];
+  activationRate: number;
 };
 
 export type ItemSkillDescription = {

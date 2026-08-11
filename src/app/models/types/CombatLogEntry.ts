@@ -14,6 +14,9 @@ export interface CombatLogEntry {
   // Monotonic sequence number stamped by the server — used to reorder entries that
   // may arrive out of order (mix of broadcast + per-client send).
   seq?: number;
+  // Fight-elapsed game time in ms at the moment this entry was emitted (0 before the battle
+  // starts). Mirrors the backend's CombatLogMessage.t.
+  t?: number;
   attackerId?: number;
   defenderId?: number;
   weaponItemId?: number;

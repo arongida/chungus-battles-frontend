@@ -3,6 +3,8 @@ import { OverlayRef } from '@angular/cdk/overlay';
 import Item from '../../../models/colyseus-schema/ItemSchema';
 import { Player } from '../../../models/colyseus-schema/PlayerSchema';
 import { ItemCardComponent, FreeClaimSource } from '../item-card/item-card.component';
+import { EquipSlot } from '../../../models/types/ItemTypes';
+import { EQUIP_SLOT_DISPLAY_ORDER } from '../../constants/game';
 
 interface EquippedSlot { slot: string; item: Item; }
 
@@ -53,8 +55,13 @@ export class ItemComparisonOverlayComponent {
   get equippedSlots(): EquippedSlot[] {
     const opts = this.item.equipOptions;
     if (!opts || this.item.equipped) return [];
+    // Sorted into panel display order (EQUIP_SLOT_DISPLAY_ORDER) — equipOptions arrives in
+    // DB/backend order, which for a Martial Artist weapon doesn't match the equipment panel.
+    const slots = Array.from(opts.values()).sort(
+      (a, b) => EQUIP_SLOT_DISPLAY_ORDER.indexOf(a as EquipSlot) - EQUIP_SLOT_DISPLAY_ORDER.indexOf(b as EquipSlot)
+    );
     const result: EquippedSlot[] = [];
-    for (const slot of opts) {
+    for (const slot of slots) {
       const eq = this.player.equippedItems.get(slot);
       if (eq) result.push({ slot, item: eq });
     }

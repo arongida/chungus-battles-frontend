@@ -5,6 +5,7 @@ import Item from '../../../models/colyseus-schema/ItemSchema';
 import { EquipSlot, ItemRarity } from '../../../models/types/ItemTypes';
 import { InfoContent } from '../../models/info-content';
 import { cooldownReductionPct, dodgeChance } from '../../utils/stat-formulas';
+import { EQUIP_SLOT_DISPLAY_ORDER } from '../../constants/game';
 import { InfoHoverCardDirective } from '../../directives/info-hover-card.directive';
 import { ItemHoverCardDirective } from '../../directives/item-hover-card.directive';
 import { SkillIconsComponent } from '../skill-icons/skill-icons.component';
@@ -24,7 +25,7 @@ import { SkillIconsComponent } from '../skill-icons/skill-icons.component';
 export class PlayerBuildCardComponent {
   @Input({ required: true }) build!: Player;
 
-  readonly equipmentLayout = [EquipSlot.HELMET, EquipSlot.MAIN_HAND, EquipSlot.OFF_HAND, EquipSlot.ARMOR];
+  readonly equipmentLayout = EQUIP_SLOT_DISPLAY_ORDER;
 
   readonly slotIcons: Record<string, string> = {
     [EquipSlot.HELMET]:    '🪖',

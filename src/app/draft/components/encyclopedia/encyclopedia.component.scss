@@ -204,6 +204,14 @@
   margin-bottom: 2px;
 }
 
+/* Same purple used for cooldownReduction elsewhere — ties an active skill's cadence to the
+ * stat that shortens it. */
+.enc-talent-active {
+  color: #c084fc;
+  font-size: 0.72rem;
+  margin-bottom: 2px;
+}
+
 .enc-talent-tier {
   color: rgba(180, 120, 30, 0.6);
   font-size: 0.7rem;

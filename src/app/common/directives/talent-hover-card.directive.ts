@@ -2,6 +2,7 @@ import { Directive, ElementRef, HostListener, Input, OnDestroy, ViewContainerRef
 import { Overlay, OverlayRef } from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
 import { Talent } from '../../models/colyseus-schema/TalentSchema';
+import { Player } from '../../models/colyseus-schema/PlayerSchema';
 import { TalentCardComponent } from '../components/talent-card/talent-card.component';
 
 @Directive({
@@ -10,6 +11,9 @@ import { TalentCardComponent } from '../components/talent-card/talent-card.compo
 })
 export class TalentHoverCardDirective implements OnDestroy {
   @Input({ alias: 'appTalentHoverCard', required: true }) talent!: Talent;
+  /** Owner of the talent — supplies cooldownReduction so the card's ACTIVE cadence line shows
+   *  the player's actual (CDR-shortened) interval. */
+  @Input() hoverPlayer?: Player;
 
   private overlayRef: OverlayRef | null = null;
 
@@ -53,6 +57,7 @@ export class TalentHoverCardDirective implements OnDestroy {
     const portal = new ComponentPortal(TalentCardComponent, this.viewContainerRef);
     const ref = this.overlayRef.attach(portal);
     ref.setInput('talent', this.talent);
+    ref.setInput('hoverPlayer', this.hoverPlayer);
   }
 
   private closeOverlay() {

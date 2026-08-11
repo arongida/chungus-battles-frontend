@@ -12,7 +12,13 @@
       <p class="tc-description">{{ talent.description }}</p>
     }
 
-    <p class="tc-trigger">⚡ {{ triggerLabel() }}</p>
+    @let activeSkill = activeSkillLabel();
+    @if (activeSkill.otherTriggers.length > 0) {
+      <p class="tc-trigger">⚡ {{ activeSkill.otherTriggers.join(', ') }}</p>
+    }
+    @if (activeSkill.activeText) {
+      <p class="tc-active">⏳ {{ activeSkill.activeText }}</p>
+    }
 
     @if (hasSelfStats(talent.affectedStats)) {
       <div class="tc-divider tc-divider--inner"></div>
@@ -26,7 +32,7 @@
       @if (s.dodgeRate)     { <p class="tc-stat tc-stat--buff">🦵 {{ fmt(s.dodgeRate) }} Dodge</p> }
       @if (s.income)        { <p class="tc-stat tc-stat--buff">💰 {{ fmt(s.income) }} Income</p> }
       @if (s.hpRegen)       { <p class="tc-stat tc-stat--buff">🧪 {{ fmt(s.hpRegen) }} HP Regen</p> }
-      @if (s.cooldownReduction) { <p class="tc-stat tc-stat--buff">⏳ {{ fmt(s.cooldownReduction) }} Cooldown Reduction</p> }
+      @if (s.cooldownReduction) { <p class="tc-stat tc-stat--cdr">⏳ {{ fmt(s.cooldownReduction) }} Cooldown Reduction</p> }
     }
 
     @if (hasEnemyStats(talent.affectedEnemyStats)) {

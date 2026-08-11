@@ -17,6 +17,11 @@
     <span class="fst-col">{{ fmt(stats.enemy.damageDealt.weapon) }}</span>
   </div>
   <div class="fst-row">
+    <span class="fst-label">💫 Skill damage</span>
+    <span class="fst-col">{{ fmt(stats.player.damageDealt.skill || 0) }}</span>
+    <span class="fst-col">{{ fmt(stats.enemy.damageDealt.skill || 0) }}</span>
+  </div>
+  <div class="fst-row">
     <span class="fst-label">🔥 Burn damage</span>
     <span class="fst-col">{{ fmt(stats.player.damageDealt.burn) }}</span>
     <span class="fst-col">{{ fmt(stats.enemy.damageDealt.burn) }}</span>

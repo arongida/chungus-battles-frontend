@@ -31,7 +31,7 @@ import { FightStatsDialogComponent } from '../common/components/fight-stats-dial
 // Mirrors backend playerToPlainObject → rehydrates a plain snapshot into a typed Player.
 function rehydrateItem(raw: any): Item {
   const item = new Item();
-  const NESTED = new Set(['affectedStats', 'affectedEnemyStats', 'skillAffectedStats', 'skillAffectedEnemyStats', 'tags', 'itemCollections', 'triggerTypes', 'equipOptions']);
+  const NESTED = new Set(['affectedStats', 'affectedEnemyStats', 'skillAffectedStats', 'skillAffectedEnemyStats', 'skillAffectedStats2', 'skillAffectedEnemyStats2', 'tags', 'itemCollections', 'triggerTypes', 'equipOptions']);
   for (const key of Object.keys(raw ?? {})) {
     if (NESTED.has(key)) continue;
     try { (item as any)[key] = raw[key]; } catch {}
@@ -40,6 +40,8 @@ function rehydrateItem(raw: any): Item {
   if (raw?.affectedEnemyStats) Object.assign(item.affectedEnemyStats, raw.affectedEnemyStats);
   if (raw?.skillAffectedStats) Object.assign(item.skillAffectedStats, raw.skillAffectedStats);
   if (raw?.skillAffectedEnemyStats) Object.assign(item.skillAffectedEnemyStats, raw.skillAffectedEnemyStats);
+  if (raw?.skillAffectedStats2) Object.assign(item.skillAffectedStats2, raw.skillAffectedStats2);
+  if (raw?.skillAffectedEnemyStats2) Object.assign(item.skillAffectedEnemyStats2, raw.skillAffectedEnemyStats2);
   (raw?.tags ?? []).forEach((t: string) => item.tags.push(t));
   (raw?.itemCollections ?? []).forEach((c: number) => item.itemCollections.push(c));
   (raw?.triggerTypes ?? []).forEach((t: string) => item.triggerTypes.push(t));
@@ -103,7 +105,10 @@ function applySideStats(p: Player, side: StatsSyncSide): void {
   if (side.cooldownReduction !== undefined) p.cooldownReduction = side.cooldownReduction;
   for (const it of side.items ?? []) {
     const item = p.equippedItems.get(it.slot);
-    if (item) item.skillStatus = it.skillStatus;
+    if (item) {
+      item.skillStatus = it.skillStatus;
+      item.skillStatus2 = it.skillStatus2;
+    }
   }
 }
 
@@ -300,7 +305,7 @@ export class ReplayRoomComponent implements OnInit, AfterViewInit, OnDestroy {
         }
         while (this.eventIndex < this.events.length && this.events[this.eventIndex].t <= this.virtualMs) {
           const ev = this.events[this.eventIndex++];
-          this.fightAnimationService.dispatch(this.animCtx, ev.type, ev.payload);
+          this.fightAnimationService.dispatch(this.animCtx, ev.type, ev.payload, ev.t);
         }
         if (this.eventIndex >= this.events.length) {
           this.done = true;

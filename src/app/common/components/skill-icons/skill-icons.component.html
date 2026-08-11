@@ -1,7 +1,7 @@
 <div class="pl-1 sm:pl-4">
   <div class="text-white fill-slate-100" [class]="row ? 'flex flex-row' : 'flex flex-col'">
     @for (talent of player.talents; track $index) {
-    <div class="p-1 rounded-sm cursor-default" [appTalentHoverCard]="talent"
+    <div class="p-1 rounded-sm cursor-default" [appTalentHoverCard]="talent" [hoverPlayer]="player"
       id="talent-{{talent.talentId}}-{{player.playerId}}">
       <img [src]="talent.image" class="object-contain"
            [style.width.px]="iconSizePx" [style.height.px]="iconSizePx" />

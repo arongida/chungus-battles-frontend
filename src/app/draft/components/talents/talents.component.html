@@ -20,7 +20,13 @@
             <div class="tp-card-body">
               <div class="tp-card-name">{{ talent.name }}</div>
               <div class="tp-card-desc">{{ talent.description }}</div>
-              <div class="tp-card-trigger">⚡ {{ talent.triggerTypes.join(', ') }}</div>
+              @let activeSkill = activeSkillLabel(talent);
+              @if (activeSkill.otherTriggers.length > 0) {
+                <div class="tp-card-trigger">⚡ {{ activeSkill.otherTriggers.join(', ') }}</div>
+              }
+              @if (activeSkill.activeText) {
+                <div class="tp-card-active">⏳ {{ activeSkill.activeText }}</div>
+              }
             </div>
           </div>
           <button class="tp-slot-reroll"

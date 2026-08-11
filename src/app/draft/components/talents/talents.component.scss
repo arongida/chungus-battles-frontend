@@ -113,6 +113,13 @@
   font-size: 0.72rem;
 }
 
+/* Same purple used for cooldownReduction elsewhere — ties an active skill's cadence to the
+ * stat that shortens it. */
+.tp-card-active {
+  color: #c084fc;
+  font-size: 0.72rem;
+}
+
 // Plain native <button>, not `mat-icon-button`/`mat-button`: Material's own button directives
 // bake their ripple/label markup and padding into the button's box in ways that fight a simple
 // centered-circle layout (see .chungus-icon-btn in draft-toolbar.component.scss for the same

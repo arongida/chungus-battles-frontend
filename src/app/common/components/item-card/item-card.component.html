@@ -22,6 +22,18 @@
     <p class="px-3 pb-1 text-xs font-medium text-amber-300 leading-snug">▸ {{ item.skillStatus }}</p>
     }
     }
+    @if (item.skillId2) {
+    <p class="px-3 pb-1 text-xs font-semibold" [ngClass]="titleColorClass">
+      {{ item.skillName2 }}
+    </p>
+    <p class="px-3 pb-1 text-xs italic text-slate-300 leading-snug">{{ item.skillDescription2 }}</p>
+    @if (item.skillStatus2) {
+    <p class="px-3 pb-1 text-xs font-medium text-amber-300 leading-snug">▸ {{ item.skillStatus2 }}</p>
+    }
+    }
+    @if (activeSkillLabel().activeText; as activeText) {
+    <p class="px-3 pb-1 text-xs font-semibold text-purple-400 leading-snug">⏳ {{ activeText }}</p>
+    }
     <div class="flex flex-col items-center justify-start p-1">
       @if (showPrice && !showBuyButton) {
       <div class="p-1">

@@ -77,6 +77,15 @@ class Item extends Schema {
   // Live, per-tick skill state as display text (e.g. "+42 / +100 defense"), EQUIPPED items only —
   // mirrors backend ItemSchema.ts's skillStatus. Never present via the /playerBuild REST path.
   @type('string') skillStatus: string = '';
+  // Second item skill — only ever granted by Weapon Whisperer (backend TalentBehaviors.ts).
+  // Same shape/lifecycle as skillId/skillName/skillDescription/skillAffectedStats/
+  // skillAffectedEnemyStats/skillStatus above; 0/empty for every other item.
+  @type('number') skillId2: number = 0;
+  @type('string') skillName2: string = '';
+  @type('string') skillDescription2: string = '';
+  @type(AffectedStats) skillAffectedStats2: AffectedStats = new AffectedStats();
+  @type(AffectedStats) skillAffectedEnemyStats2: AffectedStats = new AffectedStats();
+  @type('string') skillStatus2: string = '';
   // Frontend-only display state — not synced, must stay after all backend fields
   imageCache: string = '';
   rollPreview: ItemRollPreview | null = null;

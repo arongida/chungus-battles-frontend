@@ -84,7 +84,7 @@ export type SetFightSpeedMessage = {
 };
 
 export type FightSideStats = {
-  damageDealt: { weapon: number; burn: number; poison: number };
+  damageDealt: { weapon: number; skill?: number; burn: number; poison: number }; // skill optional — absent on pre-skill-damage-tracking replays (weapon included skill damage back then)
   healingReceived: number;
   damageReducedByDefense: number;
   attacksDodged: number;
@@ -108,6 +108,9 @@ export type FightStatsMessage = {
 export type StatsSyncItem = {
   slot: string;
   skillStatus: string;
+  // Weapon Whisperer's second skill slot — same "resent whenever either slot's status changed"
+  // granularity as skillStatus above, not diffed independently.
+  skillStatus2: string;
 };
 
 export type StatsSyncSide = {

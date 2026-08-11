@@ -26,6 +26,7 @@ import { InfoHintDirective } from '../../directives/info-hint.directive';
 import { InfoHoverCardDirective } from '../../directives/info-hover-card.directive';
 import { InfoContent } from '../../models/info-content';
 import { cooldownReductionPct, dodgeChance } from '../../utils/stat-formulas';
+import { EQUIP_SLOT_DISPLAY_ORDER } from '../../constants/game';
 import { SkillIconsComponent } from '../skill-icons/skill-icons.component';
 import { CharacterDetailsService } from '../../services/character-details.service';
 import { InfoBoxService } from '../../services/info-box.service';
@@ -170,9 +171,7 @@ export class CharacterDetailsComponent implements OnInit, OnDestroy {
       .replace('01', 'transparent');
   }
 
-  equipmentLayout = [
-    [EquipSlot.HELMET, EquipSlot.MAIN_HAND, EquipSlot.OFF_HAND, EquipSlot.ARMOR],
-  ];
+  equipmentLayout = [EQUIP_SLOT_DISPLAY_ORDER];
 
   readonly slotIcons: Record<string, string> = {
     [EquipSlot.HELMET]:    '🪖',
@@ -180,6 +179,17 @@ export class CharacterDetailsComponent implements OnInit, OnDestroy {
     [EquipSlot.OFF_HAND]:  '🛡️',
     [EquipSlot.ARMOR]:     '🧥',
   };
+
+  /** Sorts an item's equipOptions into the panel's display order (EQUIP_SLOT_DISPLAY_ORDER).
+   *  equipOptions arrives in DB/backend order (mainHand, offHand, then armor+helmet appended by
+   *  Martial Artist — see TalentBehaviors.ts's openMartialArtistSlots), which doesn't match the
+   *  slot row above it; sorting here keeps the equip buttons readable against that row. */
+  orderedEquipOptions(item: Item): string[] {
+    const options = Array.from(item.equipOptions?.values() ?? []);
+    return options.sort(
+      (a, b) => EQUIP_SLOT_DISPLAY_ORDER.indexOf(a as EquipSlot) - EQUIP_SLOT_DISPLAY_ORDER.indexOf(b as EquipSlot)
+    );
+  }
 
   readonly inventoryCategories = [
     { label: 'All',     value: 'all' },

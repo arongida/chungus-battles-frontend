@@ -84,7 +84,7 @@ export type SetFightSpeedMessage = {
 };
 
 export type FightSideStats = {
-  damageDealt: { weapon: number; burn: number; poison: number };
+  damageDealt: { weapon: number; skill?: number; burn: number; poison: number }; // skill optional — absent on pre-skill-damage-tracking replays (weapon included skill damage back then)
   healingReceived: number;
   damageReducedByDefense: number;
   attacksDodged: number;

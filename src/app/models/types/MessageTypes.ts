@@ -108,6 +108,9 @@ export type FightStatsMessage = {
 export type StatsSyncItem = {
   slot: string;
   skillStatus: string;
+  // Weapon Whisperer's second skill slot — same "resent whenever either slot's status changed"
+  // granularity as skillStatus above, not diffed independently.
+  skillStatus2: string;
 };
 
 export type StatsSyncSide = {

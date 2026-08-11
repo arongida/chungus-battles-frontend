@@ -10,7 +10,7 @@ export function buildItemFromData(itemData: any): Item {
   const primitiveFields = ['itemId', 'name', 'description', 'price', 'sellPrice',
     'tier', 'rarity', 'image', 'sold', 'equipped', 'type', 'class', 'showDetails',
     'baseMinDamage', 'baseMaxDamage', 'baseAttackSpeed', 'activationRate',
-    'skillId', 'skillName', 'skillDescription'];
+    'skillId', 'skillName', 'skillDescription', 'skillId2', 'skillName2', 'skillDescription2'];
   primitiveFields.forEach(f => { if (primitives[f] !== undefined) try { (item as any)[f] = primitives[f]; } catch {} });
   if (affectedStats) { const s = new AffectedStats(); Object.assign(s, affectedStats); item.affectedStats = s; }
   if (affectedEnemyStats) { const s = new AffectedStats(); Object.assign(s, affectedEnemyStats); item.affectedEnemyStats = s; }

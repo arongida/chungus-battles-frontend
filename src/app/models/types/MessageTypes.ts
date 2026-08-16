@@ -16,6 +16,12 @@ export type InvulnerableStateMessage = {
   invincible: boolean;
 };
 
+// Shield Bash (item skill): mirrors InvulnerableStateMessage above.
+export type StunnedStateMessage = {
+  playerId: number;
+  stunned: boolean;
+};
+
 export type HealingMessage = {
   playerId: number;
   healing: number;

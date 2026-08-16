@@ -30,6 +30,15 @@
     @if (item.skillStatus2) {
     <p class="px-3 pb-1 text-xs font-medium text-amber-300 leading-snug">▸ {{ item.skillStatus2 }}</p>
     }
+    } @else if (!item.skillId && item.futureSkillId) {
+    <!-- Skill preview: the roll is already seed-determined the moment the item exists (see
+         backend refreshFutureItemSkill), so a Common/Rare/Epic class item can show exactly which
+         skill it's heading toward. Shields carry their skill from Common onward (no rarity gate),
+         so they're labeled differently. Dimmed to read as a promise, not an active effect. -->
+    <p class="px-3 pb-1 text-xs font-semibold text-slate-400">
+      {{ item.type === 'shield' ? 'Skill' : 'At Legendary' }}: {{ item.futureSkillName }}
+    </p>
+    <p class="px-3 pb-1 text-xs italic text-slate-500 leading-snug">{{ item.futureSkillDescription }}</p>
     }
     @if (activeSkillLabel().activeText; as activeText) {
     <p class="px-3 pb-1 text-xs font-semibold text-purple-400 leading-snug">⏳ {{ activeText }}</p>
@@ -70,7 +79,7 @@
           <p>
             Damage:
             <span class="text-red-500">
-              {{ item.baseMinDamage | number: '1.0-1' }} - {{ item.baseMaxDamage | number: '1.0-1' }} ⚔️
+              {{ item.baseMinDamage | number: '1.0-1' }} - {{ item.baseMaxDamage + item.bonusMaxDamage | number: '1.0-1' }} ⚔️
             </span>
           </p>
           }

@@ -160,6 +160,14 @@ body {
   -webkit-text-stroke: 1px #d97706;
 }
 
+// Shield Bash (item skill) — same purple as .stunned-aura's pulse, so the floating text and the
+// avatar aura read as one effect.
+.stunned-number {
+  @apply absolute text-purple-400 text-lg font-bold whitespace-nowrap;
+  animation: floatUp 3s ease-in forwards;
+  -webkit-text-stroke: 1px #7e22ce;
+}
+
 // Draft-phase "lucky find" announcement — floats over the shop card instead of a
 // snackbar toast. Stays inside the card's own bounds (the card wrapper clips overflow
 // for its hover/drag visuals), unlike the battle damage numbers which escape their box.
@@ -191,6 +199,13 @@ body {
 
 .invulnerable-aura {
   animation: invulnerable-pulse 1s ease-in-out infinite;
+  border-radius: 0.5rem;
+}
+
+// Shield Bash (item skill) stun indicator — same idiom as invulnerable-aura above, distinct
+// blue/purple pulse so the two states read differently at a glance.
+.stunned-aura {
+  animation: stunned-pulse 0.6s ease-in-out infinite;
   border-radius: 0.5rem;
 }
 
@@ -341,6 +356,12 @@ body {
   0%   { box-shadow: 0 0 6px 2px rgba(251, 191, 36, 0.5); }
   50%  { box-shadow: 0 0 16px 6px rgba(251, 191, 36, 0.9); }
   100% { box-shadow: 0 0 6px 2px rgba(251, 191, 36, 0.5); }
+}
+
+@keyframes stunned-pulse {
+  0%   { box-shadow: 0 0 6px 2px rgba(96, 165, 250, 0.5); }
+  50%  { box-shadow: 0 0 16px 6px rgba(147, 51, 234, 0.9); }
+  100% { box-shadow: 0 0 6px 2px rgba(96, 165, 250, 0.5); }
 }
 
 @keyframes floatUp {

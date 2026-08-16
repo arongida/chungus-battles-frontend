@@ -5,7 +5,7 @@ export type CombatLogKind =
   | 'burn_apply' | 'burn_tick'
   | 'heal' | 'leech'
   | 'talent' | 'item'
-  | 'invulnerable'
+  | 'invulnerable' | 'stun'
   | 'reward' | 'xp' | 'result';
 
 export interface CombatLogEntry {

@@ -248,6 +248,9 @@ export class FightRoomComponent implements OnInit {
         // exists for replays, but an unregistered type would log a warning.
         room.onMessage('invulnerable_state', () => {});
 
+        // Live mode gets `stunned` via schema sync — same reasoning as invulnerable_state above.
+        room.onMessage('stunned_state', () => {});
+
         room.onMessage('trigger_talent', (message: TriggerTalentMessage) => {
           this.fightAnimationService.applyTriggerTalent(animCtx, message);
         });

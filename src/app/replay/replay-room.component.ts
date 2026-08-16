@@ -279,6 +279,17 @@ export class ReplayRoomComponent implements OnInit, AfterViewInit, OnDestroy {
           this.enemy.set(e);
         }
       },
+      setStunned: (playerId, stunned) => {
+        const p = this.player();
+        const e = this.enemy();
+        if (p && p.playerId === playerId) {
+          p.stunned = stunned;
+          this.player.set(p);
+        } else if (e && e.playerId === playerId) {
+          e.stunned = stunned;
+          this.enemy.set(e);
+        }
+      },
       applyStatsSync: (msg) => {
         // Sides are labelled from the room's perspective, exactly like initialState.player /
         // initialState.enemy which initPlayers() maps onto these two signals.

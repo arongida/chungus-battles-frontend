@@ -78,6 +78,9 @@ export class Player extends Schema {
   // commands/triggers/ActiveTriggerCommand.ts). Declared here (end of the backend @type block)
   // so field indices stay stable — same reasoning as freeRerolls and its neighbors above.
   @type('number') cooldownReduction: number = 0;
+  // Shield Bash (item skill): true while stunned — mirrors `invincible` above. Declared here (end
+  // of the backend @type block) so field indices stay stable — same reasoning as cooldownReduction.
+  @type('boolean') stunned: boolean = false;
   // Frontend-only fields not present in backend schema (placed last to preserve index alignment)
   @type([ItemCollection]) activeItemCollections: ArraySchema<ItemCollection> =
     new ArraySchema<ItemCollection>();

@@ -7,6 +7,7 @@ import {
   HealingMessage,
   InvulnerableMessage,
   InvulnerableStateMessage,
+  StunnedStateMessage,
   RewardGainMessage,
   TriggerItemMessage,
   TriggerTalentMessage,
@@ -23,6 +24,7 @@ import {
   triggerShowDamageNumber,
   triggerShowBlockText,
   triggerShowDodgeText,
+  triggerShowStunnedText,
   triggerShowGoldNumber,
   triggerShowHealingNumber,
   triggerShowInvulnerableText,
@@ -51,6 +53,8 @@ export interface AnimationContext {
   applyHpDelta?: (playerId: number, damage: number, healing: number) => void;
   /** Replay-only: mutates the Player signal's invincible flag, since there is no Colyseus schema sync. */
   setInvincible?: (playerId: number, invincible: boolean) => void;
+  /** Replay-only: mutates the Player signal's stunned flag, since there is no Colyseus schema sync. */
+  setStunned?: (playerId: number, stunned: boolean) => void;
   /** Replay-only: applies a periodic authoritative stat/skill-status sync recorded by the
    *  server, since playback has no Colyseus schema sync. */
   applyStatsSync?: (msg: StatsSyncMessage) => void;
@@ -93,6 +97,11 @@ export class FightAnimationService {
     if (msg.kind === 'block' && msg.defenderId != null && ctx.player() && ctx.enemy()) {
       triggerShowBlockText(ctx.renderer, ctx.platformId, msg.defenderId);
     }
+    // Shield Bash (item skill): attackerId is the STUNNED player (the striker who triggered the
+    // proc), not the shield's owner — see ItemSkillBehaviors.ts's SHIELD_BASH entry.
+    if (msg.kind === 'stun' && msg.attackerId != null && ctx.player() && ctx.enemy()) {
+      triggerShowStunnedText(ctx.renderer, ctx.platformId, msg.attackerId);
+    }
   }
 
   applyAttack(ctx: AnimationContext, attackerId: number): void {
@@ -132,6 +141,10 @@ export class FightAnimationService {
 
   applyInvulnerableState(ctx: AnimationContext, msg: InvulnerableStateMessage): void {
     ctx.setInvincible?.(msg.playerId, msg.invincible);
+  }
+
+  applyStunnedState(ctx: AnimationContext, msg: StunnedStateMessage): void {
+    ctx.setStunned?.(msg.playerId, msg.stunned);
   }
 
   applyHealing(ctx: AnimationContext, msg: HealingMessage): void {
@@ -196,6 +209,7 @@ export class FightAnimationService {
       case 'damage':          this.applyDamage(ctx, payload as DamageMessage); break;
       case 'invulnerable':    this.applyInvulnerable(ctx, payload as InvulnerableMessage); break;
       case 'invulnerable_state': this.applyInvulnerableState(ctx, payload as InvulnerableStateMessage); break;
+      case 'stunned_state':   this.applyStunnedState(ctx, payload as StunnedStateMessage); break;
       case 'healing':         this.applyHealing(ctx, payload as HealingMessage); break;
       case 'reward_gain':     this.applyReward(ctx, payload as RewardGainMessage); break;
       case 'trigger_talent':  this.applyTriggerTalent(ctx, payload as TriggerTalentMessage); break;

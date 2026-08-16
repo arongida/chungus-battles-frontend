@@ -64,6 +64,12 @@ export function triggerShowBlockText(renderer: Renderer2, platformId: Object, de
   showFloatingText(renderer, platformId, defenderId, 'invulnerable-number', '🛡️ Blocked!');
 }
 
+/** Shield Bash (item skill): shown over the STUNNED player (the one who just attacked into the
+ *  shield), same as dodge shows over the player who dodged. */
+export function triggerShowStunnedText(renderer: Renderer2, platformId: Object, stunnedPlayerId: number): void {
+  showFloatingText(renderer, platformId, stunnedPlayerId, 'stunned-number', '💫 Stunned!');
+}
+
 function showFloatingText(renderer: Renderer2, platformId: Object, playerId: number, cssClass: string, text: string): void {
   if (!isPlatformBrowser(platformId)) return;
   const container = document.getElementById(`damage-numbers-${playerId}`);

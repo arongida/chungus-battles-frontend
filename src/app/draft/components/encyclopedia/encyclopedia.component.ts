@@ -1,5 +1,4 @@
-import { Component, Inject, OnInit, ChangeDetectorRef } from '@angular/core';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import Item from '../../../models/colyseus-schema/ItemSchema';
 import { MatButtonModule } from '@angular/material/button';
 import { environment } from '../../../../environments/environment';
@@ -33,8 +32,9 @@ export class EncyclopediaComponent implements OnInit {
   selectedTier: string | null = null;
   dummyPlayer: Player = new Player();
 
+  // No MAT_DIALOG_DATA dependency — this is a pure catalog browser, openable from a dialog
+  // (draft toolbar, login page) with nothing player/session-specific to pass in.
   constructor(
-    @Inject(MAT_DIALOG_DATA) public dialogData: any,
     private cdr: ChangeDetectorRef,
     private seasonsService: SeasonsService,
   ) {}

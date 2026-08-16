@@ -22,13 +22,14 @@ import {
   LossRewardOptions,
   LossRewardResultMessage,
   FightStatsMessage,
+  GameOverMessage,
   GameWinMessage,
 } from '../../../models/types/MessageTypes';
 import { CombatLogEntry } from '../../../models/types/CombatLogEntry';
 import { CombatLogComponent } from '../combat-log/combat-log.component';
 import { DraftService } from '../../../draft/services/draft.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -45,6 +46,7 @@ import { InfoHintDirective } from '../../../common/directives/info-hint.directiv
 import { PanelLayoutService } from '../../../common/services/panel-layout.service';
 import { AnimationContext, FightAnimationService } from '../../services/fight-animation.service';
 import { InfoBoxService } from '../../../common/services/info-box.service';
+import { ReplaysService } from '../../../common/services/replays.service';
 import {
   battleWonHint,
   battleLostHint,
@@ -80,7 +82,6 @@ function coercePlayer(src: any): Player {
     CharacterDetailsComponent,
     DraggablePanelDirective,
     InfoHintDirective,
-    RouterLink,
   ],
   templateUrl: './fight-room.component.html',
   styleUrl: './fight-room.component.scss',
@@ -130,6 +131,7 @@ export class FightRoomComponent implements OnInit {
     private infoBoxService: InfoBoxService,
     private panelLayoutService: PanelLayoutService,
     private dialog: MatDialog,
+    private replaysService: ReplaysService,
   ) {
     effect(() => {
       const room = this.fightService.room();
@@ -163,6 +165,7 @@ export class FightRoomComponent implements OnInit {
             const stats = msg?.stats ?? null;
             const wins = msg?.wins ?? this.player()?.wins ?? 0;
             this.battleOver = true;
+            if (replayId) this.replaysService.invalidate(this.player()?.originalPlayerId ?? 0);
             localStorage.setItem('battleEndState', JSON.stringify({ type: 'end_battle', result, lossReward, replayId, stats, wins }));
             if (result === 'win') this.soundsService.playSound(SoundOptions.CHEER);
             else if (result === 'lose') this.soundsService.playSound(SoundOptions.JEER);
@@ -180,12 +183,16 @@ export class FightRoomComponent implements OnInit {
             );
           },
           onGameOver: (message) => {
+            const msg: GameOverMessage = typeof message === 'string' ? { message } : message;
             this.gameOver = true;
             this.battleOver = true;
-            this.gameOverMessage.set(message);
+            this.gameOverMessage.set(msg.message);
             this.gameOverMinimized.set(false);
             this.gameOverVisible.set(true);
-            localStorage.setItem('battleEndState', JSON.stringify({ type: 'game_over', message }));
+            this.battleReplayId.set(msg.replayId ?? null);
+            this.battleStats.set(msg.stats ?? null);
+            if (msg.replayId) this.replaysService.invalidate(this.player()?.originalPlayerId ?? 0);
+            localStorage.setItem('battleEndState', JSON.stringify({ type: 'game_over', message: msg.message, replayId: msg.replayId, stats: msg.stats }));
             this.infoBoxService.setPageDefault(runOverHint);
           },
           onGameWin: (message) => {
@@ -198,7 +205,10 @@ export class FightRoomComponent implements OnInit {
             this.gameWinLosses.set(message.losses ?? 0);
             this.gameOver = true;
             this.battleOver = true;
-            localStorage.setItem('battleEndState', JSON.stringify({ type: 'game_win', wins: message.wins, losses: message.losses }));
+            this.battleReplayId.set(message.replayId ?? null);
+            this.battleStats.set(message.stats ?? null);
+            if (message.replayId) this.replaysService.invalidate(this.player()?.originalPlayerId ?? 0);
+            localStorage.setItem('battleEndState', JSON.stringify({ type: 'game_win', wins: message.wins, losses: message.losses, replayId: message.replayId, stats: message.stats }));
             this.infoBoxService.setPageDefault(gameWinHint);
           },
         };
@@ -246,7 +256,7 @@ export class FightRoomComponent implements OnInit {
           this.fightAnimationService.applyTriggerItem(animCtx, message);
         });
 
-        room.onMessage('game_over', (message: string) => {
+        room.onMessage('game_over', (message: GameOverMessage | string) => {
           this.fightAnimationService.dispatch(animCtx, 'game_over', message);
         });
 
@@ -356,6 +366,8 @@ export class FightRoomComponent implements OnInit {
         this.gameOverMessage.set(state.message ?? 'Game over');
         this.gameOverMinimized.set(false);
         this.gameOverVisible.set(true);
+        this.battleReplayId.set(state.replayId ?? null);
+        this.battleStats.set(state.stats ?? null);
         this.infoBoxService.setPageDefault(runOverHint);
       } else if (state.type === 'end_battle') {
         this.battleOver = true;
@@ -381,6 +393,8 @@ export class FightRoomComponent implements OnInit {
         this.gameWinMinimized.set(false);
         this.gameWinWins.set(state.wins ?? 0);
         this.gameWinLosses.set(state.losses ?? 0);
+        this.battleReplayId.set(state.replayId ?? null);
+        this.battleStats.set(state.stats ?? null);
         this.infoBoxService.setPageDefault(gameWinHint);
       }
     } catch {}

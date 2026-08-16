@@ -276,9 +276,6 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
   openEncyclopedia(): void {
     this.infoBoxService.runGated(this.encyclopediaHint, () => {
       this.dialog.open(EncyclopediaComponent, {
-        data: {
-          player: this.player,
-        },
         maxWidth: '100vw',
         maxHeight: '100vh',
         height: '100%',

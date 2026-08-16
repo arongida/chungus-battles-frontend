@@ -10,6 +10,7 @@ import {
   RewardGainMessage,
   TriggerItemMessage,
   TriggerTalentMessage,
+  GameOverMessage,
   GameWinMessage,
   StatsSyncMessage,
 } from '../../models/types/MessageTypes';
@@ -43,7 +44,8 @@ export interface AnimationContext {
   /** Called for every damage event — typically animates avatar + sets being-hit signal. */
   triggerDamagedAvatar: (playerId: number) => void;
   onEndBattle?: (msg: EndBattleMessage) => void;
-  onGameOver?: (msg: string) => void;
+  /** `string` covers replays recorded before game_over carried an object payload. */
+  onGameOver?: (msg: GameOverMessage | string) => void;
   onGameWin?: (msg: GameWinMessage) => void;
   /** Replay-only: mutates the Player signal's HP directly, since there is no Colyseus schema sync. */
   applyHpDelta?: (playerId: number, damage: number, healing: number) => void;
@@ -200,7 +202,7 @@ export class FightAnimationService {
       case 'trigger_item':    this.applyTriggerItem(ctx, payload as TriggerItemMessage); break;
       case 'stats_sync':      ctx.applyStatsSync?.(payload as StatsSyncMessage); break;
       case 'end_battle':      ctx.onEndBattle?.(payload as EndBattleMessage); break;
-      case 'game_over':       ctx.onGameOver?.(payload as string); break;
+      case 'game_over':       ctx.onGameOver?.(payload as GameOverMessage | string); break;
       case 'game_win':        ctx.onGameWin?.(payload as GameWinMessage); break;
       // Compat: old replays recorded before Season 16 contain 'version_win' events —
       // route them to the same win-screen handler so those replays still show a banner.

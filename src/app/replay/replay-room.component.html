@@ -7,6 +7,13 @@
     </span>
   }
   <div class="flex-1"></div>
+  <!-- Stats -->
+  @if (battleStats()) {
+    <button mat-button class="replay-back-btn" (click)="openStats()" title="Fight stats">
+      <mat-icon>insights</mat-icon>
+      <span class="hidden sm:inline ml-1">Stats</span>
+    </button>
+  }
   <!-- Speed buttons -->
   <div class="speed-group">
     <button (click)="setSpeed(0.5)" [class.active]="speed() === 0.5">0.5×</button>
@@ -93,40 +100,6 @@
   @if (truncated()) {
     <div class="version-banner fixed bottom-16 left-1/2 -translate-x-1/2 z-30">
       This replay was truncated (fight was very long)
-    </div>
-  }
-
-  <!-- Fight result overlay -->
-  @if (showResultBanner()) {
-    <div class="fixed inset-0 z-[9999] flex items-center justify-center chungus-backdrop">
-      <div class="chungus-card text-center">
-        <div class="chungus-modal-icon">
-          @if (battleResult() === 'win') { ⚔️ }
-          @if (battleResult() === 'lose') { 🛡️ }
-          @if (battleResult() === 'draw') { ⚡ }
-        </div>
-        <h2 class="chungus-modal-title">
-          @if (battleResult() === 'win') { Fight Won }
-          @if (battleResult() === 'lose') { Fight Lost }
-          @if (battleResult() === 'draw') { Draw }
-        </h2>
-        <div class="flex gap-3 justify-center mt-4">
-          <button mat-raised-button class="chungus-modal-btn" (click)="showResultBanner.set(false)">
-            Review Log
-          </button>
-          <button mat-raised-button class="chungus-modal-btn" (click)="restart()">
-            Watch Again
-          </button>
-          @if (battleStats()) {
-            <button mat-stroked-button class="chungus-modal-btn" (click)="openStats()">
-              Stats
-            </button>
-          }
-          <button mat-stroked-button class="chungus-modal-btn" (click)="closeTab()">
-            Close Replay
-          </button>
-        </div>
-      </div>
     </div>
   }
 }

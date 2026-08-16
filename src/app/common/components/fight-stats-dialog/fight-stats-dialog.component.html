@@ -10,4 +10,11 @@
     <app-fight-stats-table [playerName]="data.playerName" [enemyName]="data.enemyName" [stats]="data.stats">
     </app-fight-stats-table>
   </div>
+  @if (data.replayId) {
+    <div class="fsd-modal-footer">
+      <a mat-stroked-button class="fsd-replay-btn" [routerLink]="['/replay', data.replayId]" target="_blank" (click)="close()">
+        Watch Replay
+      </a>
+    </div>
+  }
 </div>

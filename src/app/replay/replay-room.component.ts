@@ -150,7 +150,6 @@ export class ReplayRoomComponent implements OnInit, AfterViewInit, OnDestroy {
   battleResult = signal<string | null>(null);
   truncated = signal(false);
   versionMismatch = signal(false);
-  showResultBanner = signal(false);
   battleStats = signal<FightStatsMessage | null>(null);
 
   playing = signal(true);
@@ -249,9 +248,13 @@ export class ReplayRoomComponent implements OnInit, AfterViewInit, OnDestroy {
           setTimeout(() => this.enemyBeingHit.set(false), 200);
         }
       },
-      onEndBattle: (msg) => { this.battleResult.set(msg?.result ?? 'win'); this.showResultBanner.set(true); },
-      onGameOver: (msg) => { this.battleResult.set(msg?.includes('lose') || msg?.toLowerCase().includes('lost') ? 'lose' : 'win'); this.showResultBanner.set(true); },
-      onGameWin: (_msg) => { this.battleResult.set('win'); this.showResultBanner.set(true); },
+      onEndBattle: (msg) => { this.battleResult.set(msg?.result ?? 'win'); },
+      // Older replays recorded a plain string; newer ones record a GameOverMessage object.
+      onGameOver: (msg) => {
+        const text = typeof msg === 'string' ? msg : msg?.message ?? '';
+        this.battleResult.set(text.includes('lose') || text.toLowerCase().includes('lost') ? 'lose' : 'win');
+      },
+      onGameWin: (_msg) => { this.battleResult.set('win'); },
       applyHpDelta: (playerId, damage, healing) => {
         const p = this.player();
         const e = this.enemy();
@@ -311,9 +314,6 @@ export class ReplayRoomComponent implements OnInit, AfterViewInit, OnDestroy {
           this.done = true;
           this.playing.set(false);
           this.progressPct.set(100);
-          if (!this.showResultBanner()) {
-            this.showResultBanner.set(true);
-          }
         }
       }
       this.lastRafTs = timestamp;
@@ -341,7 +341,6 @@ export class ReplayRoomComponent implements OnInit, AfterViewInit, OnDestroy {
     this.lastRafTs = 0;
     this.progressPct.set(0);
     this.entries.set([]);
-    this.showResultBanner.set(false);
     this.initPlayers();
     this.playing.set(true);
     if (this.rafId === null && isPlatformBrowser(this.platformId)) {

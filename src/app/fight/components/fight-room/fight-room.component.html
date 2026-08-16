@@ -159,11 +159,6 @@
           Stats
         </button>
       }
-      @if (battleReplayId()) {
-        <a mat-stroked-button class="version-win-secondary-btn" [routerLink]="['/replay', battleReplayId()]" target="_blank">
-          Watch Replay
-        </a>
-      }
       <button mat-raised-button class="chungus-modal-btn" [disabled]="lossChoicePending()" (click)="handleBattleResultExit()">
         Back to Draft
       </button>
@@ -191,9 +186,16 @@
     <div class="chungus-modal-icon game-over-icon">💀</div>
     <h2 class="chungus-modal-title">Run Over</h2>
     <p class="chungus-modal-body">{{ gameOverMessage() }}</p>
-    <button mat-raised-button class="chungus-modal-btn" (click)="handleGameOverExit()">
-      View Your Results
-    </button>
+    <div class="flex flex-col sm:flex-row gap-3 justify-center">
+      @if (battleStats()) {
+        <button mat-stroked-button class="version-win-secondary-btn" (click)="openStats()">
+          Stats
+        </button>
+      }
+      <button mat-raised-button class="chungus-modal-btn" (click)="handleGameOverExit()">
+        View Your Results
+      </button>
+    </div>
   </div>
 </div>
 }
@@ -218,9 +220,16 @@
       {{ gameWinWins() }} wins · {{ gameWinLosses() }} losses<br>
       You've earned your place on the Wall of Fame.
     </p>
-    <button mat-raised-button class="chungus-modal-btn" (click)="handleGameWinExit()">
-      Claim Your Glory
-    </button>
+    <div class="flex flex-col sm:flex-row gap-3 justify-center">
+      @if (battleStats()) {
+        <button mat-stroked-button class="version-win-secondary-btn" (click)="openStats()">
+          Stats
+        </button>
+      }
+      <button mat-raised-button class="chungus-modal-btn" (click)="handleGameWinExit()">
+        Claim Your Glory
+      </button>
+    </div>
   </div>
 </div>
 }

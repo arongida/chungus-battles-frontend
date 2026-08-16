@@ -7,9 +7,11 @@ import {
   HealingMessage,
   InvulnerableMessage,
   InvulnerableStateMessage,
+  StunnedStateMessage,
   RewardGainMessage,
   TriggerItemMessage,
   TriggerTalentMessage,
+  GameOverMessage,
   GameWinMessage,
   StatsSyncMessage,
 } from '../../models/types/MessageTypes';
@@ -22,6 +24,7 @@ import {
   triggerShowDamageNumber,
   triggerShowBlockText,
   triggerShowDodgeText,
+  triggerShowStunnedText,
   triggerShowGoldNumber,
   triggerShowHealingNumber,
   triggerShowInvulnerableText,
@@ -43,12 +46,15 @@ export interface AnimationContext {
   /** Called for every damage event — typically animates avatar + sets being-hit signal. */
   triggerDamagedAvatar: (playerId: number) => void;
   onEndBattle?: (msg: EndBattleMessage) => void;
-  onGameOver?: (msg: string) => void;
+  /** `string` covers replays recorded before game_over carried an object payload. */
+  onGameOver?: (msg: GameOverMessage | string) => void;
   onGameWin?: (msg: GameWinMessage) => void;
   /** Replay-only: mutates the Player signal's HP directly, since there is no Colyseus schema sync. */
   applyHpDelta?: (playerId: number, damage: number, healing: number) => void;
   /** Replay-only: mutates the Player signal's invincible flag, since there is no Colyseus schema sync. */
   setInvincible?: (playerId: number, invincible: boolean) => void;
+  /** Replay-only: mutates the Player signal's stunned flag, since there is no Colyseus schema sync. */
+  setStunned?: (playerId: number, stunned: boolean) => void;
   /** Replay-only: applies a periodic authoritative stat/skill-status sync recorded by the
    *  server, since playback has no Colyseus schema sync. */
   applyStatsSync?: (msg: StatsSyncMessage) => void;
@@ -91,6 +97,11 @@ export class FightAnimationService {
     if (msg.kind === 'block' && msg.defenderId != null && ctx.player() && ctx.enemy()) {
       triggerShowBlockText(ctx.renderer, ctx.platformId, msg.defenderId);
     }
+    // Shield Bash (item skill): attackerId is the STUNNED player (the striker who triggered the
+    // proc), not the shield's owner — see ItemSkillBehaviors.ts's SHIELD_BASH entry.
+    if (msg.kind === 'stun' && msg.attackerId != null && ctx.player() && ctx.enemy()) {
+      triggerShowStunnedText(ctx.renderer, ctx.platformId, msg.attackerId);
+    }
   }
 
   applyAttack(ctx: AnimationContext, attackerId: number): void {
@@ -130,6 +141,10 @@ export class FightAnimationService {
 
   applyInvulnerableState(ctx: AnimationContext, msg: InvulnerableStateMessage): void {
     ctx.setInvincible?.(msg.playerId, msg.invincible);
+  }
+
+  applyStunnedState(ctx: AnimationContext, msg: StunnedStateMessage): void {
+    ctx.setStunned?.(msg.playerId, msg.stunned);
   }
 
   applyHealing(ctx: AnimationContext, msg: HealingMessage): void {
@@ -194,13 +209,14 @@ export class FightAnimationService {
       case 'damage':          this.applyDamage(ctx, payload as DamageMessage); break;
       case 'invulnerable':    this.applyInvulnerable(ctx, payload as InvulnerableMessage); break;
       case 'invulnerable_state': this.applyInvulnerableState(ctx, payload as InvulnerableStateMessage); break;
+      case 'stunned_state':   this.applyStunnedState(ctx, payload as StunnedStateMessage); break;
       case 'healing':         this.applyHealing(ctx, payload as HealingMessage); break;
       case 'reward_gain':     this.applyReward(ctx, payload as RewardGainMessage); break;
       case 'trigger_talent':  this.applyTriggerTalent(ctx, payload as TriggerTalentMessage); break;
       case 'trigger_item':    this.applyTriggerItem(ctx, payload as TriggerItemMessage); break;
       case 'stats_sync':      ctx.applyStatsSync?.(payload as StatsSyncMessage); break;
       case 'end_battle':      ctx.onEndBattle?.(payload as EndBattleMessage); break;
-      case 'game_over':       ctx.onGameOver?.(payload as string); break;
+      case 'game_over':       ctx.onGameOver?.(payload as GameOverMessage | string); break;
       case 'game_win':        ctx.onGameWin?.(payload as GameWinMessage); break;
       // Compat: old replays recorded before Season 16 contain 'version_win' events —
       // route them to the same win-screen handler so those replays still show a banner.

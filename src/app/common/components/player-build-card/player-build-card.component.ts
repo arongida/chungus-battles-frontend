@@ -59,14 +59,14 @@ export class PlayerBuildCardComponent {
       title: `${p.name}'s Stats`,
       entries: [
         { icon: '❤️', label: 'Health',              text: `${Math.round(p.maxHp)} HP total.`,                                                              color: 'text-pink-500' },
-        { icon: '🎯', label: 'Accuracy',             text: `+${p.accuracy?.toFixed(1)} added to weapon's minimum damage roll and cancels enemy dodge rating 1:1.`, color: 'text-red-400' },
+        { icon: '🎯', label: 'Accuracy',             text: `+${p.accuracy?.toFixed(1)} added to weapon's minimum damage roll.`,                             color: 'text-red-400' },
         { icon: '⚔️', label: 'Strength',             text: `+${p.strength?.toFixed(1)} added to weapon's maximum damage roll.`,                             color: 'text-red-400' },
         { icon: '⏩', label: 'Speed Bonus',           text: `${((p.attackSpeed - 1) * 100)?.toFixed(0)}% multiplier applied to all weapon attack speeds.`,   color: 'text-blue-400' },
         { icon: '💰', label: 'Income',               text: `${p.income} gold earned per fight. Grows by 1 automatically each fight.`,                    color: 'text-yellow-400' },
         { icon: '🧪', label: 'HP Regen',             text: `Recover ${p.hpRegen?.toFixed(3)} HP every second during battle.`,                               color: 'text-orange-400' },
         { icon: '⏳', label: 'Cooldown Reduction',   text: `Active skills fire ${cooldownReductionPercent}% faster (${p.cooldownReduction?.toFixed(0)} rating).`, color: 'text-purple-400' },
         { icon: '🛡️', label: 'Defense',              text: `Reduces incoming damage by ${defenseReduction}% (DR formula, ${p.defense?.toFixed(2)} defense).`, color: 'text-green-400' },
-        { icon: '🦵', label: 'Dodge',                text: `${dodgePct}% chance to completely dodge an incoming attack before enemy accuracy — each point of enemy accuracy cancels 1 point of this dodge rating.`, color: 'text-green-400' },
+        { icon: '🦵', label: 'Dodge',                text: `${dodgePct}% chance to completely dodge an incoming attack.`,                                 color: 'text-green-400' },
       ],
     };
   }

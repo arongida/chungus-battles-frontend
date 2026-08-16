@@ -16,6 +16,12 @@ export type InvulnerableStateMessage = {
   invincible: boolean;
 };
 
+// Shield Bash (item skill): mirrors InvulnerableStateMessage above.
+export type StunnedStateMessage = {
+  playerId: number;
+  stunned: boolean;
+};
+
 export type HealingMessage = {
   playerId: number;
   healing: number;
@@ -55,6 +61,18 @@ export type GameWinMessage = {
   wins: number;
   losses: number;
   season: number;
+  replayId?: string;
+  stats?: FightStatsMessage;
+};
+
+/** Run truly over (lives exhausted). Object payload so the client can offer the same
+ *  Stats/Watch Replay actions as end_battle. `replayId`/`stats` are absent on older replays
+ *  recorded before this message carried them — and on replays recorded before this change
+ *  shipped, the whole payload is a plain string instead of this object. */
+export type GameOverMessage = {
+  message: string;
+  replayId?: string;
+  stats?: FightStatsMessage;
 };
 
 export type LossRewardChoice = 'gold' | 'xp' | 'item_upgrade';

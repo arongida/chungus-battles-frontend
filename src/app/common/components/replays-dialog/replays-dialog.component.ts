@@ -48,12 +48,14 @@ export class ReplaysDialogComponent {
     return '⚡ Draw';
   }
 
-  openStats(r: ReplayListItem, event: Event): void {
-    event.preventDefault();
-    event.stopPropagation();
+  /** Clicking a row opens its stats first — replay playback is a secondary action reachable
+   *  from the stats popup's Watch Replay button. Rows without recorded stats (old replays)
+   *  fall through to the row's own routerLink and start playback directly. */
+  onRowClick(r: ReplayListItem, event: Event): void {
     if (!r.stats) return;
+    event.preventDefault();
     this.dialog.open(FightStatsDialogComponent, {
-      data: { playerName: r.playerName, enemyName: r.enemyName, stats: r.stats },
+      data: { playerName: r.playerName, enemyName: r.enemyName, stats: r.stats, replayId: r.replayId },
       backdropClass: 'chungus-dialog-backdrop',
       autoFocus: false,
     });

@@ -24,4 +24,11 @@ export class ReplaysService {
       return [];
     }
   }
+
+  /** Drops the cached list for a character, e.g. right after a fight ends so the freshly
+   *  saved replay isn't missing next time the dialog opens (the cache never expires
+   *  otherwise). */
+  invalidate(originalPlayerId: number): void {
+    this.cache.delete(originalPlayerId);
+  }
 }

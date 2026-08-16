@@ -19,7 +19,8 @@ export class TalentCardComponent {
   hasSelfStats(s: AffectedStats): boolean {
     if (!s) return false;
     return !!(s.strength || s.accuracy || (s.attackSpeed && s.attackSpeed !== 1) ||
-              s.maxHp || s.defense || s.dodgeRate || s.income || s.hpRegen || s.cooldownReduction);
+              s.maxHp || s.defense || s.dodgeRate || s.income || s.hpRegen || s.cooldownReduction ||
+              s.luckyFindChance);
   }
 
   hasEnemyStats(e: AffectedStats): boolean {
@@ -34,6 +35,11 @@ export class TalentCardComponent {
 
   speedPct(v: number): string {
     const pct = Math.round((v - 1) * 100);
+    return pct > 0 ? `+${pct}%` : `${pct}%`;
+  }
+
+  luckyFindPct(v: number): string {
+    const pct = Math.round(v * 100);
     return pct > 0 ? `+${pct}%` : `${pct}%`;
   }
 

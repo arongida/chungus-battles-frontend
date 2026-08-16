@@ -142,10 +142,10 @@
     <button mat-raised-button class="chungus-modal-btn text-2xl" (click)="goToHome()">
       RESTART
     </button>
-    <button mat-stroked-button class="replays-btn" (click)="openReplays(originalPlayerId(), 'My')">
+    <button mat-stroked-button class="replays-btn" [disabled]="originalPlayerId() === 0" (click)="openReplays(originalPlayerId(), 'My')">
       <mat-icon>history</mat-icon> My Replays
     </button>
-    <button mat-stroked-button class="replays-btn" (click)="openGameStats(originalPlayerId(), playerName())">
+    <button mat-stroked-button class="replays-btn" [disabled]="originalPlayerId() === 0" (click)="openGameStats(originalPlayerId(), playerName())">
       <mat-icon>insights</mat-icon> My Game Stats
     </button>
   </div>
@@ -170,17 +170,14 @@
       } @else {
         <div class="replays-list">
           @for (r of replays(); track r.replayId) {
-            <a [routerLink]="['/replay', r.replayId]" class="replay-row" target="_blank">
+            <a [routerLink]="['/replay', r.replayId]" class="replay-row" target="_blank" (click)="onRowClick(r, $event)">
               <span class="replay-row-round">Round {{ r.round }}</span>
               <span class="replay-row-vs">vs. {{ r.enemyName }}</span>
               <span class="replay-row-result" [class.win]="r.result === 'win'" [class.lose]="r.result === 'lose' || r.result === 'loose'" [class.draw]="r.result === 'draw'">
                 {{ replayResultLabel(r.result) }}
               </span>
               <span class="replay-row-date">{{ r.createdAt | date:'MMM d' }}</span>
-              @if (r.stats) {
-                <button class="replay-row-stats" (click)="openStats(r, $event)" title="Fight stats">📊</button>
-              }
-              <mat-icon class="replay-row-icon">play_circle</mat-icon>
+              <mat-icon class="replay-row-icon">insights</mat-icon>
             </a>
           }
         </div>

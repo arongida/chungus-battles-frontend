@@ -1,5 +1,4 @@
-import { Component, Inject, OnInit, ChangeDetectorRef } from '@angular/core';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import Item from '../../../models/colyseus-schema/ItemSchema';
 import { MatButtonModule } from '@angular/material/button';
 import { environment } from '../../../../environments/environment';
@@ -33,8 +32,9 @@ export class EncyclopediaComponent implements OnInit {
   selectedTier: string | null = null;
   dummyPlayer: Player = new Player();
 
+  // No MAT_DIALOG_DATA dependency — this is a pure catalog browser, openable from a dialog
+  // (draft toolbar, login page) with nothing player/session-specific to pass in.
   constructor(
-    @Inject(MAT_DIALOG_DATA) public dialogData: any,
     private cdr: ChangeDetectorRef,
     private seasonsService: SeasonsService,
   ) {}
@@ -89,8 +89,10 @@ export class EncyclopediaComponent implements OnInit {
     try {
       const data: any[] = await fetch(`${environment.gameServer}/itemSkills`).then(r => r.json());
       return data.map(e => ({
+        id: e.id,
         name: e.name,
         class: e.class ?? '',
+        slots: e.slots ?? [],
         descriptions: e.descriptions ?? [],
         triggerTypes: e.triggerTypes ?? [],
       }));
@@ -144,6 +146,13 @@ export class EncyclopediaComponent implements OnInit {
 
   switchTab(tab: ActiveTab): void {
     this.activeTab = tab;
+    // Each tab's <select> options differ (e.g. "shield" only exists for itemSkills) — the DOM
+    // options change out from under the uncontrolled <select> without firing `change`, so a
+    // stale selectedClass/selectedTier would silently keep filtering the new tab's data while
+    // the dropdown itself resets to "All classes"/"All tiers". Reset the filter state here so
+    // it can never disagree with what's actually rendered.
+    this.selectedClass = null;
+    this.selectedTier = null;
     this.applyFilters();
   }
 
@@ -197,8 +206,10 @@ export type ItemSkillDescription = {
 };
 
 export type ItemSkillPreview = {
+  id: number;
   name: string;
   class: string;
+  slots: string[];
   descriptions: ItemSkillDescription[];
   triggerTypes: string[];
 };

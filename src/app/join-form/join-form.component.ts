@@ -19,6 +19,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { isPlatformBrowser } from '@angular/common';
 import { itemPictures } from '../common/item-image-links';
 import { ItemTrackingService } from '../common/services/item-tracking.service';
@@ -47,6 +48,7 @@ interface ClassOption {
     MatCardModule,
     MatIconModule,
     MatProgressSpinnerModule,
+    MatDialogModule,
     RouterLink,
   ],
   templateUrl: './join-form.component.html',
@@ -90,6 +92,7 @@ export class JoinFormComponent implements AfterViewInit, OnDestroy, OnInit {
     private soundsService: SoundsService,
     private infoBoxService: InfoBoxService,
     private seasonsService: SeasonsService,
+    private dialog: MatDialog,
     @Inject(PLATFORM_ID) private platformId: Object,
   ) {}
 
@@ -204,5 +207,21 @@ export class JoinFormComponent implements AfterViewInit, OnDestroy, OnInit {
 
   cycleVolume() {
     this.soundsService.cycleVolume();
+  }
+
+  // Lazy-loaded so the encyclopedia (+ item-card, hover-card) doesn't bloat the login
+  // page's initial bundle — it's opened rarely and the browser catalog is session-free.
+  async openEncyclopedia(): Promise<void> {
+    const { EncyclopediaComponent } = await import(
+      '../draft/components/encyclopedia/encyclopedia.component'
+    );
+    this.dialog.open(EncyclopediaComponent, {
+      maxWidth: '100vw',
+      maxHeight: '100vh',
+      height: '100%',
+      width: '80%',
+      backdropClass: 'chungus-dialog-backdrop',
+      autoFocus: false,
+    });
   }
 }

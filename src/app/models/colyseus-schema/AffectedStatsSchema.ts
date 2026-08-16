@@ -10,4 +10,6 @@ export class AffectedStats extends Schema {
     @type('number') income: number = 0;
     @type('number') hpRegen: number = 0;
     @type('number') cooldownReduction: number = 0;
+    // Shop-only bonus, never rolled on items — currently granted only by VIP Pass (talent 202).
+    @type('number') luckyFindChance: number = 0;
 }

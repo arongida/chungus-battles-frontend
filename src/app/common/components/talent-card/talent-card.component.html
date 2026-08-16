@@ -33,6 +33,7 @@
       @if (s.income)        { <p class="tc-stat tc-stat--buff">💰 {{ fmt(s.income) }} Income</p> }
       @if (s.hpRegen)       { <p class="tc-stat tc-stat--buff">🧪 {{ fmt(s.hpRegen) }} HP Regen</p> }
       @if (s.cooldownReduction) { <p class="tc-stat tc-stat--cdr">⏳ {{ fmt(s.cooldownReduction) }} Cooldown Reduction</p> }
+      @if (s.luckyFindChance) { <p class="tc-stat tc-stat--buff">🍀 {{ luckyFindPct(s.luckyFindChance) }} Lucky Find</p> }
     }
 
     @if (hasEnemyStats(talent.affectedEnemyStats)) {

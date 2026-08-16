@@ -77,10 +77,6 @@ export class CharacterDetailsComponent implements OnInit, OnDestroy {
   @Input() enemy: boolean = false;
   @Input() combat: boolean = false;
   @Input() showStats: boolean = true;
-  /** The other side of the matchup, when known (fight/replay). Used to show the real
-   *  dodge % against this opponent's accuracy, and vice versa. Null in the draft phase,
-   *  where no opponent is known yet. */
-  @Input() opponent: Player | null = null;
   /** Next-Enemy Preview: identity-only reveal — hide stats/talents/equipped slots and show a
    *  "??? — stats unknown" placeholder (plus talent/item class chips) instead. The server
    *  already sends the preview Player with the hidden fields empty (server-side redaction);
@@ -400,32 +396,23 @@ export class CharacterDetailsComponent implements OnInit, OnDestroy {
   };
 
   get allStatsHint(): InfoContent {
-    const opponentAccuracy = this.opponent?.accuracy ?? 0;
-    const dodgePct = Math.round(100 * dodgeChance(this.player.dodgeRate, opponentAccuracy));
+    const dodgePct = Math.round(100 * dodgeChance(this.player.dodgeRate));
     const defenseReduction = Math.round(100 * (1 - 100 / (100 + this.player.defense)));
     const cooldownReductionPercent = Math.round(100 * cooldownReductionPct(this.player.cooldownReduction));
-
-    const accuracyText = this.player.accuracy
-      ? `+${this.player.accuracy.toFixed(1)} added to your weapon's minimum damage roll, and cancels ${this.player.accuracy.toFixed(1)} of the enemy's dodge rating.`
-      : `+${this.player.accuracy?.toFixed(1)} added to your weapon's minimum damage roll.`;
-
-    const dodgeText = this.opponent
-      ? `${dodgePct}% chance to completely dodge an incoming attack (${this.player.dodgeRate?.toFixed(2)} dodge rating minus the enemy's ${opponentAccuracy.toFixed(1)} accuracy).`
-      : `${dodgePct}% chance to completely dodge an incoming attack before enemy accuracy — each point of enemy accuracy cancels 1 point of your ${this.player.dodgeRate?.toFixed(2)} dodge rating.`;
 
     return {
       id: 'all-stats',
       title: `${this.player.name}'s Stats`,
       entries: [
         { icon: '❤️', label: 'Health', text: `${Math.round(this.player.maxHp)} HP total. Reaches zero = you lose the battle.`, color: 'text-pink-500' },
-        { icon: '🎯', label: 'Accuracy', text: accuracyText, color: 'text-red-400' },
+        { icon: '🎯', label: 'Accuracy', text: `+${this.player.accuracy?.toFixed(1)} added to your weapon's minimum damage roll.`, color: 'text-red-400' },
         { icon: '⚔️', label: 'Strength', text: `+${this.player.strength?.toFixed(1)} added to your weapon's maximum damage roll.`, color: 'text-red-400' },
         { icon: '⏩', label: 'Speed Bonus', text: `${((this.player.attackSpeed - 1) * 100)?.toFixed(0)}% multiplier applied to all weapon attack speeds.`, color: 'text-blue-400' },
         { icon: '💰', label: 'Income', text: `${this.player.income} gold earned at the end of this fight. Grows by 1 each fight.`, color: 'text-yellow-400' },
         { icon: '🧪', label: 'HP Regen', text: `Recover ${this.player.hpRegen?.toFixed(3)} HP every second during battle.`, color: 'text-orange-400' },
         { icon: '⏳', label: 'Cooldown Reduction', text: `Active skills fire ${cooldownReductionPercent}% faster (${this.player.cooldownReduction?.toFixed(0)} rating applied to a defense-style formula).`, color: 'text-purple-400' },
         { icon: '🛡️', label: 'Defense', text: `Reduces incoming damage by ${defenseReduction}% (DR formula applied to ${this.player.defense?.toFixed(2)} defense).`, color: 'text-green-400' },
-        { icon: '🦵', label: 'Dodge', text: dodgeText, color: 'text-green-400' },
+        { icon: '🦵', label: 'Dodge', text: `${dodgePct}% chance to completely dodge an incoming attack.`, color: 'text-green-400' },
       ],
     };
   }

@@ -64,7 +64,7 @@
          [raiseZIndexBase]="10" [raiseGroup]="'replay'"
          class="fixed z-10 fight-panel-top">
       <app-character-details [combat]="true" [player]="enemy()!" [enemy]="true"
-        [opponent]="player()" [playerBeingHit]="playerBeingHit()" [enemyBeingHit]="enemyBeingHit()">
+        [playerBeingHit]="playerBeingHit()" [enemyBeingHit]="enemyBeingHit()">
       </app-character-details>
     </div>
   }
@@ -74,7 +74,7 @@
     <div appDraggablePanel [dragHandleSelector]="'.cd-header, .compact-card'"
          [raiseZIndexBase]="10" [raiseGroup]="'replay'"
          class="fixed z-10 fight-panel-bottom">
-      <app-character-details [combat]="true" [player]="player()!" [opponent]="enemy()"
+      <app-character-details [combat]="true" [player]="player()!"
         [playerBeingHit]="playerBeingHit()" [enemyBeingHit]="enemyBeingHit()">
       </app-character-details>
     </div>

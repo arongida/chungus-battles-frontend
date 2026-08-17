@@ -108,22 +108,22 @@ export class TalentsComponent {
     return Math.round(this.characterDetailsService.talentPlayerLuckyFindChance() * 100);
   }
 
-  /** Every level's stat gain, mirroring DraftRoom.ts levelUp: a flat +10 max HP baseline plus a
-   *  class-specific bonus (Season 18). */
+  /** Every level's stat gain, mirroring DraftRoom.ts levelUp: a flat +20 max HP baseline plus a
+   *  class-specific bonus (Season 18, HP doubled Season 25). */
   levelStatBonus(): { maxHp: number; strength: number; attackSpeed: number; dodgeRate: number; income: number } {
-    const bonus = { maxHp: 10, strength: 0, attackSpeed: 0, dodgeRate: 0, income: 0 };
+    const bonus = { maxHp: 20, strength: 0, attackSpeed: 0, dodgeRate: 0, income: 0 };
     switch (this.playerAvatarUrl()) {
       case 'assets/warrior_01.png':
-        bonus.maxHp += 20;
-        bonus.strength += 4;
+        bonus.maxHp += 60;
+        bonus.strength += 6;
         break;
       case 'assets/thief_01.png':
-        bonus.attackSpeed += 10;
+        bonus.attackSpeed += 20;
         bonus.dodgeRate += 10;
         break;
       case 'assets/merchant_01.png':
         bonus.income += 2;
-        bonus.maxHp += 10;
+        bonus.maxHp += 20;
         break;
     }
     return bonus;

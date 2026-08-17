@@ -61,7 +61,7 @@ function calculatePlayerStats(player: Player): void {
   const b = player.baseStats;
   player.strength        = b.strength        ?? 0;
   player.accuracy        = b.accuracy        ?? 0;
-  player.maxHp           = b.maxHp           ?? 100;
+  player.maxHp           = b.maxHp           ?? 200;
   player.defense         = b.defense         ?? 0;
   player.dodgeRate       = b.dodgeRate       ?? 0;
   player.income          = b.income          ?? 0;

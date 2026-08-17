@@ -123,17 +123,17 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
   }
 
   /** Per-level stat bonus for the player's class, mirroring DraftRoom.ts levelUp:
-   *  +10 max HP baseline for everyone, plus a class-specific bonus (Season 18). */
+   *  +20 max HP baseline for everyone, plus a class-specific bonus (Season 18, HP doubled Season 25). */
   get classLevelBonusText(): string {
     switch (this.player.avatarUrl) {
       case 'assets/warrior_01.png':
-        return '+40 HP, +6 strength';
+        return '+80 HP, +6 strength';
       case 'assets/thief_01.png':
-        return '+10 HP, +20% attack speed, +10 dodge';
+        return '+20 HP, +20% attack speed, +10 dodge';
       case 'assets/merchant_01.png':
-        return '+20 HP, +2 income';
+        return '+40 HP, +2 income';
       default:
-        return '+10 HP';
+        return '+20 HP';
     }
   }
 

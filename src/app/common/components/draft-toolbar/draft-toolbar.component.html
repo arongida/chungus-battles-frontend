@@ -7,7 +7,7 @@
         <span class="text-green-400"> {{ player.luckyFindChance * 100 | number:'1.0-0' }}%🍀</span></span>
     </div>
 
-    <div class="toolbar-col-center">
+    <div class="toolbar-col-center flex gap-2">
       @if (!isFighting() && ((availableTalents?.length ?? 0) > 0 || levelUpPending())) {
       <button mat-button class="level-up-toggle"
         (click)="toggleTalentPicker()" [appInfoHint]="talentHint"
@@ -16,6 +16,17 @@
         <span class="level-up-toggle-label">Level up</span>
         <mat-icon [class.animate-bounce]="!showTalentPicker() && (availableTalents?.length ?? 0) > 0">
           {{ showTalentPicker() ? 'keyboard_arrow_down' : 'keyboard_arrow_up' }}
+        </mat-icon>
+      </button>
+      }
+      @if (!isFighting() && jokerCards().length > 0) {
+      <button mat-button class="level-up-toggle"
+        (click)="toggleJokerPicker()" [appInfoHint]="jokerPickHint"
+        [class.ring-2]="showJokerPicker()"
+        [class.ring-purple-400]="showJokerPicker()">
+        <span class="level-up-toggle-label">🃏 Joker</span>
+        <mat-icon [class.animate-bounce]="!showJokerPicker()">
+          {{ showJokerPicker() ? 'keyboard_arrow_down' : 'keyboard_arrow_up' }}
         </mat-icon>
       </button>
       }

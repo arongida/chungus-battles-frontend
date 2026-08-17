@@ -1,0 +1,24 @@
+<div class="jp-panel">
+
+  <div class="jp-header">
+    <span class="jp-title">🃏 The Joker Deals!</span>
+  </div>
+  <div class="jp-divider"></div>
+
+  <div class="jp-intro">Pick one card for a permanent stat bonus. The other is discarded.</div>
+
+  <div class="jp-cards">
+    @for (card of cards(); track card.stat) {
+      <button class="jp-card" (click)="pick(card)">
+        <span class="jp-card-icon">{{ card.icon }}</span>
+        <span class="jp-card-label">{{ card.label }}</span>
+        <span class="jp-card-text">{{ card.text }}</span>
+      </button>
+    }
+  </div>
+
+  <div class="jp-footer">
+    <button class="jp-later" (click)="close()">Decide later</button>
+  </div>
+
+</div>

@@ -9,6 +9,7 @@ import { InfoHintDirective } from '../../../common/directives/info-hint.directiv
 import { InfoContent } from '../../../common/models/info-content';
 import { environment } from '../../../../environments/environment';
 import { buildActiveSkillLabel } from '../../../common/utils/active-skill-label';
+import { STAT_DISPLAY } from '../../../common/utils/stat-display';
 
 /**
  * Opened via MatDialog from DraftToolbarComponent (rather than taking talentsList/playerLevel
@@ -76,15 +77,15 @@ export class TalentsComponent {
 
     const fmt = (v: number) => (v > 0 ? `+${v}` : `${v}`);
 
-    if (s?.strength)         entries.push({ icon: '⚔️', label: 'Strength',     text: `${fmt(s.strength)} to max damage roll`,          color: 'text-red-400' });
-    if (s?.accuracy)         entries.push({ icon: '🎯', label: 'Accuracy',     text: `${fmt(s.accuracy)} to min damage roll`,          color: 'text-red-400' });
-    if (s?.attackSpeed && s.attackSpeed !== 1) entries.push({ icon: '⏩', label: 'Attack Speed', text: `${fmt(Math.round((s.attackSpeed - 1) * 100))}% speed bonus`, color: 'text-blue-400' });
-    if (s?.maxHp)            entries.push({ icon: '❤️', label: 'Max HP',       text: `${fmt(s.maxHp)} max health`,                     color: 'text-pink-400' });
-    if (s?.defense)          entries.push({ icon: '🛡️', label: 'Defense',      text: `${fmt(s.defense)} defense`,                      color: 'text-green-400' });
-    if (s?.dodgeRate)        entries.push({ icon: '🦵', label: 'Dodge',        text: `${fmt(s.dodgeRate)} dodge rating`,               color: 'text-green-400' });
-    if (s?.income)           entries.push({ icon: '💰', label: 'Income',       text: `${fmt(s.income)} gold per fight`,                color: 'text-yellow-400' });
-    if (s?.hpRegen)          entries.push({ icon: '🧪', label: 'HP Regen',     text: `${fmt(s.hpRegen)} HP per second`,                color: 'text-orange-400' });
-    if (s?.cooldownReduction) entries.push({ icon: '⏳', label: 'Cooldown Reduction', text: `${fmt(s.cooldownReduction)} rating — active skills fire faster`, color: 'text-purple-400' });
+    if (s?.strength)         entries.push({ icon: STAT_DISPLAY.strength.icon, label: STAT_DISPLAY.strength.label, text: STAT_DISPLAY.strength.describe(s.strength), color: STAT_DISPLAY.strength.color });
+    if (s?.accuracy)         entries.push({ icon: STAT_DISPLAY.accuracy.icon, label: STAT_DISPLAY.accuracy.label, text: STAT_DISPLAY.accuracy.describe(s.accuracy), color: STAT_DISPLAY.accuracy.color });
+    if (s?.attackSpeed && s.attackSpeed !== 1) entries.push({ icon: STAT_DISPLAY.attackSpeed.icon, label: STAT_DISPLAY.attackSpeed.label, text: STAT_DISPLAY.attackSpeed.describe(s.attackSpeed - 1), color: STAT_DISPLAY.attackSpeed.color });
+    if (s?.maxHp)            entries.push({ icon: STAT_DISPLAY.maxHp.icon, label: STAT_DISPLAY.maxHp.label, text: STAT_DISPLAY.maxHp.describe(s.maxHp), color: STAT_DISPLAY.maxHp.color });
+    if (s?.defense)          entries.push({ icon: STAT_DISPLAY.defense.icon, label: STAT_DISPLAY.defense.label, text: STAT_DISPLAY.defense.describe(s.defense), color: STAT_DISPLAY.defense.color });
+    if (s?.dodgeRate)        entries.push({ icon: STAT_DISPLAY.dodgeRate.icon, label: STAT_DISPLAY.dodgeRate.label, text: STAT_DISPLAY.dodgeRate.describe(s.dodgeRate), color: STAT_DISPLAY.dodgeRate.color });
+    if (s?.income)           entries.push({ icon: STAT_DISPLAY.income.icon, label: STAT_DISPLAY.income.label, text: STAT_DISPLAY.income.describe(s.income), color: STAT_DISPLAY.income.color });
+    if (s?.hpRegen)          entries.push({ icon: STAT_DISPLAY.hpRegen.icon, label: STAT_DISPLAY.hpRegen.label, text: STAT_DISPLAY.hpRegen.describe(s.hpRegen), color: STAT_DISPLAY.hpRegen.color });
+    if (s?.cooldownReduction) entries.push({ icon: STAT_DISPLAY.cooldownReduction.icon, label: STAT_DISPLAY.cooldownReduction.label, text: STAT_DISPLAY.cooldownReduction.describe(s.cooldownReduction), color: STAT_DISPLAY.cooldownReduction.color });
 
     if (e?.strength)         entries.push({ icon: '⚔️', label: 'Enemy Strength',     text: `${fmt(e.strength)} enemy max damage`,    color: 'text-gray-400' });
     if (e?.accuracy)         entries.push({ icon: '🎯', label: 'Enemy Accuracy',     text: `${fmt(e.accuracy)} enemy min damage`,    color: 'text-gray-400' });

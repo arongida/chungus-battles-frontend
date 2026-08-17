@@ -97,10 +97,11 @@ export class FightAnimationService {
     if (msg.kind === 'block' && msg.defenderId != null && ctx.player() && ctx.enemy()) {
       triggerShowBlockText(ctx.renderer, ctx.platformId, msg.defenderId);
     }
-    // Shield Bash (item skill): attackerId is the STUNNED player (the striker who triggered the
-    // proc), not the shield's owner — see ItemSkillBehaviors.ts's SHIELD_BASH entry.
-    if (msg.kind === 'stun' && msg.attackerId != null && ctx.player() && ctx.enemy()) {
-      triggerShowStunnedText(ctx.renderer, ctx.platformId, msg.attackerId);
+    // stunnedPlayerId names the actually-stunned player explicitly — attacker/defender roles
+    // flip depending on the source (Shield Bash stuns the striker, Bully stuns its target), so
+    // neither attackerId nor defenderId alone is a safe bet here.
+    if (msg.kind === 'stun' && msg.stunnedPlayerId != null && ctx.player() && ctx.enemy()) {
+      triggerShowStunnedText(ctx.renderer, ctx.platformId, msg.stunnedPlayerId);
     }
   }
 

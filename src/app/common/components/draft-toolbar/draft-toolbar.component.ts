@@ -8,7 +8,9 @@ import { Player } from '../../../models/colyseus-schema/PlayerSchema';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ConfirmDialogComponent, ConfirmDialogData } from '../confirm-dialog/confirm-dialog.component';
 import { TalentsComponent } from '../../../draft/components/talents/talents.component';
+import { JokerPickComponent } from '../../../draft/components/joker-pick/joker-pick.component';
 import { Talent } from '../../../models/colyseus-schema/TalentSchema';
+import { parseJokerCards } from '../../utils/joker-cards';
 import { EncyclopediaComponent } from '../../../draft/components/encyclopedia/encyclopedia.component';
 import { DecimalPipe, NgClass } from '@angular/common';
 import { MatMenuModule } from '@angular/material/menu';
@@ -24,7 +26,7 @@ import { DraggablePanelDirective } from '../../directives/draggable-panel.direct
 import { InfoContent } from '../../models/info-content';
 import { Router } from '@angular/router';
 import { FightService } from '../../../fight/services/fight.service';
-import { goldHint, buyXpHint, lockShopHint, talentHint, draftReadyHint, shopPhaseHint, fightingHint, abandonHint, forfeitHint, infoBoxHint, encyclopediaHint, volumeHint, matchHistoryHint } from './draft-toolbar.hints';
+import { goldHint, buyXpHint, lockShopHint, talentHint, jokerPickHint, draftReadyHint, shopPhaseHint, fightingHint, abandonHint, forfeitHint, infoBoxHint, encyclopediaHint, volumeHint, matchHistoryHint } from './draft-toolbar.hints';
 import { ReplaysDialogComponent } from '../replays-dialog/replays-dialog.component';
 import { environment } from '../../../../environments/environment';
 import { NextFightPickerComponent } from '../next-fight-picker/next-fight-picker.component';
@@ -67,6 +69,14 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
   levelUpPending = signal(false);
   private talentDialogRef?: MatDialogRef<TalentsComponent>;
 
+  showJokerPicker = this.characterDetailsService.showJokerPicker;
+  jokerCards = this.characterDetailsService.jokerCards;
+  private jokerDialogRef?: MatDialogRef<JokerPickComponent>;
+  /** Length of the previous ngOnChanges' jokerCards, used the same way as availableTalents'
+   *  prevLen/curLen SimpleChanges comparison — jokerCards isn't an @Input though (it's derived
+   *  from player.talents), so there's no SimpleChanges entry for it to read. */
+  private lastJokerCardCount = 0;
+
   /** Last level we've confirmed as real (settled), used instead of Angular's own
    *  SimpleChanges.previousValue — see scheduleLevelCheck for why. Null until first seen. */
   private lastConfirmedLevel: number | null = null;
@@ -76,6 +86,7 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
   readonly buyXpHint = buyXpHint;
   readonly lockShopHint = lockShopHint;
   readonly talentHint = talentHint;
+  readonly jokerPickHint = jokerPickHint;
   readonly draftReadyHint = draftReadyHint;
   readonly shopPhaseHint = shopPhaseHint;
   readonly fightingHint = fightingHint;
@@ -165,6 +176,24 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
         this.talentDialogRef.close();
       }
     });
+
+    // Same mirroring for the Joker card-pick dialog — see showJokerPicker's doc comment for why
+    // it's a separate signal from jokerCards itself.
+    effect(() => {
+      const show = this.showJokerPicker();
+      if (show && !this.jokerDialogRef) {
+        this.jokerDialogRef = this.dialog.open(JokerPickComponent, {
+          backdropClass: 'chungus-dialog-backdrop',
+          autoFocus: false,
+        });
+        this.jokerDialogRef.afterClosed().subscribe(() => {
+          this.jokerDialogRef = undefined;
+          this.showJokerPicker.set(false);
+        });
+      } else if (!show && this.jokerDialogRef) {
+        this.jokerDialogRef.close();
+      }
+    });
   }
 
   @Input({ required: true }) player: Player = new Player();
@@ -192,6 +221,16 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
     this.characterDetailsService.hasBlackMarketTalent.set(
       this.player.talents?.some((t) => t.talentId === 504) ?? false
     );
+
+    // Joker's pending post-fight cards, re-derived from player.talents on every change (see
+    // joker-cards.ts). Only the genuine 0->2 transition auto-opens the dialog — see
+    // lastJokerCardCount's doc comment for why this can't reuse SimpleChanges directly.
+    const jokerCards = parseJokerCards(this.player.talents);
+    this.characterDetailsService.jokerCards.set(jokerCards);
+    if (this.lastJokerCardCount === 0 && jokerCards.length > 0) {
+      this.showJokerPicker.set(true);
+    }
+    this.lastJokerCardCount = jokerCards.length;
 
     const talentsChange = changes['availableTalents'];
     if (talentsChange) {
@@ -271,6 +310,11 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
   closeTalentPicker(): void {
     this.showTalentPicker.set(false);
     this.levelUpPending.set(false);
+  }
+
+  toggleJokerPicker(): void {
+    this.soundsService.playSound(SoundOptions.CLICK);
+    this.showJokerPicker.set(!this.showJokerPicker());
   }
 
   openEncyclopedia(): void {

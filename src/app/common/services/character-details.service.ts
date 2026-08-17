@@ -1,11 +1,22 @@
 import { Injectable, signal } from '@angular/core';
 import { Talent } from '../../models/colyseus-schema/TalentSchema';
+import { JokerCard } from '../utils/joker-cards';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CharacterDetailsService {
   public showTalentPicker = signal<boolean>(false);
+
+  /** Backing data for the Joker card-pick dialog (JokerPickComponent), mirrored here by
+   *  DraftToolbarComponent the same way availableTalents is below. Non-empty only while the
+   *  player has an unresolved Joker pick — see joker-cards.ts. */
+  public jokerCards = signal<JokerCard[]>([]);
+  /** Open/closed state of the Joker card-pick dialog — a separate boolean from jokerCards
+   *  (same split as showTalentPicker/availableTalents below) so re-deriving jokerCards on every
+   *  state tick doesn't reopen a dialog the player deliberately dismissed; only the genuine
+   *  0-cards -> 2-cards transition (detected in DraftToolbarComponent.ngOnChanges) opens it. */
+  public showJokerPicker = signal<boolean>(false);
 
   /** Backing data for the talent-picker dialog (TalentsComponent), mirrored here by
    *  DraftToolbarComponent so the dialog — which has no @Input path once opened via

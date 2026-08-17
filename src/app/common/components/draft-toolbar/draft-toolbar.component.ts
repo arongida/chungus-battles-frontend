@@ -225,12 +225,18 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
     // Joker's pending post-fight cards, re-derived from player.talents on every change (see
     // joker-cards.ts). Only the genuine 0->2 transition auto-opens the dialog — see
     // lastJokerCardCount's doc comment for why this can't reuse SimpleChanges directly.
-    const jokerCards = parseJokerCards(this.player.talents);
-    this.characterDetailsService.jokerCards.set(jokerCards);
-    if (this.lastJokerCardCount === 0 && jokerCards.length > 0) {
-      this.showJokerPicker.set(true);
+    // Gated to the shop phase: FIGHT_END deals the cards while this toolbar is still the
+    // FightRoom instance (draftService.room() is null there), and joker_pick has no handler
+    // in FightRoom, so a pick made then silently no-ops and the same cards reappear once the
+    // real draft room loads. Only ever surface/pick them once actually in the shop.
+    if (!this.isFighting()) {
+      const jokerCards = parseJokerCards(this.player.talents);
+      this.characterDetailsService.jokerCards.set(jokerCards);
+      if (this.lastJokerCardCount === 0 && jokerCards.length > 0) {
+        this.showJokerPicker.set(true);
+      }
+      this.lastJokerCardCount = jokerCards.length;
     }
-    this.lastJokerCardCount = jokerCards.length;
 
     const talentsChange = changes['availableTalents'];
     if (talentsChange) {

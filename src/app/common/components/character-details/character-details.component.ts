@@ -405,6 +405,18 @@ export class CharacterDetailsComponent implements OnInit, OnDestroy {
     };
   }
 
+  // Set/cleared by the Brewing row's (mouseenter)/(mouseleave) — see statsHint below. Kept as a
+  // plain flag rather than a second [appInfoHoverCard] on that row: the stats panel uses ONE
+  // hover region anchored to the whole panel (stable position, doesn't jump depending on which
+  // cell you're over), and InfoHoverCardDirective now live-updates its open card's content when
+  // its input changes, so swapping to the potions-only hint while over that one row just means
+  // swapping which InfoContent the SAME open card is showing.
+  hoveringPotions = false;
+
+  get statsHint(): InfoContent {
+    return this.hoveringPotions ? this.potionsHint : this.allStatsHint;
+  }
+
   get allStatsHint(): InfoContent {
     const dodgePct = Math.round(100 * dodgeChance(this.player.dodgeRate));
     const defenseReduction = Math.round(100 * (1 - 100 / (100 + this.player.defense)));

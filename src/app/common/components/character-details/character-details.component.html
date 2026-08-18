@@ -44,7 +44,7 @@
     </div>
 
     @if (showStats && !redacted) {
-      <div id="stats" class="cd-stats" [appInfoHoverCard]="allStatsHint">
+      <div id="stats" class="cd-stats" [appInfoHoverCard]="statsHint">
 
         <div class="cd-stat col-span-2">
           <span class="text-pink-500">❤️ {{ getPlayerHp() | number:'1.0-0' }}</span>
@@ -71,7 +71,7 @@
         <div class="cd-stat"><span class="text-green-600">🛡️ {{ player.defense | number:'1.0-2' }}</span></div>
         <div class="cd-stat"><span class="text-green-400">🦵 {{ player.dodgeRate | number:'1.0-2' }}</span></div>
 
-        <div class="cd-stat col-span-2" [appInfoHoverCard]="potionsHint">
+        <div class="cd-stat col-span-2" (mouseenter)="hoveringPotions = true" (mouseleave)="hoveringPotions = false">
           <span class="text-cyan-400 text-[10px]">🧉 Brewing ({{ player.pendingPotionEffects.length }}/{{ player.potionCapacity }}){{ player.pendingPotionSummary ? ': ' + player.pendingPotionSummary : '' }}</span>
         </div>
 

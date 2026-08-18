@@ -86,19 +86,16 @@ class Item extends Schema {
   @type(AffectedStats) skillAffectedStats2: AffectedStats = new AffectedStats();
   @type(AffectedStats) skillAffectedEnemyStats2: AffectedStats = new AffectedStats();
   @type('string') skillStatus2: string = '';
-  // The skill this class item WILL roll once it reaches Legendary — a precomputed promise, not a
-  // guess (see backend items/skills/itemSkillRoller.ts's refreshFutureItemSkill). 0/empty once a
-  // real skillId is granted, for shields, and for non-class items.
+  // The skill this class item WILL roll once it reaches Legendary — picked once, uniformly at
+  // random, the moment the item first exists, then latched as a real promise (see backend
+  // items/skills/itemSkillRoller.ts's refreshFutureItemSkill). 0/empty once a real skillId is
+  // granted, for shields, and for non-class items.
   @type('number') futureSkillId: number = 0;
   @type('string') futureSkillName: string = '';
   @type('string') futureSkillDescription: string = '';
   // Runtime-only max-damage bonus accumulated during a fight (Soulstealer's Scythe souls) —
   // mirrors backend ItemSchema.ts's bonusMaxDamage. Not persisted, always 0 outside a fight.
   @type('number') bonusMaxDamage: number = 0;
-  // Shop-roll nonce mixed into the item-skill hash (see backend items/skills/itemSkillRoller.ts).
-  // Assigned fresh per shop slot on reroll, then frozen once bought — mirrors backend field
-  // order. Not read directly by the frontend.
-  @type('number') skillRollNonce: number = 0;
   // Frontend-only display state — not synced, must stay after all backend fields
   imageCache: string = '';
   rollPreview: ItemRollPreview | null = null;

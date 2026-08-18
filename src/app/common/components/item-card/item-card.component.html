@@ -31,10 +31,11 @@
     <p class="px-3 pb-1 text-xs font-medium text-amber-300 leading-snug">▸ {{ item.skillStatus2 }}</p>
     }
     } @else if (!item.skillId && item.futureSkillId) {
-    <!-- Skill preview: the roll is already seed-determined the moment the item exists (see
-         backend refreshFutureItemSkill), so a Common/Rare/Epic class item can show exactly which
-         skill it's heading toward. Shields carry their skill from Common onward (no rarity gate),
-         so they're labeled differently. Dimmed to read as a promise, not an active effect. -->
+    <!-- Skill preview: picked once, uniformly at random, the moment the item first exists, and
+         latched from then on (see backend refreshFutureItemSkill), so a Common/Rare/Epic class
+         item can show exactly which skill it's heading toward. Shields carry their skill from
+         Common onward (no rarity gate), so they're labeled differently. Dimmed to read as a
+         promise, not an active effect. -->
     <p class="px-3 pb-1 text-xs font-semibold text-slate-400">
       {{ item.type === 'shield' ? 'Skill' : 'At Legendary' }}: {{ item.futureSkillName }}
     </p>

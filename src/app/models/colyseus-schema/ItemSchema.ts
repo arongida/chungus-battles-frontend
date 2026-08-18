@@ -95,6 +95,10 @@ class Item extends Schema {
   // Runtime-only max-damage bonus accumulated during a fight (Soulstealer's Scythe souls) —
   // mirrors backend ItemSchema.ts's bonusMaxDamage. Not persisted, always 0 outside a fight.
   @type('number') bonusMaxDamage: number = 0;
+  // Shop-roll nonce mixed into the item-skill hash (see backend items/skills/itemSkillRoller.ts).
+  // Assigned fresh per shop slot on reroll, then frozen once bought — mirrors backend field
+  // order. Not read directly by the frontend.
+  @type('number') skillRollNonce: number = 0;
   // Frontend-only display state — not synced, must stay after all backend fields
   imageCache: string = '';
   rollPreview: ItemRollPreview | null = null;

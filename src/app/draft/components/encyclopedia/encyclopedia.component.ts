@@ -113,6 +113,7 @@ export class EncyclopediaComponent implements OnInit {
     rogue: 'assets/talents/Icon_Rogue_basic_01.png',
     merchant: 'assets/talents/Icon_Merchant_basic_01.png',
     shield: 'assets/items/Item_ID_76_Buckler_shield.png',
+    potion: 'assets/items/Item_ID_6_Health_flask.png',
   };
 
   getSkillIcon(skillClass: string): string {

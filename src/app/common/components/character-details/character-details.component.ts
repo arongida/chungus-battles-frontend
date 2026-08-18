@@ -395,6 +395,16 @@ export class CharacterDetailsComponent implements OnInit, OnDestroy {
     ],
   };
 
+  get potionsHint(): InfoContent {
+    return {
+      id: 'potions',
+      title: 'Brewing',
+      entries: [
+        { icon: '🧉', label: 'Potions', text: `Drink up to your potion capacity (currently ${this.player.pendingPotionEffects.length}/${this.player.potionCapacity}) before a fight — each grants a benefit for that one fight only.`, color: 'text-cyan-400' },
+      ],
+    };
+  }
+
   get allStatsHint(): InfoContent {
     const dodgePct = Math.round(100 * dodgeChance(this.player.dodgeRate));
     const defenseReduction = Math.round(100 * (1 - 100 / (100 + this.player.defense)));

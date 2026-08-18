@@ -31,6 +31,10 @@ export interface ItemRollPreview {
 class Item extends Schema {
   // Fields in backend declaration order (required for skipHandshake)
   @type('number') itemId: number = 0;
+  // Per-instance identity distinct from itemId (the shared template id) — see backend
+  // ItemSchema.ts. Used to target a specific owned instance for sell/equip/unequip/drink so
+  // stacked duplicates (two potions, two rings) aren't confused with one another.
+  @type('number') uid: number = 0;
   @type('string') name: string = '';
   @type('string') description: string = '';
   @type('number') price: number = 0;

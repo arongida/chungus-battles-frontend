@@ -305,7 +305,7 @@ export class CharacterDetailsComponent implements OnInit, OnDestroy {
 
   sellSelectedItem(item: Item) {
     this.infoBoxService.runGated(this.sellHint, () => {
-      this.draftService.sendMessage('sell', { itemId: item.itemId });
+      this.draftService.sendMessage('sell', { uid: item.uid });
     });
   }
 
@@ -318,14 +318,14 @@ export class CharacterDetailsComponent implements OnInit, OnDestroy {
 
   equip(item: Item, slot: EquipSlot | string) {
     this.infoBoxService.runGated(this.equipHint, () => {
-      this.draftService.sendMessage('equip', { itemId: item.itemId, slot: slot });
+      this.draftService.sendMessage('equip', { uid: item.uid, slot: slot });
     });
   }
 
   unequip(item: Item | undefined, slot: EquipSlot) {
     if (!item) return;
     this.draftService.sendMessage('unequip', {
-      itemId: item.itemId,
+      uid: item.uid,
       slot: slot,
     });
   }

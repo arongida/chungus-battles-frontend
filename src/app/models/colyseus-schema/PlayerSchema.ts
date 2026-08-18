@@ -54,8 +54,8 @@ export class Player extends Schema {
   // Misconduct: same latch as comradeFreeClaim (any unsold shop item), but the claimed item
   // also gets a rarity upgrade + full-price sell value (see backend TalentBehaviors.ts MISCONDUCT).
   @type('boolean') misconductFreeClaim: boolean = false;
-  // Health Flask (itemId 6): hpRegen bonus banked in the draft for the wearer's next fight only
-  // (see backend PlayerSchema.ts / statsUtils.recalculatePlayerStats).
+  // Deprecated — see backend PlayerSchema.ts's comment. Health Flask brews now bank into
+  // pendingPotionEffects below; kept declared (never populated) so field indices stay stable.
   @type('number') pendingRegenBuff: number = 0;
   // Hidden shop-roll stat, synced so the client can display it next to gold/income (see backend
   // PlayerSchema.ts comment).
@@ -81,6 +81,18 @@ export class Player extends Schema {
   // Shield Bash (item skill): true while stunned — mirrors `invincible` above. Declared here (end
   // of the backend @type block) so field indices stay stable — same reasoning as cooldownReduction.
   @type('boolean') stunned: boolean = false;
+  // Health Flask brews banked in the draft for the wearer's next fight only — one skillId per
+  // flask drunk (see backend PlayerSchema.ts / items/skills/itemSkillRoller.ts's
+  // ensurePotionEffect). Declared here (end of the backend @type block) so field indices stay
+  // stable, same reasoning as stunned and its neighbors above.
+  @type(['number']) pendingPotionEffects: ArraySchema<number> = new ArraySchema<number>();
+  // Comma-joined brew names for pendingPotionEffects, rebuilt server-side on every drink — lets
+  // the UI show "Brewing: Antidote, Stoneskin" without needing the item-skill name table.
+  @type('string') pendingPotionSummary: string = '';
+  // How many potions pendingPotionEffects may hold at once (see backend PlayerSchema.ts /
+  // ShopUpgradeUtils.BASE_POTION_CAPACITY / Flash Sale). Declared here (end of the backend
+  // @type block) so field indices stay stable, same reasoning as pendingPotionSummary above.
+  @type('number') potionCapacity: number = 1;
   // Frontend-only fields not present in backend schema (placed last to preserve index alignment)
   @type([ItemCollection]) activeItemCollections: ArraySchema<ItemCollection> =
     new ArraySchema<ItemCollection>();

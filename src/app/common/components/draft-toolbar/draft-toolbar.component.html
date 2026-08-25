@@ -73,25 +73,25 @@
   @if(!isFighting()) {
   <div class="fixed top-1/2 -translate-y-1/2 right-1 sm:right-2 flex flex-col scale-[1.125] sm:scale-[1.35] md:scale-[1.65] origin-right">
 
-    <button [disabled]="canLevelUp ? player.gold < goldToLevelUp : player.gold < 4"
+    <button [disabled]="hasFutureIsNow || (canLevelUp ? player.gold < goldToLevelUp : player.gold < 4)"
       [appInfoHint]="xpButtonHint" [gatesAction]="true"
       mat-button class="chungus-icon-btn m-1 sm:m-2"
       [ngClass]="{'level-up-btn': canLevelUp}"
-      (click)="canLevelUp ? levelUp() : buyXp()"
+      (click)="hasFutureIsNow ? null : (canLevelUp ? levelUp() : buyXp())"
       (mouseenter)="switchBuyXpAnimate()" (mouseleave)="switchBuyXpAnimate()">
       <span class="btn-content">
-        <span class="btn-label">{{ canLevelUp ? goldToLevelUp + '🟡' : '4🟡' }}</span>
-        <span class="btn-label">{{ canLevelUp ? 'Level up' : '4XP' }}</span>
+        <span class="btn-label">{{ hasFutureIsNow ? '⛔' : (canLevelUp ? goldToLevelUp + '🟡' : '4🟡') }}</span>
+        <span class="btn-label">{{ hasFutureIsNow ? 'Blocked' : (canLevelUp ? 'Level up' : '4XP') }}</span>
       </span>
     </button>
 
-    <button [disabled]="!player.freeRerolls && player.hagglerFreeRerolls <= 0 && player.gold < player.refreshShopCost" [appInfoHint]="refreshShopHint" [gatesAction]="true"
+    <button [disabled]="!player.freeRerolls && player.freeRerollCharges <= 0 && player.gold < player.refreshShopCost" [appInfoHint]="refreshShopHint" [gatesAction]="true"
       mat-button class="chungus-icon-btn m-1 sm:m-2" (click)="refreshShop()">
       <span class="btn-content">
         @if (player.freeRerolls) {
         <span class="btn-label text-orange-400">FREE 🍀</span>
-        } @else if (player.hagglerFreeRerolls > 0) {
-        <span class="btn-label text-orange-400">FREE 💳</span>
+        } @else if (player.freeRerollCharges > 0) {
+        <span class="btn-label text-orange-400">FREE 💳 ×{{ player.freeRerollCharges }}</span>
         } @else {
         <span class="btn-label">{{ player.refreshShopCost }}🟡</span>
         }

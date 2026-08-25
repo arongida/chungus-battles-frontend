@@ -65,9 +65,10 @@ export class Player extends Schema {
   // STORE_CREDIT).
   @type('boolean') storeCreditFreeClaim: boolean = false;
   @type('number') storeCreditFreeClaimCap: number = 0;
-  // Haggler (item skill): remaining free shop rerolls for the current shop phase (see backend
-  // ItemSkillBehaviors.ts HAGGLER / PlayerSchema.ts).
-  @type('number') hagglerFreeRerolls: number = 0;
+  // Free shop rerolls (Haggler item skill + Bargain Hunter talent): remaining free rerolls for the
+  // current shop phase, shared across both sources (see backend ItemSkillBehaviors.ts HAGGLER /
+  // TalentBehaviors.ts BARGAIN_HUNTER / PlayerSchema.ts).
+  @type('number') freeRerollCharges: number = 0;
   // Fortune's Fool (talent 403): reroll count for the current shop phase (see backend
   // PlayerSchema.ts / DraftRoom.refreshShop).
   @type('number') rerollsThisRound: number = 0;

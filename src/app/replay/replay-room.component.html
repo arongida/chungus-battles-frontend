@@ -47,9 +47,25 @@
     <p class="text-red-400 text-xl">{{ error() }}</p>
   </div>
 }
+@if (prunedInfo(); as info) {
+  <div class="w-screen h-screen flex items-center justify-center bg-amber-950 game-bg">
+    <div class="text-center max-w-md px-6">
+      <p class="text-amber-300 text-xl mb-2">🗄️ This fight was archived</p>
+      <p class="text-amber-100/70 text-base">
+        @if (info.playerName && info.enemyName) {
+          {{ info.playerName }} vs. {{ info.enemyName }}
+          @if (info.result) { — {{ info.result === 'win' ? 'Win' : info.result === 'draw' ? 'Draw' : 'Loss' }} }
+        }
+      </p>
+      <p class="text-amber-100/50 text-sm mt-3">
+        Season {{ info.gameVersion }} ended, so its recorded fight was cleared to save storage. Its stats are still available.
+      </p>
+    </div>
+  </div>
+}
 
 <!-- Main fight stage (same layout as live fight, no toolbar) -->
-@if (!loading() && !error()) {
+@if (!loading() && !error() && !prunedInfo()) {
   <div class="w-screen h-screen bg-amber-950 flex flex-col items-center justify-center game-bg">
     @if (!player()) {
       <div class="absolute inset-0 flex items-center justify-center z-50">

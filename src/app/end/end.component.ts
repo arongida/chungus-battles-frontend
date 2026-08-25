@@ -1,6 +1,6 @@
 import { Component, ElementRef, ViewChild, Renderer2, AfterViewInit, OnDestroy, OnInit, signal, computed, PLATFORM_ID, Inject } from '@angular/core';
 import { DatePipe, isPlatformBrowser, NgTemplateOutlet } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ReplayListItem } from '../replay/replay-room.component';
 import { Router } from '@angular/router';
 import { Player } from '../models/colyseus-schema/PlayerSchema';
@@ -15,7 +15,7 @@ import { DraggablePanelDirective } from '../common/directives/draggable-panel.di
 import { PlayerBuildCardComponent } from '../common/components/player-build-card/player-build-card.component';
 import { MatDialog } from '@angular/material/dialog';
 import { FightStatsDialogComponent } from '../common/components/fight-stats-dialog/fight-stats-dialog.component';
-import { GameStatsResult } from '../models/types/MessageTypes';
+import { GameStatsResult, Tournament, TournamentPairing, TournamentStandingRow } from '../models/types/MessageTypes';
 import { TimeAgoPipe } from '../common/pipes/time-ago.pipe';
 import { SoundsService } from '../common/services/sounds.service';
 
@@ -43,6 +43,15 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
   /** Wall of Fame season filter — defaults to the current season once /seasons resolves. */
   fameSeasonOptions = signal<{ label: string; value: number }[]>([]);
   fameSeason = signal<number>(0);
+
+  /** Season-end tournament (fame tab only) — null while loading/absent, cached per season since
+   *  a completed season's tournament never changes. */
+  tournament = signal<Tournament | null>(null);
+  tournamentStandingsOpen = signal(false);
+  private tournamentCache = new Map<number, Tournament | null>();
+  tournamentBuildOpen = signal(false);
+  tournamentBuildName = signal<string>('');
+  tournamentBuildPlayer = signal<Player | null>(null);
 
   readonly avatarOptions: { label: string; value: string }[] = [
     { label: 'All classes', value: '' },
@@ -83,6 +92,7 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
 
   constructor(
     private router: Router,
+    private route: ActivatedRoute,
     private infoBoxService: InfoBoxService,
     private renderer: Renderer2,
     @Inject(PLATFORM_ID) private platformId: Object,
@@ -255,16 +265,20 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
       this.playerId = Number(localStorage.getItem('playerId')) ?? 0;
       document.addEventListener('pointerdown', this.onDocumentPointerDown, true);
     }
+    // Lets the admin panel's "View Results" link (POST /admin/tournament flow) land directly
+    // on the season it just ran, instead of the visitor having to reselect it from the dropdown.
+    const seasonParam = Number(this.route.snapshot.queryParamMap.get('season'));
     this.seasonsService.getSeasons().then(data => {
       this.currentSeason.set(data.currentSeason);
       const fameSeasons = data.seasons
         .filter(s => s.number >= 16) // Wall of Fame was introduced in Season 16
         .map(s => ({ label: `Season ${s.number} — ${s.name}`, value: s.number }));
       this.fameSeasonOptions.set([{ label: 'All Seasons', value: 0 }, ...fameSeasons]);
-      this.fameSeason.set(data.currentSeason);
+      this.fameSeason.set(seasonParam > 0 ? seasonParam : data.currentSeason);
       if (this.activeTab() === 'fame') {
         this.currentPage.set(0);
         this.fetchLeaderboard();
+        this.fetchTournament();
       }
     });
     this.fetchPlayerData();
@@ -315,12 +329,14 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
     this.fameSeason.set(Number(value));
     this.currentPage.set(0);
     this.fetchLeaderboard();
+    this.fetchTournament();
   }
 
   setTab(tab: 'fame' | 'all'): void {
     this.activeTab.set(tab);
     this.currentPage.set(0);
     this.fetchLeaderboard();
+    if (tab === 'fame') this.fetchTournament();
   }
 
   nextPage(): void {
@@ -452,6 +468,71 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
       backdropClass: 'chungus-dialog-backdrop',
       autoFocus: false,
     });
+  }
+
+  // -------------------------------------------------------------------------
+  // Season-end tournament (fame tab)
+  // -------------------------------------------------------------------------
+
+  private async fetchTournament(): Promise<void> {
+    const season = this.fameSeason();
+    if (!season) { this.tournament.set(null); return; } // "All Seasons" has no single tournament
+    const cached = this.tournamentCache.get(season);
+    if (cached !== undefined) { this.tournament.set(cached); return; }
+    try {
+      const resp = await fetch(`${environment.gameServer}/tournament?season=${season}`);
+      const result = resp.ok ? await resp.json() as Tournament : null;
+      this.tournamentCache.set(season, result);
+      this.tournament.set(result);
+    } catch (e) {
+      console.error('Error fetching tournament:', e);
+      this.tournament.set(null);
+    }
+  }
+
+  tournamentNameFor(originalPlayerId: number): string {
+    const t = this.tournament();
+    return t?.roster.find(r => r.originalPlayerId === originalPlayerId)?.name ?? '?';
+  }
+
+  tournamentRunnerUpName(): string {
+    const t = this.tournament();
+    if (!t?.runnerUpId) return '';
+    return this.tournamentNameFor(t.runnerUpId);
+  }
+
+  /** One replay per gauntlet pairing that had a showcase saved — the closest-finish game of
+   *  that pairing (see backend TournamentRunner.ts). Skips pairings with no games yet (an
+   *  in-progress tournament) or none close enough to warrant a kept replay. */
+  tournamentShowcasePairings(): TournamentPairing[] {
+    return (this.tournament()?.gauntlet.pairings ?? []).filter(p => p.showcaseReplayId);
+  }
+
+  toggleTournamentStandings(): void {
+    this.tournamentStandingsOpen.update(v => !v);
+  }
+
+  /** Shows a tournament participant's frozen winning build (the exact snapshot they fought
+   *  the tournament with), reusing the same rehydration buildPlayerFromData uses for
+   *  /playerBuild — snapshotPlayer's shape on the backend is compatible with it. */
+  openTournamentBuild(row: TournamentStandingRow): void {
+    const entry = this.tournament()?.roster.find(r => r.originalPlayerId === row.originalPlayerId);
+    if (!entry) return;
+    if (!entry.snapshot) return;
+    this.tournamentBuildName.set(row.name);
+    this.tournamentBuildPlayer.set(buildPlayerFromData(entry.snapshot));
+    this.tournamentBuildOpen.set(true);
+  }
+
+  closeTournamentBuild(): void {
+    this.tournamentBuildOpen.set(false);
+  }
+
+  openChampionBuild(): void {
+    const t = this.tournament();
+    if (!t?.championId) return;
+    const row = t.gauntlet.table.find(r => r.originalPlayerId === t.championId);
+    if (row) this.openTournamentBuild(row);
   }
 
   goToHome() {

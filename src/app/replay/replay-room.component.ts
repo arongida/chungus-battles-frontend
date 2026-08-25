@@ -123,6 +123,10 @@ export interface ReplayListItem {
   createdAt: string;
   truncated: boolean;
   stats?: FightStatsMessage;
+  kind?: string;
+  /** True once end-of-season pruning has stripped this replay's events/initialState — the row
+   *  can still show its result/stats but playback is gone (see pruneSeasonReplays). */
+  pruned?: boolean;
 }
 
 @Component({
@@ -147,6 +151,10 @@ export class ReplayRoomComponent implements OnInit, AfterViewInit, OnDestroy {
 
   loading = signal(true);
   error = signal<string | null>(null);
+  /** Set when the replay was archived by end-of-season pruning (events/initialState stripped,
+   *  see backend replay/db/Replay.ts's pruneSeasonReplays) — distinct from `error` so the
+   *  template can show a specific "archived" message instead of a generic not-found one. */
+  prunedInfo = signal<{ playerName?: string; enemyName?: string; result?: string; gameVersion?: number } | null>(null);
   battleResult = signal<string | null>(null);
   truncated = signal(false);
   versionMismatch = signal(false);
@@ -183,6 +191,11 @@ export class ReplayRoomComponent implements OnInit, AfterViewInit, OnDestroy {
     try {
       const replay = await this.fetchReplayWithRetry(id);
       if (!replay) { this.error.set('Replay not found.'); this.loading.set(false); return; }
+      if (replay.pruned) {
+        this.prunedInfo.set({ playerName: replay.playerName, enemyName: replay.enemyName, result: replay.result, gameVersion: replay.gameVersion });
+        this.loading.set(false);
+        return;
+      }
 
       this.events = replay.events ?? [];
       this.initialState = replay.initialState;
@@ -206,11 +219,16 @@ export class ReplayRoomComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /** The replay save is fire-and-forget right after the fight ends, so clicking "Watch
    *  Replay" moments after the result modal appears can briefly 404 before the DB write
-   *  lands. Retry a few times before giving up. */
+   *  lands. Retry a few times before giving up.
+   *
+   *  A 410 (the replay was archived by end-of-season pruning — see pruneSeasonReplays in the
+   *  backend) is never retried: it will never come back, unlike a 404, and its body is still
+   *  useful (playerName/enemyName/result/gameVersion survive pruning) so it's returned like a
+   *  normal payload, just flagged `pruned: true` for the caller to branch on. */
   private async fetchReplayWithRetry(id: string, attempts = 4, delayMs = 600): Promise<any | null> {
     for (let i = 0; i < attempts; i++) {
       const resp = await fetch(`${environment.gameServer}/replays/${id}`);
-      if (resp.ok) return resp.json();
+      if (resp.ok || resp.status === 410) return resp.json();
       if (resp.status !== 404 || i === attempts - 1) return null;
       await new Promise(r => setTimeout(r, delayMs));
     }

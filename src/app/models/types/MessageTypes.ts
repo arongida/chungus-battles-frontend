@@ -161,6 +161,94 @@ export type GameStatsResult = {
   stats: FightStatsMessage;
 };
 
+// --- Season-end Hall of Fame tournament — GET /tournament, GET /tournaments -------------------
+
+export type TournamentGameResult = {
+  gameIndex: number;
+  aIsPlayer: boolean;
+  result: 'win' | 'lose' | 'draw';
+  replayId?: string;
+  durationMs: number;
+  winnerHpFraction?: number;
+  aDamageDealt: number;
+  aDamageTaken: number;
+};
+
+export type TournamentPairing = {
+  aId: number;
+  bId: number;
+  aWins: number;
+  bWins: number;
+  draws: number;
+  games: TournamentGameResult[];
+  showcaseReplayId?: string;
+};
+
+export type TournamentStandingRow = {
+  originalPlayerId: number;
+  name: string;
+  avatarUrl?: string;
+  seed: number;
+  fights: number;
+  wins: number;
+  losses: number;
+  draws: number;
+  winRate: number;
+  damageDealt: number;
+  damageTaken: number;
+  avgDurationMs: number;
+};
+
+export type TournamentMatch = {
+  matchId: string;
+  stage: 'PI' | 'QF1' | 'QF2' | 'SF1' | 'SF2' | 'FIN';
+  aId: number;
+  bId: number;
+  aWins: number;
+  bWins: number;
+  games: TournamentGameResult[];
+  winnerId?: number;
+};
+
+export type TournamentRosterEntry = {
+  playerId: number;
+  originalPlayerId: number;
+  name: string;
+  avatarUrl?: string;
+  // Frozen snapshotPlayer() output the character actually fought the tournament with — the
+  // same shape /playerBuild's playerToPlainObject produces, so buildPlayerFromData can
+  // rehydrate it directly.
+  snapshot?: Record<string, any>;
+};
+
+/** GET /tournament?season=N — the full record of one season's tournament. */
+export type Tournament = {
+  tournamentId: string;
+  season: number;
+  status: 'running' | 'complete' | 'failed' | 'skipped';
+  createdAt: string;
+  completedAt?: string;
+  progress: { fightsDone: number; fightsTotal: number; stage: 'gauntlet' | 'playoff' | 'done' };
+  roster: TournamentRosterEntry[];
+  gauntlet: { pairings: TournamentPairing[]; table: TournamentStandingRow[] };
+  playoff: { matches: TournamentMatch[] };
+  championId?: number;
+  championName?: string;
+  championAvatarUrl?: string;
+  runnerUpId?: number;
+};
+
+/** GET /tournaments — lightweight listing for the season selector. */
+export type TournamentSummary = {
+  season: number;
+  status: 'running' | 'complete' | 'failed' | 'skipped';
+  createdAt: string;
+  completedAt?: string;
+  championId?: number;
+  championName?: string;
+  championAvatarUrl?: string;
+};
+
 export type EndBattleMessage = {
   result: 'win' | 'lose' | 'draw';
   lossBonus?: number; // legacy (old replays)

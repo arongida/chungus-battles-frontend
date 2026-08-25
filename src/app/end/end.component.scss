@@ -366,6 +366,18 @@
     background: rgba(180, 120, 30, 0.08);
     color: #f59e0b;
   }
+
+  &.replay-row-pruned {
+    color: rgba(255, 255, 255, 0.4);
+    &:hover { color: rgba(245, 158, 11, 0.7); }
+  }
+}
+
+.replay-row-archived {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.35);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .replay-row-round {
@@ -407,4 +419,201 @@
   height: 18px;
   color: rgba(245, 158, 11, 0.5);
   flex-shrink: 0;
+}
+
+/* ── Season-end tournament panel ──────────────────────────── */
+
+.tournament-panel {
+  width: 100%;
+  max-width: 28rem;
+  margin-bottom: 10px;
+  padding: 10px 14px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(180, 120, 30, 0.35);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.tournament-champion {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.tournament-champion-trophy {
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.tournament-champion-name {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #fbbf24;
+  cursor: pointer;
+  transition: color 100ms;
+
+  &:hover { color: #fde68a; text-decoration: underline; }
+}
+
+.tournament-champion-sub {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.tournament-bracket {
+  width: 100%;
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tournament-match {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px;
+  background: rgba(180, 120, 30, 0.06);
+  border-radius: 4px;
+  font-size: 0.82rem;
+}
+
+.tournament-match-stage {
+  font-weight: 700;
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  color: rgba(245, 158, 11, 0.6);
+  min-width: 28px;
+}
+
+.tournament-match-score {
+  flex: 1;
+  text-align: left;
+  color: rgba(255, 255, 255, 0.8);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  b { color: #fff; }
+}
+
+.tournament-match-games {
+  display: flex;
+  gap: 3px;
+  flex-shrink: 0;
+}
+
+.tournament-game-pip {
+  font-size: 0.7rem;
+  line-height: 1;
+  text-decoration: none;
+  color: rgba(255, 255, 255, 0.25);
+  transition: transform 100ms;
+
+  &:hover { transform: scale(1.3); }
+  &.win  { color: #4ade80; }
+  &.lose { color: #f87171; }
+  &.draw { color: #fbbf24; }
+}
+
+.tournament-toggle-btn {
+  margin-top: 10px;
+  background: none;
+  border: none;
+  color: rgba(245, 158, 11, 0.6);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 2px 6px;
+  transition: color 100ms;
+
+  &:hover { color: #f59e0b; }
+}
+
+.tournament-standings-wrap {
+  width: 100%;
+  margin-top: 6px;
+}
+
+.tournament-standings-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.78rem;
+
+  th {
+    text-align: left;
+    padding: 4px 6px;
+    color: rgba(255, 255, 255, 0.4);
+    font-weight: 600;
+    border-bottom: 1px solid rgba(180, 120, 30, 0.25);
+  }
+
+  td {
+    padding: 4px 6px;
+    color: rgba(255, 255, 255, 0.75);
+    border-bottom: 1px solid rgba(180, 120, 30, 0.08);
+  }
+
+  tr:not(:first-child) { cursor: pointer; }
+  tbody tr:hover td { background: rgba(180, 120, 30, 0.08); color: #f59e0b; }
+}
+
+.tournament-showcase-list {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  text-align: left;
+}
+
+.tournament-showcase-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: rgba(245, 158, 11, 0.5);
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.tournament-showcase-row {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  padding: 2px 4px;
+  border-radius: 3px;
+  transition: background 100ms, color 100ms;
+
+  &:hover { background: rgba(180, 120, 30, 0.1); color: #f59e0b; }
+}
+
+.tournament-showcase-record {
+  color: rgba(255, 255, 255, 0.35);
+  margin-left: 4px;
+}
+
+.tournament-inprogress {
+  font-size: 0.85rem;
+  color: rgba(245, 158, 11, 0.8);
+  padding: 4px 0;
+}
+
+.tournament-build-modal {
+  background: rgba(10, 10, 15, 0.98);
+  border: 1px solid rgba(180, 120, 30, 0.5);
+  border-radius: 8px;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.8);
+  width: 90vw;
+  max-width: 380px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.tournament-build-modal-body {
+  overflow-y: auto;
 }

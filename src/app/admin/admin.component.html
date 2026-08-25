@@ -1,0 +1,124 @@
+<div class="admin-page">
+  <h1 class="admin-title">🛠️ Tournament Admin</h1>
+
+  @if (!secret()) {
+    <div class="admin-panel admin-gate">
+      <p class="admin-gate-text">
+        No admin secret set. Set <code>localStorage.adminSecret</code> yourself, or enter it below
+        (this just does the same thing).
+      </p>
+      @if (authError()) {
+        <p class="admin-error">{{ authError() }}</p>
+      }
+      <div class="admin-gate-form">
+        <input
+          class="admin-input"
+          type="password"
+          placeholder="Admin secret…"
+          [value]="secretInput()"
+          (input)="secretInput.set($any($event.target).value)"
+          (keydown.enter)="saveSecret()" />
+        <button mat-raised-button class="chungus-modal-btn" (click)="saveSecret()">Save</button>
+      </div>
+    </div>
+  } @else {
+    <div class="admin-panel">
+      <div class="admin-panel-header">
+        <span>Signed in as admin</span>
+        <button class="admin-link-btn" (click)="clearSecret()">Clear secret</button>
+      </div>
+
+      <div class="admin-field-row">
+        <label class="admin-label">Season</label>
+        <select class="admin-select" (change)="setSeason($any($event.target).value)">
+          @for (opt of seasonOptions(); track opt.value) {
+            <option [value]="opt.value" [selected]="opt.value === season()">{{ opt.label }}</option>
+          }
+        </select>
+      </div>
+
+      @if (authError()) {
+        <p class="admin-error">{{ authError() }}</p>
+      }
+      @if (actionError()) {
+        <p class="admin-error">{{ actionError() }}</p>
+      }
+
+      @if (tournament(); as t) {
+        @if (t.status === 'running') {
+          <div class="admin-progress-block">
+            <p class="admin-status-line">🏃 Running — stage: <b>{{ t.progress.stage }}</b></p>
+            <div class="admin-progress-bar">
+              <div class="admin-progress-fill" [style.width.%]="progressPct()"></div>
+            </div>
+            <p class="admin-progress-label">{{ t.progress.fightsDone }} / {{ t.progress.fightsTotal }} fights ({{ progressPct() }}%)</p>
+          </div>
+        } @else {
+          <p class="admin-status-line">
+            Status: <b>{{ t.status }}</b>
+            @if (t.status === 'complete' && t.championName) {
+              — 🏆 {{ t.championName }}
+            }
+          </p>
+
+          @if (t.status === 'complete') {
+            <label class="admin-checkbox-row">
+              <mat-checkbox [checked]="forceRestart()" (change)="forceRestart.set($event.checked)"></mat-checkbox>
+              Force restart (discards the completed run)
+            </label>
+          }
+
+          <div class="admin-actions">
+            <button
+              mat-raised-button
+              class="chungus-modal-btn"
+              [disabled]="!canRun() || running()"
+              (click)="runTournament()">
+              {{ running() ? 'Starting…' : actionLabel() }}
+            </button>
+            @if (t.status === 'complete') {
+              <a mat-stroked-button class="admin-view-btn" [routerLink]="['/end']" [queryParams]="{ season: t.season }" target="_blank">
+                <mat-icon>visibility</mat-icon> View Results
+              </a>
+            }
+          </div>
+        }
+      } @else {
+        <div class="admin-actions">
+          <button mat-raised-button class="chungus-modal-btn" [disabled]="running()" (click)="runTournament()">
+            {{ running() ? 'Starting…' : 'Start Tournament' }}
+          </button>
+        </div>
+      }
+
+      <div class="admin-divider"></div>
+
+      <div class="admin-prune-block">
+        <p class="admin-prune-label">Replay pruning — strips recorded events from ordinary fights of this season once its tournament is complete. Irreversible; tournament replays are never touched.</p>
+        <button mat-stroked-button class="admin-prune-btn" [disabled]="pruning()" (click)="pruneReplays()">
+          {{ pruning() ? 'Pruning…' : 'Prune Season ' + season() + ' Replays' }}
+        </button>
+        @if (pruneResult()) {
+          <p class="admin-prune-result">{{ pruneResult() }}</p>
+        }
+      </div>
+    </div>
+
+    @if (tournamentSummaries().length > 0) {
+      <div class="admin-panel admin-history">
+        <span class="admin-panel-header">Tournament history</span>
+        <div class="admin-history-list">
+          @for (s of tournamentSummaries(); track s.season) {
+            <a class="admin-history-row" [routerLink]="['/end']" [queryParams]="{ season: s.season }" target="_blank">
+              <span class="admin-history-season">Season {{ s.season }}</span>
+              <span class="admin-history-status" [class]="'status-' + s.status">{{ s.status }}</span>
+              @if (s.championName) {
+                <span class="admin-history-champion">🏆 {{ s.championName }}</span>
+              }
+            </a>
+          }
+        </div>
+      </div>
+    }
+  }
+</div>

@@ -10,9 +10,12 @@
   } @else {
     <div class="replays-list">
       @for (r of replays(); track r.replayId) {
-        <a [routerLink]="['/replay', r.replayId]" class="replay-row" target="_blank" (click)="onRowClick(r, $event)">
+        <a [routerLink]="['/replay', r.replayId]" class="replay-row" [class.replay-row-pruned]="r.pruned" target="_blank" (click)="onRowClick(r, $event)">
           <span class="replay-row-round">Round {{ r.round }}</span>
           <span class="replay-row-vs">vs. {{ r.enemyName }}</span>
+          @if (r.pruned) {
+            <span class="replay-row-archived" title="This fight's recording was cleared to save storage at the end of the season — stats are still available.">🗄️ Archived</span>
+          }
           <span class="replay-row-result" [class.win]="r.result === 'win'" [class.lose]="r.result === 'lose' || r.result === 'loose'" [class.draw]="r.result === 'draw'">
             {{ replayResultLabel(r.result) }}
           </span>

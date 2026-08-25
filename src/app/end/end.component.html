@@ -49,6 +49,87 @@
     </div>
   }
 
+  <!-- Season-end tournament (fame tab only) -->
+  @if (activeTab() === 'fame' && tournament(); as t) {
+    <div class="tournament-panel">
+      @if (t.status === 'complete') {
+        <div class="tournament-champion">
+          <span class="tournament-champion-trophy">🏆</span>
+          <span class="tournament-champion-name" (click)="openChampionBuild()">{{ t.championName }}</span>
+          <span class="tournament-champion-sub">Season {{ t.season }} Tournament Champion</span>
+          @if (t.runnerUpId) {
+            <span class="tournament-champion-sub">defeated {{ tournamentRunnerUpName() }} in the final</span>
+          }
+        </div>
+
+        @if (t.playoff.matches.length > 0) {
+          <div class="tournament-bracket">
+            @for (m of t.playoff.matches; track m.matchId) {
+              <div class="tournament-match">
+                <span class="tournament-match-stage">{{ m.stage }}</span>
+                <span class="tournament-match-score">
+                  {{ tournamentNameFor(m.aId) }} <b>{{ m.aWins }}</b> – <b>{{ m.bWins }}</b> {{ tournamentNameFor(m.bId) }}
+                </span>
+                <span class="tournament-match-games">
+                  @for (g of m.games; track g.gameIndex) {
+                    @if (g.replayId) {
+                      <a [routerLink]="['/replay', g.replayId]" target="_blank"
+                         class="tournament-game-pip"
+                         [class.win]="g.result === 'win'"
+                         [class.lose]="g.result === 'lose'"
+                         [class.draw]="g.result === 'draw'"
+                         [title]="tournamentNameFor(m.aId) + (g.result === 'win' ? ' won' : g.result === 'lose' ? ' lost' : ' drew') + ' game ' + (g.gameIndex + 1)">●</a>
+                    }
+                  }
+                </span>
+              </div>
+            }
+          </div>
+        }
+
+        <button class="tournament-toggle-btn" (click)="toggleTournamentStandings()">
+          Gauntlet Standings {{ tournamentStandingsOpen() ? '▾' : '▸' }}
+        </button>
+
+        @if (tournamentStandingsOpen()) {
+          <div class="tournament-standings-wrap">
+            <table class="tournament-standings-table">
+              <thead>
+                <tr><th>#</th><th>Name</th><th>Record</th><th>Win%</th></tr>
+              </thead>
+              <tbody>
+                @for (row of t.gauntlet.table; track row.originalPlayerId) {
+                  <tr (click)="openTournamentBuild(row)">
+                    <td>{{ row.seed }}</td>
+                    <td>{{ row.name }}</td>
+                    <td>{{ row.wins }}-{{ row.losses }}-{{ row.draws }}</td>
+                    <td>{{ (row.winRate * 100).toFixed(0) }}%</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+
+            @if (tournamentShowcasePairings().length > 0) {
+              <div class="tournament-showcase-list">
+                <span class="tournament-showcase-label">Notable gauntlet fights</span>
+                @for (p of tournamentShowcasePairings(); track p.aId + '-' + p.bId) {
+                  <a [routerLink]="['/replay', p.showcaseReplayId]" target="_blank" class="tournament-showcase-row">
+                    {{ tournamentNameFor(p.aId) }} vs {{ tournamentNameFor(p.bId) }}
+                    <span class="tournament-showcase-record">({{ p.aWins }}-{{ p.bWins }}-{{ p.draws }})</span>
+                  </a>
+                }
+              </div>
+            }
+          </div>
+        }
+      } @else if (t.status === 'running') {
+        <div class="tournament-inprogress">
+          🏆 Season {{ t.season }} Tournament running — {{ t.progress.fightsDone }}/{{ t.progress.fightsTotal }} fights simulated
+        </div>
+      }
+    </div>
+  }
+
   <!-- Filter row (All Characters tab only) -->
   @if (activeTab() === 'all') {
     <div class="leaderboard-filters">
@@ -170,9 +251,12 @@
       } @else {
         <div class="replays-list">
           @for (r of replays(); track r.replayId) {
-            <a [routerLink]="['/replay', r.replayId]" class="replay-row" target="_blank" (click)="onRowClick(r, $event)">
+            <a [routerLink]="['/replay', r.replayId]" class="replay-row" [class.replay-row-pruned]="r.pruned" target="_blank" (click)="onRowClick(r, $event)">
               <span class="replay-row-round">Round {{ r.round }}</span>
               <span class="replay-row-vs">vs. {{ r.enemyName }}</span>
+              @if (r.pruned) {
+                <span class="replay-row-archived" title="This fight's recording was cleared to save storage at the end of the season — stats are still available.">🗄️ Archived</span>
+              }
               <span class="replay-row-result" [class.win]="r.result === 'win'" [class.lose]="r.result === 'lose' || r.result === 'loose'" [class.draw]="r.result === 'draw'">
                 {{ replayResultLabel(r.result) }}
               </span>
@@ -182,6 +266,21 @@
           }
         </div>
       }
+    </div>
+  </div>
+}
+
+<!-- Tournament build modal: shows a participant's frozen winning-run build -->
+@if (tournamentBuildOpen() && tournamentBuildPlayer(); as build) {
+  <div class="fixed inset-0 z-[9999] flex items-center justify-center" style="background: rgba(0,0,0,0.7);" (click)="closeTournamentBuild()">
+    <div class="tournament-build-modal" (click)="$event.stopPropagation()">
+      <div class="replays-modal-header">
+        <span>{{ tournamentBuildName() }}'s tournament build</span>
+        <button class="replays-close-btn" (click)="closeTournamentBuild()">×</button>
+      </div>
+      <div class="tournament-build-modal-body">
+        <app-player-build-card [build]="build"></app-player-build-card>
+      </div>
     </div>
   </div>
 }

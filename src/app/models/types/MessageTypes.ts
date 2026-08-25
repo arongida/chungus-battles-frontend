@@ -201,7 +201,7 @@ export type TournamentStandingRow = {
 
 export type TournamentMatch = {
   matchId: string;
-  stage: 'SF1' | 'SF2' | 'FIN';
+  stage: 'PI' | 'QF1' | 'QF2' | 'SF1' | 'SF2' | 'FIN';
   aId: number;
   bId: number;
   aWins: number;

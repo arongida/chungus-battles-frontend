@@ -101,8 +101,8 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
   get refreshShopHint(): InfoContent {
     const text = this.player.freeRerolls
       ? `Free reroll (Fortune's Fool) — roll a new set of items in the shop at no cost, but you'll start your next fight with less HP.`
-      : this.player.hagglerFreeRerolls > 0
-      ? `Free reroll available (Haggler) — roll a new set of items in the shop at no cost.`
+      : this.player.freeRerollCharges > 0
+      ? `Free reroll available (Haggler / Bargain Hunter) — ${this.player.freeRerollCharges} left this round.`
       : `Spend ${this.player.refreshShopCost} gold to roll a new set of items in the shop.`;
     return {
       id: 'refresh-shop',
@@ -120,6 +120,12 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
 
   get canLevelUp(): boolean {
     return this.player.gold >= this.goldToLevelUp;
+  }
+
+  // talentId 32 = The Future is Now (blocks buying XP directly, including the auto level-up
+  // path — see DraftRoom.buyXp on the backend, which both buy_xp and level_up route through).
+  get hasFutureIsNow(): boolean {
+    return this.player.talents?.some((t) => t.talentId === 32) ?? false;
   }
 
   /** Per-level stat bonus for the player's class, mirroring DraftRoom.ts levelUp:
@@ -148,7 +154,18 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
     };
   }
 
+  get futureIsNowHint(): InfoContent {
+    return {
+      id: 'future-is-now-blocked',
+      title: 'XP Blocked',
+      entries: [
+        { icon: '⛔', label: 'Blocked', text: 'The Future is Now already doubles your XP after each battle — buying XP or leveling up directly is disabled.' },
+      ],
+    };
+  }
+
   get xpButtonHint(): InfoContent {
+    if (this.hasFutureIsNow) return this.futureIsNowHint;
     return this.canLevelUp ? this.levelUpHint : this.buyXpHint;
   }
 

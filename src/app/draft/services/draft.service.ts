@@ -31,10 +31,17 @@ export class DraftService {
     try {
       let playerId = playerIdInput;
       if (!playerId) {
-        const result = await fetch(environment.gameServer + '/playerId')
+        // A fresh playerId also reserves a playerToken for it (see backend PlayerToken.ts) —
+        // the server won't let anything but the matching token join as this id from now on, so
+        // it must be persisted here and resent on every future join as this character (below,
+        // and by FightService.joinOrCreate for the same playerId).
+        const result = await fetch(environment.gameServer + '/playerid')
           .then((res) => res.json())
           .catch((e) => console.error(e));
         playerId = result.playerId;
+        if (DraftService.isLocalStorageAvailable && result?.playerToken) {
+          localStorage.setItem('playerToken', result.playerToken);
+        }
       }
 
       console.log(`[DraftService] creating draft_room playerId=${playerId}`);
@@ -42,6 +49,7 @@ export class DraftService {
         name: name,
         playerId: playerId,
         avatarUrl: avatarUrl,
+        playerToken: DraftService.isLocalStorageAvailable ? localStorage.getItem('playerToken') : undefined,
       }));
 
       const room = this.room()!;

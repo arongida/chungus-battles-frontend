@@ -36,6 +36,9 @@ export class FightService {
       this.room.set(
         await this.client.create('fight_room', {
           playerId: playerId,
+          // Same playerToken DraftService persisted when this character's playerId was first
+          // minted (see DraftService.joinOrCreate) — required by FightRoom.onAuth.
+          playerToken: FightService.isLocalStorageAvailable ? localStorage.getItem('playerToken') : undefined,
           ...(enemyPlayerId ? { enemyPlayerId } : {}),
         }),
       );

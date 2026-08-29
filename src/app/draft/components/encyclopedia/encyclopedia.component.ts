@@ -1,6 +1,7 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, Inject, Optional } from '@angular/core';
 import Item from '../../../models/colyseus-schema/ItemSchema';
 import { MatButtonModule } from '@angular/material/button';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { environment } from '../../../../environments/environment';
 import { buildItemFromData } from '../../../common/utils/player-schema-builder';
 import { Player } from '../../../models/colyseus-schema/PlayerSchema';
@@ -10,6 +11,10 @@ import { SeasonsService, SeasonInfo } from '../../../common/services/seasons.ser
 import { ActiveSkillLabel, buildActiveSkillLabel } from '../../../common/utils/active-skill-label';
 
 export type ActiveTab = 'items' | 'talents' | 'itemSkills' | 'seasons';
+
+export interface EncyclopediaDialogData {
+  initialTab?: ActiveTab;
+}
 
 @Component({
   selector: 'app-encyclopedia',
@@ -32,12 +37,18 @@ export class EncyclopediaComponent implements OnInit {
   selectedTier: string | null = null;
   dummyPlayer: Player = new Player();
 
-  // No MAT_DIALOG_DATA dependency — this is a pure catalog browser, openable from a dialog
-  // (draft toolbar, login page) with nothing player/session-specific to pass in.
+  // MAT_DIALOG_DATA is optional — this is a pure catalog browser, openable from a dialog
+  // (draft toolbar, login page) with nothing player/session-specific to pass in, other than
+  // an optional initial tab to land on.
   constructor(
     private cdr: ChangeDetectorRef,
     private seasonsService: SeasonsService,
-  ) {}
+    @Optional() @Inject(MAT_DIALOG_DATA) data: EncyclopediaDialogData | null,
+  ) {
+    if (data?.initialTab) {
+      this.activeTab = data.initialTab;
+    }
+  }
 
   async ngOnInit(): Promise<void> {
     const [items, talents, itemSkills, seasons] = await Promise.all([

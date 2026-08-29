@@ -28,6 +28,7 @@ import { InfoBoxService } from '../common/services/info-box.service';
 import { InfoEntry } from '../common/models/info-content';
 import { SeasonsService } from '../common/services/seasons.service';
 import { RouterLink } from '@angular/router';
+import type { ActiveTab } from '../draft/components/encyclopedia/encyclopedia.component';
 
 interface ClassOption {
   avatar: string;
@@ -211,7 +212,7 @@ export class JoinFormComponent implements AfterViewInit, OnDestroy, OnInit {
 
   // Lazy-loaded so the encyclopedia (+ item-card, hover-card) doesn't bloat the login
   // page's initial bundle — it's opened rarely and the browser catalog is session-free.
-  async openEncyclopedia(): Promise<void> {
+  async openEncyclopedia(initialTab?: ActiveTab): Promise<void> {
     const { EncyclopediaComponent } = await import(
       '../draft/components/encyclopedia/encyclopedia.component'
     );
@@ -222,6 +223,7 @@ export class JoinFormComponent implements AfterViewInit, OnDestroy, OnInit {
       width: '80%',
       backdropClass: 'chungus-dialog-backdrop',
       autoFocus: false,
+      data: initialTab ? { initialTab } : undefined,
     });
   }
 }

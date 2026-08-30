@@ -22,9 +22,6 @@ import {
   Talent,
 } from '../../../models/colyseus-schema/TalentSchema';
 import {
-  ItemCollection,
-} from '../../../models/colyseus-schema/ItemCollectionSchema';
-import {
   RoundInfoComponent,
 } from '../../../common/components/round-info/round-info.component';
 import {
@@ -81,7 +78,6 @@ export class DraftRoomComponent implements OnInit {
   availableTalents = signal<Talent[]>([]);
   // Per-slot reroll-used tracker, aligned by index with availableTalents.
   talentRerollUsed = signal<boolean[]>([]);
-  availableCollections = signal<ItemCollection[]>([]);
   /** Server-side-redacted preview of the locked-in next opponent (Next-Enemy Preview). */
   nextEnemy = signal<Player>(new Player(), { equal: () => false });
   nextEnemyRevealLevel = signal(-1);
@@ -167,7 +163,6 @@ export class DraftRoomComponent implements OnInit {
     this.shop.set([...(state.shop ?? [])] as unknown as Item[]);
     this.availableTalents.set([...(state.availableTalents ?? [])] as unknown as Talent[]);
     this.talentRerollUsed.set([...(state.talentRerollUsed ?? [])] as unknown as boolean[]);
-    this.availableCollections.set([...(state.player?.availableItemCollections ?? [])] as unknown as ItemCollection[]);
     this.draftService.canUndoSell.set(!!state.canUndoSell);
     this.nextEnemy.set(coercePlayer(state.nextEnemy));
     this.nextEnemyRevealLevel.set(state.nextEnemyRevealLevel ?? -1);

@@ -6,7 +6,6 @@ import {
 } from '@colyseus/schema';
 import { Talent } from './TalentSchema';
 import Item from './ItemSchema';
-import { ItemCollection } from './ItemCollectionSchema';
 import { AffectedStats } from './AffectedStatsSchema';
 
 export class Player extends Schema {
@@ -60,6 +59,9 @@ export class Player extends Schema {
   // Hidden shop-roll stat, synced so the client can display it next to gold/income (see backend
   // PlayerSchema.ts comment).
   @type('number') luckyFindChance: number = 0;
+  // Permanent snowball bonus to luckyFindChance, granted by Lucky Find Mythic upgrades (see
+  // backend PlayerSchema.ts / ShopUpgradeUtils.LUCKY_FIND_MYTHIC_BONUS).
+  @type('number') luckyFindMythicBonus: number = 0;
   // Store Credit (item skill): same latch as comradeFreeClaim, but the client only honors it on
   // shop items priced at or below storeCreditFreeClaimCap (see backend ItemSkillBehaviors.ts
   // STORE_CREDIT).
@@ -94,12 +96,6 @@ export class Player extends Schema {
   // ShopUpgradeUtils.BASE_POTION_CAPACITY / Flash Sale). Declared here (end of the backend
   // @type block) so field indices stay stable, same reasoning as pendingPotionSummary above.
   @type('number') potionCapacity: number = 1;
-  // Frontend-only fields not present in backend schema (placed last to preserve index alignment)
-  @type([ItemCollection]) activeItemCollections: ArraySchema<ItemCollection> =
-    new ArraySchema<ItemCollection>();
-  @type([ItemCollection])
-  availableItemCollections: ArraySchema<ItemCollection> =
-    new ArraySchema<ItemCollection>();
   // Not synced — server-only computation, no @type
   private _poisonStack: number = 0;
   // Leaderboard-only display field: ISO timestamp of this character's last-saved snapshot,

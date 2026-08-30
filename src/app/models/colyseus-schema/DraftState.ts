@@ -6,7 +6,6 @@ import {
 import { Player } from './PlayerSchema';
 import Item from './ItemSchema';
 import { Talent } from './TalentSchema';
-import { ItemCollection } from './ItemCollectionSchema';
 
 export class DraftState extends Schema {
   @type(Player) player: Player = new Player();
@@ -30,6 +29,4 @@ export class DraftState extends Schema {
   // duplicates kept so ×N counts are visible. Same order as backend (skipHandshake).
   @type(['string']) nextEnemyTalentClasses: ArraySchema<string> = new ArraySchema<string>();
   @type(['string']) nextEnemyItemClasses: ArraySchema<string> = new ArraySchema<string>();
-  // Not synced from server — kept for potential future use
-  availableItemCollections: ArraySchema<ItemCollection> = new ArraySchema<ItemCollection>();
 }

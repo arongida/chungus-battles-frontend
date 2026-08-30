@@ -64,7 +64,7 @@ function rehydrateTalent(raw: any): Talent {
 
 function rehydratePlayer(snapshot: any): Player {
   const p = new Player();
-  const NESTED = new Set(['equippedItems', 'inventory', 'talents', 'lockedShop', 'baseStats', 'activeItemCollections', 'availableItemCollections']);
+  const NESTED = new Set(['equippedItems', 'inventory', 'talents', 'lockedShop', 'baseStats']);
   for (const key of Object.keys(snapshot ?? {})) {
     if (NESTED.has(key)) continue;
     try { (p as any)[key] = snapshot[key]; } catch {}

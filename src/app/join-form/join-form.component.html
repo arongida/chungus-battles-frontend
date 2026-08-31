@@ -15,7 +15,7 @@
       <button mat-icon-button class="size-10 p-2 rounded-l-xl flex items-center justify-center" (click)="onNextButton()">
         <mat-icon>arrow_back</mat-icon>
       </button>
-      <img [src]="avatarSelected" alt="player portrait" class="player-portrait w-[180px] h-auto" />
+      <img [src]="avatarSelected" alt="player portrait" class="player-portrait w-[130px] sm:w-[180px] h-auto" />
       <button mat-icon-button class="size-10 p-2 rounded-r-xl flex items-center justify-center" (click)="onPrevButton()">
         <mat-icon>arrow_forward</mat-icon>
       </button>
@@ -27,7 +27,7 @@
       </div>
       <div class="text-sm text-gray-400 mt-1">{{ selectedClass.effect }}</div>
     </div>
-    <mat-form-field class="m-4">
+    <mat-form-field class="mx-4 my-1 sm:m-4">
       <mat-label>Name</mat-label>
       <input matInput [formControl]="nameControl" />
       @if (nameControl.invalid && nameControl.touched) {<mat-error>{{getInputErrorMessage()}}</mat-error>}
@@ -59,7 +59,7 @@
      title="Support the server">☕ <span class="font-semibold">Support the server</span></a>
 </div>
 
-<div class="fixed top-5 right-5 flex items-center">
+<div class="fixed top-1 right-2 sm:top-5 sm:right-5 flex items-center">
   <button mat-icon-button class="text-gray-400" (click)="openEncyclopedia()" title="Encyclopedia">
     <mat-icon>menu_book</mat-icon>
   </button>

@@ -29,37 +29,6 @@
   }
 }
 
-/* ── Leaderboard loading skeleton ─────────────────────────── */
-.leaderboard-skeleton-row {
-  height: 1.75rem; /* matches .player-row's text-lg line-height */
-  margin-bottom: 0.5rem; /* matches .player-row's mb-2 */
-  border-radius: 4px;
-  background: linear-gradient(
-    90deg,
-    rgba(180, 120, 30, 0.08) 25%,
-    rgba(180, 120, 30, 0.18) 50%,
-    rgba(180, 120, 30, 0.08) 75%
-  );
-  background-size: 200% 100%;
-  animation: leaderboardSkeletonShimmer 1.4s ease-in-out infinite;
-}
-
-@keyframes leaderboardSkeletonShimmer {
-  from {
-    background-position: 200% 0;
-  }
-
-  to {
-    background-position: -200% 0;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .leaderboard-skeleton-row {
-    animation: none;
-  }
-}
-
 /* ── Leaderboard tabs (version toggle) ───────────────────── */
 
 .leaderboard-tabs {

@@ -164,31 +164,12 @@
     </div>
   }
 
-  <div class="w-full max-w-md bg-gray-800 bg-opacity-50 rounded-lg shadow-lg p-6">
-    @for (Player of leaderboardPlayers(); track Player.playerId) {
-      <div
-        class="player-row text-lg mb-2 cursor-pointer select-none"
-        [class.text-yellow-400]="originalPlayerId() && Player.originalPlayerId === originalPlayerId()"
-        [class.text-white]="!originalPlayerId() || Player.originalPlayerId !== originalPlayerId()"
-        [class.player-row-active]="isActive(Player.playerId)"
-        [class.player-row-pinned]="isPinned(Player.playerId)"
-        (mouseenter)="onPlayerHover(Player.playerId)"
-        (mouseleave)="onPlayerLeave()"
-        (click)="onRowActivate(Player.playerId)">
-        @if (activeTab() === 'fame') {
-          {{ currentPage() * pageSize + $index + 1 }}. {{ Player.name }} — 💀 {{ Player.runsEnded || 0 }} ended
-        } @else {
-          {{ currentPage() * pageSize + $index + 1 }}. {{ Player.name }} - {{ Player.wins }} wins
-        }
-        @if (isPinned(Player.playerId)) {
-          <span class="text-amber-500 text-sm ml-1">📌</span>
-        }
-        @if (Player.lastPlayedAt) {
-          <span class="text-gray-400 text-sm ml-2 whitespace-nowrap">{{ Player.lastPlayedAt | timeAgo }}</span>
-        }
-      </div>
-    }
-    @if (leaderboardPlayers().length === 0) {
+  <div class="w-full max-w-md bg-gray-800 bg-opacity-50 rounded-lg shadow-lg p-6" [attr.aria-busy]="leaderboardLoading()">
+    @if (leaderboardLoading()) {
+      @for (i of skeletonRows; track i) {
+        <div class="h-7 mb-2 rounded bg-amber-500 bg-opacity-10 animate-pulse" aria-hidden="true"></div>
+      }
+    } @else if (leaderboardPlayers().length === 0) {
       <p class="text-gray-500 text-sm text-center py-2">
         @if (activeTab() === 'fame') {
           No one has reached 12 wins yet this season. Be the first!
@@ -196,6 +177,30 @@
           No players match the current filters.
         }
       </p>
+    } @else {
+      @for (Player of leaderboardPlayers(); track Player.playerId) {
+        <div
+          class="player-row text-lg mb-2 cursor-pointer select-none"
+          [class.text-yellow-400]="originalPlayerId() && Player.originalPlayerId === originalPlayerId()"
+          [class.text-white]="!originalPlayerId() || Player.originalPlayerId !== originalPlayerId()"
+          [class.player-row-active]="isActive(Player.playerId)"
+          [class.player-row-pinned]="isPinned(Player.playerId)"
+          (mouseenter)="onPlayerHover(Player.playerId)"
+          (mouseleave)="onPlayerLeave()"
+          (click)="onRowActivate(Player.playerId)">
+          @if (activeTab() === 'fame') {
+            {{ currentPage() * pageSize + $index + 1 }}. {{ Player.name }} — 💀 {{ Player.runsEnded || 0 }} ended
+          } @else {
+            {{ currentPage() * pageSize + $index + 1 }}. {{ Player.name }} - {{ Player.wins }} wins
+          }
+          @if (isPinned(Player.playerId)) {
+            <span class="text-amber-500 text-sm ml-1">📌</span>
+          }
+          @if (Player.lastPlayedAt) {
+            <span class="text-gray-400 text-sm ml-2 whitespace-nowrap">{{ Player.lastPlayedAt | timeAgo }}</span>
+          }
+        </div>
+      }
     }
   </div>
 

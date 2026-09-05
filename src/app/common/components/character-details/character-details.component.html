@@ -66,7 +66,10 @@
         <div class="cd-stat">
           <span class="text-blue-400">⏩ {{ (player.attackSpeed - 1) >= 0 ? '+' : '' }}{{ (player.attackSpeed - 1) * 100 | number:'1.0-0' }}%</span>
         </div>
-        <div class="cd-stat"><span class="text-yellow-400">💰 +{{ player.income | number:'1.0-0' }}</span></div>
+        <div class="cd-stat">
+          <span class="text-yellow-400">💰 +{{ player.income | number:'1.0-0' }}</span>
+          @if (player.incomeDebt > 0) { <span class="text-red-400 text-xs">(−{{ player.incomeDebt | number:'1.0-0' }})</span> }
+        </div>
 
         <div class="cd-stat"><span class="text-green-600">🛡️ {{ player.defense | number:'1.0-2' }}</span></div>
         <div class="cd-stat"><span class="text-green-400">🦵 {{ player.dodgeRate | number:'1.0-2' }}</span></div>

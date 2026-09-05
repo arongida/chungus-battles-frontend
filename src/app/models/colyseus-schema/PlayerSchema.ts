@@ -23,6 +23,10 @@ export class Player extends Schema {
     'assets/Portrait_ID_0_Placeholder.png';
   @type('number') gameVersion: number = 0;
   @type('number') income: number = 0;
+  // Mirrors backend PlayerSchema: how far below 0 the raw income total is (theft debt from
+  // Robbery/Misconduct/Light Fingers). income itself is floored at 0, so this is the only place
+  // the debt is visible.
+  @type('number') incomeDebt: number = 0;
   @type('number') hpRegen: number = 0;
   @type([Talent]) talents: ArraySchema<Talent> = new ArraySchema<Talent>();
   @type([Item]) inventory: ArraySchema<Item> = new ArraySchema<Item>();

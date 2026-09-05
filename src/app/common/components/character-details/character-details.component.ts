@@ -430,7 +430,9 @@ export class CharacterDetailsComponent implements OnInit, OnDestroy {
         { icon: '🎯', label: 'Accuracy', text: `+${this.player.accuracy?.toFixed(1)} added to your weapon's minimum damage roll.`, color: 'text-red-400' },
         { icon: '⚔️', label: 'Strength', text: `+${this.player.strength?.toFixed(1)} added to your weapon's maximum damage roll.`, color: 'text-red-400' },
         { icon: '⏩', label: 'Speed Bonus', text: `${((this.player.attackSpeed - 1) * 100)?.toFixed(0)}% multiplier applied to all weapon attack speeds.`, color: 'text-blue-400' },
-        { icon: '💰', label: 'Income', text: `${this.player.income} gold earned at the end of this fight. Grows by 1 each fight.`, color: 'text-yellow-400' },
+        { icon: '💰', label: 'Income', text: this.player.incomeDebt > 0
+            ? `Income is ${this.player.incomeDebt} in the red from thefts — you earn 0 gold until it recovers (+1 per fight).`
+            : `${this.player.income} gold earned at the end of this fight. Grows by 1 each fight.`, color: 'text-yellow-400' },
         { icon: '🧪', label: 'HP Regen', text: `Recover ${this.player.hpRegen?.toFixed(3)} HP every second during battle.`, color: 'text-orange-400' },
         { icon: '⏳', label: 'Cooldown Reduction', text: `Active skills fire ${cooldownReductionPercent}% faster (${this.player.cooldownReduction?.toFixed(0)} rating applied to a defense-style formula).`, color: 'text-purple-400' },
         { icon: '🛡️', label: 'Defense', text: `Reduces incoming damage by ${defenseReduction}% (DR formula applied to ${this.player.defense?.toFixed(2)} defense).`, color: 'text-green-400' },

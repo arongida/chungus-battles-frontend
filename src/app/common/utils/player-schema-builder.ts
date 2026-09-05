@@ -25,7 +25,7 @@ export function buildPlayerFromData(data: any): Player {
   const player = new Player();
   const primitiveFields = ['playerId', 'originalPlayerId', 'name', 'gold', 'xp', 'level',
     'sessionId', 'maxXp', 'round', 'lives', 'wins', 'avatarUrl', 'gameVersion',
-    'income', 'hpRegen', 'cooldownReduction', 'dodgeRate', 'refreshShopCost', 'maxHp', 'hp',
+    'income', 'incomeDebt', 'hpRegen', 'cooldownReduction', 'dodgeRate', 'refreshShopCost', 'maxHp', 'hp',
     'strength', 'accuracy', 'defense', 'attackSpeed', 'comradeFreeClaim', 'goldGenieFreeClaim', 'luckyFindFreeClaim', 'misconductFreeClaim',
     'storeCreditFreeClaim', 'storeCreditFreeClaimCap', 'freeRerollCharges', 'rerollsThisRound', 'freeRerolls',
     'killedByPlayerId', 'killedByOriginalPlayerId', 'killedByName'];
@@ -92,4 +92,9 @@ function calculatePlayerStats(player: Player): void {
 
   player.attackSpeed = speedMult;
   player.hp = player.maxHp;
+
+  // Mirrors the backend's recalculatePlayerStats clamp: income can go negative (theft debt from
+  // Robbery/Misconduct/Light Fingers) but is never shown or paid out as negative.
+  player.incomeDebt = Math.max(0, -player.income);
+  player.income = Math.max(0, player.income);
 }

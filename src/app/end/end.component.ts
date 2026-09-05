@@ -31,8 +31,19 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
   leaderboardPlayers = signal<Player[]>([]);
   totalCount = signal<number>(0);
   readonly pageSize = 10;
+  // Placeholder row count for the loading skeleton — matches a full page so the list doesn't
+  // collapse/jump in height while data is in flight.
+  readonly skeletonRows = Array.from({ length: this.pageSize }, (_, i) => i);
   currentPage = signal<number>(0);
   totalPages = computed(() => Math.max(1, Math.ceil(this.totalCount() / this.pageSize)));
+  // Starts true so the very first render shows skeletons, never the "nobody has won" empty
+  // state — that used to double as the (invisible) loading state.
+  leaderboardLoading = signal<boolean>(true);
+  // Bumped on every fetchLeaderboard call; a response only applies itself if it's still the
+  // most recent request, so an in-flight request that resolves out of order (e.g. the initial
+  // "All Seasons" fetch racing the seasons-service fetch that narrows to the current season)
+  // can't clobber a newer one.
+  private leaderboardRequestId = 0;
 
   filterName = signal<string>('');
   filterAvatar = signal<string>('');
@@ -265,6 +276,9 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
       this.playerId = Number(localStorage.getItem('playerId')) ?? 0;
       document.addEventListener('pointerdown', this.onDocumentPointerDown, true);
     }
+    // fight-room/draft-toolbar navigate here as /end;won=won|lost (a matrix param on this
+    // segment, not a query param) right after a run ends.
+    this.message = this.route.snapshot.paramMap.get('won') === 'won' ? 'Victory' : 'Game Over';
     // Lets the admin panel's "View Results" link (POST /admin/tournament flow) land directly
     // on the season it just ran, instead of the visitor having to reselect it from the dropdown.
     const seasonParam = Number(this.route.snapshot.queryParamMap.get('season'));
@@ -282,7 +296,9 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     });
     this.fetchPlayerData();
-    this.intervalId = setInterval(() => this.fetchPlayerData(), 5000);
+    // background: true — the 5s poll refreshes data silently and must not strobe the list
+    // back into skeletons on every tick.
+    this.intervalId = setInterval(() => this.fetchPlayerData(true), 5000);
 
     this.infoBoxService.clearContent();
     this.infoBoxService.setPageDefault({
@@ -353,13 +369,19 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  private async fetchLeaderboard(rankForOriginalPlayerId?: number): Promise<void> {
+  /** @param background - true for the silent 5s poll: skips the loading-skeleton flip so the
+   *  list doesn't strobe on every tick. User-initiated fetches (tab/season/page/filter changes,
+   *  and the initial load) pass false so they show a skeleton while in flight. */
+  private async fetchLeaderboard(rankForOriginalPlayerId?: number, background = false): Promise<void> {
+    const requestId = ++this.leaderboardRequestId;
+    if (!background) this.leaderboardLoading.set(true);
     try {
       const params = new URLSearchParams({ limit: String(this.pageSize), skip: String(this.currentPage() * this.pageSize) });
 
       if (this.activeTab() === 'fame') {
         if (this.fameSeason()) params.set('season', String(this.fameSeason()));
         const result = await fetch(`${environment.gameServer}/wallOfFame?${params}`).then(r => r.json());
+        if (requestId !== this.leaderboardRequestId) return; // a newer request already landed
         this.leaderboardPlayers.set(Array.isArray(result.players) ? result.players : []);
         this.totalCount.set(typeof result.total === 'number' ? result.total : 0);
         return;
@@ -371,15 +393,18 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
       const origId = rankForOriginalPlayerId ?? this.originalPlayerId();
       if (origId) params.set('rankForOriginalPlayerId', String(origId));
       const result = await fetch(`${environment.gameServer}/leaderboard?${params}`).then(r => r.json());
+      if (requestId !== this.leaderboardRequestId) return; // a newer request already landed
       this.leaderboardPlayers.set(Array.isArray(result.players) ? result.players : []);
       this.totalCount.set(typeof result.total === 'number' ? result.total : 0);
       if (typeof result.userRank === 'number') this.playerRank.set(result.userRank);
     } catch (error) {
       console.error('Error fetching leaderboard:', error);
+    } finally {
+      if (requestId === this.leaderboardRequestId) this.leaderboardLoading.set(false);
     }
   }
 
-  async fetchPlayerData(): Promise<void> {
+  async fetchPlayerData(background = false): Promise<void> {
     try {
       const response = await fetch(`${environment.gameServer}/rank?playerId=${this.playerId}`);
       if (response.ok) {
@@ -388,7 +413,7 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
         this.playerWins.set(playerRankResult.wins);
         if (playerRankResult.originalPlayerId) this.originalPlayerId.set(playerRankResult.originalPlayerId);
       }
-      await this.fetchLeaderboard(this.originalPlayerId());
+      await this.fetchLeaderboard(this.originalPlayerId(), background);
     } catch (error) {
       console.error('Error fetching player data:', error);
     }

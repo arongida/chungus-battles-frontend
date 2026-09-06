@@ -123,7 +123,7 @@
   gap: 2px;
   align-content: center;
   cursor: default;
-  text-shadow: 0 2px 3px rgba(100, 100, 100, 0.9);
+  text-shadow: none;
 }
 
 .cd-stat {
@@ -131,7 +131,11 @@
   align-items: center;
   padding: 3px 4px;
   border-radius: 3px;
-  font-size: 0.9rem;
+  //font-family: Arial, 'Helvetica Neue', sans-serif;
+  font-size: 1rem;
+  //font-weight: 700;
+  //font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
   letter-spacing: 0.04rem;
   white-space: nowrap;
   overflow: hidden;
@@ -391,7 +395,7 @@
     }
 
     .cd-stat {
-      font-size: 0.75rem;
+      font-size: 14px;
       padding: 2px 3px;
     }
 

@@ -38,7 +38,7 @@ export const jokerPickHint: InfoContent = {
   id: 'joker-pick-available',
   title: 'The Joker Deals!',
   entries: [
-    { icon: '🃏', label: 'Joker', text: 'Every fight with the Joker talent deals two cards — pick one for a permanent stat bonus. Every bonus the Joker has ever given you stays withheld until you pick.' },
+    { icon: '🃏', label: 'Joker', text: 'Picking Joker and every subsequent fight deals two cards — pick one for a permanent stat bonus. Every bonus the Joker has ever given you stays withheld until you pick.' },
   ],
 };
 

@@ -117,8 +117,8 @@ body {
   margin: 0;
   font-family: 'Darinia', Roboto, 'Helvetica Neue', sans-serif;
   font-size: 18px;
-  -webkit-font-smoothing: none;
-  font-smooth: never;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   letter-spacing: 0.02rem;
   text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.8);
 }

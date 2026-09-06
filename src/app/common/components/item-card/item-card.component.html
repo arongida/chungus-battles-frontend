@@ -10,14 +10,14 @@
   @if (item.showDetails || showDetails) {
   <div class="item-card-details-scroll flex-1 overflow-y-auto text-center">
     @if (item.description) {
-    <p class="px-3 pb-1 text-xs italic text-slate-300 leading-snug">{{ (item.description | slice:0:1 |
+    <p class="px-3 pb-1 text-xs text-slate-300 leading-snug">{{ (item.description | slice:0:1 |
       uppercase) + (item.description | slice:1) }}</p>
     }
     @if (item.skillId) {
     <p class="px-3 pb-1 text-xs font-semibold" [ngClass]="titleColorClass">
       {{ item.skillName }}
     </p>
-    <p class="px-3 pb-1 text-xs italic text-slate-300 leading-snug">{{ item.skillDescription }}</p>
+    <p class="px-3 pb-1 text-xs text-slate-300 leading-snug">{{ item.skillDescription }}</p>
     @if (item.skillStatus) {
     <p class="px-3 pb-1 text-xs font-medium text-amber-300 leading-snug">▸ {{ item.skillStatus }}</p>
     }
@@ -26,20 +26,21 @@
     <p class="px-3 pb-1 text-xs font-semibold" [ngClass]="titleColorClass">
       {{ item.skillName2 }}
     </p>
-    <p class="px-3 pb-1 text-xs italic text-slate-300 leading-snug">{{ item.skillDescription2 }}</p>
+    <p class="px-3 pb-1 text-xs text-slate-300 leading-snug">{{ item.skillDescription2 }}</p>
     @if (item.skillStatus2) {
     <p class="px-3 pb-1 text-xs font-medium text-amber-300 leading-snug">▸ {{ item.skillStatus2 }}</p>
     }
     } @else if (!item.skillId && item.futureSkillId) {
-    <!-- Skill preview: picked once, uniformly at random, the moment the item first exists, and
-         latched from then on (see backend refreshFutureItemSkill), so a Common/Rare/Epic class
-         item can show exactly which skill it's heading toward. Shields carry their skill from
-         Common onward (no rarity gate), so they're labeled differently. Dimmed to read as a
-         promise, not an active effect. -->
-    <p class="px-3 pb-1 text-xs font-semibold text-slate-400">
-      {{ item.type === 'shield' ? 'Skill' : 'At Legendary' }}: {{ item.futureSkillName }}
+    <!-- Label the unlock requirement explicitly so preview text can stay fully readable.
+         Shields have no rarity gate and must not show a locked state. -->
+    <p class="px-3 pb-1 text-xs font-semibold text-slate-300 leading-snug">
+      @if (item.type === 'shield') {
+        Skill: {{ item.futureSkillName }}
+      } @else {
+        <span aria-hidden="true">🔒</span> Unlocks at Legendary: {{ item.futureSkillName }}
+      }
     </p>
-    <p class="px-3 pb-1 text-xs italic text-slate-500 leading-snug">{{ item.futureSkillDescription }}</p>
+    <p class="px-3 pb-1 text-xs text-slate-300 leading-snug">{{ item.futureSkillDescription }}</p>
     }
     @if (activeSkillLabel().activeText; as activeText) {
     <p class="px-3 pb-1 text-xs font-semibold text-purple-400 leading-snug">⏳ {{ activeText }}</p>

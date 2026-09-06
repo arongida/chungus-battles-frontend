@@ -97,7 +97,15 @@
 }
 
 .entry-text {
-  font-size: 13px;
-  color: #cbd5e1;
-  line-height: 1.5;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 16px;
+  font-weight: 400;
+  font-style: normal;
+  color: #e2e8f0;
+  line-height: 1.55;
+  text-transform: none;
+  letter-spacing: normal;
+  text-shadow: none;
+  -webkit-font-smoothing: antialiased;
+  overflow-wrap: anywhere;
 }

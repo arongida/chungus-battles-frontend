@@ -17,6 +17,7 @@ import {
 } from '../../models/types/MessageTypes';
 import {
   triggerAvatarHit,
+  triggerEmpoweredHit,
   triggerHpDamageFlash,
   triggerHpHealFlash,
   triggerItemActivation,
@@ -91,6 +92,9 @@ export class FightAnimationService {
       const next = [...prev, entry].sort((a, b) => (a.seq ?? 0) - (b.seq ?? 0));
       return next.length > 200 ? next.slice(-200) : next;
     });
+    if (msg.kind === 'attack' && msg.empowered && msg.defenderId != null && ctx.player() && ctx.enemy()) {
+      triggerEmpoweredHit(ctx.renderer, ctx.platformId, msg.defenderId);
+    }
     if (msg.kind === 'dodge' && msg.defenderId != null && ctx.player() && ctx.enemy()) {
       triggerShowDodgeText(ctx.renderer, ctx.platformId, msg.defenderId);
     }
@@ -119,7 +123,7 @@ export class FightAnimationService {
       ctx.triggerDamagedAvatar(msg.playerId);
       ctx.applyHpDelta?.(msg.playerId, msg.damage, 0);
 
-      if (!this.throttled(`damage:${type}:${msg.playerId}`)) {
+      if (msg.empowered || !this.throttled(`damage:${type}:${msg.playerId}`)) {
         if (type === 'burn') {
           triggerSpriteVfx(ctx.renderer, ctx.platformId, 'fire', msg.playerId);
           this.sounds.playSound(SoundOptions.BURN);
@@ -127,7 +131,7 @@ export class FightAnimationService {
           triggerSpriteVfx(ctx.renderer, ctx.platformId, 'poison', msg.playerId);
           this.sounds.playSound(SoundOptions.POISON);
         } else {
-          triggerSpriteVfx(ctx.renderer, ctx.platformId, 'slash', msg.playerId);
+          triggerSpriteVfx(ctx.renderer, ctx.platformId, 'slash', msg.playerId, msg.empowered);
           this.sounds.playSound(SoundOptions.HIT);
         }
       }

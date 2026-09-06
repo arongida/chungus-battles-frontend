@@ -28,6 +28,8 @@ export interface CombatLogEntry {
   talentId?: number;
   slot?: string;
   damage?: number;
+  /** Present on weapon-hit logs only when an empowered auto actually removed HP. */
+  empowered?: boolean;
   rolledDamage?: number;
   mitigatedDamage?: number;
   defenderHpAfter?: number;

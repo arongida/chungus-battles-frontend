@@ -4,6 +4,7 @@ export type DamageMessage = {
   playerId: number;
   damage: number;
   type?: DamageType;
+  empowered?: boolean;
 };
 
 export type InvulnerableMessage = {

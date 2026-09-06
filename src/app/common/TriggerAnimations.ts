@@ -10,6 +10,11 @@ export function triggerAvatarHit(playerId: number) {
   }
 }
 
+/** The impact slash is styled by the damage event; the combat log supplies its label. */
+export function triggerEmpoweredHit(renderer: Renderer2, platformId: Object, defenderId: number): void {
+  showFloatingText(renderer, platformId, defenderId, 'empowered-number', 'EMPOWERED!');
+}
+
 export function triggerTalentActivation(talentId: number, playerId: number) {
   const talentContainer = document.getElementById(
     `talent-${talentId}-${playerId}`
@@ -354,7 +359,7 @@ const SLASH_DURATION_MAX_MS = 360;
 /** Plays a sprite-sheet VFX (weapon slash, fire, poison cloud, heal glow) over the
  *  target's avatar. Mounts in the same `damage-numbers-{playerId}` overlay used for
  *  floating text, so it shares that container's stacking/positioning. */
-export function triggerSpriteVfx(renderer: Renderer2, platformId: Object, kind: VfxKind, playerId: number): void {
+export function triggerSpriteVfx(renderer: Renderer2, platformId: Object, kind: VfxKind, playerId: number, empowered = false): void {
   if (!isPlatformBrowser(platformId)) return;
   const container = document.getElementById(`damage-numbers-${playerId}`);
   if (!container) {
@@ -364,6 +369,7 @@ export function triggerSpriteVfx(renderer: Renderer2, platformId: Object, kind: 
   const el = renderer.createElement('div');
   renderer.addClass(el, 'vfx');
   renderer.addClass(el, `vfx-${kind}`);
+  if (kind === 'slash' && empowered) renderer.addClass(el, 'vfx-slash--empowered');
   let duration = VFX_DURATION_MS[kind];
   if (kind === 'slash') {
     const dx = (Math.random() * 2 - 1) * VFX_JITTER_X_PX;

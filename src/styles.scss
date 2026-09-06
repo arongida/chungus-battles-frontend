@@ -543,3 +543,32 @@ body {
   background-size: cover;
   background-position: center;
 }
+
+
+// Empowered autos reuse the normal slash sheet at 125% size, tinted gold.
+.vfx-slash--empowered {
+  width: 112.5px;
+  height: 112.5px;
+  filter: brightness(0) saturate(100%) invert(83%) sepia(69%) saturate(1000%) hue-rotate(350deg) brightness(105%);
+}
+.empowered-number {
+  position: absolute;
+  top: -28px;
+  z-index: 3;
+  pointer-events: none;
+  white-space: nowrap;
+  color: #fde68a;
+  font-size: 22px;
+  font-weight: 900;
+  text-shadow: 2px 2px 0 #451a03, 0 0 8px #f59e0b;
+  animation: empoweredFloat 1100ms ease-out forwards;
+}
+@keyframes empoweredFloat {
+  0% { transform: translateY(0) scale(.8); opacity: 0; }
+  15% { transform: translateY(-8px) scale(1.12); opacity: 1; }
+  35% { transform: translateY(-16px) scale(1); opacity: 1; }
+  100% { transform: translateY(-60px) scale(1); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .empowered-number { animation: none; }
+}

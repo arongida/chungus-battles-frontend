@@ -30,6 +30,7 @@ import { goldHint, buyXpHint, lockShopHint, talentHint, jokerPickHint, draftRead
 import { ReplaysDialogComponent } from '../replays-dialog/replays-dialog.component';
 import { environment } from '../../../../environments/environment';
 import { NextFightPickerComponent } from '../next-fight-picker/next-fight-picker.component';
+import { RunRegistryService } from '../../services/run-registry.service';
 
 @Component({
   selector: 'app-draft-toolbar',
@@ -174,6 +175,7 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
     private fightService: FightService,
     private soundsService: SoundsService,
     private router: Router,
+    private runRegistry: RunRegistryService,
   ) {
     // Mirrors showTalentPicker to an actual MatDialogRef so the talent picker renders in the
     // CDK overlay instead of the inline @if block it used to be — see TalentsComponent and
@@ -489,12 +491,16 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
     if (fightRoom) fightRoom.send('abandon_run', {});
     else if (draftRoom) draftRoom.send('abandon_run', {});
     this.soundsService.stopMusic();
-    localStorage.removeItem('reconnectToken');
-    localStorage.removeItem('battleEndState');
+    const playerId = this.player.playerId;
+    // abandon_run sets lives = 0 server-side, so the character can never rejoin regardless —
+    // reflect that immediately client-side too.
+    this.runRegistry.markEnded(playerId);
+    this.runRegistry.clearReconnect(playerId);
+    this.runRegistry.setBattleEndState(playerId, null);
     // Navigate first so reactive room-signal effects in DraftRoomComponent don't
     // fire while the toolbar is still mounted, which can cancel navigation.
     // Leave the room after Angular has destroyed the old route's components.
-    this.router.navigate(['/end', { won: 'lost' }]).then(() => {
+    this.router.navigate(['/end', { won: 'lost', playerId }]).then(() => {
       if (fightRoom) this.fightService.leave(false);
       else if (draftRoom) this.draftService.leave(false);
     });

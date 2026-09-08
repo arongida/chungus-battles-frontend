@@ -29,7 +29,10 @@ import { CombatLogEntry } from '../../../models/types/CombatLogEntry';
 import { CombatLogComponent } from '../combat-log/combat-log.component';
 import { DraftService } from '../../../draft/services/draft.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { RunRegistryService } from '../../../common/services/run-registry.service';
+import { RunResumeService } from '../../../common/services/run-resume.service';
+import { ItemTrackingService } from '../../../common/services/item-tracking.service';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -86,7 +89,22 @@ function coercePlayer(src: any): Player {
   templateUrl: './fight-room.component.html',
   styleUrl: './fight-room.component.scss',
 })
+// Deliberately has NO ngOnDestroy/beforeunload cleanup that calls fightService.leave() on
+// navigation away — that's load-bearing, not an oversight. leave() is a CONSENTED Colyseus
+// leave, which skips the 30s allowReconnection window entirely (see FightRoom.onDrop on the
+// backend): a beforeunload-triggered leave would kill tab-reload recovery, and an
+// ngOnDestroy-triggered leave on back-button nav would force round++/a loss on a fight that
+// never resolved. The room simply keeps running server-side (autoDispose = false) until the
+// player reconnects, forfeits, or it resolves — runGuard (common/guards/run.guard.ts) is what
+// routes a mid-fight run's "Resume" back here instead of into a stale draft room.
 export class FightRoomComponent implements OnInit {
+  /** The active run's playerId, from the route (:id) — set by runGuard before this component
+   *  activates, so it's available immediately, unlike room.state.player which only populates
+   *  after the join round-trip completes. */
+  private get runPlayerId(): number {
+    return Number(this.route.snapshot.paramMap.get('id'));
+  }
+
   player = signal<Player | null>(null, { equal: () => false });
   enemy = signal<Player | null>(null, { equal: () => false });
   entries = signal<CombatLogEntry[]>([]);
@@ -124,6 +142,10 @@ export class FightRoomComponent implements OnInit {
     private draftService: DraftService,
     private snackBar: MatSnackBar,
     private router: Router,
+    private route: ActivatedRoute,
+    private runRegistry: RunRegistryService,
+    private runResumeService: RunResumeService,
+    private itemTrackingService: ItemTrackingService,
     private soundsService: SoundsService,
     private renderer: Renderer2,
     @Inject(PLATFORM_ID) private platformId: Object,
@@ -166,7 +188,7 @@ export class FightRoomComponent implements OnInit {
             const wins = msg?.wins ?? this.player()?.wins ?? 0;
             this.battleOver = true;
             if (replayId) this.replaysService.invalidate(this.player()?.originalPlayerId ?? 0);
-            localStorage.setItem('battleEndState', JSON.stringify({ type: 'end_battle', result, lossReward, replayId, stats, wins }));
+            this.runRegistry.setBattleEndState(this.runPlayerId, { type: 'end_battle', result, lossReward, replayId, stats, wins });
             if (result === 'win') this.soundsService.playSound(SoundOptions.CHEER);
             else if (result === 'lose') this.soundsService.playSound(SoundOptions.JEER);
             this.lossRewardOptions.set(lossReward);
@@ -192,7 +214,8 @@ export class FightRoomComponent implements OnInit {
             this.battleReplayId.set(msg.replayId ?? null);
             this.battleStats.set(msg.stats ?? null);
             if (msg.replayId) this.replaysService.invalidate(this.player()?.originalPlayerId ?? 0);
-            localStorage.setItem('battleEndState', JSON.stringify({ type: 'game_over', message: msg.message, replayId: msg.replayId, stats: msg.stats }));
+            this.runRegistry.setBattleEndState(this.runPlayerId, { type: 'game_over', message: msg.message, replayId: msg.replayId, stats: msg.stats });
+            this.runRegistry.markEnded(this.runPlayerId);
             this.infoBoxService.setPageDefault(runOverHint);
           },
           onGameWin: (message) => {
@@ -208,7 +231,8 @@ export class FightRoomComponent implements OnInit {
             this.battleReplayId.set(message.replayId ?? null);
             this.battleStats.set(message.stats ?? null);
             if (message.replayId) this.replaysService.invalidate(this.player()?.originalPlayerId ?? 0);
-            localStorage.setItem('battleEndState', JSON.stringify({ type: 'game_win', wins: message.wins, losses: message.losses, replayId: message.replayId, stats: message.stats }));
+            this.runRegistry.setBattleEndState(this.runPlayerId, { type: 'game_win', wins: message.wins, losses: message.losses, replayId: message.replayId, stats: message.stats });
+            this.runRegistry.markEnded(this.runPlayerId);
             this.infoBoxService.setPageDefault(gameWinHint);
           },
         };
@@ -271,15 +295,10 @@ export class FightRoomComponent implements OnInit {
           this.lossRewardOutcome.set(message);
           this.lossRewardChoiceSending.set(false);
           // Re-persist so a refresh after choosing shows the outcome, not the choice.
-          const raw = localStorage.getItem('battleEndState');
-          if (raw) {
-            try {
-              const state = JSON.parse(raw);
-              if (state.type === 'end_battle' && state.lossReward) {
-                state.lossReward.outcome = message;
-                localStorage.setItem('battleEndState', JSON.stringify(state));
-              }
-            } catch {}
+          const state = this.runRegistry.getBattleEndState(this.runPlayerId) as any;
+          if (state?.type === 'end_battle' && state.lossReward) {
+            state.lossReward.outcome = message;
+            this.runRegistry.setBattleEndState(this.runPlayerId, state);
           }
         });
 
@@ -298,9 +317,10 @@ export class FightRoomComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     this.fightSpeed.set(this.fightService.getStoredFightSpeed());
     this.soundsService.playMusic(MusicOptions.BATTLE);
+    this.itemTrackingService.load(this.runPlayerId);
     const room = this.fightService.room();
     if (!room) {
-      await this.fightService.reconnect(localStorage.getItem('reconnectToken') as string);
+      await this.runResumeService.resume(this.runPlayerId);
     }
   }
 
@@ -357,10 +377,10 @@ export class FightRoomComponent implements OnInit {
   }
 
   private restoreBattleEndState(): void {
-    const raw = localStorage.getItem('battleEndState');
+    const raw = this.runRegistry.getBattleEndState(this.runPlayerId);
     if (!raw) return;
     try {
-      const state = JSON.parse(raw) as { type: string; message?: string; wins?: number; losses?: number; season?: number; result?: string; lossReward?: LossRewardOptions & { outcome?: LossRewardResultMessage }; replayId?: string | null; stats?: FightStatsMessage | null };
+      const state = raw as { type: string; message?: string; wins?: number; losses?: number; season?: number; result?: string; lossReward?: LossRewardOptions & { outcome?: LossRewardResultMessage }; replayId?: string | null; stats?: FightStatsMessage | null };
       const player = this.player();
       if (!player) return;
       if (state.type === 'game_over') {
@@ -404,27 +424,34 @@ export class FightRoomComponent implements OnInit {
   }
 
   async endBattle(playerId: number, name: string, gameOver = false, won = false) {
-    localStorage.removeItem('battleEndState');
+    this.runRegistry.setBattleEndState(playerId, null);
     this.battleReplayId.set(null);
     this.battleStats.set(null);
-    this.fightService.leave(false);
+    // Awaited: resolves only once the server's onLeave (save + releasePlayerSession) completes,
+    // so the draftService.joinRun below — now that the session-claim mutex is actually
+    // enforced — doesn't race the still-live claim and get rejected with "already playing".
+    await this.fightService.leave(false);
     this.soundsService.stopMusic();
     if (gameOver) {
-      this.router.navigate(['/end', { won: won ? 'won' : 'lost' }]);
+      this.router.navigate(['/end', { won: won ? 'won' : 'lost', playerId }]);
     } else {
-      const errorMessage = await this.draftService.joinOrCreate(name, playerId);
+      const errorMessage = await this.draftService.joinRun(playerId);
       if (errorMessage) {
-        this.snackBar.open('Could not rejoin draft — please try again.', 'Dismiss', {
+        this.snackBar.open('Could not rejoin the draft — please try again.', 'Dismiss', {
           duration: 6000,
           panelClass: 'chungus-snackbar',
         });
+        // Both this fight and the draft join above have already ended/failed at this point —
+        // staying on the fight screen just leaves a dead room signal and buttons that silently
+        // do nothing. Send the player home, where the run list reflects the real state.
+        this.router.navigate(['/']);
       }
     }
   }
 
   triggerDamagedAvatarImage(damagedPlayerId: number) {
     triggerAvatarHit(damagedPlayerId);
-    if (damagedPlayerId === Number(localStorage.getItem("playerId"))) {
+    if (damagedPlayerId === this.player()?.playerId) {
       this.playerBeingHit.set(true);
       setTimeout(() => this.playerBeingHit.set(false), 200);
     } else {

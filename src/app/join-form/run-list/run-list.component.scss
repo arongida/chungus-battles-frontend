@@ -1,0 +1,137 @@
+.run-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.run-list-header {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--cm-amber, #f59e0b);
+  text-shadow: none;
+  margin-bottom: 0.1rem;
+}
+
+.run-list-refresh-icon {
+  font-size: 14px;
+  width: 14px;
+  height: 14px;
+  animation: run-list-spin 1s linear infinite;
+  color: var(--cm-text-muted, #9ca3af);
+}
+
+@keyframes run-list-spin {
+  to { transform: rotate(360deg); }
+}
+
+.run-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.4rem 0.5rem;
+  border-radius: 6px;
+  background: rgba(10, 10, 15, 0.6);
+  border: 1px solid rgba(180, 120, 30, 0.25);
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+
+  &:hover {
+    background: rgba(180, 120, 30, 0.12);
+    border-color: rgba(180, 120, 30, 0.5);
+  }
+}
+
+.run-row-ended {
+  cursor: default;
+  opacity: 0.6;
+
+  &:hover {
+    background: rgba(10, 10, 15, 0.6);
+    border-color: rgba(180, 120, 30, 0.25);
+  }
+}
+
+.run-row-avatar {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.run-row-body {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+}
+
+.run-row-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #e2e8f0;
+  text-shadow: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.run-row-badge {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  padding: 0.05rem 0.35rem;
+  border-radius: 999px;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.run-row-badge-ended {
+  background: rgba(148, 163, 184, 0.2);
+  color: #94a3b8;
+}
+
+.run-row-badge-busy {
+  background: rgba(56, 189, 248, 0.15);
+  color: #38bdf8;
+}
+
+.run-row-badge-season {
+  background: rgba(180, 120, 30, 0.2);
+  color: var(--cm-amber-light, #fbbf24);
+}
+
+.run-row-meta {
+  font-size: 0.72rem;
+  color: var(--cm-text-muted, #9ca3af);
+  text-shadow: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.run-row-lives {
+  color: #ef4444;
+  letter-spacing: 1px;
+}
+
+.run-row-action {
+  flex-shrink: 0;
+  color: var(--cm-text-muted, #9ca3af);
+
+  &:hover {
+    color: var(--cm-amber-light, #fbbf24);
+  }
+}
+
+.run-row-action-delete:hover {
+  color: #ef4444;
+}

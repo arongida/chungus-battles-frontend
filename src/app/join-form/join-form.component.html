@@ -1,4 +1,4 @@
-<div class="grid place-items-center min-h-full gap-2 lg:gap-8 p-2 lg:p-4 max-h-screen">
+<div class="flex flex-col items-center justify-center min-h-screen gap-2 lg:gap-8 p-2 lg:p-4 overflow-y-auto">
   <header class="text-center">
     <div class="text-6xl lg:text-9xl mt-2 lg:mt-10">Chungus Battles</div>
     @if (currentSeason()) {
@@ -21,11 +21,13 @@
       </button>
     </div>
     <div class="text-center -mt-2 w-[28rem] max-w-[90vw] relative left-1/2 -translate-x-1/2">
-      <div class="text-lg lg:text-xl font-semibold">
+      <div class="text-lg lg:text-xl font-semibold" style="text-shadow: none">
         {{ selectedClass.icon }} {{ selectedClass.name }}
         <span class="text-amber-400">· {{ selectedClass.tagline }}</span>
       </div>
-      <div class="text-sm text-gray-400 mt-1">{{ selectedClass.effect }}</div>
+      <div class="chungus-prose text-sm mt-1">{{ selectedClass.identity }}</div>
+      <div class="chungus-prose text-xs mt-1 text-amber-200/80">Start: {{ selectedClass.start }}</div>
+      <div class="chungus-prose text-xs mt-0.5 text-gray-400">Per level: {{ selectedClass.perLevel.join(' · ') }}</div>
     </div>
     <mat-form-field class="mx-4 my-1 sm:m-4">
       <mat-label>Name</mat-label>
@@ -37,10 +39,10 @@
       @else {Start!}
     </button>
 
+    <app-run-list (resume)="onResumeRun($event)" />
+
     <div class="flex sm:hidden flex-col items-center gap-1 text-sm text-center mt-1">
-      <a class="font-light hover:text-amber-400 transition-colors"
-         href="https://ko-fi.com/arongida" target="_blank" rel="noopener noreferrer"
-         title="Support the server">☕ <span class="font-semibold">Support the server</span></a>
+      <app-support-link />
       <span class="font-light">Art by <a class="font-semibold" href="https://cara.app/pkart" target="_blank"
           rel="noopener noreferrer">pkart</a></span>
     </div>
@@ -54,9 +56,7 @@
 </div>
 
 <div class="hidden sm:block fixed bottom-5 left-5">
-  <a class="font-light hover:text-amber-400 transition-colors"
-     href="https://ko-fi.com/chungusbattles" target="_blank" rel="noopener noreferrer"
-     title="Support the server">☕ <span class="font-semibold">Support the server</span></a>
+  <app-support-link />
 </div>
 
 <div class="fixed top-1 right-2 sm:top-5 sm:right-5 flex items-center">

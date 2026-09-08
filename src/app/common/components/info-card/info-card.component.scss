@@ -1,4 +1,7 @@
 .info-card {
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100dvh - 32px);
   background: rgba(10, 10, 15, 0.97);
   border: 1px solid rgba(180, 120, 30, 0.5);
   border-radius: 6px;
@@ -20,6 +23,7 @@
 }
 
 .info-card-header {
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -44,6 +48,7 @@
 }
 
 .info-divider {
+  flex-shrink: 0;
   height: 1px;
   background: linear-gradient(to right, rgba(180, 120, 30, 0.5), transparent);
   margin: 0 12px;
@@ -54,7 +59,7 @@
   display: flex;
   flex-direction: column;
   gap: 7px;
-  max-height: 600px;
+  min-height: 0;
   overflow-y: auto;
 
   &::-webkit-scrollbar {
@@ -70,6 +75,7 @@
 }
 
 .info-entry {
+  flex-shrink: 0;
   display: flex;
   align-items: flex-start;
   gap: 8px;
@@ -96,6 +102,8 @@
   text-shadow: 0 1px 1px rgba(100, 100, 100, 0.9);
 }
 
+// Shared readable-prose rules live in .chungus-prose (src/styles.scss) — this adds the
+// Georgia/16px treatment this modal wants on top of it.
 .entry-text {
   font-family: Georgia, 'Times New Roman', serif;
   font-size: 16px;

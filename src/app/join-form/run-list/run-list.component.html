@@ -1,0 +1,52 @@
+@if (runs().length > 0) {
+  <div class="run-list">
+    <div class="run-list-header">
+      <span>Continue a Run</span>
+      @if (refreshing()) {
+        <mat-icon class="run-list-refresh-icon">sync</mat-icon>
+      }
+    </div>
+    @for (run of runs(); track run.playerId) {
+      <div class="run-row" [class.run-row-ended]="isEnded(run)" (click)="onResume(run)">
+        <img [src]="run.avatarUrl || 'assets/merchant_01.png'" alt="" class="run-row-avatar" />
+        <div class="run-row-body">
+          <div class="run-row-name">
+            {{ run.name || 'Unnamed run' }}
+            @if (isEnded(run)) {
+              <span class="run-row-badge run-row-badge-ended">Run over</span>
+            } @else if (run.summary?.busy) {
+              <span class="run-row-badge run-row-badge-busy" [title]="busyTooltip(run)">In progress elsewhere</span>
+            }
+            @if (!isEnded(run) && isOldSeason(run)) {
+              <span class="run-row-badge run-row-badge-season">Season {{ run.summary?.gameVersion }}</span>
+            }
+          </div>
+          <div class="run-row-meta">
+            @if (run.summary) {
+              <span>Lv {{ run.summary.level }} · Round {{ run.summary.round }}</span>
+              <span class="run-row-lives">
+                @for (life of livesPips(run); track $index) {
+                  <span class="run-row-life">♥</span>
+                }
+              </span>
+            } @else {
+              <span class="run-row-meta-loading">— · —</span>
+            }
+          </div>
+        </div>
+        @if (isEnded(run)) {
+          <button mat-icon-button class="run-row-action" title="Remove" (click)="confirmDelete(run, $event)">
+            <mat-icon>delete_outline</mat-icon>
+          </button>
+        } @else {
+          <button mat-icon-button class="run-row-action" title="Resume" (click)="onResume(run)">
+            <mat-icon>play_arrow</mat-icon>
+          </button>
+          <button mat-icon-button class="run-row-action run-row-action-delete" title="Remove" (click)="confirmDelete(run, $event)">
+            <mat-icon>close</mat-icon>
+          </button>
+        }
+      </div>
+    }
+  </div>
+}

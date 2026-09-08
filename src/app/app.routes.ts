@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { JoinFormComponent } from './join-form/join-form.component';
 import { DraftRoomComponent } from './draft/components/draft-room/draft-room.component';
-import { draftGuard } from './draft/guards/draft.guard';
+import { runGuard } from './common/guards/run.guard';
 import { FightRoomComponent } from './fight/components/fight-room/fight-room.component';
 import { EndComponent } from './end/end.component';
 export const routes: Routes = [
@@ -11,16 +11,17 @@ export const routes: Routes = [
     pathMatch: 'full',
   },
   {
+    // :id is the run's playerId (not a Colyseus sessionId) — see run.guard.ts.
     path: 'draft/:id',
     component: DraftRoomComponent,
     pathMatch: 'full',
-    canActivate: [draftGuard],
+    canActivate: [runGuard],
   },
   {
     path: 'fight/:id',
     component: FightRoomComponent,
     pathMatch: 'full',
-    canActivate: [draftGuard],
+    canActivate: [runGuard],
   },
   {
     path: 'end',

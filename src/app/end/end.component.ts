@@ -18,11 +18,13 @@ import { FightStatsDialogComponent } from '../common/components/fight-stats-dial
 import { GameStatsResult, Tournament, TournamentPairing, TournamentStandingRow } from '../models/types/MessageTypes';
 import { TimeAgoPipe } from '../common/pipes/time-ago.pipe';
 import { SoundsService } from '../common/services/sounds.service';
+import { RunRegistryService } from '../common/services/run-registry.service';
+import { SupportLinkComponent } from '../common/components/support-link/support-link.component';
 
 @Component({
   selector: 'app-end',
   standalone: true,
-  imports: [MatButtonModule, MatIconModule, DatePipe, NgTemplateOutlet, DraggablePanelDirective, RouterLink, PlayerBuildCardComponent, TimeAgoPipe],
+  imports: [MatButtonModule, MatIconModule, DatePipe, NgTemplateOutlet, DraggablePanelDirective, RouterLink, PlayerBuildCardComponent, TimeAgoPipe, SupportLinkComponent],
   templateUrl: './end.component.html',
   styleUrl: './end.component.scss',
 })
@@ -110,6 +112,7 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
     private seasonsService: SeasonsService,
     private dialog: MatDialog,
     private soundsService: SoundsService,
+    private runRegistry: RunRegistryService,
   ) {}
 
   get infoBoxVisible() {
@@ -273,7 +276,10 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit() {
     if (isPlatformBrowser(this.platformId)) {
-      this.playerId = Number(localStorage.getItem('playerId')) ?? 0;
+      // fight-room/draft-toolbar navigate here as /end;won=won|lost;playerId=N (matrix params on
+      // this segment, not query params) right after a run ends. Fall back to the run registry's
+      // last-active run for older links/tabs that predate the playerId param.
+      this.playerId = Number(this.route.snapshot.paramMap.get('playerId')) || this.runRegistry.activeRunId() || 0;
       document.addEventListener('pointerdown', this.onDocumentPointerDown, true);
     }
     // fight-room/draft-toolbar navigate here as /end;won=won|lost (a matrix param on this
@@ -561,10 +567,10 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   goToHome() {
-    localStorage.removeItem('sessionId');
-    localStorage.removeItem('playerId');
-    localStorage.removeItem('roomId');
-    localStorage.removeItem('reconnectToken');
+    // The run itself (character, credentials) stays in the registry — RESTART only clears which
+    // run is "active", it never deletes the run. A run is removed only via the run list's
+    // explicit delete action (see run-list.component.ts), which is unrecoverable.
+    this.runRegistry.setActiveRun(null);
     this.router.navigate(['/']);
   }
 

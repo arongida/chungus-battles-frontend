@@ -15,6 +15,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DraftService } from '../draft/services/draft.service';
+import { RunResumeService } from '../common/services/run-resume.service';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -22,20 +23,26 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { isPlatformBrowser } from '@angular/common';
 import { itemPictures } from '../common/item-image-links';
-import { ItemTrackingService } from '../common/services/item-tracking.service';
 import { MusicOptions, SoundsService } from '../common/services/sounds.service';
 import { InfoBoxService } from '../common/services/info-box.service';
 import { InfoEntry } from '../common/models/info-content';
 import { SeasonsService } from '../common/services/seasons.service';
 import { RouterLink } from '@angular/router';
 import type { ActiveTab } from '../draft/components/encyclopedia/encyclopedia.component';
+import { RunListComponent } from './run-list/run-list.component';
+import { SupportLinkComponent } from '../common/components/support-link/support-link.component';
 
 interface ClassOption {
   avatar: string;
   icon: string;
   name: string;
   tagline: string;
-  effect: string;
+  /** One line on how the class plays. */
+  identity: string;
+  /** The starting perk, in plain words. */
+  start: string;
+  /** Per-level stat gains, jargon glossed. */
+  perLevel: string[];
 }
 
 @Component({
@@ -51,6 +58,8 @@ interface ClassOption {
     MatProgressSpinnerModule,
     MatDialogModule,
     RouterLink,
+    RunListComponent,
+    SupportLinkComponent,
   ],
   templateUrl: './join-form.component.html',
   styleUrl: './join-form.component.scss',
@@ -59,9 +68,24 @@ export class JoinFormComponent implements AfterViewInit, OnDestroy, OnInit {
   nameControl = new FormControl('', Validators.compose([Validators.maxLength(20), Validators.required]));
 
   private readonly classOptions: ClassOption[] = [
-    { avatar: 'assets/warrior_01.png', icon: '⚔️', name: 'Warrior', tagline: 'Value', effect: '4 lives instead of 3 — more chances. Every level: +80 HP, +6 strength' },
-    { avatar: 'assets/thief_01.png', icon: '🗡️', name: 'Rogue', tagline: 'Tempo', effect: 'Starts at lvl 2, extra talent + tier-2 shop. Every level: +20 HP, +20% attack speed, +10 dodge' },
-    { avatar: 'assets/merchant_01.png', icon: '💰', name: 'Merchant', tagline: 'Flexibility', effect: 'Starts with +3 income. Every level: +40 HP, +2 income' },
+    {
+      avatar: 'assets/warrior_01.png', icon: '⚔️', name: 'Warrior', tagline: 'Value',
+      identity: 'Durable, and hits hard.',
+      start: '4 lives instead of 3',
+      perLevel: ['+80 max HP', '+6 strength'],
+    },
+    {
+      avatar: 'assets/thief_01.png', icon: '🗡️', name: 'Rogue', tagline: 'Tempo',
+      identity: 'Fast and slippery, ahead from the first shop.',
+      start: 'Begins at level 2 — one extra talent and tier-2 items right away',
+      perLevel: ['+20 max HP', '+20% attack speed', '+10 dodge'],
+    },
+    {
+      avatar: 'assets/merchant_01.png', icon: '💰', name: 'Merchant', tagline: 'Flexibility',
+      identity: 'Out-earns everyone and buys the build they want.',
+      start: '+3 gold every round',
+      perLevel: ['+40 max HP', '+2 income (gold per round)'],
+    },
   ];
   fallingItems = itemPictures;
   selectedIndex = signal(1);
@@ -87,9 +111,9 @@ export class JoinFormComponent implements AfterViewInit, OnDestroy, OnInit {
 
   constructor(
     public draftService: DraftService,
+    private runResumeService: RunResumeService,
     private snackBar: MatSnackBar,
     private renderer: Renderer2,
-    private itemTrackingService: ItemTrackingService,
     private soundsService: SoundsService,
     private infoBoxService: InfoBoxService,
     private seasonsService: SeasonsService,
@@ -111,9 +135,13 @@ export class JoinFormComponent implements AfterViewInit, OnDestroy, OnInit {
     this.soundsService.playMusic(MusicOptions.DRAFT);
     this.infoBoxService.clearContent();
     const entries: InfoEntry[] = [
-      ...this.classOptions.map(c => ({ icon: c.icon, label: `${c.name} - ${c.tagline}`, text: c.effect })),
+      ...this.classOptions.map(c => ({
+        icon: c.icon,
+        label: `${c.name} - ${c.tagline}`,
+        text: `${c.identity}`,
+      })),
       { icon: '💡', label: 'Tip', text: 'Your class picks a starting bonus and weapon — items can take you any direction.' },
-    ];
+  ];
     this.infoBoxService.setPageDefault({
       id: 'choose-character',
       title: 'Choose Your Character',
@@ -177,11 +205,16 @@ export class JoinFormComponent implements AfterViewInit, OnDestroy, OnInit {
     }
 
     this.loading = true;
-    this.itemTrackingService.resetTrackedCollections();
-    const joinResult = await this.draftService.joinOrCreate(this.nameControl.value!, undefined, this.avatarSelected);
+    const joinResult = await this.draftService.createRun(this.nameControl.value!, this.avatarSelected);
     if (joinResult) {
       this.snackBar.open(joinResult, 'Close', { panelClass: 'chungus-snackbar' });
     }
+    this.loading = false;
+  }
+
+  async onResumeRun(playerId: number) {
+    this.loading = true;
+    await this.runResumeService.resume(playerId);
     this.loading = false;
   }
 

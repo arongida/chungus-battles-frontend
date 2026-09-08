@@ -71,7 +71,7 @@ export class JoinFormComponent implements AfterViewInit, OnDestroy, OnInit {
     {
       avatar: 'assets/warrior_01.png', icon: '⚔️', name: 'Warrior', tagline: 'Value',
       identity: 'Durable, and hits hard.',
-      start: '5 lives instead of 4',
+      start: '+1 starting life',
       perLevel: ['+80 max HP', '+6 strength'],
     },
     {

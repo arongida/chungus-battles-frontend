@@ -11,9 +11,12 @@ export interface RunSummary {
   lives: number;
   wins: number;
   gameVersion: number;
-  /** Server-side sessionId !== '' — someone (possibly another tab) may already be connected to
-   *  this run. Resuming is still attempted; this only sets viewer expectations. */
+  /** Server-side sessionId !== '' with a live (non-stale) heartbeat — someone (possibly another
+   *  tab) is actively connected to this run right now. Resuming is still attempted; this only
+   *  sets viewer expectations. */
   busy: boolean;
+  /** Which room type currently holds the claim — only meaningful when busy. */
+  busyPhase?: 'draft' | 'fight';
   fetchedAt: number;
 }
 

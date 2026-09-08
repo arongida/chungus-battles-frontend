@@ -15,7 +15,7 @@
             @if (isEnded(run)) {
               <span class="run-row-badge run-row-badge-ended">Run over</span>
             } @else if (run.summary?.busy) {
-              <span class="run-row-badge run-row-badge-busy" title="This run may still be connected in another tab">In progress elsewhere</span>
+              <span class="run-row-badge run-row-badge-busy" [title]="busyTooltip(run)">In progress elsewhere</span>
             }
             @if (!isEnded(run) && isOldSeason(run)) {
               <span class="run-row-badge run-row-badge-season">Season {{ run.summary?.gameVersion }}</span>

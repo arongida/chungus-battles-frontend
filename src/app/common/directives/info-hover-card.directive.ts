@@ -49,6 +49,8 @@ export class InfoHoverCardDirective implements OnChanges, OnDestroy {
         .position()
         .flexibleConnectedTo(this.elementRef)
         .withFlexibleDimensions(false)
+        .withViewportMargin(16)
+        .withPush(true)
         .withPositions([
           { originX: 'end',    originY: 'center', overlayX: 'start',  overlayY: 'center', offsetX: 8  },
           { originX: 'start',  originY: 'center', overlayX: 'end',    overlayY: 'center', offsetX: -8 },

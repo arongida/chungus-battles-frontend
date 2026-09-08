@@ -10,6 +10,7 @@ import {
 import { isPlatformBrowser } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { DraftService } from '../../services/draft.service';
+import { RunResumeService } from '../../../common/services/run-resume.service';
 import { ItemTrackingService } from '../../../common/services/item-tracking.service';
 import {
   Player,
@@ -99,6 +100,7 @@ export class DraftRoomComponent implements OnInit {
 
   constructor(
     public draftService: DraftService,
+    private runResumeService: RunResumeService,
     private soundsService: SoundsService,
     private renderer: Renderer2,
     private route: ActivatedRoute,
@@ -160,7 +162,7 @@ export class DraftRoomComponent implements OnInit {
     this.itemTrackingService.load(playerId);
 
     if (!this.draftService.room()) {
-      await this.draftService.resumeRun(playerId);
+      await this.runResumeService.resume(playerId);
     }
   }
 

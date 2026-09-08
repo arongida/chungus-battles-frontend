@@ -31,6 +31,7 @@ import { DraftService } from '../../../draft/services/draft.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RunRegistryService } from '../../../common/services/run-registry.service';
+import { RunResumeService } from '../../../common/services/run-resume.service';
 import { ItemTrackingService } from '../../../common/services/item-tracking.service';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatButtonModule } from '@angular/material/button';
@@ -88,6 +89,14 @@ function coercePlayer(src: any): Player {
   templateUrl: './fight-room.component.html',
   styleUrl: './fight-room.component.scss',
 })
+// Deliberately has NO ngOnDestroy/beforeunload cleanup that calls fightService.leave() on
+// navigation away — that's load-bearing, not an oversight. leave() is a CONSENTED Colyseus
+// leave, which skips the 30s allowReconnection window entirely (see FightRoom.onDrop on the
+// backend): a beforeunload-triggered leave would kill tab-reload recovery, and an
+// ngOnDestroy-triggered leave on back-button nav would force round++/a loss on a fight that
+// never resolved. The room simply keeps running server-side (autoDispose = false) until the
+// player reconnects, forfeits, or it resolves — runGuard (common/guards/run.guard.ts) is what
+// routes a mid-fight run's "Resume" back here instead of into a stale draft room.
 export class FightRoomComponent implements OnInit {
   /** The active run's playerId, from the route (:id) — set by runGuard before this component
    *  activates, so it's available immediately, unlike room.state.player which only populates
@@ -135,6 +144,7 @@ export class FightRoomComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private runRegistry: RunRegistryService,
+    private runResumeService: RunResumeService,
     private itemTrackingService: ItemTrackingService,
     private soundsService: SoundsService,
     private renderer: Renderer2,
@@ -310,7 +320,7 @@ export class FightRoomComponent implements OnInit {
     this.itemTrackingService.load(this.runPlayerId);
     const room = this.fightService.room();
     if (!room) {
-      await this.fightService.resumeRun(this.runPlayerId);
+      await this.runResumeService.resume(this.runPlayerId);
     }
   }
 
@@ -417,17 +427,24 @@ export class FightRoomComponent implements OnInit {
     this.runRegistry.setBattleEndState(playerId, null);
     this.battleReplayId.set(null);
     this.battleStats.set(null);
-    this.fightService.leave(false);
+    // Awaited: resolves only once the server's onLeave (save + releasePlayerSession) completes,
+    // so the draftService.joinRun below — now that the session-claim mutex is actually
+    // enforced — doesn't race the still-live claim and get rejected with "already playing".
+    await this.fightService.leave(false);
     this.soundsService.stopMusic();
     if (gameOver) {
       this.router.navigate(['/end', { won: won ? 'won' : 'lost', playerId }]);
     } else {
       const errorMessage = await this.draftService.joinRun(playerId);
       if (errorMessage) {
-        this.snackBar.open('Could not rejoin draft — please try again.', 'Dismiss', {
+        this.snackBar.open('Could not rejoin the draft — please try again.', 'Dismiss', {
           duration: 6000,
           panelClass: 'chungus-snackbar',
         });
+        // Both this fight and the draft join above have already ended/failed at this point —
+        // staying on the fight screen just leaves a dead room signal and buttons that silently
+        // do nothing. Send the player home, where the run list reflects the real state.
+        this.router.navigate(['/']);
       }
     }
   }

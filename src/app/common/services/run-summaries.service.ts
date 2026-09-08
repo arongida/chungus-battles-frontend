@@ -13,6 +13,7 @@ interface RunSummaryDto {
   losses: number;
   gameVersion: number;
   busy: boolean;
+  busyPhase?: 'draft' | 'fight';
 }
 
 /** Fetches lean run summaries (level/round/lives/…) for the run list — deliberately NOT
@@ -59,6 +60,7 @@ export class RunSummariesService {
         wins: dto.wins,
         gameVersion: dto.gameVersion,
         busy: dto.busy,
+        busyPhase: dto.busyPhase,
         fetchedAt: Date.now(),
       });
       this.runRegistry.backfillIdentity(run.playerId, dto.name, dto.avatarUrl);

@@ -4,6 +4,7 @@ import {
   environment,
 } from '../../../environments/environment';
 import { Router } from '@angular/router';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import {
   DraftState,
 } from '../../models/colyseus-schema/DraftState';
@@ -22,7 +23,11 @@ export class DraftService {
   /** True while the most recent item sale can still be undone (see DraftState.canUndoSell). */
   canUndoSell = signal(false);
 
-  constructor(private router: Router, private runRegistry: RunRegistryService) {
+  /** Set around our own room.leave() calls so watchForUnexpectedLeave can tell "we did this on
+   *  purpose, leave() already handles cleanup/navigation" apart from a room dying under us. */
+  private intentionalLeave = false;
+
+  constructor(private router: Router, private runRegistry: RunRegistryService, private snackBar: MatSnackBar) {
     this.client = new Colyseus.Client(environment.gameServer);
   }
 
@@ -99,19 +104,15 @@ export class DraftService {
     }
   }
 
-  /** Resumes a run on route entry: tries the live Colyseus reconnection token first (works only
-   *  inside the ~30s window while the room still exists, and bypasses the sessionId mutex
-   *  entirely), falling back to joinRun (always works while the character is alive). */
-  public async resumeRun(playerId: number): Promise<void> {
+  /** Tries the live Colyseus reconnection token for this run (works only inside the ~30s window
+   *  while the room still exists, and — unlike joinRun — bypasses the session-claim mutex
+   *  entirely, since Colyseus resumes the SAME room object without re-running onJoin). Returns
+   *  false (never throws) when there's no usable token or the attempt fails, so callers can fall
+   *  back to joinRun. See RunResumeService, the actual entry point for "resume this run". */
+  public async tryReconnect(playerId: number): Promise<boolean> {
     const run = this.runRegistry.getRun(playerId);
     const token = run?.reconnect?.phase === 'draft' ? run.reconnect.token : undefined;
-    if (token && (await this.reconnect(token, playerId))) return;
-
-    const errorMessage = await this.joinRun(playerId);
-    if (errorMessage) {
-      console.error('[DraftService] resumeRun failed', errorMessage);
-      this.router.navigate(['/']);
-    }
+    return token ? this.reconnect(token, playerId) : false;
   }
 
   private enterRoom(room: Colyseus.Room<DraftState>, playerId: number): void {
@@ -119,7 +120,29 @@ export class DraftService {
     console.log(`[DraftService] draft_room joined roomId=${room.roomId} sessionId=${room.sessionId}`);
     this.runRegistry.setReconnect(playerId, 'draft', room.reconnectionToken);
     this.runRegistry.setActiveRun(playerId);
+    this.watchForUnexpectedLeave(room);
     this.router.navigate(['/draft', playerId]);
+  }
+
+  /** Registered on every room this service obtains (fresh join or reconnect) — without this, a
+   *  room whose connection ends for any reason we didn't initiate (this tab's session claim
+   *  taken over by another tab/device, a network drop that outlasts Colyseus's own retry, the
+   *  server closing it) leaves `room()` pointing at a dead object forever: sendMessage() keeps
+   *  calling .send() on it, which silently goes nowhere — every click looks "frozen" with no
+   *  error, since nothing ever told the UI the connection was gone. */
+  private watchForUnexpectedLeave(room: Colyseus.Room<DraftState>): void {
+    room.onLeave((code) => {
+      console.warn(`[DraftService] room left code=${code} intentional=${this.intentionalLeave}`);
+      if (this.intentionalLeave) return; // our own leave() call already handles cleanup/navigation
+      if (this.room() !== room) return; // a newer room has since replaced this one — not our problem
+      this.room.set(null);
+      this.canUndoSell.set(false);
+      this.snackBar.open('Lost connection to this run — it may be active in another tab.', 'Dismiss', {
+        duration: 6000,
+        panelClass: 'chungus-snackbar',
+      });
+      this.router.navigate(['/']);
+    });
   }
 
   private async reconnect(reconnectionToken: string, playerId: number): Promise<boolean> {
@@ -127,11 +150,6 @@ export class DraftService {
     try {
       const room = await this.client.reconnect(reconnectionToken) as Colyseus.Room<DraftState>;
       console.log(`[DraftService] reconnect succeeded roomId=${room.roomId} sessionId=${room.sessionId}`);
-
-      room.onLeave((code) => {
-        console.warn(`[DraftService] room left after reconnect code=${code}`);
-      });
-
       this.enterRoom(room, playerId);
       return true;
     } catch (e) {
@@ -150,8 +168,15 @@ export class DraftService {
   public async leave(redirectToHome = true) {
     const room = this.room();
     if (room) {
-      room.leave();
+      this.intentionalLeave = true;
+      // Awaited (with a timeout so a wedged socket can't hang the transition forever): room.leave()
+      // resolves only once the server has finished onLeave (save + releasePlayerSession — see
+      // DraftRoom.ts), and the next room's join races that release, now that "Player already
+      // playing!" is actually enforced. Must come before removeAllListeners() — that clears the
+      // room.onLeave callback the leave() promise's resolution depends on.
+      await Promise.race([room.leave(), new Promise((resolve) => setTimeout(resolve, 4000))]);
       room.removeAllListeners();
+      this.intentionalLeave = false;
       this.room.set(null);
       this.canUndoSell.set(false);
       if (redirectToHome) this.router.navigate(['/']);

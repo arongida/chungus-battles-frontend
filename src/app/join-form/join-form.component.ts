@@ -15,6 +15,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DraftService } from '../draft/services/draft.service';
+import { RunResumeService } from '../common/services/run-resume.service';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -110,6 +111,7 @@ export class JoinFormComponent implements AfterViewInit, OnDestroy, OnInit {
 
   constructor(
     public draftService: DraftService,
+    private runResumeService: RunResumeService,
     private snackBar: MatSnackBar,
     private renderer: Renderer2,
     private soundsService: SoundsService,
@@ -136,11 +138,10 @@ export class JoinFormComponent implements AfterViewInit, OnDestroy, OnInit {
       ...this.classOptions.map(c => ({
         icon: c.icon,
         label: `${c.name} - ${c.tagline}`,
-        text: `${c.identity} Start: ${c.start}. Per level: ${c.perLevel.join(' · ')}.`,
+        text: `${c.identity}`,
       })),
       { icon: '💡', label: 'Tip', text: 'Your class picks a starting bonus and weapon — items can take you any direction.' },
-      { icon: '📜', label: 'Continue a Run', text: 'Already have a run going? It stays saved on this device — pick it up again from the list below instead of starting over.' },
-    ];
+  ];
     this.infoBoxService.setPageDefault({
       id: 'choose-character',
       title: 'Choose Your Character',
@@ -213,7 +214,7 @@ export class JoinFormComponent implements AfterViewInit, OnDestroy, OnInit {
 
   async onResumeRun(playerId: number) {
     this.loading = true;
-    await this.draftService.resumeRun(playerId);
+    await this.runResumeService.resume(playerId);
     this.loading = false;
   }
 

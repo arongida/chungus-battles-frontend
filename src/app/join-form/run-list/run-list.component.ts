@@ -52,6 +52,14 @@ export class RunListComponent implements OnInit {
     return Array.from({ length: Math.max(0, run.summary?.lives ?? 0) });
   }
 
+  /** Only meaningful now that the backend actually enforces one live session per character (see
+   *  claimPlayerSession) — before that fix this badge was structurally always false. */
+  busyTooltip(run: RunRecord): string {
+    return run.summary?.busyPhase === 'fight'
+      ? 'Currently in a fight in another tab or window'
+      : 'This run may still be connected in another tab';
+  }
+
   onResume(run: RunRecord): void {
     if (this.isEnded(run)) return;
     this.resume.emit(run.playerId);

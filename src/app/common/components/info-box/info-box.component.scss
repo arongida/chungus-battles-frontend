@@ -131,7 +131,17 @@
 // Shared readable-prose rules (weight/color/line-height/shadow) live in .chungus-prose
 // (src/styles.scss) — this just adds the size this panel wants on top of it.
 .entry-text {
+  //font-family: Georgia, 'Times New Roman', serif;
   font-size: 1rem;
+  font-weight: 400;
+  font-style: normal;
+  color: #e2e8f0;
+  line-height: 1.55;
+  text-transform: none;
+  letter-spacing: normal;
+  text-shadow: none;
+  -webkit-font-smoothing: antialiased;
+  overflow-wrap: anywhere;
 }
 
 .info-idle {

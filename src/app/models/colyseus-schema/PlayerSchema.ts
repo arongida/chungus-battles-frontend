@@ -17,7 +17,7 @@ export class Player extends Schema {
   @type('string') sessionId: string = 'sessionId';
   @type('number') maxXp: number = 0;
   @type('number') round: number = 1;
-  @type('number') lives: number = 3;
+  @type('number') lives: number = 4;
   @type('number') wins: number = 0;
   @type('string') avatarUrl: string =
     'assets/Portrait_ID_0_Placeholder.png';

@@ -96,16 +96,9 @@
   text-shadow: 0 1px 1px rgba(100, 100, 100, 0.9);
 }
 
+// Shared readable-prose rules live in .chungus-prose (src/styles.scss) — this adds the
+// Georgia/16px treatment this modal wants on top of it.
 .entry-text {
   font-family: Georgia, 'Times New Roman', serif;
   font-size: 16px;
-  font-weight: 400;
-  font-style: normal;
-  color: #e2e8f0;
-  line-height: 1.55;
-  text-transform: none;
-  letter-spacing: normal;
-  text-shadow: none;
-  -webkit-font-smoothing: antialiased;
-  overflow-wrap: anywhere;
 }

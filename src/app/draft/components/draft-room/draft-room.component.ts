@@ -6,10 +6,11 @@ import {
   Renderer2,
   effect,
   signal,
-  untracked,
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
 import { DraftService } from '../../services/draft.service';
+import { ItemTrackingService } from '../../../common/services/item-tracking.service';
 import {
   Player,
 } from '../../../models/colyseus-schema/PlayerSchema';
@@ -100,6 +101,8 @@ export class DraftRoomComponent implements OnInit {
     public draftService: DraftService,
     private soundsService: SoundsService,
     private renderer: Renderer2,
+    private route: ActivatedRoute,
+    private itemTrackingService: ItemTrackingService,
     @Inject(PLATFORM_ID) private platformId: Object,
   ) {
     effect(() => {
@@ -153,8 +156,11 @@ export class DraftRoomComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     this.soundsService.playMusic(MusicOptions.DRAFT);
 
+    const playerId = Number(this.route.snapshot.paramMap.get('id'));
+    this.itemTrackingService.load(playerId);
+
     if (!this.draftService.room()) {
-      await this.draftService.reconnect(untracked(() => localStorage.getItem('reconnectToken')) as string);
+      await this.draftService.resumeRun(playerId);
     }
   }
 

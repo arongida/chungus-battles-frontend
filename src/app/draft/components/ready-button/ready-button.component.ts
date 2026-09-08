@@ -40,10 +40,10 @@ export class ReadyButtonComponent {
   async startFight() {
     if (this.loading) return;
     this.loading = true;
-    const playerId = localStorage.getItem('playerId');
+    const playerId = this.player.playerId;
     if (!playerId) return;
     await this.draftService.leave(false);
-    await this.fightService.joinOrCreate(parseInt(playerId));
+    await this.fightService.joinOrCreate(playerId);
     this.loading = false;
   }
 

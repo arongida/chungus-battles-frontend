@@ -123,6 +123,23 @@ body {
   text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.8);
 }
 
+/* Readable body copy, for any paragraph-length text rendered over the stylized pixel-font body
+ * (which carries a hard 2px offset text-shadow — fine for short display text but smears real
+ * sentences at normal weight/size). Same rules info-box/info-card's .entry-text already used —
+ * pulled out here so any prose block (the join screen's class description included) can opt in
+ * without re-deriving the fix. See commit f0f854f. */
+.chungus-prose {
+  font-weight: 400;
+  font-style: normal;
+  color: #e2e8f0;
+  line-height: 1.55;
+  text-transform: none;
+  letter-spacing: normal;
+  text-shadow: none;
+  -webkit-font-smoothing: antialiased;
+  overflow-wrap: anywhere;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

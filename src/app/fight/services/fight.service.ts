@@ -3,6 +3,7 @@ import * as Colyseus from '@colyseus/sdk';
 import { environment } from '../../../environments/environment';
 import { Router } from '@angular/router';
 import { FightState } from '../../models/colyseus-schema/FightState';
+import { RunRegistryService } from '../../common/services/run-registry.service';
 
 @Injectable({
   providedIn: 'root',
@@ -22,7 +23,7 @@ export class FightService {
   static readonly ALLOWED_FIGHT_SPEEDS = [0.5, 1, 2];
   private static readonly FIGHT_SPEED_STORAGE_KEY = 'fightSpeed';
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private runRegistry: RunRegistryService) {
     this.client = new Colyseus.Client(environment.gameServer);
     console.log(`[FightService] client created server=${environment.gameServer}`);
   }
@@ -33,35 +34,40 @@ export class FightService {
       const enemyPlayerId = this.selectedEnemyId();
       this.selectedEnemyId.set(null);
       this.selectedEnemyName.set(null);
-      this.room.set(
-        await this.client.create('fight_room', {
-          playerId: playerId,
-          // Same playerToken DraftService persisted when this character's playerId was first
-          // minted (see DraftService.joinOrCreate) — required by FightRoom.onAuth.
-          playerToken: FightService.isLocalStorageAvailable ? localStorage.getItem('playerToken') : undefined,
-          ...(enemyPlayerId ? { enemyPlayerId } : {}),
-        }),
-      );
-
-      const room = this.room();
-      console.log(`[FightService] fight_room created roomId=${room?.roomId} sessionId=${room?.sessionId}`);
-
-      if (FightService.isLocalStorageAvailable && room) {
-        localStorage.setItem('sessionId', room.sessionId);
-        localStorage.setItem('roomId', room.roomId);
-        localStorage.setItem('reconnectToken', room.reconnectionToken);
-      }
+      const room = await this.client.create('fight_room', {
+        playerId: playerId,
+        // Same playerToken persisted for this character when its playerId was first minted
+        // (see DraftService.createRun) — required by FightRoom.onAuth.
+        playerToken: this.runRegistry.tokenFor(playerId),
+        ...(enemyPlayerId ? { enemyPlayerId } : {}),
+      });
+      this.enterRoom(room, playerId);
 
       // On reconnect the synced timeScale is authoritative, so only new rooms get this.
       const storedSpeed = this.getStoredFightSpeed();
       if (storedSpeed !== 1) {
-        room?.send('set_fight_speed', { speed: storedSpeed });
+        room.send('set_fight_speed', { speed: storedSpeed });
       }
-
-      this.router.navigate(['/fight', room!.sessionId]);
     } catch (e) {
       console.error('[FightService] joinOrCreate error', e);
     }
+  }
+
+  /** Resumes a run on route entry — see DraftService.resumeRun for the reconnect-then-rejoin shape. */
+  public async resumeRun(playerId: number): Promise<void> {
+    const run = this.runRegistry.getRun(playerId);
+    const token = run?.reconnect?.phase === 'fight' ? run.reconnect.token : undefined;
+    if (token && (await this.reconnect(token, playerId))) return;
+
+    await this.joinOrCreate(playerId);
+  }
+
+  private enterRoom(room: Colyseus.Room<FightState>, playerId: number): void {
+    this.room.set(room);
+    console.log(`[FightService] fight_room joined roomId=${room.roomId} sessionId=${room.sessionId}`);
+    this.runRegistry.setReconnect(playerId, 'fight', room.reconnectionToken);
+    this.runRegistry.setActiveRun(playerId);
+    this.router.navigate(['/fight', playerId]);
   }
 
   public setFightSpeed(speed: number) {
@@ -78,28 +84,21 @@ export class FightService {
     return FightService.ALLOWED_FIGHT_SPEEDS.includes(stored) ? stored : 1;
   }
 
-  public async reconnect(reconnectionToken: string) {
+  private async reconnect(reconnectionToken: string, playerId: number): Promise<boolean> {
     console.log(`[FightService] reconnect attempt token=${reconnectionToken.slice(0, 8)}…`);
     try {
-      this.room.set(await this.client.reconnect(reconnectionToken) as Colyseus.Room<FightState>);
+      const room = await this.client.reconnect(reconnectionToken) as Colyseus.Room<FightState>;
+      console.log(`[FightService] reconnect succeeded roomId=${room.roomId} sessionId=${room.sessionId}`);
 
-      const room = this.room();
-      console.log(`[FightService] reconnect succeeded roomId=${room?.roomId} sessionId=${room?.sessionId}`);
-
-      room?.onLeave((code) => {
+      room.onLeave((code) => {
         console.warn(`[FightService] room left after reconnect code=${code}`);
       });
 
-      if (FightService.isLocalStorageAvailable && room) {
-        localStorage.setItem('sessionId', room.sessionId);
-        localStorage.setItem('roomId', room.roomId);
-        localStorage.setItem('reconnectToken', room.reconnectionToken);
-      }
-
-      this.router.navigate(['/fight', room!.sessionId]);
+      this.enterRoom(room, playerId);
+      return true;
     } catch (e) {
-      console.error('[FightService] reconnect error', e);
-      this.router.navigate(['/']);
+      console.warn('[FightService] reconnect failed, falling back to joinOrCreate', e);
+      return false;
     }
   }
 
@@ -116,11 +115,6 @@ export class FightService {
       room.leave();
       room.removeAllListeners();
       this.room.set(null);
-      // if (FightService.isLocalStorageAvailable) {
-      //   localStorage.removeItem('sessionId');
-      //   localStorage.removeItem('roomId');
-      //   localStorage.removeItem('reconnectToken');
-      // }
       if (redirectToHome) this.router.navigate(['/']);
     }
   }

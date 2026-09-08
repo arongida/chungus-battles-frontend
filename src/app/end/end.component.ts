@@ -282,6 +282,8 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
       this.playerId = Number(this.route.snapshot.paramMap.get('playerId')) || this.runRegistry.activeRunId() || 0;
       document.addEventListener('pointerdown', this.onDocumentPointerDown, true);
     }
+    // fight-room/draft-toolbar navigate here as /end;won=won|lost (a matrix param on this
+    // segment, not a query param) right after a run ends.
     this.message = this.route.snapshot.paramMap.get('won') === 'won' ? 'Victory' : 'Game Over';
     // Lets the admin panel's "View Results" link (POST /admin/tournament flow) land directly
     // on the season it just ran, instead of the visitor having to reselect it from the dropdown.

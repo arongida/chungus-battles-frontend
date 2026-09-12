@@ -89,6 +89,11 @@
   option { background: #0d0d10; color: var(--cm-amber); }
 }
 
+.admin-input-narrow {
+  flex: 0 0 auto;
+  width: 5rem;
+}
+
 .admin-field-row {
   display: flex;
   align-items: center;

@@ -104,6 +104,51 @@
       </div>
     </div>
 
+    <div class="admin-panel">
+      <div class="admin-panel-header">
+        <span>🤖 Bot Runs</span>
+      </div>
+      <p class="admin-prune-label">
+        Plays full runs headlessly for matchmaking variety and balance telemetry. Only one batch
+        runs at a time per backend process.
+      </p>
+
+      @if (botActionError()) {
+        <p class="admin-error">{{ botActionError() }}</p>
+      }
+
+      @if (botBatchStatus()?.running) {
+        <div class="admin-progress-block">
+          <p class="admin-status-line">🏃 Running — policy: <b>{{ botBatchStatus()?.policyId }}</b></p>
+          <div class="admin-progress-bar">
+            <div class="admin-progress-fill" [style.width.%]="botProgressPct()"></div>
+          </div>
+          <p class="admin-progress-label">{{ botBatchStatus()?.runsDone }} / {{ botBatchStatus()?.runsTotal }} runs ({{ botProgressPct() }}%)</p>
+        </div>
+        <div class="admin-actions">
+          <button mat-stroked-button class="admin-prune-btn" [disabled]="botStopping()" (click)="stopBotBatch()">
+            {{ botStopping() ? 'Stopping…' : 'Stop After Current Run' }}
+          </button>
+        </div>
+      } @else {
+        <div class="admin-field-row">
+          <label class="admin-label">Runs</label>
+          <input
+            class="admin-input admin-input-narrow"
+            type="number"
+            min="1"
+            max="1000"
+            [value]="botRunCount()"
+            (input)="botRunCount.set($any($event.target).valueAsNumber || 1)" />
+        </div>
+        <div class="admin-actions">
+          <button mat-raised-button class="chungus-modal-btn" [disabled]="botStarting()" (click)="startBotBatch()">
+            {{ botStarting() ? 'Starting…' : 'Start Bot Batch' }}
+          </button>
+        </div>
+      }
+    </div>
+
     @if (tournamentSummaries().length > 0) {
       <div class="admin-panel admin-history">
         <span class="admin-panel-header">Tournament history</span>

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Inject, OnInit, Output, PLATFORM_ID, signal } from '@angular/core';
+import { Component, computed, EventEmitter, Inject, OnInit, Output, PLATFORM_ID, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -22,6 +22,9 @@ export class RunListComponent implements OnInit {
   @Output() resume = new EventEmitter<number>();
 
   runs = this.runRegistry.runs;
+  // Ended runs still live in the registry (see RunRegistryService's auto-eviction), just not
+  // surfaced here — showing them was pure clutter since they can never be resumed.
+  visibleRuns = computed(() => this.runs().filter((run) => !this.isEnded(run)));
   refreshing = signal(false);
   currentSeason = signal(0);
 

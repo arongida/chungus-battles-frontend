@@ -4,6 +4,10 @@
   <app-support-link extraClass="text-white" />
 </div>
 
+<div class="hidden sm:block fixed bottom-5 right-5">
+  <app-art-credit extraClass="text-white" />
+</div>
+
 <div class="fixed top-4 right-4">
   <button mat-icon-button (click)="cycleVolume()">
     <mat-icon>{{ volumeIcon }}</mat-icon>
@@ -240,7 +244,10 @@
     </button>
   </div>
 
-  <app-support-link class="sm:hidden mt-3" extraClass="text-white" />
+  <div class="flex sm:hidden flex-col items-center gap-1 text-sm text-center mt-3">
+    <app-support-link extraClass="text-white" />
+    <app-art-credit extraClass="text-white" />
+  </div>
 </div>
 
 <!-- Replays modal -->

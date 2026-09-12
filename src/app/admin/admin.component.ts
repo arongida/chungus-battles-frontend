@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { environment } from '../../environments/environment';
 import { SeasonsService } from '../common/services/seasons.service';
+import { InfoBoxService } from '../common/services/info-box.service';
 import { BotBatchStatus, Tournament, TournamentSummary } from '../models/types/MessageTypes';
 
 const SECRET_STORAGE_KEY = 'adminSecret';
@@ -54,10 +55,12 @@ export class AdminComponent implements OnInit, OnDestroy {
 
   constructor(
     private seasonsService: SeasonsService,
+    private infoBoxService: InfoBoxService,
     @Inject(PLATFORM_ID) private platformId: Object,
   ) {}
 
   ngOnInit(): void {
+    this.infoBoxService.hide();
     if (isPlatformBrowser(this.platformId)) {
       const stored = localStorage.getItem(SECRET_STORAGE_KEY);
       if (stored) this.secret.set(stored);
@@ -75,6 +78,7 @@ export class AdminComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     if (this.pollId) clearInterval(this.pollId);
     if (this.botPollId) clearInterval(this.botPollId);
+    this.infoBoxService.show();
   }
 
   saveSecret(): void {

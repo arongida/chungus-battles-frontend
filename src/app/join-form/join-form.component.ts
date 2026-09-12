@@ -31,6 +31,7 @@ import { RouterLink } from '@angular/router';
 import type { ActiveTab } from '../draft/components/encyclopedia/encyclopedia.component';
 import { RunListComponent } from './run-list/run-list.component';
 import { SupportLinkComponent } from '../common/components/support-link/support-link.component';
+import { ArtCreditComponent } from '../common/components/art-credit/art-credit.component';
 
 interface ClassOption {
   avatar: string;
@@ -60,6 +61,7 @@ interface ClassOption {
     RouterLink,
     RunListComponent,
     SupportLinkComponent,
+    ArtCreditComponent,
   ],
   templateUrl: './join-form.component.html',
   styleUrl: './join-form.component.scss',

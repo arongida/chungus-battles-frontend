@@ -6,16 +6,17 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { environment } from '../../environments/environment';
 import { SeasonsService } from '../common/services/seasons.service';
-import { Tournament, TournamentSummary } from '../models/types/MessageTypes';
+import { BotBatchStatus, Tournament, TournamentSummary } from '../models/types/MessageTypes';
 
 const SECRET_STORAGE_KEY = 'adminSecret';
 
 /**
- * Season-end tournament admin panel. Gated by an admin secret the operator sets themselves
- * (in localStorage, via the form below or devtools directly) — the panel is otherwise public;
- * the real boundary is the backend's x-admin-secret check on POST /admin/tournament and
- * POST /admin/pruneReplays (see app.config.ts). GET /tournament and GET /tournaments need no
- * auth, so the panel can always show status even before a secret is set.
+ * Season-end tournament + bot-run admin panel. Gated by an admin secret the operator sets
+ * themselves (in localStorage, via the form below or devtools directly) — the panel is otherwise
+ * public; the real boundary is the backend's x-admin-secret check on every POST /admin/* route
+ * and on GET /admin/bots/status (see app.config.ts). GET /tournament and GET /tournaments need no
+ * auth, so the tournament half of the panel can always show status even before a secret is set —
+ * the bot section can't, since /admin/bots/status itself requires the secret.
  */
 @Component({
   selector: 'app-admin',
@@ -42,7 +43,14 @@ export class AdminComponent implements OnInit, OnDestroy {
   pruning = signal(false);
   pruneResult = signal<string | null>(null);
 
+  botBatchStatus = signal<BotBatchStatus | null>(null);
+  botRunCount = signal<number>(10);
+  botStarting = signal(false);
+  botStopping = signal(false);
+  botActionError = signal<string | null>(null);
+
   private pollId: any = null;
+  private botPollId: any = null;
 
   constructor(
     private seasonsService: SeasonsService,
@@ -61,10 +69,12 @@ export class AdminComponent implements OnInit, OnDestroy {
       this.refreshTournament();
     });
     this.fetchSummaries();
+    this.refreshBotStatus();
   }
 
   ngOnDestroy(): void {
     if (this.pollId) clearInterval(this.pollId);
+    if (this.botPollId) clearInterval(this.botPollId);
   }
 
   saveSecret(): void {
@@ -74,11 +84,17 @@ export class AdminComponent implements OnInit, OnDestroy {
     this.secret.set(value);
     this.secretInput.set('');
     this.authError.set(null);
+    this.refreshBotStatus(); // GET /admin/bots/status needs the secret, unlike GET /tournament
   }
 
   clearSecret(): void {
     if (isPlatformBrowser(this.platformId)) localStorage.removeItem(SECRET_STORAGE_KEY);
     this.secret.set('');
+    if (this.botPollId) {
+      clearInterval(this.botPollId);
+      this.botPollId = null;
+    }
+    this.botBatchStatus.set(null);
   }
 
   setSeason(value: string): void {
@@ -195,6 +211,96 @@ export class AdminComponent implements OnInit, OnDestroy {
       this.actionError.set('Network error — is the backend reachable?');
     } finally {
       this.pruning.set(false);
+    }
+  }
+
+  /** Silent (no authError/clearSecret on failure) — this runs on load and on a poll timer, not
+   *  in response to an operator action, so a bad/missing secret should just leave the section
+   *  showing nothing rather than bouncing the operator out of the whole panel. */
+  async refreshBotStatus(): Promise<void> {
+    if (!this.secret()) return;
+    try {
+      const res = await fetch(`${environment.gameServer}/admin/bots/status`, {
+        headers: { 'x-admin-secret': this.secret() },
+      });
+      const status = res.ok ? (await res.json() as BotBatchStatus) : null;
+      this.botBatchStatus.set(status);
+      this.manageBotPolling(status);
+    } catch {
+      this.botBatchStatus.set(null);
+    }
+  }
+
+  /** Same 5s cadence as the tournament progress poll (managePolling above). */
+  private manageBotPolling(status: BotBatchStatus | null): void {
+    if (status?.running) {
+      if (!this.botPollId) this.botPollId = setInterval(() => this.refreshBotStatus(), 5000);
+    } else if (this.botPollId) {
+      clearInterval(this.botPollId);
+      this.botPollId = null;
+    }
+  }
+
+  botProgressPct(): number {
+    const s = this.botBatchStatus();
+    if (!s?.runsTotal) return 0;
+    return Math.min(100, Math.round(((s.runsDone ?? 0) / s.runsTotal) * 100));
+  }
+
+  async startBotBatch(): Promise<void> {
+    if (!this.secret()) return;
+    this.botStarting.set(true);
+    this.botActionError.set(null);
+    try {
+      const res = await fetch(`${environment.gameServer}/admin/bots`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-admin-secret': this.secret() },
+        body: JSON.stringify({ runs: this.botRunCount() }),
+      });
+      if (res.status === 401) {
+        this.clearSecret();
+        this.authError.set('Admin secret rejected — set it again below.');
+        return;
+      }
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        this.botActionError.set(data.error ?? `Request failed (HTTP ${res.status})`);
+        return;
+      }
+      await this.refreshBotStatus();
+    } catch {
+      this.botActionError.set('Network error — is the backend reachable?');
+    } finally {
+      this.botStarting.set(false);
+    }
+  }
+
+  /** Cooperative — the run currently in progress finishes normally; only the runs queued after
+   *  it are skipped (see BotRunner.ts's stopBotBatch doc comment on the backend). */
+  async stopBotBatch(): Promise<void> {
+    if (!this.secret()) return;
+    this.botStopping.set(true);
+    this.botActionError.set(null);
+    try {
+      const res = await fetch(`${environment.gameServer}/admin/bots/stop`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-admin-secret': this.secret() },
+      });
+      if (res.status === 401) {
+        this.clearSecret();
+        this.authError.set('Admin secret rejected — set it again below.');
+        return;
+      }
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        this.botActionError.set(data.error ?? `Request failed (HTTP ${res.status})`);
+        return;
+      }
+      await this.refreshBotStatus();
+    } catch {
+      this.botActionError.set('Network error — is the backend reachable?');
+    } finally {
+      this.botStopping.set(false);
     }
   }
 

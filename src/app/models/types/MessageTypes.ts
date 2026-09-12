@@ -250,6 +250,17 @@ export type TournamentSummary = {
   championAvatarUrl?: string;
 };
 
+/** GET /admin/bots/status — the currently running bot batch, if any (see BotRunner.ts on the
+ *  backend). Only one batch runs per backend process at a time. */
+export type BotBatchStatus = {
+  running: boolean;
+  batchId?: string;
+  policyId?: string;
+  runsTotal?: number;
+  runsDone?: number;
+  startedAt?: string;
+};
+
 export type EndBattleMessage = {
   result: 'win' | 'lose' | 'draw';
   lossBonus?: number; // legacy (old replays)

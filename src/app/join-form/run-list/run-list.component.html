@@ -1,4 +1,4 @@
-@if (runs().length > 0) {
+@if (visibleRuns().length > 0) {
   <div class="run-list">
     <div class="run-list-header">
       <span>Continue a Run</span>
@@ -6,7 +6,7 @@
         <mat-icon class="run-list-refresh-icon">sync</mat-icon>
       }
     </div>
-    @for (run of runs(); track run.playerId) {
+    @for (run of visibleRuns(); track run.playerId) {
       <div class="run-row" [class.run-row-ended]="isEnded(run)" (click)="onResume(run)">
         <img [src]="run.avatarUrl || 'assets/merchant_01.png'" alt="" class="run-row-avatar" />
         <div class="run-row-body">

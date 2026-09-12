@@ -20,11 +20,12 @@ import { TimeAgoPipe } from '../common/pipes/time-ago.pipe';
 import { SoundsService } from '../common/services/sounds.service';
 import { RunRegistryService } from '../common/services/run-registry.service';
 import { SupportLinkComponent } from '../common/components/support-link/support-link.component';
+import { ArtCreditComponent } from '../common/components/art-credit/art-credit.component';
 
 @Component({
   selector: 'app-end',
   standalone: true,
-  imports: [MatButtonModule, MatIconModule, DatePipe, NgTemplateOutlet, DraggablePanelDirective, RouterLink, PlayerBuildCardComponent, TimeAgoPipe, SupportLinkComponent],
+  imports: [MatButtonModule, MatIconModule, DatePipe, NgTemplateOutlet, DraggablePanelDirective, RouterLink, PlayerBuildCardComponent, TimeAgoPipe, SupportLinkComponent, ArtCreditComponent],
   templateUrl: './end.component.html',
   styleUrl: './end.component.scss',
 })

@@ -256,9 +256,13 @@ export type BotBatchStatus = {
   running: boolean;
   batchId?: string;
   policyId?: string;
+  /** Missing while running means the selected policy rolls one per run. */
+  archetypeId?: string;
   runsTotal?: number;
   runsDone?: number;
   startedAt?: string;
+  availablePolicyIds?: string[];
+  availableArchetypeIds?: string[];
 };
 
 export type EndBattleMessage = {

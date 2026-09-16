@@ -119,7 +119,13 @@
 
       @if (botBatchStatus()?.running) {
         <div class="admin-progress-block">
-          <p class="admin-status-line">🏃 Running — policy: <b>{{ botBatchStatus()?.policyId }}</b></p>
+          <p class="admin-status-line">
+            🏃 Running — policy: <b>{{ botPolicyLabel(botBatchStatus()?.policyId ?? 'unknown') }}</b>
+          </p>
+          <p class="admin-progress-label">
+            Archetype:
+            <b>{{ botBatchStatus()?.archetypeId ? botArchetypeLabel(botBatchStatus()!.archetypeId!) : 'Random per run' }}</b>
+          </p>
           <div class="admin-progress-bar">
             <div class="admin-progress-fill" [style.width.%]="botProgressPct()"></div>
           </div>
@@ -131,15 +137,41 @@
           </button>
         </div>
       } @else {
-        <div class="admin-field-row">
-          <label class="admin-label">Runs</label>
-          <input
-            class="admin-input admin-input-narrow"
-            type="number"
-            min="1"
-            max="1000"
-            [value]="botRunCount()"
-            (input)="botRunCount.set($any($event.target).valueAsNumber || 1)" />
+        <div class="admin-bot-fields">
+          <label class="admin-field">
+            <span class="admin-label">Runs</span>
+            <input
+              class="admin-input admin-input-narrow"
+              type="number"
+              min="1"
+              max="1000"
+              [value]="botRunCount()"
+              (input)="botRunCount.set($any($event.target).valueAsNumber || 1)" />
+          </label>
+
+          <label class="admin-field">
+            <span class="admin-label">Policy</span>
+            <select class="admin-select" [value]="botPolicyId()" (change)="setBotPolicy($any($event.target).value)">
+              @for (policyId of botPolicyIds(); track policyId) {
+                <option [value]="policyId">{{ botPolicyLabel(policyId) }}</option>
+              }
+            </select>
+          </label>
+
+          @if (botPolicyId() === 'heuristic-v2') {
+            <label class="admin-field">
+              <span class="admin-label">Archetype</span>
+              <select class="admin-select" [value]="botArchetypeId()" (change)="botArchetypeId.set($any($event.target).value)">
+                <option value="">Random per run</option>
+                @for (archetypeId of botArchetypeIds(); track archetypeId) {
+                  <option [value]="archetypeId">{{ botArchetypeLabel(archetypeId) }}</option>
+                }
+              </select>
+            </label>
+            <p class="admin-field-help">
+              Random uses the run seed to choose a reproducible archetype independently for each bot.
+            </p>
+          }
         </div>
         <div class="admin-actions">
           <button mat-raised-button class="chungus-modal-btn" [disabled]="botStarting()" (click)="startBotBatch()">

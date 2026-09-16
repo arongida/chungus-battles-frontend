@@ -46,6 +46,11 @@ export class AdminComponent implements OnInit, OnDestroy {
 
   botBatchStatus = signal<BotBatchStatus | null>(null);
   botRunCount = signal<number>(10);
+  botPolicyId = signal<string>('heuristic-v1');
+  /** Empty means the policy chooses an archetype for each run. */
+  botArchetypeId = signal<string>('');
+  botPolicyIds = signal<string[]>(['heuristic-v1', 'heuristic-v2']);
+  botArchetypeIds = signal<string[]>([]);
   botStarting = signal(false);
   botStopping = signal(false);
   botActionError = signal<string | null>(null);
@@ -229,6 +234,15 @@ export class AdminComponent implements OnInit, OnDestroy {
       });
       const status = res.ok ? (await res.json() as BotBatchStatus) : null;
       this.botBatchStatus.set(status);
+      if (status?.availablePolicyIds?.length) {
+        this.botPolicyIds.set(status.availablePolicyIds);
+        if (!status.availablePolicyIds.includes(this.botPolicyId())) {
+          this.botPolicyId.set(status.availablePolicyIds[0]);
+        }
+      }
+      if (status?.availableArchetypeIds) {
+        this.botArchetypeIds.set(status.availableArchetypeIds);
+      }
       this.manageBotPolling(status);
     } catch {
       this.botBatchStatus.set(null);
@@ -251,6 +265,22 @@ export class AdminComponent implements OnInit, OnDestroy {
     return Math.min(100, Math.round(((s.runsDone ?? 0) / s.runsTotal) * 100));
   }
 
+  setBotPolicy(policyId: string): void {
+    this.botPolicyId.set(policyId);
+    // V1 has no archetype support. Clear it so the request and UI cannot disagree.
+    if (policyId !== 'heuristic-v2') this.botArchetypeId.set('');
+  }
+
+  botPolicyLabel(policyId: string): string {
+    if (policyId === 'heuristic-v1') return 'Heuristic v1 (baseline)';
+    if (policyId === 'heuristic-v2') return 'Heuristic v2';
+    return policyId;
+  }
+
+  botArchetypeLabel(archetypeId: string): string {
+    return archetypeId.split('-').map(part => part[0].toUpperCase() + part.slice(1)).join(' ');
+  }
+
   async startBotBatch(): Promise<void> {
     if (!this.secret()) return;
     this.botStarting.set(true);
@@ -259,7 +289,11 @@ export class AdminComponent implements OnInit, OnDestroy {
       const res = await fetch(`${environment.gameServer}/admin/bots`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'x-admin-secret': this.secret() },
-        body: JSON.stringify({ runs: this.botRunCount() }),
+        body: JSON.stringify({
+          runs: this.botRunCount(),
+          policyId: this.botPolicyId(),
+          archetypeId: this.botArchetypeId() || undefined,
+        }),
       });
       if (res.status === 401) {
         this.clearSecret();

@@ -32,7 +32,14 @@ export class NextEnemyBadgeComponent implements OnDestroy {
   @Input() talentClasses: string[] = [];
   @Input() itemClasses: string[] = [];
 
+  /** Grace period before the hover panel closes. The panel is offset 8px off the badge, so
+   *  without a delay the cursor crossing that gap would close it before it could arrive. */
+  private static readonly CLOSE_DELAY_MS = 150;
+
   private overlayRef: OverlayRef | null = null;
+  private closeTimer: ReturnType<typeof setTimeout> | null = null;
+  private paneEnter: (() => void) | null = null;
+  private paneLeave: (() => void) | null = null;
 
   /** Dev next-fight-picker can override the locked-in pick (dev builds only) — flag it. */
   readonly devPickerEnabled = environment.enemyPicker;
@@ -62,12 +69,28 @@ export class NextEnemyBadgeComponent implements OnDestroy {
 
   onMouseEnter(): void {
     if (this.infoBoxService.isTouch || !this.visible) return;
+    this.cancelScheduledClose();
     this.openOverlay();
   }
 
   onMouseLeave(): void {
     if (this.infoBoxService.isTouch) return;
-    this.closeOverlay();
+    this.scheduleClose();
+  }
+
+  /** Closes after CLOSE_DELAY_MS unless the cursor lands on the badge or the panel first. */
+  private scheduleClose(): void {
+    this.cancelScheduledClose();
+    this.closeTimer = setTimeout(() => {
+      this.closeTimer = null;
+      this.closeOverlay();
+    }, NextEnemyBadgeComponent.CLOSE_DELAY_MS);
+  }
+
+  private cancelScheduledClose(): void {
+    if (this.closeTimer === null) return;
+    clearTimeout(this.closeTimer);
+    this.closeTimer = null;
   }
 
   onClick(): void {
@@ -102,9 +125,28 @@ export class NextEnemyBadgeComponent implements OnDestroy {
     componentRef.setInput('talentClasses', this.talentClasses);
     componentRef.setInput('itemClasses', this.itemClasses);
     componentRef.changeDetectorRef.detectChanges();
+
+    // The overlay pane lives outside this component's DOM, so moving the cursor onto it fires
+    // the badge's own mouseleave. Keep the panel alive while the cursor is inside it — that's
+    // what lets the enemy's items and talents be hovered for their own detail cards. Those
+    // cards open beside their trigger, not under the cursor, so they never pull hover out of
+    // the panel themselves.
+    const pane = this.overlayRef.overlayElement;
+    this.paneEnter = () => this.cancelScheduledClose();
+    this.paneLeave = () => this.scheduleClose();
+    pane.addEventListener('mouseenter', this.paneEnter);
+    pane.addEventListener('mouseleave', this.paneLeave);
   }
 
   private closeOverlay(): void {
+    this.cancelScheduledClose();
+    const pane = this.overlayRef?.overlayElement;
+    if (pane) {
+      if (this.paneEnter) pane.removeEventListener('mouseenter', this.paneEnter);
+      if (this.paneLeave) pane.removeEventListener('mouseleave', this.paneLeave);
+    }
+    this.paneEnter = null;
+    this.paneLeave = null;
     this.overlayRef?.dispose();
     this.overlayRef = null;
   }

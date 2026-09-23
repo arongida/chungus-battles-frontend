@@ -39,21 +39,22 @@
              [style.background-image]="'url(' + getCringeAvatarImage() + ')'"
              [class.opacity-0]="!isShowingCringe()"></div>
       </div>
+      @if (player.invincible) { <div class="status-shield-loop"></div> }
+      @if (player.stunned) { <div class="status-stun-loop"></div> }
       <div id="damage-numbers-{{ player.playerId }}" class="absolute inset-0 pointer-events-none z-10"></div>
-      <div class="absolute" id="attack-{{ player.playerId }}"></div>
     </div>
 
     @if (showStats && !redacted) {
       <div id="stats" class="cd-stats" [appInfoHoverCard]="statsHint">
 
         <div class="cd-stat col-span-2">
-          <span class="text-pink-300">❤️ {{ getPlayerHp() | number:'1.0-0' }}</span>
+          <span class="text-pink-300">❤️ @if (combat) {<app-tween-number [value]="getPlayerHp()" />} @else {{{ getPlayerHp() | number:'1.0-0' }}}</span>
           <span class="text-slate-300 text-xs ml-1">/ {{ player.maxHp | number:'1.0-0' }}</span>
         </div>
         @if (combat) {
-          <div id="hp-{{ player.playerId }}" class="hp-bar-wrapper col-span-2">
-            <mat-progress-bar class="red-progress-bar" mode="determinate"
-              [value]="(player.hp / player.maxHp) * 100"></mat-progress-bar>
+          <div id="hp-{{ player.playerId }}" class="hp-bar-wrapper hp-bar col-span-2" [class.hp-bar--low]="isLowHp()">
+            <div class="hp-bar__trail" [style.width.%]="hpPercent()"></div>
+            <div class="hp-bar__fill" [style.width.%]="hpPercent()"></div>
           </div>
         }
 
@@ -274,7 +275,7 @@
   </div>
 
   <!-- Portrait: transparent variant; enemy is horizontally mirrored to face the player.
-       #avatar-{id} must be on the outer wrapper (for avatar-shake animation).
+       #avatar-{id} must be on the outer wrapper (for the hit knockback/flash animations).
        Only the inner portrait div is flipped, so damage numbers stay upright. -->
   <div id="avatar-{{ player.playerId }}" class="compact-avatar"
        [class.invulnerable-aura]="player.invincible"
@@ -284,18 +285,19 @@
            [class.compact-enemy-flip]="enemy"
            [style.background-image]="'url(' + getCompactAvatarImage() + ')'"></div>
     </div>
+    @if (player.invincible) { <div class="status-shield-loop"></div> }
+    @if (player.stunned) { <div class="status-stun-loop"></div> }
     <div id="damage-numbers-{{ player.playerId }}" class="absolute inset-0 pointer-events-none z-10"></div>
-    <div class="absolute" id="attack-{{ player.playerId }}"></div>
   </div>
 
   <!-- HP text + bar (#hp-{id} needed for flash animations) -->
   <div class="compact-hp-text">
-    <span class="text-pink-500 text-[9px]">❤️ {{ getPlayerHp() | number:'1.0-0' }}</span>
+    <span class="text-pink-500 text-[9px]">❤️ <app-tween-number [value]="getPlayerHp()" /></span>
     <span class="text-slate-500 text-[8px]"> / {{ player.maxHp | number:'1.0-0' }}</span>
   </div>
-  <div id="hp-{{ player.playerId }}" class="hp-bar-wrapper compact-hp-bar">
-    <mat-progress-bar class="red-progress-bar" mode="determinate"
-      [value]="(player.hp / player.maxHp) * 100"></mat-progress-bar>
+  <div id="hp-{{ player.playerId }}" class="hp-bar-wrapper hp-bar compact-hp-bar" [class.hp-bar--low]="isLowHp()">
+    <div class="hp-bar__trail" [style.width.%]="hpPercent()"></div>
+    <div class="hp-bar__fill" [style.width.%]="hpPercent()"></div>
   </div>
 
   <!-- Mini equipped items — display-only, IDs preserved for trigger animations -->

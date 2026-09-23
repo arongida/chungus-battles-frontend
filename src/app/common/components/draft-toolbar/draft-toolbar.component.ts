@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, effect, inject, signal } from '@angular/core';
+import { Component, Input, OnChanges, OnDestroy, OnInit, PLATFORM_ID, Renderer2, SimpleChanges, effect, inject, signal, viewChild } from '@angular/core';
 import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
 import Item from '../../../models/colyseus-schema/ItemSchema';
 import { MatIconModule } from '@angular/material/icon';
@@ -12,10 +12,15 @@ import { JokerPickComponent } from '../../../draft/components/joker-pick/joker-p
 import { Talent } from '../../../models/colyseus-schema/TalentSchema';
 import { parseJokerCards } from '../../utils/joker-cards';
 import { EncyclopediaComponent } from '../../../draft/components/encyclopedia/encyclopedia.component';
-import { DecimalPipe, NgClass } from '@angular/common';
+import { DecimalPipe, NgClass, isPlatformBrowser } from '@angular/common';
 import { MatMenuModule } from '@angular/material/menu';
 import { DraftService } from '../../../draft/services/draft.service';
 import { CharacterDetailsComponent } from '../character-details/character-details.component';
+import { TweenNumberComponent } from '../tween-number/tween-number.component';
+import { triggerFloatIn, triggerLevelUpBurst } from '../../TriggerAnimations';
+
+/** How long the level-up burst plays before the talent picker opens. */
+const LEVEL_UP_BURST_MS = 850;
 import { MatCardModule } from '@angular/material/card';
 import { MatBadgeModule } from '@angular/material/badge';
 import { SoundOptions, SoundsService } from '../../services/sounds.service';
@@ -49,6 +54,7 @@ import { RunRegistryService } from '../../services/run-registry.service';
     DraggablePanelDirective,
     NextFightPickerComponent,
     DragDropModule,
+    TweenNumberComponent,
   ],
   templateUrl: './draft-toolbar.component.html',
   styleUrl: './draft-toolbar.component.scss',
@@ -170,6 +176,11 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
     return this.canLevelUp ? this.levelUpHint : this.buyXpHint;
   }
 
+  private readonly platformId = inject(PLATFORM_ID);
+  private readonly isBrowser = isPlatformBrowser(this.platformId);
+  private readonly renderer = inject(Renderer2);
+  private readonly characterPanel = viewChild(CharacterDetailsComponent);
+
   constructor(
     public draftService: DraftService,
     private fightService: FightService,
@@ -177,6 +188,14 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
     private router: Router,
     private runRegistry: RunRegistryService,
   ) {
+    // While the draft character panel is expanded, tag <body> so the shop can make room for it
+    // on wide screens (see `body.draft-panel-open` / `.draft-stage` in styles.scss).
+    effect(() => {
+      if (!this.isBrowser) return;
+      const open = !this.isFighting() && !!this.characterPanel()?.expanded();
+      document.body.classList.toggle('draft-panel-open', open);
+    });
+
     // Mirrors showTalentPicker to an actual MatDialogRef so the talent picker renders in the
     // CDK overlay instead of the inline @if block it used to be — see TalentsComponent and
     // ConfirmDialogComponent's class doc for why (toolbar host stacking-context cap).
@@ -186,6 +205,7 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
         this.talentDialogRef = this.dialog.open(TalentsComponent, {
           backdropClass: 'chungus-dialog-backdrop',
           autoFocus: false,
+          maxWidth: 'calc(100vw - 16px)', // default 80vw would squeeze the picker on phones
         });
         this.talentDialogRef.afterClosed().subscribe(() => {
           this.talentDialogRef = undefined;
@@ -225,7 +245,18 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
     this.infoBoxService.setPageDefault(this.isFighting() ? this.fightingHint : this.shopPhaseHint);
   }
 
+  /** Last seen gold, to float "-X" off the counter when gold is spent (gains already float
+   *  over the avatar via reward_gain). Undefined until the first player snapshot. */
+  private lastGold?: number;
+
   ngOnChanges(changes: SimpleChanges): void {
+    if (changes['player'] && this.player && this.isBrowser) {
+      const gold = this.player.gold;
+      if (this.lastGold !== undefined && gold < this.lastGold && !this.isFighting()) {
+        triggerFloatIn(this.renderer, this.platformId, 'gold-counter', `-${this.lastGold - gold}`, ['ft', 'ft-drop', 'ft-spend'], 800);
+      }
+      this.lastGold = gold;
+    }
     // Keep the talent dialog's data current on every change — not just open/close
     // transitions — so it reflects live updates (e.g. a reroll) while it's already open.
     // TalentsComponent reads these instead of @Inputs since MatDialog content has no
@@ -305,13 +336,19 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
       if (settledLevel > (this.lastConfirmedLevel ?? 0)) {
         this.lastConfirmedLevel = settledLevel;
         this.levelUpPending.set(true);
-        this.showTalentPicker.set(true);
+        // Let the level-up burst land before the picker covers the screen.
+        triggerLevelUpBurst(this.renderer, this.platformId, this.player.playerId);
+        this.levelCheckTimeoutId = setTimeout(() => {
+          this.levelCheckTimeoutId = null;
+          this.showTalentPicker.set(true);
+        }, LEVEL_UP_BURST_MS);
       }
     }, 400);
   }
 
   ngOnDestroy(): void {
     if (this.levelCheckTimeoutId) clearTimeout(this.levelCheckTimeoutId);
+    if (this.isBrowser) document.body.classList.remove('draft-panel-open');
   }
 
   shopItemOverPanel = false;

@@ -16,7 +16,14 @@ import {
   StatsSyncMessage,
 } from '../../models/types/MessageTypes';
 import {
+  hitSeverity,
+  NumberTier,
+  numberTier,
+  triggerAvatarDeflect,
+  triggerAvatarDodge,
   triggerAvatarHit,
+  triggerAvatarLunge,
+  triggerKnockOut,
   triggerEmpoweredHit,
   triggerHpDamageFlash,
   triggerHpHealFlash,
@@ -44,9 +51,12 @@ export interface AnimationContext {
   entries: WritableSignal<CombatLogEntry[]>;
   /** Called for every attack event — typically plays sounds in live mode. */
   triggerAttack: (attackerId: number) => void;
-  /** Called for every damage event — typically animates avatar + sets being-hit signal. */
+  /** Called for every damage event — typically swaps to the cringe portrait via the being-hit
+   *  signal. The knockback/flash itself is played by the service. */
   triggerDamagedAvatar: (playerId: number) => void;
   onEndBattle?: (msg: EndBattleMessage) => void;
+  /** Called for every gold/xp gain — the fight room tallies the local player's for the result modal. */
+  onReward?: (msg: RewardGainMessage) => void;
   /** `string` covers replays recorded before game_over carried an object payload. */
   onGameOver?: (msg: GameOverMessage | string) => void;
   onGameWin?: (msg: GameWinMessage) => void;
@@ -97,9 +107,11 @@ export class FightAnimationService {
     }
     if (msg.kind === 'dodge' && msg.defenderId != null && ctx.player() && ctx.enemy()) {
       triggerShowDodgeText(ctx.renderer, ctx.platformId, msg.defenderId);
+      triggerAvatarDodge(ctx.renderer, ctx.platformId, msg.defenderId);
     }
     if (msg.kind === 'block' && msg.defenderId != null && ctx.player() && ctx.enemy()) {
       triggerShowBlockText(ctx.renderer, ctx.platformId, msg.defenderId);
+      triggerAvatarDeflect(ctx.renderer, ctx.platformId, msg.defenderId);
     }
     // stunnedPlayerId names the actually-stunned player explicitly — attacker/defender roles
     // flip depending on the source (Shield Bash stuns the striker, Bully stuns its target), so
@@ -112,18 +124,52 @@ export class FightAnimationService {
   applyAttack(ctx: AnimationContext, attackerId: number): void {
     if (ctx.player() && ctx.enemy()) {
       ctx.triggerAttack(attackerId);
+      if (!this.throttled(`lunge:${attackerId}`)) triggerAvatarLunge(attackerId);
     }
+  }
+
+  /** How long views should hold the K.O. beat before showing the round-result modal. */
+  static readonly KO_BEAT_MS = 1100;
+
+  /** Plays the K.O. beat for a fight-ending message. `result` is from the local player's view. */
+  applyKnockOut(ctx: AnimationContext, result: 'win' | 'lose' | 'draw'): void {
+    const player = ctx.player(), enemy = ctx.enemy();
+    if (!player || !enemy) return;
+    const losers = result === 'win' ? [enemy.playerId] : result === 'lose' ? [player.playerId] : [player.playerId, enemy.playerId];
+    const winner = result === 'win' ? player.playerId : result === 'lose' ? enemy.playerId : undefined;
+    triggerKnockOut(ctx.renderer, ctx.platformId, losers, winner);
+  }
+
+  /** Size tier of `amount` against the target's max HP — drives number size and hit severity. */
+  private tierFor(ctx: AnimationContext, playerId: number, amount: number): NumberTier {
+    const target = [ctx.player(), ctx.enemy()].find(p => p?.playerId === playerId);
+    return numberTier(amount, target?.maxHp ?? 0);
   }
 
   applyDamage(ctx: AnimationContext, msg: DamageMessage): void {
     if (ctx.player() && ctx.enemy()) {
       const type = msg.type ?? 'normal';
-      triggerShowDamageNumber(ctx.renderer, ctx.platformId, Math.round(msg.damage), msg.playerId, type);
+      const dot = type === 'poison' || type === 'burn' ? type : undefined;
+      let tier = this.tierFor(ctx, msg.playerId, msg.damage);
+      if (msg.empowered && tier !== 'xl') tier = tier === 'sm' ? 'md' : tier === 'md' ? 'lg' : 'xl';
+      triggerShowDamageNumber(ctx.renderer, ctx.platformId, Math.round(msg.damage), msg.playerId, type, tier);
       triggerHpDamageFlash(msg.playerId);
       ctx.triggerDamagedAvatar(msg.playerId);
       ctx.applyHpDelta?.(msg.playerId, msg.damage, 0);
 
-      if (msg.empowered || !this.throttled(`damage:${type}:${msg.playerId}`)) {
+      const severity = hitSeverity(tier);
+      // Heavy hits always land (they're rare and should never be swallowed); lighter ones share
+      // the throttle below so a flurry doesn't restart the knockback every few ms.
+      const throttledHit = this.throttled(`damage:${type}:${msg.playerId}`);
+      if (severity === 'heavy' || msg.empowered || !throttledHit) {
+        triggerAvatarHit(msg.playerId, {
+          severity,
+          dot,
+          vignette: msg.playerId === ctx.player()?.playerId,
+        });
+      }
+
+      if (msg.empowered || !throttledHit) {
         if (type === 'burn') {
           triggerSpriteVfx(ctx.renderer, ctx.platformId, 'fire', msg.playerId);
           this.sounds.playSound(SoundOptions.BURN);
@@ -141,6 +187,9 @@ export class FightAnimationService {
   applyInvulnerable(ctx: AnimationContext, msg: InvulnerableMessage): void {
     if (ctx.player() && ctx.enemy()) {
       triggerShowInvulnerableText(ctx.renderer, ctx.platformId, msg.playerId);
+      if (!this.throttled(`deflect:${msg.playerId}`)) {
+        triggerAvatarDeflect(ctx.renderer, ctx.platformId, msg.playerId);
+      }
     }
   }
 
@@ -154,7 +203,7 @@ export class FightAnimationService {
 
   applyHealing(ctx: AnimationContext, msg: HealingMessage): void {
     if (ctx.player() && ctx.enemy()) {
-      triggerShowHealingNumber(ctx.renderer, ctx.platformId, Math.round(msg.healing), msg.playerId);
+      triggerShowHealingNumber(ctx.renderer, ctx.platformId, Math.round(msg.healing), msg.playerId, this.tierFor(ctx, msg.playerId, msg.healing));
       triggerHpHealFlash(msg.playerId);
       ctx.applyHpDelta?.(msg.playerId, 0, msg.healing);
 
@@ -171,6 +220,7 @@ export class FightAnimationService {
    *  doesn't spam audio. Xp gains get a floating number only — no sound for now. */
   applyReward(ctx: AnimationContext, msg: RewardGainMessage): void {
     if (!(ctx.player() && ctx.enemy())) return;
+    ctx.onReward?.(msg);
 
     if (msg.gold) {
       triggerShowGoldNumber(ctx.renderer, ctx.platformId, Math.round(msg.gold), msg.playerId);
@@ -185,6 +235,7 @@ export class FightAnimationService {
 
     if (msg.gold && !this.throttled(`reward:${msg.playerId}`)) {
       this.sounds.playSound(SoundOptions.GOLD);
+      triggerSpriteVfx(ctx.renderer, ctx.platformId, 'coins', msg.playerId);
     }
   }
 
@@ -198,10 +249,6 @@ export class FightAnimationService {
     if (ctx.player() && ctx.enemy()) {
       triggerItemActivation(msg.playerId, msg.slot);
     }
-  }
-
-  applyTriggerAvatarHit(playerId: number): void {
-    triggerAvatarHit(playerId);
   }
 
   /** Routes a raw replay event to the correct apply method. `t` is the ReplayEvent's own
@@ -220,12 +267,24 @@ export class FightAnimationService {
       case 'trigger_talent':  this.applyTriggerTalent(ctx, payload as TriggerTalentMessage); break;
       case 'trigger_item':    this.applyTriggerItem(ctx, payload as TriggerItemMessage); break;
       case 'stats_sync':      ctx.applyStatsSync?.(payload as StatsSyncMessage); break;
-      case 'end_battle':      ctx.onEndBattle?.(payload as EndBattleMessage); break;
-      case 'game_over':       ctx.onGameOver?.(payload as GameOverMessage | string); break;
-      case 'game_win':        ctx.onGameWin?.(payload as GameWinMessage); break;
+      case 'end_battle':
+        this.applyKnockOut(ctx, (payload as EndBattleMessage)?.result ?? 'win');
+        ctx.onEndBattle?.(payload as EndBattleMessage);
+        break;
+      case 'game_over':
+        this.applyKnockOut(ctx, 'lose');
+        ctx.onGameOver?.(payload as GameOverMessage | string);
+        break;
+      case 'game_win':
+        this.applyKnockOut(ctx, 'win');
+        ctx.onGameWin?.(payload as GameWinMessage);
+        break;
       // Compat: old replays recorded before Season 16 contain 'version_win' events —
       // route them to the same win-screen handler so those replays still show a banner.
-      case 'version_win':     ctx.onGameWin?.(payload as GameWinMessage); break;
+      case 'version_win':
+        this.applyKnockOut(ctx, 'win');
+        ctx.onGameWin?.(payload as GameWinMessage);
+        break;
       default:                break;
     }
   }

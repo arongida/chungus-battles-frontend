@@ -193,8 +193,9 @@
       {{ item.upgradePreview ? 'Upgrade' : 'Buy' }} FREE {{ freeClaimIcon }}
     </button>
     } @else {
-    <button mat-raised-button class="chungus-modal-btn no-click-sound" [disabled]="player.gold < item.price"
-      (click)="$event.stopPropagation(); buyClicked.emit()">
+    <button mat-raised-button class="chungus-modal-btn no-click-sound"
+      [class.btn-unaffordable]="player.gold < item.price" [attr.aria-disabled]="player.gold < item.price"
+      (click)="$event.stopPropagation(); onBuyClick($event)">
       {{ item.upgradePreview ? 'Upgrade' : 'Buy' }} {{ item.price }} 🟡
     </button>
     }

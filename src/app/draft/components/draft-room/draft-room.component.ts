@@ -38,7 +38,7 @@ import {
   SoundsService,
 } from '../../../common/services/sounds.service';
 import { RewardGainMessage, ShopFloatingMessage, TriggerItemMessage, TriggerTalentMessage } from '../../../models/types/MessageTypes';
-import { triggerDraftLogFloatingText, triggerShopFloatingText, triggerShowGoldNumber, triggerShowXpNumber, triggerShowLuckyFindBonusNumber, triggerLuckyFindBonusFireworks, triggerTalentActivation, triggerItemActivation } from '../../../common/TriggerAnimations';
+import { triggerDraftLogFloatingText, triggerShopFloatingText, triggerSpriteVfx, triggerShowGoldNumber, triggerShowXpNumber, triggerShowLuckyFindBonusNumber, triggerLuckyFindBonusFireworks, triggerTalentActivation, triggerItemActivation } from '../../../common/TriggerAnimations';
 
 // Creates a typed Player from any schema object (typed or reflection-decoded generic).
 // Copies primitive backing fields and collection references; skips `baseStats` because
@@ -204,6 +204,7 @@ export class DraftRoomComponent implements OnInit {
     this.lastRewardSoundTime.set(message.playerId, now);
 
     this.soundsService.playSound(SoundOptions.GOLD);
+    triggerSpriteVfx(this.renderer, this.platformId, 'coins', message.playerId);
   }
 
   /** Retries queued shop_floating messages once per state change (deferred one frame so the

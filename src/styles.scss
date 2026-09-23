@@ -149,70 +149,31 @@ body {
   border-right: none;
 }
 
-.damage-number {
-  @apply absolute text-red-500 text-lg font-thin transition-all;
-  animation: floatUp 3s ease-in forwards;
-  -webkit-text-stroke: 1px red;
-}
-
-.damage-number--poison {
-  @apply text-green-300;
-  -webkit-text-stroke: 1px #16a34a;
-}
-
-.damage-number--burn {
-  @apply text-orange-400;
-  -webkit-text-stroke: 1px #ea580c;
-}
-
-.dodge-number {
-  @apply absolute text-blue-400 text-lg font-bold italic whitespace-nowrap;
-  animation: floatUp 3s ease-in forwards;
-  -webkit-text-stroke: 1px #2563eb;
-}
-
-.invulnerable-number {
-  @apply absolute text-amber-400 text-lg font-bold whitespace-nowrap;
-  animation: floatUp 3s ease-in forwards;
-  -webkit-text-stroke: 1px #d97706;
-}
-
-// Shield Bash (item skill) — same purple as .stunned-aura's pulse, so the floating text and the
-// avatar aura read as one effect.
-.stunned-number {
-  @apply absolute text-purple-400 text-lg font-bold whitespace-nowrap;
-  animation: floatUp 3s ease-in forwards;
-  -webkit-text-stroke: 1px #7e22ce;
-}
-
 // Draft-phase "lucky find" announcement — floats over the shop card instead of a
 // snackbar toast. Stays inside the card's own bounds (the card wrapper clips overflow
 // for its hover/drag visuals), unlike the battle damage numbers which escape their box.
 .lucky-find-number {
-  @apply absolute left-1/2 text-amber-300 text-[10px] sm:text-xs md:text-sm font-extrabold whitespace-normal text-center pointer-events-none z-20 leading-tight;
+  @apply absolute left-1/2 text-[11px] sm:text-[13px] md:text-[15px] whitespace-normal text-center pointer-events-none z-20 leading-tight;
+  font-family: 'PixelParchment', 'Darinia', sans-serif;
   bottom: 6%;
   width: 90%;
   padding: 0 4px;
+  color: var(--lf-fill, #fcd34d);
+  --e: var(--lf-edge, #451a03);
+  // Hard 1px pixel outline + drop — same idiom as the combat `.ft` text, scaled to the card.
+  text-shadow:
+    1px 0 0 var(--e), -1px 0 0 var(--e), 0 1px 0 var(--e), 0 -1px 0 var(--e),
+    1px 1px 0 var(--e), -1px 1px 0 var(--e), 1px -1px 0 var(--e), -1px -1px 0 var(--e),
+    0 2px 0 rgba(0, 0, 0, 0.8);
   transform: translate(-50%, 0);
-  animation: shopFloatUp 3.5s ease-in forwards;
-  text-shadow: 0 0 4px rgba(0, 0, 0, 0.95), 0 1px 3px #000;
+  opacity: 0;
+  animation: shopFloatPop 3.5s ease-out forwards;
 }
 
-.lucky-find-number--rare {
-  color: #60a5fa;
-}
-
-.lucky-find-number--epic {
-  color: #c084fc;
-}
-
-.lucky-find-number--legendary {
-  color: #fb923c;
-}
-
-.lucky-find-number--mythic {
-  color: #f87171;
-}
+.lucky-find-number--rare      { --lf-fill: #93c5fd; --lf-edge: #172554; }
+.lucky-find-number--epic      { --lf-fill: #d8b4fe; --lf-edge: #3b0764; }
+.lucky-find-number--legendary { --lf-fill: #fdba74; --lf-edge: #431407; }
+.lucky-find-number--mythic    { --lf-fill: #fca5a5; --lf-edge: #450a0a; }
 
 .invulnerable-aura {
   animation: invulnerable-pulse 1s ease-in-out infinite;
@@ -226,41 +187,8 @@ body {
   border-radius: 0.5rem;
 }
 
-.healing-number {
-  @apply absolute text-green-400 text-lg font-thin transition-all;
-  animation: floatUp 3s ease-in forwards;
-  -webkit-text-stroke: 1px rgb(8, 238, 96);
-}
-
-// Floating gold/xp gain text — shown during both the fight and the shop round (see
-// triggerShowGoldNumber/triggerShowXpNumber in TriggerAnimations.ts). Mounted into the
-// same damage-numbers-{playerId} overlay as the combat numbers above.
-.gold-number {
-  @apply absolute text-yellow-400 text-lg font-bold whitespace-nowrap transition-all;
-  animation: floatUp 3s ease-in forwards;
-  -webkit-text-stroke: 1px #a16207;
-}
-
-.xp-number {
-  @apply absolute text-sky-300 text-lg font-bold whitespace-nowrap transition-all;
-  animation: floatUp 3s ease-in forwards;
-  -webkit-text-stroke: 1px #0369a1;
-}
-
-// Lucky Find mastery gain (see triggerShowLuckyFindBonusNumber) — same avatar overlay and
-// float pattern as gold/xp above, tinted to match the 🍀 clover.
-.lucky-find-bonus-number {
-  @apply absolute text-lime-400 text-lg font-bold whitespace-nowrap transition-all;
-  animation: floatUp 3s ease-in forwards;
-  -webkit-text-stroke: 1px #4d7c0f;
-}
-
 .animate-weapon-attack {
   animation: weapon-flash 0.4s ease-out forwards;
-}
-
-.animate-avatar-hit {
-  animation: avatar-shake 0.4s ease-out;
 }
 
 .animate-talent {
@@ -299,15 +227,6 @@ body {
 // unlike the horizontal strips above — hence background-size is 100%/600% and the pan
 // keyframes move background-position on the Y axis instead of X. image-rendering keeps
 // the pixel art crisp at the larger display size instead of blurring on upscale.
-.vfx-fire {
-  width: 96px;
-  height: 96px;
-  background-image: url(assets/vfx/fire_sheet.png);
-  background-size: 100% 600%; // 6 vertical frames
-  image-rendering: pixelated;
-  animation: vfx-fire-play 600ms steps(5) forwards;
-}
-
 .vfx-fireworks {
   width: 117px; // 30% bigger than the other 90px VFX sprites — celebration burst stands out more
   height: 117px;
@@ -347,91 +266,65 @@ body {
   overflow: hidden;
 }
 
-.vfx-poison {
-  width: 110px;
-  height: 110px;
-  background-image: url(assets/vfx/poison_sheet.png);
-  background-size: 1600% 100%; // 16 frames
-  // Source sheet is greyscale smoke — sepia + hue-rotate tints it sickly green.
-  filter: sepia(1) saturate(6) hue-rotate(60deg) brightness(0.9);
-  animation: vfx-poison-play 700ms steps(15) forwards;
-}
-
-.vfx-heal {
-  width: 120px;
-  height: 120px;
-  background-image: url(assets/vfx/heal_sheet.png);
-  background-size: 3500% 100%; // 35 frames
-  // Source sheet is a near-white glow — same greyscale-tint trick as poison above, just
-  // lighter/brighter so it reads as a gentle light green instead of a sickly dark one.
-  // hue-rotate(50deg) lands squarely on green (measured ~hue 120) — 70deg overshoots into cyan.
-  filter: sepia(1) saturate(5) hue-rotate(50deg) brightness(1);
-  animation: vfx-heal-play 900ms steps(34) forwards;
-}
-
+// Toned down now that the pixel shield bubble / orbiting stars carry these states — the glow
+// just seats the sprite on the portrait.
 @keyframes invulnerable-pulse {
-  0%   { box-shadow: 0 0 6px 2px rgba(251, 191, 36, 0.5); }
-  50%  { box-shadow: 0 0 16px 6px rgba(251, 191, 36, 0.9); }
-  100% { box-shadow: 0 0 6px 2px rgba(251, 191, 36, 0.5); }
+  0%, 100% { box-shadow: 0 0 4px 1px rgba(251, 191, 36, 0.35); }
+  50%      { box-shadow: 0 0 10px 3px rgba(251, 191, 36, 0.6); }
 }
 
 @keyframes stunned-pulse {
-  0%   { box-shadow: 0 0 6px 2px rgba(96, 165, 250, 0.5); }
-  50%  { box-shadow: 0 0 16px 6px rgba(147, 51, 234, 0.9); }
-  100% { box-shadow: 0 0 6px 2px rgba(96, 165, 250, 0.5); }
+  0%, 100% { box-shadow: 0 0 4px 1px rgba(250, 204, 21, 0.3); }
+  50%      { box-shadow: 0 0 10px 3px rgba(147, 51, 234, 0.55); }
 }
 
-@keyframes floatUp {
-  0% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(-50px);
-  }
+// Lucky-find slam: drops in big, lands with a squash + flash, holds, then rises out.
+@keyframes shopFloatPop {
+  0%   { transform: translate(-50%, -18px) scale(1.6); opacity: 0; }
+  7%   { transform: translate(-50%, 0) scale(1.2, 0.8); opacity: 1; filter: brightness(2.6); }
+  12%  { transform: translate(-50%, 0) scale(0.95, 1.08); filter: brightness(1); }
+  17%  { transform: translate(-50%, 0) scale(1); }
+  75%  { transform: translate(-50%, -8px); opacity: 1; }
+  100% { transform: translate(-50%, -40px); opacity: 0; }
 }
 
-@keyframes shopFloatUp {
-  0% {
-    opacity: 0;
-    transform: translate(-50%, 16px);
-  }
-  15% {
-    opacity: 1;
-    transform: translate(-50%, 0);
-  }
-  75% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-    transform: translate(-50%, -40px);
-  }
-}
-
-// Draft-phase event text — floats up from the bottom of the screen (full-width
-// fixed container), matching the amber lucky-find aesthetic.
+// Draft-phase event text — pops in at the bottom of the screen (full-width fixed container,
+// see triggerDraftLogFloatingText), holds, then rises out. Pixel font + hard outline like the
+// combat text, on a dark plate so long sentences stay readable over the shop. --sy stacks
+// messages that arrive back to back.
 .draft-log-float {
-  @apply absolute text-amber-300 font-extrabold pointer-events-none z-20;
-  bottom: 0;
+  @apply absolute pointer-events-none z-20;
+  bottom: 12px;
   left: 50%;
-  transform: translateX(-50%);
-  font-size: clamp(0.65rem, 3vw, 0.875rem);
+  font-family: 'PixelParchment', 'Darinia', sans-serif;
+  font-size: clamp(0.8rem, 3.4vw, 1.05rem);
+  line-height: 1.15;
   white-space: nowrap;
-  max-width: 90vw;
+  max-width: 92vw;
   overflow: hidden;
   text-overflow: ellipsis;
-  animation: draftLogFloatUp 4s ease-in forwards;
-  text-shadow: 0 0 6px rgba(0, 0, 0, 0.9), 0 1px 4px #000;
-  -webkit-text-stroke: 0.5px #d97706;
+  padding: 4px 10px;
+  border: 2px solid rgba(180, 120, 30, 0.7);
+  border-radius: 3px;
+  background: rgba(10, 8, 4, 0.72);
+  color: #fcd34d;
+  --e: #451a03;
+  text-shadow:
+    2px 0 0 var(--e), -2px 0 0 var(--e), 0 2px 0 var(--e), 0 -2px 0 var(--e),
+    2px 2px 0 var(--e), -2px 2px 0 var(--e), 2px -2px 0 var(--e), -2px -2px 0 var(--e);
+  transform: translate(-50%, var(--sy, 0px));
+  opacity: 0;
+  animation: draftLogPop 3.2s ease-out forwards;
 }
 
-@keyframes draftLogFloatUp {
-  0%   { opacity: 0;   transform: translateX(-50%) translateY(0); }
-  12%  { opacity: 1;   transform: translateX(-50%) translateY(-12px); }
-  75%  { opacity: 1;   transform: translateX(-50%) translateY(-30vh); }
-  100% { opacity: 0;   transform: translateX(-50%) translateY(-40vh); }
+@keyframes draftLogPop {
+  0%   { transform: translate(-50%, var(--sy)) scale(0.6); opacity: 0; filter: brightness(2.5); }
+  8%   { transform: translate(-50%, calc(var(--sy) - 10px)) scale(1.12); opacity: 1; filter: brightness(1.3); }
+  14%  { transform: translate(-50%, calc(var(--sy) - 12px)) scale(1); filter: brightness(1); }
+  40%  { transform: translate(-50%, calc(var(--sy) - 13px)); }
+  60%  { transform: translate(-50%, calc(var(--sy) - 12px)); }
+  75%  { transform: translate(-50%, calc(var(--sy) - 12vh)); opacity: 1; }
+  100% { transform: translate(-50%, calc(var(--sy) - 22vh)); opacity: 0; }
 }
 
 @keyframes weapon-flash {
@@ -440,44 +333,16 @@ body {
   100% { transform: scale(1);    filter: brightness(1); }
 }
 
-@keyframes avatar-shake {
-  0%   { transform: translateX(0); }
-  20%  { transform: translateX(-8px); }
-  40%  { transform: translateX(8px); }
-  60%  { transform: translateX(-5px); }
-  80%  { transform: translateX(5px); }
-  100% { transform: translateX(0); }
-}
-
 @keyframes vfx-slash-play {
   0%   { background-position: 0% 0; opacity: 1; }
   85%  { opacity: 1; }
   100% { background-position: 100% 0; opacity: 0; }
 }
 
-@keyframes vfx-fire-play {
-  0%   { background-position: 0 0%; opacity: 1; }
-  85%  { opacity: 1; }
-  100% { background-position: 0 100%; opacity: 0; }
-}
-
 @keyframes vfx-fireworks-play {
   0%   { background-position: 0 0%; opacity: 1; }
   85%  { opacity: 1; }
   100% { background-position: 0 100%; opacity: 0; }
-}
-
-@keyframes vfx-poison-play {
-  0%   { background-position: 0% 0; opacity: 0; }
-  10%  { opacity: 0.85; }
-  80%  { opacity: 0.85; }
-  100% { background-position: 100% 0; opacity: 0; }
-}
-
-@keyframes vfx-heal-play {
-  0%   { background-position: 0% 0; opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
-  15%  { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-  100% { background-position: 100% 0; opacity: 0; transform: translate(-50%, -50%) scale(1.1); }
 }
 
 .mat-toolbar, .mat-toolbar *,
@@ -555,6 +420,40 @@ body {
   }
 }
 
+// ─── Draft shop layout ───────────────────────────────────────────────────
+// Shop cards size themselves to the space available: 8rem on phones (2 columns), otherwise the
+// smaller of a third of the free width and what two rows fit vertically, capped at 15rem. When
+// the character panel is open on wide screens (body.draft-panel-open, set by DraftToolbar), the
+// stage reserves room on the left so the panel no longer covers the first shop column (and on
+// the right for the button rail) — never squeezing cards below 12rem, so on narrower desktops
+// the panel may still overlap a little.
+.shop-cell {
+  width: 8rem;
+  height: 11rem;
+}
+
+@media (min-width: 640px) {
+  .shop-cell {
+    --cell-w: clamp(9rem, min(calc((100vw - var(--shop-inset, 0px) - var(--shop-rail, 0px) - 4rem) / 3), calc((100vh - 8rem) / 2 * 0.75)), 15rem);
+    width: var(--cell-w);
+    height: calc(var(--cell-w) / 0.75);
+  }
+}
+
+// --shop-rail keeps the shifted shop clear of the fixed Level up / Refresh / Lock column.
+@media (min-width: 1024px) {
+  body.draft-panel-open {
+    --shop-rail: 8rem;
+    --shop-inset: min(470px, calc(100vw - 40rem - var(--shop-rail)));
+  }
+}
+
+.draft-stage {
+  padding-left: var(--shop-inset, 0px);
+  padding-right: var(--shop-rail, 0px);
+  transition: padding 220ms ease-out;
+}
+
 .game-bg {
   background-image: url('assets/BG_01.png');
   background-size: cover;
@@ -575,6 +474,7 @@ body {
   pointer-events: none;
   white-space: nowrap;
   color: #fde68a;
+  font-family: 'PixelParchment', 'Darinia', sans-serif;
   font-size: 22px;
   font-weight: 900;
   text-shadow: 2px 2px 0 #451a03, 0 0 8px #f59e0b;
@@ -588,4 +488,403 @@ body {
 }
 @media (prefers-reduced-motion: reduce) {
   .empowered-number { animation: none; }
+}
+
+// ─── Floating combat text ─────────────────────────────────────────────────
+// Spawned by spawnFloat() in TriggerAnimations.ts into the `damage-numbers-{playerId}` overlay.
+// Pixel font + hard 8-direction pixel outline (no blurry -webkit-text-stroke). Each variant sets
+// --ft-fill/--ft-edge; motion classes (ft-pop/ft-tick/ft-rise/ft-slam/ft-dodge) read the per-spawn
+// CSS vars --dx (arc drift), --sy (stack offset when numbers land close together), --dir (±1).
+.ft {
+  position: absolute;
+  z-index: 12;
+  pointer-events: none;
+  white-space: nowrap;
+  line-height: 1;
+  font-family: 'PixelParchment', 'Darinia', sans-serif;
+  font-size: 18px;
+  color: var(--ft-fill, #fff);
+  --e: var(--ft-edge, #000);
+  text-shadow:
+    2px 0 0 var(--e), -2px 0 0 var(--e), 0 2px 0 var(--e), 0 -2px 0 var(--e),
+    2px 2px 0 var(--e), -2px 2px 0 var(--e), 2px -2px 0 var(--e), -2px -2px 0 var(--e),
+    0 4px 0 rgba(0, 0, 0, 0.55);
+  transform: translate(-50%, var(--sy, 0px));
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+.ft--sm { font-size: 22px; }
+.ft--md { font-size: 24px; }
+.ft--lg { font-size: 28px; }
+.ft--xl { font-size: 34px; }
+
+.ft-dmg          { --ft-fill: #ff6b6b; --ft-edge: #3f0a0a; }
+.ft-dmg.ft--lg   { --ft-fill: #ffb347; --ft-edge: #4a1500; }
+.ft-dmg.ft--xl   { --ft-fill: #fff4d6; --ft-edge: #9f1d1d; }
+.ft-dmg--poison  { --ft-fill: #bef264; --ft-edge: #1a2e05; font-size: 19px; }
+.ft-dmg--burn    { --ft-fill: #fdba74; --ft-edge: #431407; font-size: 19px; }
+.ft-heal         { --ft-fill: #4ade80; --ft-edge: #052e16; }
+.ft-dodge-text   { --ft-fill: #bfdbfe; --ft-edge: #1e3a8a; font-size: 22px; }
+.ft-shield       { --ft-fill: #fde68a; --ft-edge: #78350f; font-size: 22px; }
+.ft-stun         { --ft-fill: #fde047; --ft-edge: #581c87; font-size: 23px; }
+.ft-gold         { --ft-fill: #facc15; --ft-edge: #713f12; }
+.ft-xp           { --ft-fill: #7dd3fc; --ft-edge: #0c4a6e; }
+.ft-lucky        { --ft-fill: #a3e635; --ft-edge: #365314; }
+.ft-ko           { --ft-fill: #fff7ed; --ft-edge: #7f1d1d; font-size: 40px; z-index: 13; }
+.ft-levelup      { --ft-fill: #fef08a; --ft-edge: #78350f; font-size: 28px; z-index: 13; }
+
+// Durations must match the lifetimes passed to spawnFloat().
+.ft-pop            { animation: ft-pop 950ms cubic-bezier(0.2, 0.7, 0.3, 1) forwards; }
+.ft-pop.ft--xl     { animation-duration: 1200ms; }
+.ft-tick           { animation: ft-tick 800ms ease-out forwards; }
+.ft-rise           { animation: ft-rise 1100ms ease-out forwards; }
+.ft-gold, .ft-xp   { animation-duration: 1200ms; }
+.ft-lucky          { animation-duration: 1400ms; }
+.ft-slam           { animation: ft-slam 1000ms ease-out forwards; }
+.ft-stun           { animation-duration: 1100ms; }
+.ft-ko             { animation-duration: 1600ms; }
+.ft-levelup        { animation-duration: 1300ms; }
+.ft-dodge          { animation: ft-dodge 800ms ease-out forwards; }
+
+// Hit number: flash-white pop with overshoot, then arcs outward along --dx and drops as it fades.
+@keyframes ft-pop {
+  0%   { transform: translate(-50%, var(--sy)) scale(0.3); opacity: 0; filter: brightness(3); }
+  10%  { transform: translate(calc(-50% + var(--dx) * 0.15), calc(var(--sy) - 16px)) scale(1.4); opacity: 1; filter: brightness(2.2); }
+  22%  { transform: translate(calc(-50% + var(--dx) * 0.3), calc(var(--sy) - 22px)) scale(1); filter: brightness(1); }
+  65%  { transform: translate(calc(-50% + var(--dx) * 0.75), calc(var(--sy) - 16px)) scale(1); opacity: 1; }
+  100% { transform: translate(calc(-50% + var(--dx)), calc(var(--sy) - 2px)) scale(0.85); opacity: 0; }
+}
+
+// DoT tick: no overshoot — a small steady drip upward.
+@keyframes ft-tick {
+  0%   { transform: translate(-50%, var(--sy)) scale(0.8); opacity: 0; }
+  15%  { transform: translate(-50%, calc(var(--sy) - 6px)) scale(1); opacity: 1; }
+  70%  { transform: translate(calc(-50% + var(--dx) * 0.3), calc(var(--sy) - 18px)); opacity: 1; }
+  100% { transform: translate(calc(-50% + var(--dx) * 0.4), calc(var(--sy) - 26px)); opacity: 0; }
+}
+
+// Gains (heal/gold/xp): gentle pop, then a clean rise.
+@keyframes ft-rise {
+  0%   { transform: translate(-50%, var(--sy)) scale(0.5); opacity: 0; }
+  14%  { transform: translate(-50%, calc(var(--sy) - 10px)) scale(1.2); opacity: 1; }
+  26%  { transform: translate(-50%, calc(var(--sy) - 14px)) scale(1); }
+  75%  { transform: translate(calc(-50% + var(--dx) * 0.25), calc(var(--sy) - 40px)); opacity: 1; }
+  100% { transform: translate(calc(-50% + var(--dx) * 0.3), calc(var(--sy) - 54px)); opacity: 0; }
+}
+
+// Status callouts: drop in big, land with a squash + flash, hold, drift off.
+@keyframes ft-slam {
+  0%   { transform: translate(-50%, calc(var(--sy) - 34px)) scale(2); opacity: 0; }
+  12%  { transform: translate(-50%, var(--sy)) scale(1.3, 0.75); opacity: 1; filter: brightness(3); }
+  20%  { transform: translate(-50%, var(--sy)) scale(0.92, 1.1); filter: brightness(1); }
+  28%  { transform: translate(-50%, var(--sy)) scale(1); }
+  75%  { transform: translate(-50%, calc(var(--sy) - 6px)); opacity: 1; }
+  100% { transform: translate(-50%, calc(var(--sy) - 20px)); opacity: 0; }
+}
+
+// Dodge: whips in sideways (skewed) in the avatar's dodge direction and keeps going.
+@keyframes ft-dodge {
+  0%   { transform: translate(calc(-50% - var(--dir, 1) * 24px), var(--sy)) skewX(calc(var(--dir, 1) * -20deg)); opacity: 0; }
+  18%  { transform: translate(-50%, calc(var(--sy) - 4px)) scale(1.1); opacity: 1; }
+  60%  { transform: translate(calc(-50% + var(--dir, 1) * 8px), calc(var(--sy) - 10px)) scale(1); opacity: 1; }
+  100% { transform: translate(calc(-50% + var(--dir, 1) * 30px), calc(var(--sy) - 18px)) skewX(calc(var(--dir, 1) * 12deg)); opacity: 0; }
+}
+
+// ─── Pixel-art sprite VFX (src/assets/vfx/px, generated by tools/vfx/generate-sprites.mjs) ───
+// Horizontal strips of --f frames. Panning background-position-x to f/(f-1)·100% with steps(f)
+// lands exactly on each frame boundary and gives every frame equal screen time (the last one
+// included), then steps off the strip — so one-shots vanish on their own and loops wrap cleanly.
+@keyframes vfx-px-strip {
+  from { background-position-x: 0%; }
+  to   { background-position-x: calc(100% * var(--f) / (var(--f) - 1)); }
+}
+
+.vfx-spark, .vfx-fire, .vfx-poison, .vfx-heal, .vfx-shield-ping, .vfx-dodge, .vfx-coins {
+  width: 96px;
+  height: 96px; // 32px frames at 3×
+  image-rendering: pixelated;
+  background-size: calc(var(--f) * 100%) 100%;
+  animation: vfx-px-strip var(--d) steps(var(--f)) forwards;
+}
+.vfx-spark       { --f: 5;  --d: 250ms; background-image: url(assets/vfx/px/hit_spark.png); z-index: 9; }
+.vfx-spark--gold { width: 128px; height: 128px; background-image: url(assets/vfx/px/hit_spark_gold.png); }
+.vfx-fire        { --f: 7;  --d: 560ms; background-image: url(assets/vfx/px/burn.png); }
+.vfx-poison      { --f: 8;  --d: 640ms; background-image: url(assets/vfx/px/poison.png); }
+.vfx-heal        { --f: 10; --d: 900ms; background-image: url(assets/vfx/px/heal.png); }
+.vfx-shield-ping { --f: 5;  --d: 300ms; background-image: url(assets/vfx/px/shield_ping.png); }
+.vfx-dodge       { --f: 5;  --d: 250ms; background-image: url(assets/vfx/px/dodge_streak.png); }
+.vfx-coins       { --f: 7;  --d: 490ms; background-image: url(assets/vfx/px/coin_burst.png); }
+.vfx-level-up {
+  --f: 8;
+  width: 96px;
+  height: 144px; // 32×48 frames at 3×
+  background-image: url(assets/vfx/px/level_up.png);
+  background-size: 800% 100%;
+  image-rendering: pixelated;
+  transform: translate(-50%, -70%);
+  animation: vfx-px-strip 800ms steps(8) forwards;
+}
+
+// ─── Shop / economy feedback ─────────────────────────────────────────────
+// Bought-item image arcing into the character panel (triggerItemFly).
+.item-fly {
+  position: fixed;
+  z-index: 2000;
+  pointer-events: none;
+  object-fit: contain;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 0 6px rgba(251, 191, 36, 0.9));
+}
+
+.panel-receive {
+  animation: panel-receive 380ms ease-out;
+}
+
+@keyframes panel-receive {
+  0%   { filter: brightness(1); }
+  30%  { filter: brightness(1.5) drop-shadow(0 0 10px rgba(251, 191, 36, 0.9)); }
+  100% { filter: brightness(1); }
+}
+
+// Shop cards deal in (flip from edge-on) whenever a slot gets a new item; --deal-i staggers
+// them left to right. Epic+ cards flash their rarity colour as they land.
+.shop-deal {
+  animation: shop-deal 420ms cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+  animation-delay: calc(var(--deal-i, 0) * 70ms);
+}
+
+@keyframes shop-deal {
+  0%   { transform: perspective(600px) translateY(-18px) rotateY(88deg) scale(0.9); opacity: 0; filter: brightness(2.2); }
+  55%  { transform: perspective(600px) rotateY(-10deg) scale(1.02); opacity: 1; filter: brightness(1.4); }
+  100% { transform: none; opacity: 1; filter: none; }
+}
+
+.shop-deal--r3 { --deal-glow: rgba(192, 132, 252, 0.95); }
+.shop-deal--r4 { --deal-glow: rgba(251, 146, 60, 0.95); }
+.shop-deal--r5 { --deal-glow: rgba(248, 113, 113, 1); }
+.shop-deal--r3, .shop-deal--r4, .shop-deal--r5 {
+  animation: shop-deal 420ms cubic-bezier(0.2, 0.9, 0.3, 1.2) both, shop-deal-glow 700ms ease-out both;
+  animation-delay: calc(var(--deal-i, 0) * 70ms), calc(var(--deal-i, 0) * 70ms + 300ms);
+}
+
+@keyframes shop-deal-glow {
+  0%   { box-shadow: 0 0 0 0 transparent; }
+  30%  { box-shadow: 0 0 24px 6px var(--deal-glow); }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+
+// Toolbar gold counter: counts via app-tween-number; pulses on change, flashes red on deny.
+#gold-counter { position: relative; display: inline-block; }
+#gold-counter .tween-up   { animation: tween-pop-up 400ms ease-out; display: inline-block; }
+#gold-counter .tween-down { animation: tween-pop-down 400ms ease-out; display: inline-block; }
+@keyframes tween-pop-up {
+  0%   { transform: scale(1); color: inherit; }
+  30%  { transform: scale(1.3); color: #fde047; }
+  100% { transform: scale(1); }
+}
+@keyframes tween-pop-down {
+  0%   { transform: scale(1); }
+  30%  { transform: scale(0.85); color: #fca5a5; }
+  100% { transform: scale(1); }
+}
+.gold-deny { animation: gold-deny 450ms steps(6); }
+@keyframes gold-deny {
+  0%, 100% { transform: translateX(0); color: inherit; }
+  15%  { transform: translateX(-3px); color: #f87171; }
+  35%  { transform: translateX(3px); color: #f87171; }
+  55%  { transform: translateX(-2px); color: #f87171; }
+  75%  { transform: translateX(2px); color: #f87171; }
+}
+.ft-spend { --ft-fill: #fca5a5; --ft-edge: #450a0a; font-size: 16px; }
+// Spend float hangs below the toolbar counter (rising would leave the screen).
+.ft-drop { animation: ft-drop 800ms ease-out forwards; }
+@keyframes ft-drop {
+  0%   { transform: translate(-50%, 0) scale(0.7); opacity: 0; }
+  15%  { transform: translate(-50%, 10px) scale(1.15); opacity: 1; }
+  70%  { transform: translate(-50%, 26px) scale(1); opacity: 1; }
+  100% { transform: translate(-50%, 36px); opacity: 0; }
+}
+
+// Can't-afford Buy button: stays clickable so the click can explain itself (shake + gold flash).
+.btn-unaffordable { opacity: 0.55; filter: grayscale(0.6); cursor: not-allowed; }
+.btn-deny { animation: btn-deny 360ms steps(6); }
+@keyframes btn-deny {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-5px); }
+  40% { transform: translateX(5px); }
+  60% { transform: translateX(-3px); }
+  80% { transform: translateX(3px); }
+}
+
+// Persistent status overlays, rendered by character-details while the state flag is set.
+.status-stun-loop {
+  position: absolute;
+  left: 50%;
+  top: -4px;
+  width: 110%;
+  aspect-ratio: 2 / 1; // 32×16 frames
+  z-index: 11;
+  pointer-events: none;
+  --f: 8;
+  background-image: url(assets/vfx/px/stun_loop.png);
+  background-size: 800% 100%;
+  image-rendering: pixelated;
+  animation: vfx-px-strip 640ms steps(8) infinite, stun-bob 1.2s ease-in-out infinite;
+}
+
+@keyframes stun-bob {
+  0%, 100% { transform: translate(-50%, -50%) rotate(-4deg); }
+  50%      { transform: translate(-50%, calc(-50% - 3px)) rotate(4deg); }
+}
+
+.status-shield-loop {
+  position: absolute;
+  inset: -8% -10%;
+  z-index: 9;
+  pointer-events: none;
+  --f: 6;
+  background-image: url(assets/vfx/px/shield_loop.png);
+  background-size: 600% 100%;
+  image-rendering: pixelated;
+  animation: vfx-px-strip 600ms steps(6) infinite, shield-in 240ms steps(3);
+}
+
+@keyframes shield-in {
+  from { transform: scale(0.6); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
+// Knocked-out fighter: portrait drains to grey and stays that way (see triggerKnockOut).
+.avatar-ko > :first-child {
+  filter: grayscale(1) brightness(0.55);
+  transition: filter 500ms ease-out 150ms;
+}
+
+// Stunned portrait reads dazed.
+.stunned-aura > :first-child {
+  filter: saturate(0.35) brightness(0.85);
+}
+
+// ─── Avatar reactions (TriggerAnimations: triggerAvatarHit / Dodge / Deflect) ───
+// Knockback, dodge and card shake are Web Animations (see playMotion) so they don't clobber the
+// aura pulses / card entrance animation; only the portrait-layer filters live here.
+// Flash only the portrait layer (first child), not the numbers/VFX overlay.
+.avatar-flash > :first-child { animation: avatar-flash 140ms steps(1); }
+@keyframes avatar-flash {
+  0%   { filter: brightness(2.6) saturate(0); }
+  50%  { filter: brightness(1.6) saturate(0.4); }
+  100% { filter: none; }
+}
+
+.avatar-tint--poison > :first-child { animation: avatar-tint-poison 360ms ease-out; }
+.avatar-tint--burn > :first-child   { animation: avatar-tint-burn 360ms ease-out; }
+@keyframes avatar-tint-poison {
+  0%   { filter: sepia(0.8) saturate(3.5) hue-rotate(50deg) brightness(1.1); }
+  100% { filter: none; }
+}
+@keyframes avatar-tint-burn {
+  0%   { filter: sepia(0.8) saturate(4) hue-rotate(-15deg) brightness(1.15); }
+  100% { filter: none; }
+}
+
+// Low-HP heartbeat (fight room, local player ≤ LOW_HP_PERCENT): red edges, double-thump.
+.low-hp-vignette {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 60%, rgba(185, 28, 28, 0.45) 100%);
+  animation: heartbeat 1.1s ease-in-out infinite;
+}
+
+@keyframes heartbeat {
+  0%, 100% { opacity: 0.25; }
+  12%      { opacity: 0.9; }
+  24%      { opacity: 0.4; }
+  36%      { opacity: 0.75; }
+  55%      { opacity: 0.25; }
+}
+
+// Fight intro: "name VS name" plates slide in above the countdown number.
+.vs-plates {
+  position: absolute;
+  top: 18%;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(8px, 2vw, 20px);
+  font-family: 'PixelParchment', 'Darinia', sans-serif;
+  --e: #1c0a00;
+}
+.vs-plate {
+  max-width: 38vw;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 6px 14px;
+  font-size: clamp(1rem, 3.2vw, 1.6rem);
+  color: #fef3c7;
+  background: rgba(10, 8, 4, 0.8);
+  border: 2px solid rgba(180, 120, 30, 0.8);
+  text-shadow: 2px 0 0 var(--e), -2px 0 0 var(--e), 0 2px 0 var(--e), 0 -2px 0 var(--e);
+}
+.vs-plate--left  { animation: vs-in-left 380ms cubic-bezier(0.2, 0.9, 0.3, 1.15) both; }
+.vs-plate--right { animation: vs-in-right 380ms cubic-bezier(0.2, 0.9, 0.3, 1.15) both; }
+.vs-mark {
+  font-size: clamp(1.6rem, 5vw, 2.6rem);
+  color: #f87171;
+  --e: #450a0a;
+  text-shadow: 3px 0 0 var(--e), -3px 0 0 var(--e), 0 3px 0 var(--e), 0 -3px 0 var(--e), 0 0 18px rgba(248, 113, 113, 0.7);
+  animation: vs-slam 420ms ease-out 260ms both;
+}
+@keyframes vs-in-left  { from { transform: translateX(-60vw); } to { transform: none; } }
+@keyframes vs-in-right { from { transform: translateX(60vw); } to { transform: none; } }
+@keyframes vs-slam {
+  0%   { transform: scale(3); opacity: 0; }
+  60%  { transform: scale(0.85); opacity: 1; filter: brightness(2); }
+  100% { transform: scale(1); filter: none; }
+}
+
+// Round result modal: gold/xp tally line.
+.round-earnings {
+  font-family: 'PixelParchment', 'Darinia', sans-serif;
+  font-size: 1.25rem;
+  color: var(--cm-text-muted, #cbd5e1);
+  margin: 0 0 0.75rem;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  align-items: baseline;
+}
+
+// Heavy hit on the local player: red screen-edge flash.
+.hit-vignette {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(ellipse at center, transparent 55%, rgba(220, 38, 38, 0.55) 100%);
+}
+.hit-vignette--on { animation: hit-vignette 420ms ease-out; }
+@keyframes hit-vignette {
+  0%   { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ft, .draft-log-float { animation: ft-fade 900ms ease-out forwards !important; }
+  .lucky-find-number { animation: ft-fade 3.5s ease-in forwards !important; }
+  .avatar-flash > :first-child, .hit-vignette--on { animation: none !important; }
+  .low-hp-vignette { animation: none; opacity: 0.5; }
+  .vs-plate--left, .vs-plate--right, .vs-mark { animation: none; }
+  .shop-deal, .shop-deal--r3, .shop-deal--r4, .shop-deal--r5 { animation: none; }
+  .status-stun-loop { animation: vfx-px-strip 640ms steps(8) infinite; transform: translate(-50%, -50%); }
+}
+@keyframes ft-fade {
+  0%   { opacity: 1; transform: translate(-50%, var(--sy, 0px)); }
+  100% { opacity: 0; transform: translate(-50%, calc(var(--sy, 0px) - 10px)); }
 }

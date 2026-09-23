@@ -1,8 +1,8 @@
-import { Component, Input } from '@angular/core';
+import { Component, inject, Input, OnChanges, PLATFORM_ID, Renderer2, SimpleChanges } from '@angular/core';
 import Item from '../../../models/colyseus-schema/ItemSchema';
 import { MatCardModule } from '@angular/material/card';
 import { DraftService } from '../../services/draft.service';
-import { NgClass } from '@angular/common';
+import { isPlatformBrowser, NgClass } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import {
@@ -31,6 +31,7 @@ import { InfoHintDirective } from '../../../common/directives/info-hint.directiv
 import { InfoContent } from '../../../common/models/info-content';
 import { ItemHoverCardDirective } from '../../../common/directives/item-hover-card.directive';
 import { InfoBoxService } from '../../../common/services/info-box.service';
+import { triggerItemFly } from '../../../common/TriggerAnimations';
 @Component({
   selector: 'app-shop',
   standalone: true,
@@ -50,7 +51,10 @@ import { InfoBoxService } from '../../../common/services/info-box.service';
   templateUrl: './shop.component.html',
   styleUrl: './shop.component.scss',
 })
-export class ShopComponent {
+export class ShopComponent implements OnChanges {
+  private readonly renderer = inject(Renderer2);
+  private readonly platformId = inject(PLATFORM_ID);
+
   draggedCard: Item | null = null;
   draggingCard = false;
   dragIndex = 0;
@@ -69,6 +73,31 @@ export class ShopComponent {
 
   @Input({ required: true }) shop: Item[];
   @Input({ required: true }) player: Player;
+
+  /** @for identity per slot: a new key (refresh, new round, lucky rarity upgrade) re-creates
+   *  the cell, which replays the `.shop-deal` flip-in. Buying only flips `sold`, so the card
+   *  stays put. */
+  shopCellKey(item: Item, index: number): string {
+    return `${index}:${item.itemId}:${item.rarity}:${item.upgradePreview ? 1 : 0}`;
+  }
+
+  /** sold flag per cell key from the previous shop snapshot — a false→true flip is a confirmed
+   *  purchase, which sends the item's image flying into the character panel. */
+  private soldByKey = new Map<string, boolean>();
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (!changes['shop']) return;
+    const next = new Map<string, boolean>();
+    (this.shop ?? []).forEach((item, i) => {
+      const key = this.shopCellKey(item, i);
+      if (this.soldByKey.get(key) === false && item.sold && isPlatformBrowser(this.platformId)) {
+        const cardEl = document.getElementById(`item-${i}`);
+        if (cardEl) triggerItemFly(this.renderer, this.platformId, this.getItemImage(item), cardEl);
+      }
+      next.set(key, !!item.sold);
+    });
+    this.soldByKey = next;
+  }
 
   getItemImage(item: Item) {
     return item.image ? item.image : 'assets/Item_ID_0_Empty.png';

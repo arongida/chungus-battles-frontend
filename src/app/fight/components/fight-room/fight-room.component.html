@@ -83,9 +83,21 @@
   </div>
 }
 
+<!-- Low-HP heartbeat: red screen-edge pulse while the local player is in danger -->
+@if (playerLowHp()) {
+  <div class="low-hp-vignette" aria-hidden="true"></div>
+}
+
 <!-- Fight-start countdown overlay -->
 @if (countdownText()) {
   <div class="fixed inset-0 z-[9998] flex items-center justify-center pointer-events-none">
+    @if (countdownText() !== 'Fight!') {
+      <div class="vs-plates" aria-hidden="true">
+        <span class="vs-plate vs-plate--left">{{ player()?.name }}</span>
+        <span class="vs-mark">VS</span>
+        <span class="vs-plate vs-plate--right">{{ enemy()?.name }}</span>
+      </div>
+    }
     <span class="countdown-number">{{ countdownText() }}</span>
   </div>
 }
@@ -114,13 +126,20 @@
     @if (battleResult() === 'win') {
       <div class="win-track">
         @for (filled of winPips(); track $index) {
-          <span class="win-pip" [class.filled]="filled"></span>
+          <span class="win-pip" [class.filled]="filled" [class.win-pip--new]="$index === roundWinWins() - 1"></span>
         }
         <span class="win-pip-goal">🏆</span>
       </div>
       <p class="win-track-caption">
         {{ roundWinWins() }} / {{ winsToWin }} wins
         @if (roundWinWins() < winsToWin) { · {{ winsToWin - roundWinWins() }} wins to go }
+      </p>
+    }
+    @if (earnedGold() > 0 || earnedXp() > 0) {
+      <p class="round-earnings">
+        Earned
+        @if (earnedGold() > 0) { <span class="text-yellow-300">+<app-tween-number [value]="earnedGold()" [durationMs]="700" /> 🟡</span> }
+        @if (earnedXp() > 0) { <span class="text-sky-300">+<app-tween-number [value]="earnedXp()" [durationMs]="700" /> XP</span> }
       </p>
     }
     @if (lossChoicePending()) {

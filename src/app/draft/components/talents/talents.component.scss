@@ -1,17 +1,40 @@
 .tp-panel {
   position: relative;
   z-index: 1400 !important;
-  width: 340px;
+  // Roomy and stable: wide enough that long descriptions wrap less, with a floor on height so
+  // rerolling to a shorter/longer talent (or the deal-in) doesn't make the popup jump in size.
+  width: min(480px, calc(100vw - 32px));
+  min-height: min(560px, calc(100vh - 96px));
   max-height: calc(100vh - 64px);
   overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: var(--cm-amber-dark) transparent;
+  overflow-x: hidden;
+  // Scrolls, but without a visible bar — a bar popping in/out mid-animation shifted the layout.
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+  display: flex;
+  flex-direction: column;
   background: var(--cm-bg);
   border: 1px solid var(--cm-border);
   border-radius: 6px;
   box-shadow: var(--cm-shadow);
   animation: tp-in 0.2s ease-out;
   text-shadow: 0 1px 1px rgba(100, 100, 100, 0.9);
+}
+
+.tp-card {
+  animation: tp-card-deal 320ms cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+  animation-delay: calc(120ms + var(--tp-i, 0) * 90ms);
+}
+
+// Vertical-only and never larger than its box: sideways slides/overshoot overflowed the panel.
+@keyframes tp-card-deal {
+  0%   { transform: translateY(10px); opacity: 0; filter: brightness(2); }
+  70%  { transform: translateY(-1px); opacity: 1; filter: brightness(1.2); }
+  100% { transform: none; opacity: 1; filter: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tp-card { animation: none; }
 }
 
 @keyframes tp-in {
@@ -166,6 +189,7 @@
 }
 
 .tp-bonuses {
+  margin-top: auto; // extra panel height (see .tp-panel min-height) goes above the perks
   padding: 10px 14px 12px;
   display: flex;
   flex-direction: column;

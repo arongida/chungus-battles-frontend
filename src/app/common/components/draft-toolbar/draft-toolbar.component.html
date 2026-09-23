@@ -2,7 +2,7 @@
   <div class="toolbar-grid">
     <div class="toolbar-col-start flex justify-between gap-1 sm:gap-4 items-center">
       <span class="text-sm sm:text-lg text-center shrink-0 cursor-default" [appInfoHint]="goldHint">
-        <span class="hidden sm:inline"></span>{{ player.gold }}🟡
+        <span class="hidden sm:inline"></span><span id="gold-counter"><app-tween-number [value]="player.gold" /></span>🟡
         <span class="text-yellow-400">+{{ player.income | number:'1.0-0' }}💰</span>
         @if (player.incomeDebt > 0) { <span class="text-red-400 text-xs">(−{{ player.incomeDebt | number:'1.0-0' }})</span> }
         <span class="text-green-400"> {{ player.luckyFindChance * 100 | number:'1.0-0' }}%🍀</span></span>
@@ -13,7 +13,8 @@
       <button mat-button class="level-up-toggle"
         (click)="toggleTalentPicker()" [appInfoHint]="talentHint"
         [class.ring-2]="showTalentPicker()"
-        [class.ring-yellow-400]="showTalentPicker()">
+        [class.ring-yellow-400]="showTalentPicker()"
+        [class.level-up-toggle--pending]="!showTalentPicker() && (availableTalents?.length ?? 0) > 0">
         <span class="level-up-toggle-label">Level up</span>
         <mat-icon [class.animate-bounce]="!showTalentPicker() && (availableTalents?.length ?? 0) > 0">
           {{ showTalentPicker() ? 'keyboard_arrow_down' : 'keyboard_arrow_up' }}
@@ -34,7 +35,7 @@
     </div>
 
     <div class="toolbar-col-end flex items-center">
-      <button mat-icon-button (click)="toggleInfoBox()" [appInfoHint]="infoBoxHint"
+      <button mat-icon-button aria-label="Help" (click)="toggleInfoBox()" [appInfoHint]="infoBoxHint"
         [class.text-amber-400]="infoBoxHighlighted()"
         [class.text-gray-400]="!infoBoxHighlighted()"
         [class.ring-1]="infoBoxHighlighted()"
@@ -43,24 +44,24 @@
         <mat-icon>{{ infoBoxHighlighted() ? 'help' : 'help_outline' }}</mat-icon>
       </button>
 
-      <button mat-icon-button (click)="openEncyclopedia()" [appInfoHint]="encyclopediaHint" [gatesAction]="true">
+      <button mat-icon-button aria-label="Encyclopedia" (click)="openEncyclopedia()" [appInfoHint]="encyclopediaHint" [gatesAction]="true">
         <mat-icon>menu_book</mat-icon>
       </button>
 
-      <button mat-icon-button (click)="cycleVolume()" [appInfoHint]="volumeHint" [gatesAction]="true">
+      <button mat-icon-button aria-label="Change volume" (click)="cycleVolume()" [appInfoHint]="volumeHint" [gatesAction]="true">
         <mat-icon>{{ volumeIcon }}</mat-icon>
       </button>
 
-      <button mat-icon-button (click)="openReplays()" [appInfoHint]="matchHistoryHint">
+      <button mat-icon-button aria-label="Match history" (click)="openReplays()" [appInfoHint]="matchHistoryHint">
         <mat-icon>history</mat-icon>
       </button>
 
-      <button mat-icon-button class="abandon-run-btn" (click)="confirmAbandon()" [appInfoHint]="abandonHint">
+      <button mat-icon-button aria-label="Abandon run" class="abandon-run-btn" (click)="confirmAbandon()" [appInfoHint]="abandonHint">
         <mat-icon>flag</mat-icon>
       </button>
 
       @if (isFighting()) {
-        <button mat-icon-button class="forfeit-fight-btn" (click)="confirmForfeit()" [appInfoHint]="forfeitHint">
+        <button mat-icon-button aria-label="Forfeit fight" class="forfeit-fight-btn" (click)="confirmForfeit()" [appInfoHint]="forfeitHint">
           <mat-icon>exit_to_app</mat-icon>
         </button>
       }

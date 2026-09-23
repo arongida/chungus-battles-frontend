@@ -14,7 +14,7 @@
   @if (talents().length > 0) {
     <div class="tp-list">
       @for (talent of talents(); track talent.talentId) {
-        <div class="tp-card" (click)="selectTalent(talent.talentId)" [appInfoHint]="getTalentHint(talent, $index)">
+        <div class="tp-card" [style.--tp-i]="$index" (click)="selectTalent(talent.talentId, $event)" [appInfoHint]="getTalentHint(talent, $index)">
           <div class="tp-card-main">
             <img class="tp-icon" [src]="talent.image" [alt]="talent.name" />
             <div class="tp-card-body">

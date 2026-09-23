@@ -41,6 +41,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { FightStatsDialogComponent } from '../../../common/components/fight-stats-dialog/fight-stats-dialog.component';
 import { triggerCelebrationFireworks } from '../../../common/TriggerAnimations';
 import { LOW_HP_PERCENT } from '../../../common/components/character-details/character-details.component';
+import { TweenNumberComponent } from '../../../common/components/tween-number/tween-number.component';
 import { RoundInfoComponent } from '../../../common/components/round-info/round-info.component';
 import { CharacterDetailsComponent } from '../../../common/components/character-details/character-details.component';
 import { SkillIconsComponent } from '../../../common/components/skill-icons/skill-icons.component';
@@ -87,6 +88,7 @@ function coercePlayer(src: any): Player {
     CharacterDetailsComponent,
     DraggablePanelDirective,
     InfoHintDirective,
+    TweenNumberComponent,
   ],
   templateUrl: './fight-room.component.html',
   styleUrl: './fight-room.component.scss',
@@ -130,6 +132,9 @@ export class FightRoomComponent implements OnInit {
   gameOverMessage = signal('');
   gameOverMinimized = signal(false);
   countdownText = signal<string | null>(null);
+  /** Gold/XP the local player gained this fight (reward_gain), tallied in the result modal. */
+  earnedGold = signal(0);
+  earnedXp = signal(0);
   fightSpeed = signal(1);
   readonly fightSpeeds = FightService.ALLOWED_FIGHT_SPEEDS;
   readonly fightSpeedHint = fightSpeedHint;
@@ -182,6 +187,12 @@ export class FightRoomComponent implements OnInit {
           entries: this.entries,
           triggerAttack: (id) => this.triggerAttack(id),
           triggerDamagedAvatar: (id) => this.triggerDamagedAvatarImage(id),
+          onReward: (msg) => {
+            if (msg.playerId !== this.player()?.playerId) return;
+            const gold = Math.round(msg.gold ?? 0), xp = Math.round(msg.xp ?? 0);
+            if (gold) this.earnedGold.update(g => g + gold);
+            if (xp) this.earnedXp.update(x => x + xp);
+          },
           onEndBattle: (msg) => {
             const result = msg?.result ?? 'win';
             const lossReward = msg?.lossReward ?? null;

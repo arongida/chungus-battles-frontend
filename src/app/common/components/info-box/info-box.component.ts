@@ -1,4 +1,4 @@
-import { Component, computed, ElementRef, inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { Component, computed, ElementRef, HostListener, inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { DOCUMENT, isPlatformBrowser, NgClass } from '@angular/common';
 import { InfoBoxService } from '../../services/info-box.service';
 import { MatIconModule } from '@angular/material/icon';
@@ -21,6 +21,14 @@ export class InfoBoxComponent implements OnInit {
   displayContent = computed(() =>
     this.infoBoxService.currentContent() ?? this.infoBoxService.pageDefault()
   );
+
+  /** Escape hides the help panel — unless a dialog/overlay is open, which owns Escape itself. */
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    if (!this.isVisible()) return;
+    if (this.document.querySelector('.cdk-overlay-pane')) return;
+    this.infoBoxService.hide();
+  }
 
   ngOnInit() {
     if (isPlatformBrowser(this.platformId)) {

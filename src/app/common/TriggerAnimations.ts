@@ -90,9 +90,9 @@ export function triggerGoldDeny(): void {
 /** Bought item: a copy of its image arcs from the shop card into the character panel (the
  *  #character-panel-buy-zone drop target), which pulses when it lands. Called once the server
  *  has confirmed the purchase (the slot flipped to sold), not optimistically on click. */
-export function triggerItemFly(renderer: Renderer2, platformId: Object, imageUrl: string, fromEl: HTMLElement): void {
+export function triggerItemFly(renderer: Renderer2, platformId: Object, imageUrl: string, fromEl: HTMLElement, targetId = 'character-panel-buy-zone'): void {
   if (!isPlatformBrowser(platformId) || prefersReducedMotion()) return;
-  const target = document.getElementById('character-panel-buy-zone');
+  const target = document.getElementById(targetId);
   if (!target || !imageUrl) return;
   const from = fromEl.getBoundingClientRect();
   const to = target.getBoundingClientRect();
@@ -116,6 +116,12 @@ export function triggerItemFly(renderer: Renderer2, platformId: Object, imageUrl
     img.remove();
     restartClass(target, 'panel-receive', 380);
   };
+}
+
+/** Level-up celebration over the player's panel: a pixel light pillar plus a "LEVEL UP!" slam. */
+export function triggerLevelUpBurst(renderer: Renderer2, platformId: Object, playerId: number): void {
+  triggerSpriteVfx(renderer, platformId, 'level-up', playerId);
+  spawnFloat(renderer, platformId, playerId, 'LEVEL UP!', ['ft', 'ft-slam', 'ft-levelup'], 1300);
 }
 
 /** Undoes triggerKnockOut (replay restart re-uses the same avatar elements). */
@@ -525,7 +531,7 @@ export function triggerCelebrationFireworks(renderer: Renderer2, platformId: Obj
   setTimeout(() => { if (overlay.parentNode === document.body) renderer.removeChild(document.body, overlay); }, totalDuration + 100);
 }
 
-export type VfxKind = 'slash' | 'fire' | 'poison' | 'heal' | 'spark' | 'shield-ping' | 'dodge' | 'coins';
+export type VfxKind = 'slash' | 'fire' | 'poison' | 'heal' | 'spark' | 'shield-ping' | 'dodge' | 'coins' | 'level-up';
 
 /** Must match the sprite-sheet animation durations defined in styles.scss (`.vfx-{kind}`).
  *  `slash` has a randomized duration (see SLASH_DURATION_*_MS below) — this entry is just
@@ -539,6 +545,7 @@ const VFX_DURATION_MS: Record<VfxKind, number> = {
   'shield-ping': 300,
   dodge: 250,
   coins: 490,
+  'level-up': 800,
 };
 
 /** Impact-style VFX get a small random offset from center so repeated hits don't all

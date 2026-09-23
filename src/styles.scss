@@ -532,6 +532,7 @@ body {
 .ft-xp           { --ft-fill: #7dd3fc; --ft-edge: #0c4a6e; }
 .ft-lucky        { --ft-fill: #a3e635; --ft-edge: #365314; }
 .ft-ko           { --ft-fill: #fff7ed; --ft-edge: #7f1d1d; font-size: 40px; z-index: 13; }
+.ft-levelup      { --ft-fill: #fef08a; --ft-edge: #78350f; font-size: 28px; z-index: 13; }
 
 // Durations must match the lifetimes passed to spawnFloat().
 .ft-pop            { animation: ft-pop 950ms cubic-bezier(0.2, 0.7, 0.3, 1) forwards; }
@@ -543,6 +544,7 @@ body {
 .ft-slam           { animation: ft-slam 1000ms ease-out forwards; }
 .ft-stun           { animation-duration: 1100ms; }
 .ft-ko             { animation-duration: 1600ms; }
+.ft-levelup        { animation-duration: 1300ms; }
 .ft-dodge          { animation: ft-dodge 800ms ease-out forwards; }
 
 // Hit number: flash-white pop with overshoot, then arcs outward along --dx and drops as it fades.
@@ -613,6 +615,16 @@ body {
 .vfx-shield-ping { --f: 5;  --d: 300ms; background-image: url(assets/vfx/px/shield_ping.png); }
 .vfx-dodge       { --f: 5;  --d: 250ms; background-image: url(assets/vfx/px/dodge_streak.png); }
 .vfx-coins       { --f: 7;  --d: 490ms; background-image: url(assets/vfx/px/coin_burst.png); }
+.vfx-level-up {
+  --f: 8;
+  width: 96px;
+  height: 144px; // 32×48 frames at 3×
+  background-image: url(assets/vfx/px/level_up.png);
+  background-size: 800% 100%;
+  image-rendering: pixelated;
+  transform: translate(-50%, -70%);
+  animation: vfx-px-strip 800ms steps(8) forwards;
+}
 
 // ─── Shop / economy feedback ─────────────────────────────────────────────
 // Bought-item image arcing into the character panel (triggerItemFly).
@@ -794,6 +806,60 @@ body {
   55%      { opacity: 0.25; }
 }
 
+// Fight intro: "name VS name" plates slide in above the countdown number.
+.vs-plates {
+  position: absolute;
+  top: 18%;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(8px, 2vw, 20px);
+  font-family: 'PixelParchment', 'Darinia', sans-serif;
+  --e: #1c0a00;
+}
+.vs-plate {
+  max-width: 38vw;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 6px 14px;
+  font-size: clamp(1rem, 3.2vw, 1.6rem);
+  color: #fef3c7;
+  background: rgba(10, 8, 4, 0.8);
+  border: 2px solid rgba(180, 120, 30, 0.8);
+  text-shadow: 2px 0 0 var(--e), -2px 0 0 var(--e), 0 2px 0 var(--e), 0 -2px 0 var(--e);
+}
+.vs-plate--left  { animation: vs-in-left 380ms cubic-bezier(0.2, 0.9, 0.3, 1.15) both; }
+.vs-plate--right { animation: vs-in-right 380ms cubic-bezier(0.2, 0.9, 0.3, 1.15) both; }
+.vs-mark {
+  font-size: clamp(1.6rem, 5vw, 2.6rem);
+  color: #f87171;
+  --e: #450a0a;
+  text-shadow: 3px 0 0 var(--e), -3px 0 0 var(--e), 0 3px 0 var(--e), 0 -3px 0 var(--e), 0 0 18px rgba(248, 113, 113, 0.7);
+  animation: vs-slam 420ms ease-out 260ms both;
+}
+@keyframes vs-in-left  { from { transform: translateX(-60vw); } to { transform: none; } }
+@keyframes vs-in-right { from { transform: translateX(60vw); } to { transform: none; } }
+@keyframes vs-slam {
+  0%   { transform: scale(3); opacity: 0; }
+  60%  { transform: scale(0.85); opacity: 1; filter: brightness(2); }
+  100% { transform: scale(1); filter: none; }
+}
+
+// Round result modal: gold/xp tally line.
+.round-earnings {
+  font-family: 'PixelParchment', 'Darinia', sans-serif;
+  font-size: 1.25rem;
+  color: var(--cm-text-muted, #cbd5e1);
+  margin: 0 0 0.75rem;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  align-items: baseline;
+}
+
 // Heavy hit on the local player: red screen-edge flash.
 .hit-vignette {
   position: fixed;
@@ -814,6 +880,7 @@ body {
   .lucky-find-number { animation: ft-fade 3.5s ease-in forwards !important; }
   .avatar-flash > :first-child, .hit-vignette--on { animation: none !important; }
   .low-hp-vignette { animation: none; opacity: 0.5; }
+  .vs-plate--left, .vs-plate--right, .vs-mark { animation: none; }
   .shop-deal, .shop-deal--r3, .shop-deal--r4, .shop-deal--r5 { animation: none; }
   .status-stun-loop { animation: vfx-px-strip 640ms steps(8) infinite; transform: translate(-50%, -50%); }
 }

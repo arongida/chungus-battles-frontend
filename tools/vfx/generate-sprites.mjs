@@ -430,6 +430,41 @@ function coinBurst() {
   S.save('coin_burst');
 }
 
+/** Level-up: a column of light shoots up, chevrons rise through it, sparkles scatter. 8f @ 32×48. */
+function levelUp() {
+  const S = sheet(32, 48, 8);
+  const core = hex('#fffbeb'), beam = hex('#fde68a', 200), beamEdge = hex('#f59e0b', 150), chev = hex('#fef3c7'), chevEdge = hex('#d97706'), spark = hex('#ffffff');
+  const r = rng(77);
+  const sparks = Array.from({ length: 14 }, () => ({ x: 6 + r() * 20, y: 8 + r() * 36, f: Math.floor(r() * 8) }));
+  const beamTop = [40, 22, 6, 0, 0, 0, 0, 0];
+  const beamW = [2, 4, 5, 5, 4, 3, 2, 1];
+  for (let f = 0; f < 8; f++) {
+    const g = S.frame(f);
+    // Beam grows up from the ground, then thins out.
+    const w = beamW[f], top = beamTop[f];
+    for (let y = top; y < 46; y++) {
+      for (let dx = -w; dx <= w; dx++) {
+        const edge = Math.abs(dx) === w;
+        if (f >= 5 && (y + dx + f) % 2) continue; // dither out while fading
+        g.px(16 + dx, y, edge ? beamEdge : Math.abs(dx) <= 1 ? core : beam);
+      }
+    }
+    // Ground ring on the first frames.
+    if (f < 4) g.ring(16, 45, 5 + f * 3, 1 + f * 0.6, f < 2 ? core : beamEdge, f >= 2);
+    // Two chevrons rising through the beam.
+    [0, 10].forEach(off => {
+      const y = 40 - f * 5 - off;
+      if (y < 2 || y > 44) return;
+      for (let i = 0; i <= 4; i++) { g.px(16 - i, y + i, chev); g.px(16 + i, y + i, chev); g.px(16 - i, y + i + 1, chevEdge); g.px(16 + i, y + i + 1, chevEdge); }
+    });
+    sparks.forEach(sp => {
+      if (sp.f === f) { g.px(sp.x, sp.y, spark); }
+      if (sp.f === f - 1) [[-1, 0], [1, 0], [0, -1], [0, 1]].forEach(([x, y]) => g.px(sp.x + x, sp.y + y, chev));
+    });
+  }
+  S.save('level_up');
+}
+
 console.log(`Writing sprites to ${OUT_DIR}`);
 hitSpark('hit_spark', ['#ffffff', '#fef08a', '#f97316', '#b91c1c']);
 hitSpark('hit_spark_gold', ['#ffffff', '#fde68a', '#f59e0b', '#92400e']);
@@ -441,3 +476,4 @@ shieldLoop();
 shieldPing();
 dodgeStreak();
 coinBurst();
+levelUp();

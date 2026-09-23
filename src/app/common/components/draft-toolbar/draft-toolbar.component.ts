@@ -17,7 +17,10 @@ import { MatMenuModule } from '@angular/material/menu';
 import { DraftService } from '../../../draft/services/draft.service';
 import { CharacterDetailsComponent } from '../character-details/character-details.component';
 import { TweenNumberComponent } from '../tween-number/tween-number.component';
-import { triggerFloatIn } from '../../TriggerAnimations';
+import { triggerFloatIn, triggerLevelUpBurst } from '../../TriggerAnimations';
+
+/** How long the level-up burst plays before the talent picker opens. */
+const LEVEL_UP_BURST_MS = 850;
 import { MatCardModule } from '@angular/material/card';
 import { MatBadgeModule } from '@angular/material/badge';
 import { SoundOptions, SoundsService } from '../../services/sounds.service';
@@ -332,7 +335,12 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
       if (settledLevel > (this.lastConfirmedLevel ?? 0)) {
         this.lastConfirmedLevel = settledLevel;
         this.levelUpPending.set(true);
-        this.showTalentPicker.set(true);
+        // Let the level-up burst land before the picker covers the screen.
+        triggerLevelUpBurst(this.renderer, this.platformId, this.player.playerId);
+        this.levelCheckTimeoutId = setTimeout(() => {
+          this.levelCheckTimeoutId = null;
+          this.showTalentPicker.set(true);
+        }, LEVEL_UP_BURST_MS);
       }
     }, 400);
   }

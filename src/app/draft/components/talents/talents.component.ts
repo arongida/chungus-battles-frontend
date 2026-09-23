@@ -1,4 +1,5 @@
-import { Component, computed } from '@angular/core';
+import { Component, computed, inject, PLATFORM_ID, Renderer2 } from '@angular/core';
+import { triggerItemFly } from '../../../common/TriggerAnimations';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { Talent } from '../../../models/colyseus-schema/TalentSchema';
 import { MatIconModule } from '@angular/material/icon';
@@ -34,6 +35,9 @@ export class TalentsComponent {
   playerLevel = computed(() => this.characterDetailsService.talentPlayerLevel());
   playerAvatarUrl = computed(() => this.characterDetailsService.talentPlayerAvatarUrl());
   playerCooldownReduction = computed(() => this.characterDetailsService.talentPlayerCooldownReduction());
+
+  private readonly renderer = inject(Renderer2);
+  private readonly platformId = inject(PLATFORM_ID);
 
   constructor(
     public draftService: DraftService,
@@ -137,7 +141,10 @@ export class TalentsComponent {
     talent.showDetails = false;
   }
 
-  selectTalent(talentId: number) {
+  selectTalent(talentId: number, event?: MouseEvent) {
+    // Cosmetic: the picked icon flies into the character panel as the picker closes.
+    const icon = (event?.currentTarget as HTMLElement | null)?.querySelector('img.tp-icon') as HTMLImageElement | null;
+    if (icon) triggerItemFly(this.renderer, this.platformId, icon.src, icon);
     this.draftService.sendMessage('select_talent', { talentId });
     this.dialogRef.close();
   }

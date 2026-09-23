@@ -55,6 +55,8 @@ export interface AnimationContext {
    *  signal. The knockback/flash itself is played by the service. */
   triggerDamagedAvatar: (playerId: number) => void;
   onEndBattle?: (msg: EndBattleMessage) => void;
+  /** Called for every gold/xp gain — the fight room tallies the local player's for the result modal. */
+  onReward?: (msg: RewardGainMessage) => void;
   /** `string` covers replays recorded before game_over carried an object payload. */
   onGameOver?: (msg: GameOverMessage | string) => void;
   onGameWin?: (msg: GameWinMessage) => void;
@@ -218,6 +220,7 @@ export class FightAnimationService {
    *  doesn't spam audio. Xp gains get a floating number only — no sound for now. */
   applyReward(ctx: AnimationContext, msg: RewardGainMessage): void {
     if (!(ctx.player() && ctx.enemy())) return;
+    ctx.onReward?.(msg);
 
     if (msg.gold) {
       triggerShowGoldNumber(ctx.renderer, ctx.platformId, Math.round(msg.gold), msg.playerId);

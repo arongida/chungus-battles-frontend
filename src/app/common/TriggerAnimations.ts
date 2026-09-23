@@ -256,9 +256,14 @@ function spawnFireworksBurst(renderer: Renderer2, container: HTMLElement, rarity
   setTimeout(() => { if (fireworks.parentNode === container) renderer.removeChild(container, fireworks); }, FIREWORKS_BURST_DURATION_MS);
 }
 
-/** Draft-phase event notification — floats a message up from the bottom of the screen
- *  (the full-width `#draft-log-floats` fixed container) instead of a Material snackbar
- *  toast. Uses the same amber lucky-find aesthetic. */
+/** Back-to-back draft logs (e.g. a potion drink + its brew) stack upward instead of overlapping. */
+const DRAFT_LOG_STACK_WINDOW_MS = 400;
+const DRAFT_LOG_STACK_STEP_PX = 34;
+const DRAFT_LOG_LIFETIME_MS = 3200; // must match draftLogPop in styles.scss
+let draftLogStack = { t: 0, n: 0 };
+
+/** Draft-phase event notification — pops a message in at the bottom of the screen (the
+ *  full-width `#draft-log-floats` fixed container) instead of a Material snackbar toast. */
 export function triggerDraftLogFloatingText(renderer: Renderer2, platformId: Object, text: string): void {
   if (!isPlatformBrowser(platformId)) return;
   const container = document.getElementById('draft-log-floats');
@@ -266,11 +271,15 @@ export function triggerDraftLogFloatingText(renderer: Renderer2, platformId: Obj
     console.warn('[TriggerAnimations] #draft-log-floats container not found');
     return;
   }
+  const now = performance.now();
+  const n = now - draftLogStack.t < DRAFT_LOG_STACK_WINDOW_MS ? Math.min(draftLogStack.n + 1, 3) : 0;
+  draftLogStack = { t: now, n };
   const el = renderer.createElement('div');
   renderer.addClass(el, 'draft-log-float');
   renderer.appendChild(el, renderer.createText(text));
+  renderer.setStyle(el, '--sy', `${-n * DRAFT_LOG_STACK_STEP_PX}px`, RendererStyleFlags2.DashCase);
   renderer.appendChild(container, el);
-  setTimeout(() => { if (el.parentNode === container) renderer.removeChild(container, el); }, 4000);
+  setTimeout(() => { if (el.parentNode === container) renderer.removeChild(container, el); }, DRAFT_LOG_LIFETIME_MS + 50);
 }
 
 /** Draft-phase equivalent of the battle damage numbers — floats a message up from the

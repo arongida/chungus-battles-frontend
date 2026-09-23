@@ -153,30 +153,27 @@ body {
 // snackbar toast. Stays inside the card's own bounds (the card wrapper clips overflow
 // for its hover/drag visuals), unlike the battle damage numbers which escape their box.
 .lucky-find-number {
-  @apply absolute left-1/2 text-amber-300 text-[10px] sm:text-xs md:text-sm font-extrabold whitespace-normal text-center pointer-events-none z-20 leading-tight;
+  @apply absolute left-1/2 text-[11px] sm:text-[13px] md:text-[15px] whitespace-normal text-center pointer-events-none z-20 leading-tight;
+  font-family: 'PixelParchment', 'Darinia', sans-serif;
   bottom: 6%;
   width: 90%;
   padding: 0 4px;
+  color: var(--lf-fill, #fcd34d);
+  --e: var(--lf-edge, #451a03);
+  // Hard 1px pixel outline + drop — same idiom as the combat `.ft` text, scaled to the card.
+  text-shadow:
+    1px 0 0 var(--e), -1px 0 0 var(--e), 0 1px 0 var(--e), 0 -1px 0 var(--e),
+    1px 1px 0 var(--e), -1px 1px 0 var(--e), 1px -1px 0 var(--e), -1px -1px 0 var(--e),
+    0 2px 0 rgba(0, 0, 0, 0.8);
   transform: translate(-50%, 0);
-  animation: shopFloatUp 3.5s ease-in forwards;
-  text-shadow: 0 0 4px rgba(0, 0, 0, 0.95), 0 1px 3px #000;
+  opacity: 0;
+  animation: shopFloatPop 3.5s ease-out forwards;
 }
 
-.lucky-find-number--rare {
-  color: #60a5fa;
-}
-
-.lucky-find-number--epic {
-  color: #c084fc;
-}
-
-.lucky-find-number--legendary {
-  color: #fb923c;
-}
-
-.lucky-find-number--mythic {
-  color: #f87171;
-}
+.lucky-find-number--rare      { --lf-fill: #93c5fd; --lf-edge: #172554; }
+.lucky-find-number--epic      { --lf-fill: #d8b4fe; --lf-edge: #3b0764; }
+.lucky-find-number--legendary { --lf-fill: #fdba74; --lf-edge: #431407; }
+.lucky-find-number--mythic    { --lf-fill: #fca5a5; --lf-edge: #450a0a; }
 
 .invulnerable-aura {
   animation: invulnerable-pulse 1s ease-in-out infinite;
@@ -281,46 +278,53 @@ body {
   50%      { box-shadow: 0 0 10px 3px rgba(147, 51, 234, 0.55); }
 }
 
-@keyframes shopFloatUp {
-  0% {
-    opacity: 0;
-    transform: translate(-50%, 16px);
-  }
-  15% {
-    opacity: 1;
-    transform: translate(-50%, 0);
-  }
-  75% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-    transform: translate(-50%, -40px);
-  }
+// Lucky-find slam: drops in big, lands with a squash + flash, holds, then rises out.
+@keyframes shopFloatPop {
+  0%   { transform: translate(-50%, -18px) scale(1.6); opacity: 0; }
+  7%   { transform: translate(-50%, 0) scale(1.2, 0.8); opacity: 1; filter: brightness(2.6); }
+  12%  { transform: translate(-50%, 0) scale(0.95, 1.08); filter: brightness(1); }
+  17%  { transform: translate(-50%, 0) scale(1); }
+  75%  { transform: translate(-50%, -8px); opacity: 1; }
+  100% { transform: translate(-50%, -40px); opacity: 0; }
 }
 
-// Draft-phase event text — floats up from the bottom of the screen (full-width
-// fixed container), matching the amber lucky-find aesthetic.
+// Draft-phase event text — pops in at the bottom of the screen (full-width fixed container,
+// see triggerDraftLogFloatingText), holds, then rises out. Pixel font + hard outline like the
+// combat text, on a dark plate so long sentences stay readable over the shop. --sy stacks
+// messages that arrive back to back.
 .draft-log-float {
-  @apply absolute text-amber-300 font-extrabold pointer-events-none z-20;
-  bottom: 0;
+  @apply absolute pointer-events-none z-20;
+  bottom: 12px;
   left: 50%;
-  transform: translateX(-50%);
-  font-size: clamp(0.65rem, 3vw, 0.875rem);
+  font-family: 'PixelParchment', 'Darinia', sans-serif;
+  font-size: clamp(0.8rem, 3.4vw, 1.05rem);
+  line-height: 1.15;
   white-space: nowrap;
-  max-width: 90vw;
+  max-width: 92vw;
   overflow: hidden;
   text-overflow: ellipsis;
-  animation: draftLogFloatUp 4s ease-in forwards;
-  text-shadow: 0 0 6px rgba(0, 0, 0, 0.9), 0 1px 4px #000;
-  -webkit-text-stroke: 0.5px #d97706;
+  padding: 4px 10px;
+  border: 2px solid rgba(180, 120, 30, 0.7);
+  border-radius: 3px;
+  background: rgba(10, 8, 4, 0.72);
+  color: #fcd34d;
+  --e: #451a03;
+  text-shadow:
+    2px 0 0 var(--e), -2px 0 0 var(--e), 0 2px 0 var(--e), 0 -2px 0 var(--e),
+    2px 2px 0 var(--e), -2px 2px 0 var(--e), 2px -2px 0 var(--e), -2px -2px 0 var(--e);
+  transform: translate(-50%, var(--sy, 0px));
+  opacity: 0;
+  animation: draftLogPop 3.2s ease-out forwards;
 }
 
-@keyframes draftLogFloatUp {
-  0%   { opacity: 0;   transform: translateX(-50%) translateY(0); }
-  12%  { opacity: 1;   transform: translateX(-50%) translateY(-12px); }
-  75%  { opacity: 1;   transform: translateX(-50%) translateY(-30vh); }
-  100% { opacity: 0;   transform: translateX(-50%) translateY(-40vh); }
+@keyframes draftLogPop {
+  0%   { transform: translate(-50%, var(--sy)) scale(0.6); opacity: 0; filter: brightness(2.5); }
+  8%   { transform: translate(-50%, calc(var(--sy) - 10px)) scale(1.12); opacity: 1; filter: brightness(1.3); }
+  14%  { transform: translate(-50%, calc(var(--sy) - 12px)) scale(1); filter: brightness(1); }
+  40%  { transform: translate(-50%, calc(var(--sy) - 13px)); }
+  60%  { transform: translate(-50%, calc(var(--sy) - 12px)); }
+  75%  { transform: translate(-50%, calc(var(--sy) - 12vh)); opacity: 1; }
+  100% { transform: translate(-50%, calc(var(--sy) - 22vh)); opacity: 0; }
 }
 
 @keyframes weapon-flash {
@@ -476,20 +480,20 @@ body {
   will-change: transform, opacity;
 }
 
-.ft--sm { font-size: 15px; }
-.ft--md { font-size: 19px; }
-.ft--lg { font-size: 25px; }
-.ft--xl { font-size: 33px; }
+.ft--sm { font-size: 22px; }
+.ft--md { font-size: 24px; }
+.ft--lg { font-size: 28px; }
+.ft--xl { font-size: 34px; }
 
 .ft-dmg          { --ft-fill: #ff6b6b; --ft-edge: #3f0a0a; }
 .ft-dmg.ft--lg   { --ft-fill: #ffb347; --ft-edge: #4a1500; }
 .ft-dmg.ft--xl   { --ft-fill: #fff4d6; --ft-edge: #9f1d1d; }
-.ft-dmg--poison  { --ft-fill: #bef264; --ft-edge: #1a2e05; font-size: 15px; }
-.ft-dmg--burn    { --ft-fill: #fdba74; --ft-edge: #431407; font-size: 15px; }
+.ft-dmg--poison  { --ft-fill: #bef264; --ft-edge: #1a2e05; font-size: 19px; }
+.ft-dmg--burn    { --ft-fill: #fdba74; --ft-edge: #431407; font-size: 19px; }
 .ft-heal         { --ft-fill: #4ade80; --ft-edge: #052e16; }
-.ft-dodge-text   { --ft-fill: #bfdbfe; --ft-edge: #1e3a8a; }
-.ft-shield       { --ft-fill: #fde68a; --ft-edge: #78350f; font-size: 19px; }
-.ft-stun         { --ft-fill: #fde047; --ft-edge: #581c87; font-size: 20px; }
+.ft-dodge-text   { --ft-fill: #bfdbfe; --ft-edge: #1e3a8a; font-size: 22px; }
+.ft-shield       { --ft-fill: #fde68a; --ft-edge: #78350f; font-size: 22px; }
+.ft-stun         { --ft-fill: #fde047; --ft-edge: #581c87; font-size: 23px; }
 .ft-gold         { --ft-fill: #facc15; --ft-edge: #713f12; }
 .ft-xp           { --ft-fill: #7dd3fc; --ft-edge: #0c4a6e; }
 .ft-lucky        { --ft-fill: #a3e635; --ft-edge: #365314; }
@@ -654,7 +658,8 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ft { animation: ft-fade 900ms ease-out forwards !important; }
+  .ft, .draft-log-float { animation: ft-fade 900ms ease-out forwards !important; }
+  .lucky-find-number { animation: ft-fade 3.5s ease-in forwards !important; }
   .avatar-flash > :first-child, .hit-vignette--on { animation: none !important; }
   .status-stun-loop { animation: vfx-px-strip 640ms steps(8) infinite; transform: translate(-50%, -50%); }
 }

@@ -81,6 +81,43 @@ export function triggerAvatarLunge(playerId: number): void {
   if (weapon) restartClass(weapon, 'animate-weapon-attack', 400);
 }
 
+/** Can't-afford feedback: the toolbar gold counter (#gold-counter) flashes red and shakes. */
+export function triggerGoldDeny(): void {
+  const el = document.getElementById('gold-counter');
+  if (el) restartClass(el, 'gold-deny', 450);
+}
+
+/** Bought item: a copy of its image arcs from the shop card into the character panel (the
+ *  #character-panel-buy-zone drop target), which pulses when it lands. Called once the server
+ *  has confirmed the purchase (the slot flipped to sold), not optimistically on click. */
+export function triggerItemFly(renderer: Renderer2, platformId: Object, imageUrl: string, fromEl: HTMLElement): void {
+  if (!isPlatformBrowser(platformId) || prefersReducedMotion()) return;
+  const target = document.getElementById('character-panel-buy-zone');
+  if (!target || !imageUrl) return;
+  const from = fromEl.getBoundingClientRect();
+  const to = target.getBoundingClientRect();
+  const size = Math.min(from.width, from.height) * 0.55;
+  const img = renderer.createElement('img') as HTMLImageElement;
+  img.src = imageUrl;
+  renderer.addClass(img, 'item-fly');
+  renderer.setStyle(img, 'width', `${size}px`);
+  renderer.setStyle(img, 'height', `${size}px`);
+  renderer.setStyle(img, 'left', `${from.left + from.width / 2 - size / 2}px`);
+  renderer.setStyle(img, 'top', `${from.top + from.height / 2 - size / 2}px`);
+  renderer.appendChild(document.body, img);
+  const dx = to.left + Math.min(to.width / 2, 120) - (from.left + from.width / 2);
+  const dy = to.top + Math.min(to.height / 2, 140) - (from.top + from.height / 2);
+  const anim = img.animate([
+    { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+    { transform: `translate(${dx * 0.35}px, ${dy * 0.35 - 70}px) scale(1.15) rotate(-8deg)`, opacity: 1, offset: 0.35 },
+    { transform: `translate(${dx}px, ${dy}px) scale(0.35) rotate(10deg)`, opacity: 0.2 },
+  ], { duration: 520, easing: 'cubic-bezier(0.5, 0, 0.75, 0)' });
+  anim.onfinish = () => {
+    img.remove();
+    restartClass(target, 'panel-receive', 380);
+  };
+}
+
 /** Undoes triggerKnockOut (replay restart re-uses the same avatar elements). */
 export function clearKnockOut(playerIds: number[]): void {
   for (const id of playerIds) {
@@ -256,6 +293,18 @@ function spawnFloat(renderer: Renderer2, platformId: Object, playerId: number, t
     console.warn(`Damage container not found for playerId: ${playerId}`);
     return;
   }
+  spawnFloatIn(renderer, container, text, classes, lifetimeMs, opts);
+}
+
+/** Floating text anchored to any element by id (e.g. the toolbar gold counter). The container
+ *  must be positioned (relative/absolute) — see spawnFloat for the classes/motion contract. */
+export function triggerFloatIn(renderer: Renderer2, platformId: Object, containerId: string, text: string, classes: string[], lifetimeMs: number): void {
+  if (!isPlatformBrowser(platformId)) return;
+  const container = document.getElementById(containerId);
+  if (container) spawnFloatIn(renderer, container, text, classes, lifetimeMs);
+}
+
+function spawnFloatIn(renderer: Renderer2, container: HTMLElement, text: string, classes: string[], lifetimeMs: number, opts: { dir?: boolean } = {}): void {
   const now = performance.now();
   const prev = floatStack.get(container);
   const n = prev && now - prev.t < FLOAT_STACK_WINDOW_MS ? Math.min(prev.n + 1, FLOAT_STACK_MAX) : 0;
@@ -476,7 +525,7 @@ export function triggerCelebrationFireworks(renderer: Renderer2, platformId: Obj
   setTimeout(() => { if (overlay.parentNode === document.body) renderer.removeChild(document.body, overlay); }, totalDuration + 100);
 }
 
-export type VfxKind = 'slash' | 'fire' | 'poison' | 'heal' | 'spark' | 'shield-ping' | 'dodge';
+export type VfxKind = 'slash' | 'fire' | 'poison' | 'heal' | 'spark' | 'shield-ping' | 'dodge' | 'coins';
 
 /** Must match the sprite-sheet animation durations defined in styles.scss (`.vfx-{kind}`).
  *  `slash` has a randomized duration (see SLASH_DURATION_*_MS below) — this entry is just
@@ -489,6 +538,7 @@ const VFX_DURATION_MS: Record<VfxKind, number> = {
   heal: 900,
   'shield-ping': 300,
   dodge: 250,
+  coins: 490,
 };
 
 /** Impact-style VFX get a small random offset from center so repeated hits don't all

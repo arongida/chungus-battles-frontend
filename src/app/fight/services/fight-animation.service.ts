@@ -232,6 +232,7 @@ export class FightAnimationService {
 
     if (msg.gold && !this.throttled(`reward:${msg.playerId}`)) {
       this.sounds.playSound(SoundOptions.GOLD);
+      triggerSpriteVfx(ctx.renderer, ctx.platformId, 'coins', msg.playerId);
     }
   }
 

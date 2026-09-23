@@ -9,6 +9,7 @@ import {
   UpperCasePipe,
 } from '@angular/common';
 import Item from '../../../models/colyseus-schema/ItemSchema';
+import { triggerGoldDeny } from '../../TriggerAnimations';
 import {
   Player,
 } from '../../../models/colyseus-schema/PlayerSchema';
@@ -42,6 +43,21 @@ export class ItemCardComponent {
    *  a caller sets isFreeLuckyFind without specifying a source) falls back to the clover. */
   @Input({ required: false }) freeClaimSource: FreeClaimSource = null;
   @Output() buyClicked = new EventEmitter<void>();
+
+  /** Unaffordable buys stay clickable so the click can explain itself: the button shakes and
+   *  the toolbar gold counter flashes red, instead of a dead disabled button. */
+  onBuyClick(event: Event): void {
+    if (this.player.gold < this.item.price) {
+      const btn = event.currentTarget as HTMLElement;
+      btn.classList.remove('btn-deny');
+      void btn.offsetWidth;
+      btn.classList.add('btn-deny');
+      setTimeout(() => btn.classList.remove('btn-deny'), 360);
+      triggerGoldDeny();
+      return;
+    }
+    this.buyClicked.emit();
+  }
   @Output() unequipClicked = new EventEmitter<void>();
 
   protected readonly ItemRarity = ItemRarity;

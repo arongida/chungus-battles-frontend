@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnDestroy, OnInit, PLATFORM_ID, SimpleChanges, effect, inject, signal, viewChild } from '@angular/core';
+import { Component, Input, OnChanges, OnDestroy, OnInit, PLATFORM_ID, Renderer2, SimpleChanges, effect, inject, signal, viewChild } from '@angular/core';
 import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
 import Item from '../../../models/colyseus-schema/ItemSchema';
 import { MatIconModule } from '@angular/material/icon';
@@ -16,6 +16,8 @@ import { DecimalPipe, NgClass, isPlatformBrowser } from '@angular/common';
 import { MatMenuModule } from '@angular/material/menu';
 import { DraftService } from '../../../draft/services/draft.service';
 import { CharacterDetailsComponent } from '../character-details/character-details.component';
+import { TweenNumberComponent } from '../tween-number/tween-number.component';
+import { triggerFloatIn } from '../../TriggerAnimations';
 import { MatCardModule } from '@angular/material/card';
 import { MatBadgeModule } from '@angular/material/badge';
 import { SoundOptions, SoundsService } from '../../services/sounds.service';
@@ -49,6 +51,7 @@ import { RunRegistryService } from '../../services/run-registry.service';
     DraggablePanelDirective,
     NextFightPickerComponent,
     DragDropModule,
+    TweenNumberComponent,
   ],
   templateUrl: './draft-toolbar.component.html',
   styleUrl: './draft-toolbar.component.scss',
@@ -170,7 +173,9 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
     return this.canLevelUp ? this.levelUpHint : this.buyXpHint;
   }
 
-  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  private readonly platformId = inject(PLATFORM_ID);
+  private readonly isBrowser = isPlatformBrowser(this.platformId);
+  private readonly renderer = inject(Renderer2);
   private readonly characterPanel = viewChild(CharacterDetailsComponent);
 
   constructor(
@@ -236,7 +241,18 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
     this.infoBoxService.setPageDefault(this.isFighting() ? this.fightingHint : this.shopPhaseHint);
   }
 
+  /** Last seen gold, to float "-X" off the counter when gold is spent (gains already float
+   *  over the avatar via reward_gain). Undefined until the first player snapshot. */
+  private lastGold?: number;
+
   ngOnChanges(changes: SimpleChanges): void {
+    if (changes['player'] && this.player && this.isBrowser) {
+      const gold = this.player.gold;
+      if (this.lastGold !== undefined && gold < this.lastGold && !this.isFighting()) {
+        triggerFloatIn(this.renderer, this.platformId, 'gold-counter', `-${this.lastGold - gold}`, ['ft', 'ft-drop', 'ft-spend'], 800);
+      }
+      this.lastGold = gold;
+    }
     // Keep the talent dialog's data current on every change — not just open/close
     // transitions — so it reflects live updates (e.g. a reroll) while it's already open.
     // TalentsComponent reads these instead of @Inputs since MatDialog content has no

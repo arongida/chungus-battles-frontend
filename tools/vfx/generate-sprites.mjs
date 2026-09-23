@@ -398,6 +398,38 @@ function dodgeStreak() {
   S.save('dodge_streak');
 }
 
+/** Gold coins popping out of a point and falling with gravity, with a sparkle. 7f @ 32px. */
+function coinBurst() {
+  const S = sheet(32, 32, 7);
+  const edge = hex('#92400e'), body = hex('#facc15'), hi = hex('#fef9c3'), shade = hex('#ca8a04'), spark = hex('#ffffff');
+  const r = rng(314);
+  const coins = Array.from({ length: 7 }, (_, i) => {
+    const a = -Math.PI / 2 + (i / 6 - 0.5) * Math.PI * 1.1 + (r() - 0.5) * 0.3;
+    const v = 2.3 + r() * 1.1;
+    return { vx: Math.cos(a) * v, vy: Math.sin(a) * v, spin: Math.floor(r() * 3) };
+  });
+  for (let f = 0; f < 7; f++) {
+    const g = S.frame(f);
+    if (f === 0) { g.disc(16, 20, 3, hi); g.disc(16, 20, 1, spark); }
+    if (f === 1) [[0, -5], [0, 5], [-5, 0], [5, 0]].forEach(([x, y]) => g.px(16 + x, 20 + y, hi));
+    coins.forEach(c => {
+      if (f === 0) return;
+      const t = f;
+      const x = 16 + c.vx * t, y = 20 + c.vy * t + 0.42 * t * t;
+      const phase = (f + c.spin) % 3; // 0 = face, 1 = three-quarter, 2 = edge-on
+      if (phase === 0) {
+        g.disc(x, y, 2, body); g.ring(x, y, 2, 2, edge); g.px(x - 1, y - 1, hi); g.px(x + 1, y + 1, shade);
+      } else if (phase === 1) {
+        for (let dy = -2; dy <= 2; dy++) { g.px(x - 1, y + dy, edge); g.px(x, y + dy, body); g.px(x + 1, y + dy, edge); }
+        g.px(x, y - 1, hi);
+      } else {
+        for (let dy = -2; dy <= 2; dy++) g.px(x, y + dy, dy === -2 ? hi : shade);
+      }
+    });
+  }
+  S.save('coin_burst');
+}
+
 console.log(`Writing sprites to ${OUT_DIR}`);
 hitSpark('hit_spark', ['#ffffff', '#fef08a', '#f97316', '#b91c1c']);
 hitSpark('hit_spark_gold', ['#ffffff', '#fde68a', '#f59e0b', '#92400e']);
@@ -408,3 +440,4 @@ stunLoop();
 shieldLoop();
 shieldPing();
 dodgeStreak();
+coinBurst();

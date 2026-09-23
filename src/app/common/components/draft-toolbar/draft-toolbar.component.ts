@@ -205,6 +205,7 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
         this.talentDialogRef = this.dialog.open(TalentsComponent, {
           backdropClass: 'chungus-dialog-backdrop',
           autoFocus: false,
+          maxWidth: 'calc(100vw - 16px)', // default 80vw would squeeze the picker on phones
         });
         this.talentDialogRef.afterClosed().subscribe(() => {
           this.talentDialogRef = undefined;

@@ -1,18 +1,136 @@
-import { Renderer2 } from '@angular/core';
+import { Renderer2, RendererStyleFlags2 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { DamageType } from '../models/types/MessageTypes';
 
-export function triggerAvatarHit(playerId: number) {
-  const el = document.getElementById(`avatar-${playerId}`);
-  if (el) {
-    el.classList.add('animate-avatar-hit');
-    setTimeout(() => el.classList.remove('animate-avatar-hit'), 400);
+export type HitSeverity = 'light' | 'medium' | 'heavy';
+
+/** Size tier for floating combat numbers, from the amount relative to the target's max HP. */
+export type NumberTier = 'sm' | 'md' | 'lg' | 'xl';
+
+export function numberTier(amount: number, maxHp: number): NumberTier {
+  const frac = maxHp > 0 ? amount / maxHp : 0;
+  if (frac < 0.04) return 'sm';
+  if (frac < 0.1) return 'md';
+  if (frac < 0.2) return 'lg';
+  return 'xl';
+}
+
+export function hitSeverity(tier: NumberTier): HitSeverity {
+  return tier === 'sm' ? 'light' : tier === 'md' ? 'medium' : 'heavy';
+}
+
+const KNOCKBACK_PX: Record<HitSeverity, number> = { light: 4, medium: 8, heavy: 14 };
+const HIT_DURATION_MS: Record<HitSeverity, number> = { light: 220, medium: 300, heavy: 460 };
+
+/** Knockback keyframes per severity; `kb` is the signed outward distance. Heavy holds its peak
+ *  (offsets .10 → .24) — a short hit-stop so big blows register. */
+function knockbackFrames(severity: HitSeverity, kb: number): Keyframe[] {
+  const at = (x: number, sx = 1, sy = 1) => `translateX(${x}px) scale(${sx}, ${sy})`;
+  switch (severity) {
+    case 'light': return [
+      { transform: 'none' }, { transform: at(kb, 1.03, 0.97), offset: 0.25 }, { transform: 'none' }];
+    case 'medium': return [
+      { transform: 'none' }, { transform: at(kb, 1.06, 0.94), offset: 0.18 },
+      { transform: at(-kb * 0.25, 0.98, 1.02), offset: 0.45 }, { transform: 'none' }];
+    case 'heavy': return [
+      { transform: 'none' }, { transform: at(kb, 1.1, 0.9), offset: 0.1 }, { transform: at(kb, 1.1, 0.9), offset: 0.24 },
+      { transform: at(-kb * 0.35, 0.97, 1.03), offset: 0.42 }, { transform: at(kb * 0.15), offset: 0.62 }, { transform: 'none' }];
   }
+}
+
+const CARD_SHAKE_FRAMES: Keyframe[] = [
+  { translate: '0 0' }, { translate: '-4px 2px' }, { translate: '4px -2px' }, { translate: '-3px -1px' },
+  { translate: '3px 1px' }, { translate: '-1px 1px' }, { translate: '0 0' },
+];
+
+/** -1 if the element sits left of screen center, +1 otherwise — hits knock avatars outward,
+ *  away from the opponent (panels are draggable, so this is measured, not assumed). */
+function outwardDir(el: HTMLElement): number {
+  const r = el.getBoundingClientRect();
+  return r.left + r.width / 2 < window.innerWidth / 2 ? -1 : 1;
+}
+
+function prefersReducedMotion(): boolean {
+  return window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+}
+
+/** Motion runs through the Web Animations API rather than CSS classes: the avatar/card already
+ *  own CSS animations (aura pulses, the card's slideDown entrance) that a class-based animation
+ *  would clobber and then replay on removal. One live motion per element; a new one replaces it. */
+const liveMotion = new WeakMap<Element, Animation>();
+function playMotion(el: Element, frames: Keyframe[], durationMs: number): void {
+  if (prefersReducedMotion()) return;
+  liveMotion.get(el)?.cancel();
+  liveMotion.set(el, el.animate(frames, { duration: durationMs, easing: 'ease-out' }));
+}
+
+/** Restarts a one-shot CSS animation class, even if it's mid-flight from a previous hit. */
+function restartClass(el: Element, cls: string, ms: number): void {
+  el.classList.remove(cls);
+  void (el as HTMLElement).offsetWidth;
+  el.classList.add(cls);
+  setTimeout(() => el.classList.remove(cls), ms);
+}
+
+/** Struck-avatar feedback: white flash + directional knockback with squash, scaled by severity.
+ *  Heavy hits also hit-stop, shake the whole character card, and — when `vignette` is set (the
+ *  local player got hit) — flash red screen edges. DoT ticks skip the knockback and just pulse a
+ *  poison/burn tint so they read as ticks, not blows. */
+export function triggerAvatarHit(playerId: number, opts: { severity?: HitSeverity; dot?: 'poison' | 'burn'; vignette?: boolean } = {}) {
+  const el = document.getElementById(`avatar-${playerId}`);
+  if (!el) return;
+  if (opts.dot) {
+    restartClass(el, `avatar-tint--${opts.dot}`, 360);
+    return;
+  }
+  const severity = opts.severity ?? 'medium';
+  playMotion(el, knockbackFrames(severity, outwardDir(el) * KNOCKBACK_PX[severity]), HIT_DURATION_MS[severity]);
+  restartClass(el, 'avatar-flash', 140);
+  if (severity === 'heavy') {
+    const card = el.closest('app-character-details')?.firstElementChild;
+    if (card) playMotion(card, CARD_SHAKE_FRAMES, 360);
+    if (opts.vignette) triggerHitVignette();
+  }
+}
+
+let vignetteEl: HTMLElement | null = null;
+function triggerHitVignette(): void {
+  if (!vignetteEl || !vignetteEl.isConnected) {
+    vignetteEl = document.createElement('div');
+    vignetteEl.className = 'hit-vignette';
+    document.body.appendChild(vignetteEl);
+  }
+  restartClass(vignetteEl, 'hit-vignette--on', 420);
+}
+
+/** Dodge: quick blink-sidestep outward plus a speed-streak sprite. */
+export function triggerAvatarDodge(renderer: Renderer2, platformId: Object, playerId: number): void {
+  if (!isPlatformBrowser(platformId)) return;
+  const el = document.getElementById(`avatar-${playerId}`);
+  if (!el) return;
+  const dir = outwardDir(el);
+  // Blink-sidestep: two quick flickers while displaced read as an afterimage.
+  playMotion(el, [
+    { transform: 'none', opacity: 1 },
+    { transform: `translateX(${dir * 18}px) skewX(${dir * -10}deg)`, opacity: 0.35, offset: 0.2 },
+    { opacity: 0.85, offset: 0.35 },
+    { transform: `translateX(${dir * 18}px)`, opacity: 0.4, offset: 0.5 },
+    { transform: 'none', opacity: 1 },
+  ], 320);
+  triggerSpriteVfx(renderer, platformId, 'dodge', playerId, false, dir);
+}
+
+/** Absorbed hit (invulnerable / Brace block): tiny "tink" recoil plus a hex deflect flash. */
+export function triggerAvatarDeflect(renderer: Renderer2, platformId: Object, playerId: number): void {
+  if (!isPlatformBrowser(platformId)) return;
+  const el = document.getElementById(`avatar-${playerId}`);
+  if (el) playMotion(el, knockbackFrames('light', outwardDir(el) * 3), HIT_DURATION_MS.light);
+  triggerSpriteVfx(renderer, platformId, 'shield-ping', playerId);
 }
 
 /** The impact slash is styled by the damage event; the combat log supplies its label. */
 export function triggerEmpoweredHit(renderer: Renderer2, platformId: Object, defenderId: number): void {
-  showFloatingText(renderer, platformId, defenderId, 'empowered-number', 'EMPOWERED!');
+  spawnFloat(renderer, platformId, defenderId, 'EMPOWERED!', ['empowered-number'], 1100);
 }
 
 export function triggerTalentActivation(talentId: number, playerId: number) {
@@ -36,58 +154,65 @@ export function triggerItemActivation(playerId: number, slot: string) {
   }
 }
 
-export function triggerShowDamageNumber(renderer: Renderer2, platformId: Object, damage: number, defenderId: number, type: DamageType = 'normal'): void {
-  if (!isPlatformBrowser(platformId)) return;
-  const container = document.getElementById(`damage-numbers-${defenderId}`);
-  if (!container) {
-    console.warn(`Damage container not found for defenderId: ${defenderId}`);
+export function triggerShowDamageNumber(renderer: Renderer2, platformId: Object, damage: number, defenderId: number, type: DamageType = 'normal', tier: NumberTier = 'md'): void {
+  if (type === 'poison' || type === 'burn') {
+    // DoT ticks: small, no overshoot — they should read as a steady drip, not a blow.
+    spawnFloat(renderer, platformId, defenderId, `-${damage}`, ['ft', 'ft-tick', `ft-dmg--${type}`], 800);
     return;
   }
-  const el = renderer.createElement('div');
-  renderer.addClass(el, 'damage-number');
-  if (type === 'poison' || type === 'burn') {
-    renderer.addClass(el, `damage-number--${type}`);
-  }
-  renderer.appendChild(el, renderer.createText(`-${damage}`));
-  renderer.setStyle(el, 'left', `${Math.random() * 100}%`);
-  renderer.setStyle(el, 'fontSize', `${18 + damage * 0.5}px`);
-  renderer.appendChild(container, el);
-  setTimeout(() => { if (el.parentNode === container) renderer.removeChild(container, el); }, 3000);
+  spawnFloat(renderer, platformId, defenderId, `-${damage}`, ['ft', 'ft-pop', 'ft-dmg', `ft--${tier}`], tier === 'xl' ? 1200 : 950);
 }
 
 export function triggerShowDodgeText(renderer: Renderer2, platformId: Object, defenderId: number): void {
-  showFloatingText(renderer, platformId, defenderId, 'dodge-number', 'Dodge!');
+  spawnFloat(renderer, platformId, defenderId, 'DODGE', ['ft', 'ft-dodge', 'ft-dodge-text'], 800, { dir: true });
 }
 
 export function triggerShowInvulnerableText(renderer: Renderer2, platformId: Object, playerId: number): void {
-  showFloatingText(renderer, platformId, playerId, 'invulnerable-number', '🛡️ Invulnerable!');
+  spawnFloat(renderer, platformId, playerId, 'IMMUNE', ['ft', 'ft-slam', 'ft-shield'], 1000);
 }
 
-/** Brace (shield skill): one hit fully negated. Reuses the invulnerable-number styling — same
- *  shield motif, no new CSS needed. */
+/** Brace (shield skill): one hit fully negated — same shield styling as invulnerable. */
 export function triggerShowBlockText(renderer: Renderer2, platformId: Object, defenderId: number): void {
-  showFloatingText(renderer, platformId, defenderId, 'invulnerable-number', '🛡️ Blocked!');
+  spawnFloat(renderer, platformId, defenderId, 'BLOCK', ['ft', 'ft-slam', 'ft-shield'], 1000);
 }
 
-/** Shield Bash (item skill): shown over the STUNNED player (the one who just attacked into the
- *  shield), same as dodge shows over the player who dodged. */
+/** Shown over the STUNNED player (the one who just attacked into the shield for Shield Bash). */
 export function triggerShowStunnedText(renderer: Renderer2, platformId: Object, stunnedPlayerId: number): void {
-  showFloatingText(renderer, platformId, stunnedPlayerId, 'stunned-number', '💫 Stunned!');
+  spawnFloat(renderer, platformId, stunnedPlayerId, 'STUNNED!', ['ft', 'ft-slam', 'ft-stun'], 1100);
 }
 
-function showFloatingText(renderer: Renderer2, platformId: Object, playerId: number, cssClass: string, text: string): void {
+/** Floats hitting the same avatar within this window stack upward instead of overlapping. */
+const FLOAT_STACK_WINDOW_MS = 180;
+const FLOAT_STACK_STEP_PX = 18;
+const FLOAT_STACK_MAX = 4;
+const floatStack = new WeakMap<HTMLElement, { t: number; n: number }>();
+
+/** Shared floating-text spawner for the `damage-numbers-{playerId}` avatar overlay. `classes`
+ *  (normally `ft` + a motion + a palette class) pick the motion (`ft-pop`/`ft-rise`/`ft-slam`/`ft-dodge`/`ft-tick`) and palette; see `.ft` in
+ *  styles.scss. Motion is driven by CSS vars: --dx (arc drift), --sy (stack offset), --dir. */
+function spawnFloat(renderer: Renderer2, platformId: Object, playerId: number, text: string, classes: string[], lifetimeMs: number, opts: { dir?: boolean } = {}): void {
   if (!isPlatformBrowser(platformId)) return;
   const container = document.getElementById(`damage-numbers-${playerId}`);
   if (!container) {
     console.warn(`Damage container not found for playerId: ${playerId}`);
     return;
   }
+  const now = performance.now();
+  const prev = floatStack.get(container);
+  const n = prev && now - prev.t < FLOAT_STACK_WINDOW_MS ? Math.min(prev.n + 1, FLOAT_STACK_MAX) : 0;
+  floatStack.set(container, { t: now, n });
+
   const el = renderer.createElement('div');
-  renderer.addClass(el, cssClass);
+  classes.forEach(c => renderer.addClass(el, c));
   renderer.appendChild(el, renderer.createText(text));
-  renderer.setStyle(el, 'left', `${Math.random() * 60}%`);
+  const side = Math.random() < 0.5 ? -1 : 1;
+  renderer.setStyle(el, 'left', `${30 + Math.random() * 40}%`);
+  renderer.setStyle(el, 'top', `${18 + Math.random() * 16}%`);
+  renderer.setStyle(el, '--dx', `${side * (14 + Math.random() * 18)}px`, RendererStyleFlags2.DashCase);
+  renderer.setStyle(el, '--sy', `${-n * FLOAT_STACK_STEP_PX}px`, RendererStyleFlags2.DashCase);
+  if (opts.dir) renderer.setStyle(el, '--dir', `${outwardDir(container)}`, RendererStyleFlags2.DashCase);
   renderer.appendChild(container, el);
-  setTimeout(() => { if (el.parentNode === container) renderer.removeChild(container, el); }, 3000);
+  setTimeout(() => { if (el.parentNode === container) renderer.removeChild(container, el); }, lifetimeMs + 50);
 }
 
 /** Shared rarity → class-name-suffix lookup. Drives both the `.lucky-find-number--{suffix}`
@@ -202,51 +327,16 @@ export function triggerHpHealFlash(playerId: number): void {
   setTimeout(() => el.classList.remove('hp-heal'), 450);
 }
 
-export function triggerShowHealingNumber(renderer: Renderer2, platformId: Object, healing: number, playerId: number): void {
-  if (!isPlatformBrowser(platformId)) return;
-  const container = document.getElementById(`damage-numbers-${playerId}`);
-  if (!container) {
-    console.warn(`Healing container not found for playerId: ${playerId}`);
-    return;
-  }
-  const el = renderer.createElement('div');
-  renderer.addClass(el, 'healing-number');
-  renderer.appendChild(el, renderer.createText(`+${healing}`));
-  renderer.setStyle(el, 'left', `${Math.random() * 100}%`);
-  renderer.setStyle(el, 'fontSize', `${18 + healing}px`);
-  renderer.appendChild(container, el);
-  setTimeout(() => { if (el.parentNode === container) renderer.removeChild(container, el); }, 3000);
+export function triggerShowHealingNumber(renderer: Renderer2, platformId: Object, healing: number, playerId: number, tier: NumberTier = 'md'): void {
+  spawnFloat(renderer, platformId, playerId, `+${healing}`, ['ft', 'ft-rise', 'ft-heal', `ft--${tier}`], 1100);
 }
 
 export function triggerShowGoldNumber(renderer: Renderer2, platformId: Object, amount: number, playerId: number): void {
-  if (!isPlatformBrowser(platformId)) return;
-  const container = document.getElementById(`damage-numbers-${playerId}`);
-  if (!container) {
-    console.warn(`Gold container not found for playerId: ${playerId}`);
-    return;
-  }
-  const el = renderer.createElement('div');
-  renderer.addClass(el, 'gold-number');
-  renderer.appendChild(el, renderer.createText(`+${amount} 🟡`));
-  renderer.setStyle(el, 'left', `${Math.random() * 100}%`);
-  renderer.setStyle(el, 'fontSize', `${18 + Math.min(amount, 20)}px`);
-  renderer.appendChild(container, el);
-  setTimeout(() => { if (el.parentNode === container) renderer.removeChild(container, el); }, 3000);
+  spawnFloat(renderer, platformId, playerId, `+${amount} 🟡`, ['ft', 'ft-rise', 'ft-gold', amount >= 10 ? 'ft--lg' : 'ft--md'], 1200);
 }
 
 export function triggerShowXpNumber(renderer: Renderer2, platformId: Object, amount: number, playerId: number): void {
-  if (!isPlatformBrowser(platformId)) return;
-  const container = document.getElementById(`damage-numbers-${playerId}`);
-  if (!container) {
-    console.warn(`Xp container not found for playerId: ${playerId}`);
-    return;
-  }
-  const el = renderer.createElement('div');
-  renderer.addClass(el, 'xp-number');
-  renderer.appendChild(el, renderer.createText(`+${amount} XP`));
-  renderer.setStyle(el, 'left', `${Math.random() * 100}%`);
-  renderer.appendChild(container, el);
-  setTimeout(() => { if (el.parentNode === container) renderer.removeChild(container, el); }, 3000);
+  spawnFloat(renderer, platformId, playerId, `+${amount} XP`, ['ft', 'ft-rise', 'ft-xp', 'ft--md'], 1200);
 }
 
 /** Draft-phase "Lucky Find mastery" gain — floats "+2% 🍀" over the buyer's avatar (the same
@@ -255,18 +345,7 @@ export function triggerShowXpNumber(renderer: Renderer2, platformId: Object, amo
  *  upgrade-preview buy destroys and recreates the item's DOM node — a card-anchored celebration
  *  could get yanked out mid-animation. */
 export function triggerShowLuckyFindBonusNumber(renderer: Renderer2, platformId: Object, playerId: number): void {
-  if (!isPlatformBrowser(platformId)) return;
-  const container = document.getElementById(`damage-numbers-${playerId}`);
-  if (!container) {
-    console.warn(`Damage container not found for playerId: ${playerId}`);
-    return;
-  }
-  const el = renderer.createElement('div');
-  renderer.addClass(el, 'lucky-find-bonus-number');
-  renderer.appendChild(el, renderer.createText('+2% 🍀'));
-  renderer.setStyle(el, 'left', `${Math.random() * 100}%`);
-  renderer.appendChild(container, el);
-  setTimeout(() => { if (el.parentNode === container) renderer.removeChild(container, el); }, 3000);
+  spawnFloat(renderer, platformId, playerId, '+2% 🍀', ['ft', 'ft-rise', 'ft-lucky', 'ft--lg'], 1400);
 }
 
 /** Mythic-tinted fireworks (same 3-burst sequence as a shop-roll Mythic upgrade) mounted on the
@@ -329,16 +408,19 @@ export function triggerCelebrationFireworks(renderer: Renderer2, platformId: Obj
   setTimeout(() => { if (overlay.parentNode === document.body) renderer.removeChild(document.body, overlay); }, totalDuration + 100);
 }
 
-export type VfxKind = 'slash' | 'fire' | 'poison' | 'heal';
+export type VfxKind = 'slash' | 'fire' | 'poison' | 'heal' | 'spark' | 'shield-ping' | 'dodge';
 
 /** Must match the sprite-sheet animation durations defined in styles.scss (`.vfx-{kind}`).
  *  `slash` has a randomized duration (see SLASH_DURATION_*_MS below) — this entry is just
  *  the upper bound, used as the cleanup fallback. */
 const VFX_DURATION_MS: Record<VfxKind, number> = {
   slash: 360,
-  fire: 800,
-  poison: 700,
+  spark: 250,
+  fire: 560,
+  poison: 640,
   heal: 900,
+  'shield-ping': 300,
+  dodge: 250,
 };
 
 /** Impact-style VFX get a small random offset from center so repeated hits don't all
@@ -356,39 +438,49 @@ const SLASH_SCALE_MAX = 1.25;
 const SLASH_DURATION_MIN_MS = 200;
 const SLASH_DURATION_MAX_MS = 360;
 
-/** Plays a sprite-sheet VFX (weapon slash, fire, poison cloud, heal glow) over the
- *  target's avatar. Mounts in the same `damage-numbers-{playerId}` overlay used for
- *  floating text, so it shares that container's stacking/positioning. */
-export function triggerSpriteVfx(renderer: Renderer2, platformId: Object, kind: VfxKind, playerId: number, empowered = false): void {
+function mountVfx(renderer: Renderer2, container: HTMLElement, classes: string[], transform: string | null, durationMs: number): HTMLElement {
+  const el = renderer.createElement('div');
+  renderer.addClass(el, 'vfx');
+  classes.forEach(c => renderer.addClass(el, c));
+  if (transform) renderer.setStyle(el, 'transform', transform);
+  renderer.appendChild(container, el);
+  setTimeout(() => { if (el.parentNode === container) renderer.removeChild(container, el); }, durationMs);
+  return el;
+}
+
+/** Plays a sprite-sheet VFX over the target's avatar. Mounts in the same `damage-numbers-{playerId}`
+ *  overlay used for floating text, so it shares that container's stacking/positioning. Slashes
+ *  also drop a pixel impact spark (gold when empowered) at the same spot. `dir` flips directional
+ *  sheets (dodge streak) to match the avatar's movement. */
+export function triggerSpriteVfx(renderer: Renderer2, platformId: Object, kind: VfxKind, playerId: number, empowered = false, dir = 1): void {
   if (!isPlatformBrowser(platformId)) return;
   const container = document.getElementById(`damage-numbers-${playerId}`);
   if (!container) {
     console.warn(`Vfx container not found for playerId: ${playerId}`);
     return;
   }
-  const el = renderer.createElement('div');
-  renderer.addClass(el, 'vfx');
-  renderer.addClass(el, `vfx-${kind}`);
-  if (kind === 'slash' && empowered) renderer.addClass(el, 'vfx-slash--empowered');
-  let duration = VFX_DURATION_MS[kind];
-  if (kind === 'slash') {
+  const jitter = () => {
     const dx = (Math.random() * 2 - 1) * VFX_JITTER_X_PX;
     const dy = (Math.random() * 2 - 1) * VFX_JITTER_Y_PX;
+    return `translate(calc(-50% + ${dx.toFixed(1)}px), calc(-50% + ${dy.toFixed(1)}px))`;
+  };
+  if (kind === 'slash') {
+    const at = jitter();
     const angle = (Math.random() * 2 - 1) * SLASH_ANGLE_RANGE_DEG;
     const flip = Math.random() < 0.5 ? -1 : 1;
     const scale = SLASH_SCALE_MIN + Math.random() * (SLASH_SCALE_MAX - SLASH_SCALE_MIN);
-    renderer.setStyle(
-      el,
-      'transform',
-      `translate(calc(-50% + ${dx.toFixed(1)}px), calc(-50% + ${dy.toFixed(1)}px)) rotate(${angle.toFixed(1)}deg) scale(${(flip * scale).toFixed(2)}, ${scale.toFixed(2)})`
+    const duration = SLASH_DURATION_MIN_MS + Math.random() * (SLASH_DURATION_MAX_MS - SLASH_DURATION_MIN_MS);
+    mountVfx(renderer, container, ['vfx-spark', ...(empowered ? ['vfx-spark--gold'] : [])], at, VFX_DURATION_MS.spark);
+    const slash = mountVfx(
+      renderer, container, ['vfx-slash', ...(empowered ? ['vfx-slash--empowered'] : [])],
+      `${at} rotate(${angle.toFixed(1)}deg) scale(${(flip * scale).toFixed(2)}, ${scale.toFixed(2)})`,
+      duration,
     );
-    duration = SLASH_DURATION_MIN_MS + Math.random() * (SLASH_DURATION_MAX_MS - SLASH_DURATION_MIN_MS);
-    renderer.setStyle(el, 'animationDuration', `${duration.toFixed(0)}ms`);
-  } else if (VFX_JITTER_KINDS.has(kind)) {
-    const dx = (Math.random() * 2 - 1) * VFX_JITTER_X_PX;
-    const dy = (Math.random() * 2 - 1) * VFX_JITTER_Y_PX;
-    renderer.setStyle(el, 'transform', `translate(calc(-50% + ${dx.toFixed(1)}px), calc(-50% + ${dy.toFixed(1)}px))`);
+    renderer.setStyle(slash, 'animationDuration', `${duration.toFixed(0)}ms`);
+    return;
   }
-  renderer.appendChild(container, el);
-  setTimeout(() => { if (el.parentNode === container) renderer.removeChild(container, el); }, duration);
+  const transform = VFX_JITTER_KINDS.has(kind) ? jitter()
+    : kind === 'dodge' ? `translate(-50%, -50%) scaleX(${dir})`
+    : null;
+  mountVfx(renderer, container, [`vfx-${kind}`], transform, VFX_DURATION_MS[kind]);
 }

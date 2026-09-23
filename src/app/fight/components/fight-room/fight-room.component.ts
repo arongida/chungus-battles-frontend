@@ -38,7 +38,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog } from '@angular/material/dialog';
 import { FightStatsDialogComponent } from '../../../common/components/fight-stats-dialog/fight-stats-dialog.component';
-import { triggerAvatarHit, triggerCelebrationFireworks } from '../../../common/TriggerAnimations';
+import { triggerCelebrationFireworks } from '../../../common/TriggerAnimations';
 import { RoundInfoComponent } from '../../../common/components/round-info/round-info.component';
 import { CharacterDetailsComponent } from '../../../common/components/character-details/character-details.component';
 import { SkillIconsComponent } from '../../../common/components/skill-icons/skill-icons.component';
@@ -450,7 +450,6 @@ export class FightRoomComponent implements OnInit {
   }
 
   triggerDamagedAvatarImage(damagedPlayerId: number) {
-    triggerAvatarHit(damagedPlayerId);
     if (damagedPlayerId === this.player()?.playerId) {
       this.playerBeingHit.set(true);
       setTimeout(() => this.playerBeingHit.set(false), 200);

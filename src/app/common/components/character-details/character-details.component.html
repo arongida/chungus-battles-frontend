@@ -39,6 +39,8 @@
              [style.background-image]="'url(' + getCringeAvatarImage() + ')'"
              [class.opacity-0]="!isShowingCringe()"></div>
       </div>
+      @if (player.invincible) { <div class="status-shield-loop"></div> }
+      @if (player.stunned) { <div class="status-stun-loop"></div> }
       <div id="damage-numbers-{{ player.playerId }}" class="absolute inset-0 pointer-events-none z-10"></div>
       <div class="absolute" id="attack-{{ player.playerId }}"></div>
     </div>
@@ -274,7 +276,7 @@
   </div>
 
   <!-- Portrait: transparent variant; enemy is horizontally mirrored to face the player.
-       #avatar-{id} must be on the outer wrapper (for avatar-shake animation).
+       #avatar-{id} must be on the outer wrapper (for the hit knockback/flash animations).
        Only the inner portrait div is flipped, so damage numbers stay upright. -->
   <div id="avatar-{{ player.playerId }}" class="compact-avatar"
        [class.invulnerable-aura]="player.invincible"
@@ -284,6 +286,8 @@
            [class.compact-enemy-flip]="enemy"
            [style.background-image]="'url(' + getCompactAvatarImage() + ')'"></div>
     </div>
+    @if (player.invincible) { <div class="status-shield-loop"></div> }
+    @if (player.stunned) { <div class="status-stun-loop"></div> }
     <div id="damage-numbers-{{ player.playerId }}" class="absolute inset-0 pointer-events-none z-10"></div>
     <div class="absolute" id="attack-{{ player.playerId }}"></div>
   </div>

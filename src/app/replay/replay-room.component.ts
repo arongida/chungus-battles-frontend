@@ -256,7 +256,6 @@ export class ReplayRoomComponent implements OnInit, AfterViewInit, OnDestroy {
       entries: this.entries,
       triggerAttack: (_id) => { /* no sounds in replay */ },
       triggerDamagedAvatar: (id) => {
-        this.fightAnimationService.applyTriggerAvatarHit(id);
         const p = this.player();
         if (p && p.playerId === id) {
           this.playerBeingHit.set(true);

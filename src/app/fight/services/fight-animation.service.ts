@@ -22,6 +22,8 @@ import {
   triggerAvatarDeflect,
   triggerAvatarDodge,
   triggerAvatarHit,
+  triggerAvatarLunge,
+  triggerKnockOut,
   triggerEmpoweredHit,
   triggerHpDamageFlash,
   triggerHpHealFlash,
@@ -120,7 +122,20 @@ export class FightAnimationService {
   applyAttack(ctx: AnimationContext, attackerId: number): void {
     if (ctx.player() && ctx.enemy()) {
       ctx.triggerAttack(attackerId);
+      if (!this.throttled(`lunge:${attackerId}`)) triggerAvatarLunge(attackerId);
     }
+  }
+
+  /** How long views should hold the K.O. beat before showing the round-result modal. */
+  static readonly KO_BEAT_MS = 1100;
+
+  /** Plays the K.O. beat for a fight-ending message. `result` is from the local player's view. */
+  applyKnockOut(ctx: AnimationContext, result: 'win' | 'lose' | 'draw'): void {
+    const player = ctx.player(), enemy = ctx.enemy();
+    if (!player || !enemy) return;
+    const losers = result === 'win' ? [enemy.playerId] : result === 'lose' ? [player.playerId] : [player.playerId, enemy.playerId];
+    const winner = result === 'win' ? player.playerId : result === 'lose' ? enemy.playerId : undefined;
+    triggerKnockOut(ctx.renderer, ctx.platformId, losers, winner);
   }
 
   /** Size tier of `amount` against the target's max HP — drives number size and hit severity. */
@@ -248,12 +263,24 @@ export class FightAnimationService {
       case 'trigger_talent':  this.applyTriggerTalent(ctx, payload as TriggerTalentMessage); break;
       case 'trigger_item':    this.applyTriggerItem(ctx, payload as TriggerItemMessage); break;
       case 'stats_sync':      ctx.applyStatsSync?.(payload as StatsSyncMessage); break;
-      case 'end_battle':      ctx.onEndBattle?.(payload as EndBattleMessage); break;
-      case 'game_over':       ctx.onGameOver?.(payload as GameOverMessage | string); break;
-      case 'game_win':        ctx.onGameWin?.(payload as GameWinMessage); break;
+      case 'end_battle':
+        this.applyKnockOut(ctx, (payload as EndBattleMessage)?.result ?? 'win');
+        ctx.onEndBattle?.(payload as EndBattleMessage);
+        break;
+      case 'game_over':
+        this.applyKnockOut(ctx, 'lose');
+        ctx.onGameOver?.(payload as GameOverMessage | string);
+        break;
+      case 'game_win':
+        this.applyKnockOut(ctx, 'win');
+        ctx.onGameWin?.(payload as GameWinMessage);
+        break;
       // Compat: old replays recorded before Season 16 contain 'version_win' events —
       // route them to the same win-screen handler so those replays still show a banner.
-      case 'version_win':     ctx.onGameWin?.(payload as GameWinMessage); break;
+      case 'version_win':
+        this.applyKnockOut(ctx, 'win');
+        ctx.onGameWin?.(payload as GameWinMessage);
+        break;
       default:                break;
     }
   }

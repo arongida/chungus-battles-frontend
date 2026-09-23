@@ -58,10 +58,69 @@ function prefersReducedMotion(): boolean {
  *  own CSS animations (aura pulses, the card's slideDown entrance) that a class-based animation
  *  would clobber and then replay on removal. One live motion per element; a new one replaces it. */
 const liveMotion = new WeakMap<Element, Animation>();
-function playMotion(el: Element, frames: Keyframe[], durationMs: number): void {
+function playMotion(el: Element, frames: Keyframe[], durationMs: number, opts: { fill?: FillMode; delayMs?: number } = {}): void {
   if (prefersReducedMotion()) return;
   liveMotion.get(el)?.cancel();
-  liveMotion.set(el, el.animate(frames, { duration: durationMs, easing: 'ease-out' }));
+  liveMotion.set(el, el.animate(frames, { duration: durationMs, easing: 'ease-out', fill: opts.fill ?? 'none', delay: opts.delayMs ?? 0 }));
+}
+
+/** Attack wind-up: a small pull back, then a lunge toward the opponent (the inverse of
+ *  outwardDir), plus a flash on the main-hand slot so you can see which fighter swung. */
+export function triggerAvatarLunge(playerId: number): void {
+  const el = document.getElementById(`avatar-${playerId}`);
+  if (el) {
+    const toward = -outwardDir(el);
+    playMotion(el, [
+      { transform: 'none' },
+      { transform: `translateX(${-toward * 4}px) scale(0.98, 1.02)`, offset: 0.3 },
+      { transform: `translateX(${toward * 12}px) scale(1.05, 0.96)`, offset: 0.55 },
+      { transform: 'none' },
+    ], 260);
+  }
+  const weapon = document.getElementById(`equipped-slot-mainHand-${playerId}`);
+  if (weapon) restartClass(weapon, 'animate-weapon-attack', 400);
+}
+
+/** Undoes triggerKnockOut (replay restart re-uses the same avatar elements). */
+export function clearKnockOut(playerIds: number[]): void {
+  for (const id of playerIds) {
+    const el = document.getElementById(`avatar-${id}`);
+    if (!el) continue;
+    el.classList.remove('avatar-ko');
+    liveMotion.get(el)?.cancel();
+  }
+}
+
+/** End-of-fight beat: the loser gets knocked back, tips over and greys out (held until the
+ *  view is torn down) under a big "K.O.!" slam; the winner does a little victory hop. */
+export function triggerKnockOut(renderer: Renderer2, platformId: Object, loserIds: number[], winnerId?: number): void {
+  if (!isPlatformBrowser(platformId)) return;
+  // game_over can follow end_battle for the same fight — only knock each fighter out once.
+  const fresh = loserIds.filter(id => !document.getElementById(`avatar-${id}`)?.classList.contains('avatar-ko'));
+  if (fresh.length === 0) return;
+  for (const id of fresh) {
+    const el = document.getElementById(`avatar-${id}`);
+    if (!el) continue;
+    const out = outwardDir(el);
+    el.classList.add('avatar-ko');
+    playMotion(el, [
+      { transform: 'none' },
+      { transform: `translateX(${out * 20}px) scale(1.12, 0.88)`, offset: 0.12 },
+      { transform: `translateX(${out * 20}px) scale(1.12, 0.88)`, offset: 0.3 },
+      { transform: `translateX(${out * 12}px) translateY(8px) rotate(${out * 12}deg)` },
+    ], 700, { fill: 'forwards' });
+    spawnFloat(renderer, platformId, id, 'K.O.!', ['ft', 'ft-slam', 'ft-ko'], 1600);
+  }
+  if (winnerId != null) {
+    const el = document.getElementById(`avatar-${winnerId}`);
+    if (el) playMotion(el, [
+      { transform: 'none' },
+      { transform: 'translateY(-12px) scale(0.96, 1.06)', offset: 0.25 },
+      { transform: 'none', offset: 0.5 },
+      { transform: 'translateY(-5px)', offset: 0.72 },
+      { transform: 'none' },
+    ], 700, { delayMs: 300 });
+  }
 }
 
 /** Restarts a one-shot CSS animation class, even if it's mid-flight from a previous hit. */

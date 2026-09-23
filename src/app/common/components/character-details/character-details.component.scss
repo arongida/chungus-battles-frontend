@@ -328,10 +328,44 @@
   box-shadow: 0 0 10px rgba(245, 158, 11, 0.45);
 }
 
-/* ── HP bar flash animations (triggered by TriggerAnimations.ts) ── */
+/* ── HP bar (triggered by TriggerAnimations.ts for flashes) ──
+   Two stacked fills: the fill snaps to the new HP, the pale trail behind it waits a beat and
+   then drains — the "chip damage" read. On heals the trail is hidden under the growing fill. */
 .hp-bar-wrapper {
   border-radius: 2px;
   overflow: hidden;
+}
+
+.hp-bar {
+  position: relative;
+  height: 6px;
+  background: rgba(60, 10, 10, 0.75);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.6);
+}
+
+.hp-bar__trail,
+.hp-bar__fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+}
+
+.hp-bar__trail {
+  background: #fde68a;
+  transition: width 450ms ease-in 350ms;
+}
+
+.hp-bar__fill {
+  background: linear-gradient(180deg, #f87171 0%, #dc2626 55%, #991b1b 100%);
+  transition: width 120ms ease-out;
+}
+
+.hp-bar--low .hp-bar__fill {
+  animation: hp-low-pulse 0.9s ease-in-out infinite;
+}
+
+@keyframes hp-low-pulse {
+  0%, 100% { filter: brightness(1); }
+  50%      { filter: brightness(1.7) saturate(1.3); }
 }
 
 @keyframes hp-damage-flash {

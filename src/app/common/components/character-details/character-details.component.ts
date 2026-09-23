@@ -28,6 +28,7 @@ import { InfoContent } from '../../models/info-content';
 import { cooldownReductionPct, dodgeChance } from '../../utils/stat-formulas';
 import { EQUIP_SLOT_DISPLAY_ORDER } from '../../constants/game';
 import { SkillIconsComponent } from '../skill-icons/skill-icons.component';
+import { TweenNumberComponent } from '../tween-number/tween-number.component';
 import { CharacterDetailsService } from '../../services/character-details.service';
 import { InfoBoxService } from '../../services/info-box.service';
 import { PanelLayoutService } from '../../services/panel-layout.service';
@@ -40,6 +41,10 @@ import {
   DragDropModule,
 } from '@angular/cdk/drag-drop';
 
+
+/** At or below this HP%, bars pulse red (and the local player gets a heartbeat vignette —
+ *  see FightRoomComponent.playerLowHp). */
+export const LOW_HP_PERCENT = 25;
 
 @Component({
   selector: 'app-character-details',
@@ -54,6 +59,7 @@ import {
     InfoHintDirective,
     InfoHoverCardDirective,
     SkillIconsComponent,
+    TweenNumberComponent,
     CdkDrag,
     CdkDropList,
     CdkDropListGroup,
@@ -292,8 +298,20 @@ export class CharacterDetailsComponent implements OnInit, OnDestroy {
     }
   }
 
+  /** Displayed HP: never negative (overkill), and a sliver of HP still reads as 1. */
   getPlayerHp(): number {
-    return this.player.hp > 0 && this.player.hp < 1 ? 1 : this.player.hp;
+    if (this.player.hp <= 0) return 0;
+    return this.player.hp < 1 ? 1 : this.player.hp;
+  }
+
+  hpPercent(): number {
+    return this.player.maxHp > 0 ? Math.max(0, Math.min(100, (this.player.hp / this.player.maxHp) * 100)) : 0;
+  }
+
+  /** Low-HP danger state: pulsing bar (both fighters). Dead fighters don't pulse. */
+  isLowHp(): boolean {
+    const pct = this.hpPercent();
+    return pct > 0 && pct <= LOW_HP_PERCENT;
   }
 
   getInventoryFiltered() {

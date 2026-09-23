@@ -1,5 +1,6 @@
 import {
   Component,
+  computed,
   effect,
   Inject,
   OnInit,
@@ -39,6 +40,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDialog } from '@angular/material/dialog';
 import { FightStatsDialogComponent } from '../../../common/components/fight-stats-dialog/fight-stats-dialog.component';
 import { triggerCelebrationFireworks } from '../../../common/TriggerAnimations';
+import { LOW_HP_PERCENT } from '../../../common/components/character-details/character-details.component';
 import { RoundInfoComponent } from '../../../common/components/round-info/round-info.component';
 import { CharacterDetailsComponent } from '../../../common/components/character-details/character-details.component';
 import { SkillIconsComponent } from '../../../common/components/skill-icons/skill-icons.component';
@@ -199,7 +201,7 @@ export class FightRoomComponent implements OnInit {
             this.battleResult.set(result);
             if (result === 'win') this.roundWinWins.set(wins);
             this.battleResultMinimized.set(false);
-            this.battleResultVisible.set(true);
+            this.afterKoBeat(() => this.battleResultVisible.set(true));
             this.infoBoxService.setPageDefault(
               result === 'win' ? battleWonHint : result === 'lose' ? battleLostHint : battleDrawHint
             );
@@ -210,7 +212,7 @@ export class FightRoomComponent implements OnInit {
             this.battleOver = true;
             this.gameOverMessage.set(msg.message);
             this.gameOverMinimized.set(false);
-            this.gameOverVisible.set(true);
+            this.afterKoBeat(() => this.gameOverVisible.set(true));
             this.battleReplayId.set(msg.replayId ?? null);
             this.battleStats.set(msg.stats ?? null);
             if (msg.replayId) this.replaysService.invalidate(this.player()?.originalPlayerId ?? 0);
@@ -220,9 +222,11 @@ export class FightRoomComponent implements OnInit {
           },
           onGameWin: (message) => {
             this.soundsService.playSound(SoundOptions.CHEER);
-            triggerCelebrationFireworks(this.renderer, this.platformId, 7,
-              () => this.soundsService.playSound(SoundOptions.FIREWORK));
-            this.gameWin.set(true);
+            this.afterKoBeat(() => {
+              triggerCelebrationFireworks(this.renderer, this.platformId, 7,
+                () => this.soundsService.playSound(SoundOptions.FIREWORK));
+              this.gameWin.set(true);
+            });
             this.gameWinMinimized.set(false);
             this.gameWinWins.set(message.wins);
             this.gameWinLosses.set(message.losses ?? 0);
@@ -448,6 +452,18 @@ export class FightRoomComponent implements OnInit {
       }
     }
   }
+
+  /** Holds result modals back until the K.O. animation has landed (see FightAnimationService). */
+  private afterKoBeat(fn: () => void): void {
+    setTimeout(fn, FightAnimationService.KO_BEAT_MS);
+  }
+
+  /** Local player at low HP (and still alive): drives the heartbeat vignette. */
+  playerLowHp = computed(() => {
+    const p = this.player();
+    if (!p || p.maxHp <= 0 || p.hp <= 0) return false;
+    return (p.hp / p.maxHp) * 100 <= LOW_HP_PERCENT;
+  });
 
   triggerDamagedAvatarImage(damagedPlayerId: number) {
     if (damagedPlayerId === this.player()?.playerId) {

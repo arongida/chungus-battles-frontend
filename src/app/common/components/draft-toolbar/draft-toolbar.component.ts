@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, effect, inject, signal } from '@angular/core';
+import { Component, Input, OnChanges, OnDestroy, OnInit, PLATFORM_ID, SimpleChanges, effect, inject, signal, viewChild } from '@angular/core';
 import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
 import Item from '../../../models/colyseus-schema/ItemSchema';
 import { MatIconModule } from '@angular/material/icon';
@@ -12,7 +12,7 @@ import { JokerPickComponent } from '../../../draft/components/joker-pick/joker-p
 import { Talent } from '../../../models/colyseus-schema/TalentSchema';
 import { parseJokerCards } from '../../utils/joker-cards';
 import { EncyclopediaComponent } from '../../../draft/components/encyclopedia/encyclopedia.component';
-import { DecimalPipe, NgClass } from '@angular/common';
+import { DecimalPipe, NgClass, isPlatformBrowser } from '@angular/common';
 import { MatMenuModule } from '@angular/material/menu';
 import { DraftService } from '../../../draft/services/draft.service';
 import { CharacterDetailsComponent } from '../character-details/character-details.component';
@@ -170,6 +170,9 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
     return this.canLevelUp ? this.levelUpHint : this.buyXpHint;
   }
 
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  private readonly characterPanel = viewChild(CharacterDetailsComponent);
+
   constructor(
     public draftService: DraftService,
     private fightService: FightService,
@@ -177,6 +180,14 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
     private router: Router,
     private runRegistry: RunRegistryService,
   ) {
+    // While the draft character panel is expanded, tag <body> so the shop can make room for it
+    // on wide screens (see `body.draft-panel-open` / `.draft-stage` in styles.scss).
+    effect(() => {
+      if (!this.isBrowser) return;
+      const open = !this.isFighting() && !!this.characterPanel()?.expanded();
+      document.body.classList.toggle('draft-panel-open', open);
+    });
+
     // Mirrors showTalentPicker to an actual MatDialogRef so the talent picker renders in the
     // CDK overlay instead of the inline @if block it used to be — see TalentsComponent and
     // ConfirmDialogComponent's class doc for why (toolbar host stacking-context cap).
@@ -312,6 +323,7 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     if (this.levelCheckTimeoutId) clearTimeout(this.levelCheckTimeoutId);
+    if (this.isBrowser) document.body.classList.remove('draft-panel-open');
   }
 
   shopItemOverPanel = false;

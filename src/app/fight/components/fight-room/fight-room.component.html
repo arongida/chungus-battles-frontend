@@ -83,6 +83,11 @@
   </div>
 }
 
+<!-- Low-HP heartbeat: red screen-edge pulse while the local player is in danger -->
+@if (playerLowHp()) {
+  <div class="low-hp-vignette" aria-hidden="true"></div>
+}
+
 <!-- Fight-start countdown overlay -->
 @if (countdownText()) {
   <div class="fixed inset-0 z-[9998] flex items-center justify-center pointer-events-none">
@@ -114,7 +119,7 @@
     @if (battleResult() === 'win') {
       <div class="win-track">
         @for (filled of winPips(); track $index) {
-          <span class="win-pip" [class.filled]="filled"></span>
+          <span class="win-pip" [class.filled]="filled" [class.win-pip--new]="$index === roundWinWins() - 1"></span>
         }
         <span class="win-pip-goal">🏆</span>
       </div>

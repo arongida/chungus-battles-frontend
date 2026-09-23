@@ -27,6 +27,7 @@ import { environment } from '../../environments/environment';
 import { FightStatsMessage, StatsSyncSide } from '../models/types/MessageTypes';
 import { MatDialog } from '@angular/material/dialog';
 import { FightStatsDialogComponent } from '../common/components/fight-stats-dialog/fight-stats-dialog.component';
+import { clearKnockOut } from '../common/TriggerAnimations';
 
 // Mirrors backend playerToPlainObject → rehydrates a plain snapshot into a typed Player.
 function rehydrateItem(raw: any): Item {
@@ -363,6 +364,9 @@ export class ReplayRoomComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   restart(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      clearKnockOut([this.player()?.playerId, this.enemy()?.playerId].filter((id): id is number => id != null));
+    }
     this.done = false;
     this.eventIndex = 0;
     this.virtualMs = 0;

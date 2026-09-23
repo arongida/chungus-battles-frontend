@@ -168,3 +168,19 @@
     transform: translateY(-1px);
   }
 }
+
+// Unpicked talent waiting (picker closed): the whole button breathes gold so it's obvious where
+// to go when "Please select a talent!" blocks the ready button.
+.level-up-toggle--pending {
+  animation: levelUpPending 1.4s ease-in-out infinite;
+}
+
+@keyframes levelUpPending {
+  // filter, not box-shadow: the base rule's box-shadow is !important and would win.
+  0%, 100% { filter: drop-shadow(0 0 0 rgba(250, 204, 21, 0)) brightness(1); }
+  50%      { filter: drop-shadow(0 0 8px rgba(250, 204, 21, 0.85)) brightness(1.25); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .level-up-toggle--pending { animation: none; outline: 2px solid #facc15; }
+}

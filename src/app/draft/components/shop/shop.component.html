@@ -6,7 +6,7 @@
 
     @for (item of shop; track $index) {
       <!-- Wrapper preserves the grid cell when CDK sets display:none on the cdkDrag element -->
-      <div class="w-32 h-44 sm:w-44 sm:h-60 md:w-52 md:h-72 lg:w-60 lg:h-80">
+      <div class="shop-cell">
         <div cdkDrag [cdkDragData]="item" [cdkDragDisabled]="item.sold"
              (cdkDragStarted)="cardDragStarted(item)"
              (cdkDragReleased)="resetDrag(item)"

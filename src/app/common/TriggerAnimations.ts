@@ -349,6 +349,15 @@ export function triggerSpeechBubble(renderer: Renderer2, platformId: Object, pla
   renderer.appendChild(el, renderer.createText(text));
   renderer.appendChild(container, el);
   liveBubbles.set(container, el);
+  // Keep the bubble on screen when its avatar sits near a viewport edge (e.g. the draft panel
+  // docked at the left): shift the bubble, and counter-shift its tail so it still points at the
+  // avatar. getBoundingClientRect ignores the transform-only pop animation's scale enough here.
+  const EDGE_PX = 8;
+  const rect = el.getBoundingClientRect();
+  let shift = 0;
+  if (rect.left < EDGE_PX) shift = EDGE_PX - rect.left;
+  else if (rect.right > window.innerWidth - EDGE_PX) shift = window.innerWidth - EDGE_PX - rect.right;
+  if (shift) renderer.setStyle(el, '--bubble-shift', `${Math.round(shift)}px`, RendererStyleFlags2.DashCase);
   setTimeout(() => { if (el.parentNode === container) renderer.removeChild(container, el); }, SPEECH_BUBBLE_LIFETIME_MS + 50);
 }
 

@@ -516,6 +516,8 @@ body {
   text-align: center;
   white-space: normal;
   box-shadow: 0 4px 0 rgba(0, 0, 0, 0.5);
+  // Set by triggerSpeechBubble when the bubble would overflow the viewport edge.
+  margin-left: var(--bubble-shift, 0px);
   transform: translateX(-50%);
   transform-origin: 50% 100%;
   animation: speech-bubble-pop 2600ms ease-out forwards;
@@ -523,7 +525,7 @@ body {
   &::after {
     content: '';
     position: absolute;
-    left: 50%;
+    left: calc(50% - var(--bubble-shift, 0px));
     top: 100%;
     width: 14px;
     height: 14px;

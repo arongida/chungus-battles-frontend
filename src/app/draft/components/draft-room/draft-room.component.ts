@@ -37,8 +37,9 @@ import {
   SoundOptions,
   SoundsService,
 } from '../../../common/services/sounds.service';
-import { RewardGainMessage, ShopFloatingMessage, TriggerItemMessage, TriggerTalentMessage } from '../../../models/types/MessageTypes';
-import { triggerDraftLogFloatingText, triggerShopFloatingText, triggerSpriteVfx, triggerShowGoldNumber, triggerShowXpNumber, triggerShowLuckyFindBonusNumber, triggerLuckyFindBonusFireworks, triggerTalentActivation, triggerItemActivation } from '../../../common/TriggerAnimations';
+import { QuipMessage, RewardGainMessage, ShopFloatingMessage, TriggerItemMessage, TriggerTalentMessage } from '../../../models/types/MessageTypes';
+import { QuipPicker } from '../../../common/social/quips';
+import { triggerDraftLogFloatingText, triggerShopFloatingText, triggerSpriteVfx, triggerShowGoldNumber, triggerShowXpNumber, triggerShowLuckyFindBonusNumber, triggerLuckyFindBonusFireworks, triggerTalentActivation, triggerItemActivation, triggerSpeechBubble } from '../../../common/TriggerAnimations';
 
 // Creates a typed Player from any schema object (typed or reflection-decoded generic).
 // Copies primitive backing fields and collection references; skips `baseStats` because
@@ -89,6 +90,7 @@ export class DraftRoomComponent implements OnInit {
   nextEnemyItemClasses = signal<string[]>([]);
   /** Public profile of the player behind the next opponent's ghost (status + badges). */
   nextEnemyOwner = signal<OwnerProfile | null>(null);
+  private readonly quipPicker = new QuipPicker();
   private nextEnemyOwnerJson = '';
 
   /** Queued `shop_floating` messages whose shop card wasn't in the DOM yet — retried on every
@@ -154,6 +156,15 @@ export class DraftRoomComponent implements OnInit {
           if (this.player()) {
             triggerItemActivation(message.playerId, message.slot);
           }
+        });
+
+        // Shop quips: the player's own character reacts to what they just did. QuipPicker
+        // decides whether it actually speaks (chance + cooldown), so most clicks stay quiet.
+        room.onMessage('quip', (message: QuipMessage) => {
+          const playerId = this.player()?.playerId;
+          if (!playerId) return;
+          const line = this.quipPicker.next(message.trigger);
+          if (line) triggerSpeechBubble(this.renderer, this.platformId, playerId, line);
         });
       }
     });

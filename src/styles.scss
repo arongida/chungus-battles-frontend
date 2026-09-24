@@ -500,18 +500,22 @@ body {
   z-index: 14;
   pointer-events: none;
   width: max-content;
-  max-width: 180px;
-  padding: 5px 9px;
-  border: 2px solid #3b2a1a;
-  border-radius: 8px;
+  max-width: 320px;
+  padding: 8px 14px;
+  border: 3px solid #3b2a1a;
+  border-radius: 10px;
   background: #fdf6e3;
-  color: #2b1d10;
-  font-family: 'PixelParchment', 'Darinia', sans-serif;
-  font-size: 14px;
-  line-height: 1.15;
+  color: #1f140a;
+  // Same display font as the rest of the HUD (names, FIGHT!), and no inherited body
+  // text-shadow — the 2px offset shadow smeared the bubble's dark-on-light text.
+  font-family: 'Darinia', sans-serif;
+  font-size: 20px;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+  text-shadow: none;
   text-align: center;
   white-space: normal;
-  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.45);
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.5);
   transform: translateX(-50%);
   transform-origin: 50% 100%;
   animation: speech-bubble-pop 2600ms ease-out forwards;
@@ -521,12 +525,12 @@ body {
     position: absolute;
     left: 50%;
     top: 100%;
-    width: 10px;
-    height: 10px;
+    width: 14px;
+    height: 14px;
     background: inherit;
-    border-right: 2px solid #3b2a1a;
-    border-bottom: 2px solid #3b2a1a;
-    transform: translate(-50%, -5px) rotate(45deg);
+    border-right: 3px solid #3b2a1a;
+    border-bottom: 3px solid #3b2a1a;
+    transform: translate(-50%, -7px) rotate(45deg);
   }
 }
 

@@ -490,6 +490,64 @@ body {
   .empowered-number { animation: none; }
 }
 
+// ─── Speech bubbles (battle cries / reactions) ────────────────────────────
+// Spawned by triggerSpeechBubble() in TriggerAnimations.ts into the `damage-numbers-{playerId}`
+// overlay; sits above the avatar with a tail pointing down at it.
+.speech-bubble {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 10px);
+  z-index: 14;
+  pointer-events: none;
+  width: max-content;
+  max-width: 180px;
+  padding: 5px 9px;
+  border: 2px solid #3b2a1a;
+  border-radius: 8px;
+  background: #fdf6e3;
+  color: #2b1d10;
+  font-family: 'PixelParchment', 'Darinia', sans-serif;
+  font-size: 14px;
+  line-height: 1.15;
+  text-align: center;
+  white-space: normal;
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.45);
+  transform: translateX(-50%);
+  transform-origin: 50% 100%;
+  animation: speech-bubble-pop 2600ms ease-out forwards;
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 100%;
+    width: 10px;
+    height: 10px;
+    background: inherit;
+    border-right: 2px solid #3b2a1a;
+    border-bottom: 2px solid #3b2a1a;
+    transform: translate(-50%, -5px) rotate(45deg);
+  }
+}
+
+.speech-bubble--reaction {
+  background: #fff1c1;
+  border-color: #92400e;
+  &::after { border-color: #92400e; }
+}
+
+@keyframes speech-bubble-pop {
+  0%   { opacity: 0; transform: translateX(-50%) translateY(6px) scale(0.6); }
+  8%   { opacity: 1; transform: translateX(-50%) translateY(0) scale(1.08); }
+  14%  { transform: translateX(-50%) scale(1); }
+  85%  { opacity: 1; transform: translateX(-50%) scale(1); }
+  100% { opacity: 0; transform: translateX(-50%) translateY(-6px) scale(0.95); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .speech-bubble { animation-timing-function: steps(1, end); }
+}
+
 // ─── Floating combat text ─────────────────────────────────────────────────
 // Spawned by spawnFloat() in TriggerAnimations.ts into the `damage-numbers-{playerId}` overlay.
 // Pixel font + hard 8-direction pixel outline (no blurry -webkit-text-stroke). Each variant sets

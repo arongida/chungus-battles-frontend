@@ -29,6 +29,10 @@
                   <span class="run-row-life">♥</span>
                 }
               </span>
+              @if (unseenCount(run) > 0) {
+                <button class="run-row-badge run-row-badge-ghost" (click)="openGhostReport(run, $event)"
+                        title="Other players fought your ghost while you were away">👻 {{ unseenCount(run) }} new</button>
+              }
             } @else {
               <span class="run-row-meta-loading">— · —</span>
             }
@@ -46,6 +50,32 @@
             <mat-icon>close</mat-icon>
           </button>
         }
+      </div>
+    }
+  </div>
+}
+
+@if (ghostRuns().length > 0) {
+  <div class="run-list">
+    <div class="run-list-header"><span>Your Ghosts</span></div>
+    @for (run of ghostRuns(); track run.playerId) {
+      <div class="run-row run-row-ghost" (click)="openGhostReport(run, $event)" title="See how this character's ghosts are doing">
+        <img [src]="run.avatarUrl || 'assets/merchant_01.png'" alt="" class="run-row-avatar" />
+        <div class="run-row-body">
+          <div class="run-row-name">
+            {{ run.name || 'Unnamed run' }}
+            @if (unseenCount(run) > 0) {
+              <span class="run-row-badge run-row-badge-ghost">👻 {{ unseenCount(run) }} new</span>
+            }
+          </div>
+          @if (run.nemesis; as n) {
+            <div class="run-row-meta run-row-nemesis">
+              Nemesis: {{ n.name }}
+              @if (nemesisStatus().get(n.originalPlayerId); as line) { <span>— {{ line }}</span> }
+            </div>
+          }
+        </div>
+        <mat-icon class="run-row-action">chevron_right</mat-icon>
       </div>
     }
   </div>

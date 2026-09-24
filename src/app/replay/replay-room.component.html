@@ -80,7 +80,8 @@
          [raiseZIndexBase]="10" [raiseGroup]="'replay'"
          class="fixed z-10 fight-panel-top">
       <app-character-details [combat]="true" [player]="enemy()!" [enemy]="true"
-        [playerBeingHit]="playerBeingHit()" [enemyBeingHit]="enemyBeingHit()">
+        [playerBeingHit]="playerBeingHit()" [enemyBeingHit]="enemyBeingHit()"
+        [ownerProfile]="enemyOwner()">
       </app-character-details>
     </div>
   }

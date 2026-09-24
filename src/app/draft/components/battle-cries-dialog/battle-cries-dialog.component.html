@@ -1,0 +1,24 @@
+<div class="cries-modal">
+  <div class="cries-modal-header">
+    <span>📣 Battle Cries</span>
+    <button class="cries-close-btn" (click)="close()">×</button>
+  </div>
+  <p class="cries-intro">
+    Your fighter says these lines in battle. So does every ghost of you that other players face,
+    even while you're offline.
+  </p>
+  <div class="cries-body">
+    @for (s of slots; track s.slot) {
+      <section class="cries-slot">
+        <h3 class="cries-slot-title">{{ s.label }} <span class="cries-slot-hint">{{ s.hint }}</span></h3>
+        <div class="cries-options">
+          @for (id of s.options; track id) {
+            <button class="cries-option" [class.selected]="data.cries()[s.slot] === id" (click)="pick(s.slot, id)">
+              “{{ emotes[id].text }}”
+            </button>
+          }
+        </div>
+      </section>
+    }
+  </div>
+</div>

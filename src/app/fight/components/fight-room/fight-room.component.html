@@ -28,7 +28,8 @@
        [raiseZIndexBase]="40" [raiseGroup]="'fight'"
        class="fixed z-40 fight-panel-top">
     <app-character-details [combat]="true" [player]="enemy()!" [enemy]="true" [panelId]="'enemy'"
-      [playerBeingHit]="playerBeingHit()" [enemyBeingHit]="enemyBeingHit()">
+      [playerBeingHit]="playerBeingHit()" [enemyBeingHit]="enemyBeingHit()"
+      [ownerProfile]="enemyOwner()">
     </app-character-details>
   </div>
 }
@@ -56,6 +57,13 @@
 <!-- Reset panel layout button -->
 @if (player()) {
   <button class="reset-layout-btn" (click)="resetPanelLayout()" title="Reset panel layout">⤢</button>
+}
+
+<!-- Reactions — preset only; delivered to the ghost's owner later -->
+@if (player() && canReact()) {
+  <div class="emote-slot">
+    <app-emote-picker [remaining]="reactionsRemaining()" (send)="sendEmote($event)" />
+  </div>
 }
 
 <!-- Fight speed toggle -->
@@ -172,6 +180,9 @@
         }
       </p>
     }
+    @if (canReact()) {
+      <app-emote-picker mode="inline" [remaining]="reactionsRemaining()" (send)="sendEmote($event)" />
+    }
     <div class="flex flex-col sm:flex-row gap-3 justify-center">
       @if (battleStats()) {
         <button mat-stroked-button class="version-win-secondary-btn" (click)="openStats()">
@@ -205,6 +216,19 @@
     <div class="chungus-modal-icon game-over-icon">💀</div>
     <h2 class="chungus-modal-title">Run Over</h2>
     <p class="chungus-modal-body">{{ gameOverMessage() }}</p>
+    @if (nemesis(); as n) {
+      <div class="nemesis-card">
+        <div class="nemesis-avatar" [style.background-image]="'url(' + nemesisAvatar() + ')'"></div>
+        <div class="nemesis-text">
+          <span class="nemesis-label">Eliminated by</span>
+          <span class="nemesis-name">{{ n.name }}</span>
+          @if (nemesisStatus()) { <span class="nemesis-status">{{ nemesisStatus() }}</span> }
+        </div>
+      </div>
+    }
+    @if (canReact()) {
+      <app-emote-picker mode="inline" [remaining]="reactionsRemaining()" [quick]="['react_wp', 'react_grr']" (send)="sendEmote($event)" />
+    }
     <div class="flex flex-col sm:flex-row gap-3 justify-center">
       @if (battleStats()) {
         <button mat-stroked-button class="version-win-secondary-btn" (click)="openStats()">
@@ -239,6 +263,9 @@
       {{ gameWinWins() }} wins · {{ gameWinLosses() }} losses<br>
       You've earned your place on the Wall of Fame.
     </p>
+    @if (canReact()) {
+      <app-emote-picker mode="inline" [remaining]="reactionsRemaining()" [quick]="['react_gg', 'react_thanks']" (send)="sendEmote($event)" />
+    }
     <div class="flex flex-col sm:flex-row gap-3 justify-center">
       @if (battleStats()) {
         <button mat-stroked-button class="version-win-secondary-btn" (click)="openStats()">

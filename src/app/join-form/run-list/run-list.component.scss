@@ -135,3 +135,21 @@
 .run-row-action-delete:hover {
   color: #ef4444;
 }
+
+.run-row-badge-ghost {
+  border: none;
+  cursor: pointer;
+  background: rgba(245, 158, 11, 0.2);
+  color: var(--cm-amber-light, #fbbf24);
+  text-transform: none;
+
+  &:hover { background: rgba(245, 158, 11, 0.35); }
+}
+
+.run-row-nemesis {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #fca5a5;
+}

@@ -17,7 +17,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { DraftService } from '../../../draft/services/draft.service';
 import { CharacterDetailsComponent } from '../character-details/character-details.component';
 import { TweenNumberComponent } from '../tween-number/tween-number.component';
-import { triggerFloatIn, triggerLevelUpBurst } from '../../TriggerAnimations';
+import { triggerDraftLogFloatingText, triggerFloatIn, triggerLevelUpBurst } from '../../TriggerAnimations';
 
 /** How long the level-up burst plays before the talent picker opens. */
 const LEVEL_UP_BURST_MS = 850;
@@ -31,11 +31,15 @@ import { DraggablePanelDirective } from '../../directives/draggable-panel.direct
 import { InfoContent } from '../../models/info-content';
 import { Router } from '@angular/router';
 import { FightService } from '../../../fight/services/fight.service';
-import { goldHint, buyXpHint, lockShopHint, talentHint, jokerPickHint, draftReadyHint, shopPhaseHint, fightingHint, abandonHint, forfeitHint, infoBoxHint, encyclopediaHint, volumeHint, matchHistoryHint } from './draft-toolbar.hints';
+import { goldHint, buyXpHint, lockShopHint, talentHint, jokerPickHint, draftReadyHint, shopPhaseHint, fightingHint, abandonHint, forfeitHint, infoBoxHint, encyclopediaHint, volumeHint, matchHistoryHint, ghostReportHint, battleCriesHint } from './draft-toolbar.hints';
 import { ReplaysDialogComponent } from '../replays-dialog/replays-dialog.component';
 import { environment } from '../../../../environments/environment';
 import { NextFightPickerComponent } from '../next-fight-picker/next-fight-picker.component';
 import { RunRegistryService } from '../../services/run-registry.service';
+import { GhostReportService } from '../../services/ghost-report.service';
+import { GhostReportDialogComponent } from '../ghost-report-dialog/ghost-report-dialog.component';
+import { BattleCries, BattleCriesDialogComponent } from '../../../draft/components/battle-cries-dialog/battle-cries-dialog.component';
+import { emoteIcon } from '../../social/emote-catalog';
 
 @Component({
   selector: 'app-draft-toolbar',
@@ -101,6 +105,13 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
   readonly forfeitHint = forfeitHint;
   readonly encyclopediaHint = encyclopediaHint;
   readonly matchHistoryHint = matchHistoryHint;
+  readonly ghostReportHint = ghostReportHint;
+  readonly battleCriesHint = battleCriesHint;
+  /** New ghost encounters since this run's report was last opened — badge on the 👻 button. */
+  ghostUnseen = signal(0);
+  private ghostReportChecked = false;
+  /** Mirrors the synced battle-cry fields so the (MatDialog) picker can read them live. */
+  battleCries = signal<BattleCries>({ greeting: '', victory: '', defeat: '' });
   readonly infoBoxHint = infoBoxHint;
 
   readonly volumeHint = volumeHint;
@@ -187,6 +198,7 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
     private soundsService: SoundsService,
     private router: Router,
     private runRegistry: RunRegistryService,
+    private ghostReportService: GhostReportService,
   ) {
     // While the draft character panel is expanded, tag <body> so the shop can make room for it
     // on wide screens (see `body.draft-panel-open` / `.draft-stage` in styles.scss).
@@ -256,6 +268,14 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
         triggerFloatIn(this.renderer, this.platformId, 'gold-counter', `-${this.lastGold - gold}`, ['ft', 'ft-drop', 'ft-spend'], 800);
       }
       this.lastGold = gold;
+      const cries = this.battleCries();
+      if (cries.greeting !== this.player.battleCryGreeting || cries.victory !== this.player.battleCryVictory || cries.defeat !== this.player.battleCryDefeat) {
+        this.battleCries.set({ greeting: this.player.battleCryGreeting, victory: this.player.battleCryVictory, defeat: this.player.battleCryDefeat });
+      }
+      if (!this.ghostReportChecked && this.player.playerId) {
+        this.ghostReportChecked = true;
+        this.checkGhostReport(this.player.playerId);
+      }
     }
     // Keep the talent dialog's data current on every change — not just open/close
     // transitions — so it reflects live updates (e.g. a reroll) while it's already open.
@@ -470,6 +490,38 @@ export class DraftToolbarComponent implements OnChanges, OnInit, OnDestroy {
       } else {
         this.draftService.sendMessage('unlock-shop', {});
       }
+    });
+  }
+
+  /** Once per toolbar (i.e. per draft/fight screen): count unseen ghost encounters for the badge,
+   *  and in the draft, pop a one-line "While you were away" teaser if there's anything new. */
+  private async checkGhostReport(playerId: number): Promise<void> {
+    const report = await this.ghostReportService.fetchUnseen(playerId);
+    if (!report || report.summary.fights === 0) return;
+    this.ghostUnseen.set(report.summary.fights);
+    if (this.isFighting()) return;
+    const { wins, losses, runsEnded, emotes } = report.summary;
+    const reactions = Object.entries(emotes).map(([id, n]) => `${emoteIcon(id)}×${n}`).join(' ');
+    const text = `👻 While you were away: your ghosts went ${wins}–${losses}`
+      + (runsEnded ? `, ending ${runsEnded} ${runsEnded === 1 ? 'run' : 'runs'}` : '')
+      + (reactions ? ` · ${reactions}` : '');
+    setTimeout(() => triggerDraftLogFloatingText(this.renderer, this.platformId, text), 1500);
+  }
+
+  openGhostReport(): void {
+    this.ghostUnseen.set(0);
+    this.dialog.open(GhostReportDialogComponent, {
+      data: { playerId: this.player.playerId, name: this.player.name },
+      backdropClass: 'chungus-dialog-backdrop',
+      autoFocus: false,
+    });
+  }
+
+  openBattleCries(): void {
+    this.dialog.open(BattleCriesDialogComponent, {
+      data: { cries: this.battleCries.asReadonly() },
+      backdropClass: 'chungus-dialog-backdrop',
+      autoFocus: false,
     });
   }
 

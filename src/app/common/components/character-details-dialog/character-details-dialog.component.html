@@ -2,7 +2,8 @@
   <h2 class="text-white text-lg font-semibold">{{ player.name }}'s Build</h2>
   <app-character-details [player]="player" [combat]="true" [enemy]="true"
     [showStats]="showStats" [redacted]="redacted" [initialExpanded]="true"
-    [talentClasses]="talentClasses" [itemClasses]="itemClasses"></app-character-details>
+    [talentClasses]="talentClasses" [itemClasses]="itemClasses"
+    [ownerProfile]="data.ownerProfile ?? null"></app-character-details>
   @if (!redacted) {
     <app-skill-icons [player]="player"></app-skill-icons>
   }

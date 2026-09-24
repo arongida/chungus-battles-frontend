@@ -56,6 +56,17 @@
         <mat-icon>history</mat-icon>
       </button>
 
+      <button mat-icon-button aria-label="Ghost report" (click)="openGhostReport()" [appInfoHint]="ghostReportHint"
+        [matBadge]="ghostUnseen() || null" matBadgeSize="small" matBadgeColor="warn" [matBadgeHidden]="!ghostUnseen()">
+        <span class="toolbar-emoji-icon">👻</span>
+      </button>
+
+      @if (!isFighting()) {
+        <button mat-icon-button aria-label="Battle cries" (click)="openBattleCries()" [appInfoHint]="battleCriesHint">
+          <mat-icon>campaign</mat-icon>
+        </button>
+      }
+
       <button mat-icon-button aria-label="Abandon run" class="abandon-run-btn" (click)="confirmAbandon()" [appInfoHint]="abandonHint">
         <mat-icon>flag</mat-icon>
       </button>

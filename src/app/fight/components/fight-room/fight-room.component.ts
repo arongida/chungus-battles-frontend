@@ -25,7 +25,12 @@ import {
   FightStatsMessage,
   GameOverMessage,
   GameWinMessage,
+  EmoteMessage,
 } from '../../../models/types/MessageTypes';
+import { EmotePickerComponent } from '../emote-picker/emote-picker.component';
+import { MAX_REACTIONS_PER_FIGHT } from '../../../common/social/emote-catalog';
+import { OwnerProfile, ownerStatusLine, parseOwnerProfile } from '../../../common/social/owner-profile';
+import { RunSummariesService } from '../../../common/services/run-summaries.service';
 import { CombatLogEntry } from '../../../models/types/CombatLogEntry';
 import { CombatLogComponent } from '../combat-log/combat-log.component';
 import { DraftService } from '../../../draft/services/draft.service';
@@ -89,6 +94,7 @@ function coercePlayer(src: any): Player {
     DraggablePanelDirective,
     InfoHintDirective,
     TweenNumberComponent,
+    EmotePickerComponent,
   ],
   templateUrl: './fight-room.component.html',
   styleUrl: './fight-room.component.scss',
@@ -143,6 +149,18 @@ export class FightRoomComponent implements OnInit {
   burnDamage = signal(0);
   roundWinWins = signal(0);
   readonly winsToWin = WINS_TO_WIN;
+  /** Reactions the server still allows this fight (from its reaction broadcasts). */
+  reactionsRemaining = signal(MAX_REACTIONS_PER_FIGHT);
+  /** Public profile of the enemy ghost's owner — badges + status on the enemy nameplate. */
+  enemyOwner = signal<OwnerProfile | null>(null);
+  /** Who ended this run (game_over) and how their own run is going now. */
+  nemesis = signal<NonNullable<GameOverMessage['killer']> | null>(null);
+  nemesisStatus = signal<string | null>(null);
+  /** Joe is synthetic — nobody to react at. */
+  canReact = computed(() => {
+    const e = this.enemy();
+    return !!e && e.playerId !== 0;
+  });
 
   constructor(
     private fightService: FightService,
@@ -161,6 +179,7 @@ export class FightRoomComponent implements OnInit {
     private panelLayoutService: PanelLayoutService,
     private dialog: MatDialog,
     private replaysService: ReplaysService,
+    private runSummariesService: RunSummariesService,
   ) {
     effect(() => {
       const room = this.fightService.room();
@@ -177,6 +196,10 @@ export class FightRoomComponent implements OnInit {
           this.burnCountdownMs.set(state.endBurnCountdownMs ?? END_BURN_START_MS);
           this.burnActive.set(state.endBurnActive ?? false);
           this.burnDamage.set(state.endBurnDamage ?? 0);
+          if (state.enemyOwnerJson !== undefined && state.enemyOwnerJson !== this.enemyOwnerJson) {
+            this.enemyOwnerJson = state.enemyOwnerJson;
+            this.enemyOwner.set(parseOwnerProfile(state.enemyOwnerJson));
+          }
         });
 
         const animCtx: AnimationContext = {
@@ -217,8 +240,15 @@ export class FightRoomComponent implements OnInit {
               result === 'win' ? battleWonHint : result === 'lose' ? battleLostHint : battleDrawHint
             );
           },
+          onEmote: (msg) => {
+            if (msg.kind === 'reaction' && msg.playerId === this.player()?.playerId && msg.remaining != null) {
+              this.reactionsRemaining.set(msg.remaining);
+            }
+          },
           onGameOver: (message) => {
             const msg: GameOverMessage = typeof message === 'string' ? { message } : message;
+            this.setNemesis(msg.killer ?? null);
+            if (msg.killer) this.runRegistry.setNemesis(this.runPlayerId, msg.killer);
             this.gameOver = true;
             this.battleOver = true;
             this.gameOverMessage.set(msg.message);
@@ -227,7 +257,7 @@ export class FightRoomComponent implements OnInit {
             this.battleReplayId.set(msg.replayId ?? null);
             this.battleStats.set(msg.stats ?? null);
             if (msg.replayId) this.replaysService.invalidate(this.player()?.originalPlayerId ?? 0);
-            this.runRegistry.setBattleEndState(this.runPlayerId, { type: 'game_over', message: msg.message, replayId: msg.replayId, stats: msg.stats });
+            this.runRegistry.setBattleEndState(this.runPlayerId, { type: 'game_over', message: msg.message, replayId: msg.replayId, stats: msg.stats, killer: msg.killer });
             this.runRegistry.markEnded(this.runPlayerId);
             this.infoBoxService.setPageDefault(runOverHint);
           },
@@ -321,6 +351,10 @@ export class FightRoomComponent implements OnInit {
           this.fightAnimationService.dispatch(animCtx, 'game_win', message);
         });
 
+        room.onMessage('emote', (message: EmoteMessage) => {
+          this.fightAnimationService.dispatch(animCtx, 'emote', message);
+        });
+
         // All handlers registered and initial state applied — safe to restore now.
         // untracked prevents this.player() read inside restoreBattleEndState from
         // being tracked by the effect, which would cause an infinite re-run loop.
@@ -337,6 +371,34 @@ export class FightRoomComponent implements OnInit {
     if (!room) {
       await this.runResumeService.resume(this.runPlayerId);
     }
+  }
+
+  private enemyOwnerJson: string | undefined;
+
+  sendEmote(emoteId: string): void {
+    this.fightService.room()?.send('emote', { emoteId });
+  }
+
+  /** Nemesis card: who ended the run, plus their live status fetched from /runSummaries (their
+   *  run keeps going after they beat you — that's the point of showing it). */
+  private setNemesis(killer: GameOverMessage['killer'] | null): void {
+    this.nemesis.set(killer ?? null);
+    this.nemesisStatus.set(null);
+    if (!killer || !killer.originalPlayerId) return;
+    this.runSummariesService.fetch([killer.originalPlayerId]).then(map => {
+      const s = map.get(killer.originalPlayerId);
+      if (!s || this.nemesis()?.originalPlayerId !== killer.originalPlayerId) return;
+      this.nemesisStatus.set(ownerStatusLine({
+        originalPlayerId: killer.originalPlayerId,
+        status: s.wins >= WINS_TO_WIN ? 'champion' : s.lives <= 0 ? 'fallen' : 'fighting',
+        wins: s.wins, losses: s.losses, round: s.round, runsEnded: 0, badges: [],
+      }));
+    });
+  }
+
+  nemesisAvatar(): string {
+    const url = this.nemesis()?.avatarUrl ?? '';
+    return url.replace(/\.png$/, '_enemy.png');
   }
 
   setSpeed(speed: number): void {
@@ -395,13 +457,14 @@ export class FightRoomComponent implements OnInit {
     const raw = this.runRegistry.getBattleEndState(this.runPlayerId);
     if (!raw) return;
     try {
-      const state = raw as { type: string; message?: string; wins?: number; losses?: number; season?: number; result?: string; lossReward?: LossRewardOptions & { outcome?: LossRewardResultMessage }; replayId?: string | null; stats?: FightStatsMessage | null };
+      const state = raw as { type: string; message?: string; wins?: number; losses?: number; season?: number; result?: string; lossReward?: LossRewardOptions & { outcome?: LossRewardResultMessage }; replayId?: string | null; stats?: FightStatsMessage | null; killer?: GameOverMessage['killer'] };
       const player = this.player();
       if (!player) return;
       if (state.type === 'game_over') {
         this.gameOver = true;
         this.battleOver = true;
         this.gameOverMessage.set(state.message ?? 'Game over');
+        this.setNemesis(state.killer ?? null);
         this.gameOverMinimized.set(false);
         this.gameOverVisible.set(true);
         this.battleReplayId.set(state.replayId ?? null);

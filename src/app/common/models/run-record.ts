@@ -42,6 +42,19 @@ export interface RunRecord {
   /** Post-fight modal state (end_battle/game_over/game_win), scoped per run so a modal from one
    *  run can't resurface on another after a switch. */
   battleEndState?: unknown;
+  /** Who delivered this run's final loss (from game_over) — shown on the run list with their
+   *  current status, since their run keeps going after they beat you. */
+  nemesis?: RunNemesis;
+  /** ISO time of the newest ghost encounter the player has seen for this run — the ghost report
+   *  only counts/teases encounters after it. Tracked client-side only (the server never writes
+   *  "seen"), so it's per browser, like everything else in this registry. */
+  ghostReportSeenAt?: string;
+}
+
+export interface RunNemesis {
+  name: string;
+  avatarUrl: string;
+  originalPlayerId: number;
 }
 
 export interface RunRegistryBlob {

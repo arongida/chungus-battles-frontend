@@ -1,0 +1,29 @@
+@if (mode() === 'popover') {
+  <div class="emote-picker">
+    <button class="emote-toggle" [class.active]="open()" [disabled]="remaining() <= 0"
+            (click)="open.set(!open())"
+            [title]="remaining() > 0 ? 'Send a reaction (' + remaining() + ' left this fight)' : 'No reactions left this fight'">
+      💬 <span class="emote-count">{{ remaining() }}</span>
+    </button>
+    @if (open()) {
+      <div class="emote-menu" role="menu">
+        @for (id of reactions; track id) {
+          <button role="menuitem" [disabled]="disabled()" (click)="pick(id)">
+            <span class="emote-icon">{{ emotes[id].icon }}</span>{{ emotes[id].text }}
+          </button>
+        }
+      </div>
+    }
+  </div>
+} @else {
+  @if (remaining() > 0) {
+    <div class="emote-quick">
+      <span class="emote-quick-label">Tell them:</span>
+      @for (id of quick(); track id) {
+        <button [disabled]="disabled()" (click)="pick(id)">
+          {{ emotes[id].icon }} {{ emotes[id].text }}
+        </button>
+      }
+    </div>
+  }
+}

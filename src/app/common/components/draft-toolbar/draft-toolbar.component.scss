@@ -184,3 +184,9 @@
 @media (prefers-reduced-motion: reduce) {
   .level-up-toggle--pending { animation: none; outline: 2px solid #facc15; }
 }
+
+.toolbar-emoji-icon {
+  font-size: 1.15rem;
+  line-height: 1;
+  filter: grayscale(0.35);
+}

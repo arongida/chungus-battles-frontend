@@ -360,3 +360,67 @@
   left: 0.5rem;
   z-index: 1000;
 }
+
+/* ── Reactions (emote picker) — sits under the speed toggle ── */
+
+.emote-slot {
+  position: fixed;
+  top: 156px;
+  left: 16px;
+  z-index: 1100;
+
+  @media (max-width: 639px) {
+    top: 140px;
+  }
+}
+
+/* ── Nemesis card (Run Over modal) ── */
+
+.nemesis-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 auto 12px;
+  padding: 8px 12px;
+  max-width: 280px;
+  border: 1px solid var(--cm-border);
+  border-radius: 8px;
+  background: rgba(127, 29, 29, 0.18);
+  text-align: left;
+}
+
+.nemesis-avatar {
+  flex-shrink: 0;
+  width: 48px;
+  height: 60px;
+  border-radius: 4px;
+  background-size: cover;
+  background-position: center;
+}
+
+.nemesis-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.nemesis-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--cm-text-muted);
+}
+
+.nemesis-name {
+  font-weight: 700;
+  color: #fca5a5;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nemesis-status {
+  font-size: 0.75rem;
+  color: var(--cm-amber-light);
+}

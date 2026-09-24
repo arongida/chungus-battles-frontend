@@ -1,0 +1,36 @@
+
+// New-build notice (AppUpdateService) — shown when a newer deploy is detected mid-run. Above the
+// game HUD and modals, below nothing: it has to be seen to be useful.
+.update-banner {
+  position: fixed;
+  top: 72px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: calc(100vw - 32px);
+  padding: 8px 10px 8px 16px;
+  border: 1px solid var(--cm-amber, #f59e0b);
+  border-radius: 8px;
+  background: var(--cm-bg, rgba(10, 10, 15, 0.97));
+  box-shadow: var(--cm-shadow);
+  color: var(--cm-text, #cbd5e1);
+  font-size: 0.85rem;
+  text-shadow: none;
+}
+
+.update-banner-btn {
+  flex-shrink: 0;
+  padding: 5px 12px;
+  border: none;
+  border-radius: 6px;
+  background: var(--cm-amber, #f59e0b);
+  color: #1c1003;
+  font-weight: 700;
+  text-shadow: none;
+  cursor: pointer;
+
+  &:hover { background: var(--cm-amber-light, #fbbf24); }
+}

@@ -7,9 +7,10 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { environment } from '../../environments/environment';
 import { SeasonsService } from '../common/services/seasons.service';
 import { InfoBoxService } from '../common/services/info-box.service';
+import { ADMIN_SECRET_STORAGE_KEY } from '../common/utils/admin-secret';
+import { MenuHeaderComponent } from '../common/components/menu-header/menu-header.component';
 import { BotBatchStatus, Tournament, TournamentSummary } from '../models/types/MessageTypes';
 
-const SECRET_STORAGE_KEY = 'adminSecret';
 
 /**
  * Season-end tournament + bot-run admin panel. Gated by an admin secret the operator sets
@@ -22,7 +23,7 @@ const SECRET_STORAGE_KEY = 'adminSecret';
 @Component({
   selector: 'app-admin',
   standalone: true,
-  imports: [MatButtonModule, MatIconModule, MatCheckboxModule, RouterLink],
+  imports: [MatButtonModule, MatIconModule, MatCheckboxModule, RouterLink, MenuHeaderComponent],
   templateUrl: './admin.component.html',
   styleUrl: './admin.component.scss',
 })
@@ -67,7 +68,7 @@ export class AdminComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.infoBoxService.hide();
     if (isPlatformBrowser(this.platformId)) {
-      const stored = localStorage.getItem(SECRET_STORAGE_KEY);
+      const stored = localStorage.getItem(ADMIN_SECRET_STORAGE_KEY);
       if (stored) this.secret.set(stored);
     }
 
@@ -89,7 +90,7 @@ export class AdminComponent implements OnInit, OnDestroy {
   saveSecret(): void {
     const value = this.secretInput().trim();
     if (!value || !isPlatformBrowser(this.platformId)) return;
-    localStorage.setItem(SECRET_STORAGE_KEY, value);
+    localStorage.setItem(ADMIN_SECRET_STORAGE_KEY, value);
     this.secret.set(value);
     this.secretInput.set('');
     this.authError.set(null);
@@ -97,7 +98,7 @@ export class AdminComponent implements OnInit, OnDestroy {
   }
 
   clearSecret(): void {
-    if (isPlatformBrowser(this.platformId)) localStorage.removeItem(SECRET_STORAGE_KEY);
+    if (isPlatformBrowser(this.platformId)) localStorage.removeItem(ADMIN_SECRET_STORAGE_KEY);
     this.secret.set('');
     if (this.botPollId) {
       clearInterval(this.botPollId);

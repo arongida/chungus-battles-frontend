@@ -8,19 +8,7 @@
   <app-art-credit extraClass="text-white" />
 </div>
 
-<div class="fixed top-4 right-4">
-  <button mat-icon-button (click)="cycleVolume()">
-    <mat-icon>{{ volumeIcon }}</mat-icon>
-  </button>
-  <button mat-icon-button (click)="toggleInfoBox()"
-    [class.text-amber-400]="infoBoxVisible()"
-    [class.text-gray-400]="!infoBoxVisible()"
-    [class.ring-1]="infoBoxVisible()"
-    [class.ring-amber-400]="infoBoxVisible()"
-    [class.rounded-full]="infoBoxVisible()">
-    <mat-icon>{{ infoBoxVisible() ? 'help' : 'help_outline' }}</mat-icon>
-  </button>
-</div>
+<app-menu-header page="leaderboard" />
 
 <div class="flex flex-col items-center justify-center min-h-screen p-4">
 

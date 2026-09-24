@@ -17,15 +17,16 @@ import { MatDialog } from '@angular/material/dialog';
 import { FightStatsDialogComponent } from '../common/components/fight-stats-dialog/fight-stats-dialog.component';
 import { GameStatsResult, Tournament, TournamentPairing, TournamentStandingRow } from '../models/types/MessageTypes';
 import { TimeAgoPipe } from '../common/pipes/time-ago.pipe';
-import { SoundsService } from '../common/services/sounds.service';
 import { RunRegistryService } from '../common/services/run-registry.service';
 import { SupportLinkComponent } from '../common/components/support-link/support-link.component';
 import { ArtCreditComponent } from '../common/components/art-credit/art-credit.component';
 
+import { MenuHeaderComponent } from '../common/components/menu-header/menu-header.component';
+
 @Component({
   selector: 'app-end',
   standalone: true,
-  imports: [MatButtonModule, MatIconModule, DatePipe, NgTemplateOutlet, DraggablePanelDirective, RouterLink, PlayerBuildCardComponent, TimeAgoPipe, SupportLinkComponent, ArtCreditComponent],
+  imports: [MatButtonModule, MatIconModule, DatePipe, NgTemplateOutlet, DraggablePanelDirective, RouterLink, PlayerBuildCardComponent, TimeAgoPipe, SupportLinkComponent, ArtCreditComponent, MenuHeaderComponent],
   templateUrl: './end.component.html',
   styleUrl: './end.component.scss',
 })
@@ -112,25 +113,8 @@ export class EndComponent implements OnInit, AfterViewInit, OnDestroy {
     @Inject(PLATFORM_ID) private platformId: Object,
     private seasonsService: SeasonsService,
     private dialog: MatDialog,
-    private soundsService: SoundsService,
     private runRegistry: RunRegistryService,
   ) {}
-
-  get infoBoxVisible() {
-    return this.infoBoxService.isVisible;
-  }
-
-  toggleInfoBox() {
-    this.infoBoxService.toggle();
-  }
-
-  get volumeIcon(): string {
-    return this.soundsService.volumeIcon;
-  }
-
-  cycleVolume(): void {
-    this.soundsService.cycleVolume();
-  }
 
   isPanelVisible(): boolean {
     const hovered = this.hoveredPlayerId();

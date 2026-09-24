@@ -57,22 +57,4 @@
   <app-support-link />
 </div>
 
-<div class="fixed top-1 right-2 sm:top-5 sm:right-5 flex items-center">
-  <button mat-icon-button class="text-gray-400" (click)="openEncyclopedia()" title="Encyclopedia">
-    <mat-icon>menu_book</mat-icon>
-  </button>
-  <button mat-icon-button class="text-gray-400" [routerLink]="['/end']">
-    <mat-icon>leaderboard</mat-icon>
-  </button>
-  <button mat-icon-button (click)="toggleInfoBox()"
-    [class.text-amber-400]="infoBoxHighlighted()"
-    [class.text-gray-400]="!infoBoxHighlighted()"
-    [class.ring-1]="infoBoxHighlighted()"
-    [class.ring-amber-400]="infoBoxHighlighted()"
-    [class.rounded-full]="infoBoxHighlighted()">
-    <mat-icon>{{ infoBoxHighlighted() ? 'help' : 'help_outline' }}</mat-icon>
-  </button>
-  <button mat-icon-button (click)="cycleVolume()">
-    <mat-icon>{{ volumeIcon }}</mat-icon>
-  </button>
-</div>
+<app-menu-header page="home" />

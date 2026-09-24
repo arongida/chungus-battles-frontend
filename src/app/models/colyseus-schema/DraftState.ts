@@ -29,4 +29,7 @@ export class DraftState extends Schema {
   // duplicates kept so ×N counts are visible. Same order as backend (skipHandshake).
   @type(['string']) nextEnemyTalentClasses: ArraySchema<string> = new ArraySchema<string>();
   @type(['string']) nextEnemyItemClasses: ArraySchema<string> = new ArraySchema<string>();
+  // JSON-encoded OwnerProfile (common/social/owner-profile.ts) of the next opponent's owner;
+  // '' for Joe. Same order as backend (skipHandshake).
+  @type('string') nextEnemyOwnerJson: string = '';
 }

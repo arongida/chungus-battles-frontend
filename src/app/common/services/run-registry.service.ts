@@ -2,6 +2,7 @@ import { Injectable, signal } from '@angular/core';
 import {
   MAX_RUNS,
   RUNS_STORAGE_KEY,
+  RunNemesis,
   RunRecord,
   RunRegistryBlob,
   RunSummary,
@@ -116,6 +117,20 @@ export class RunRegistryService {
       if (!r) return;
       if (state === null) delete r.battleEndState;
       else r.battleEndState = state;
+    });
+  }
+
+  setNemesis(playerId: number, nemesis: RunNemesis): void {
+    this.mutate((blob) => {
+      const r = blob.runs[String(playerId)];
+      if (r) r.nemesis = { name: nemesis.name, avatarUrl: nemesis.avatarUrl, originalPlayerId: nemesis.originalPlayerId };
+    });
+  }
+
+  setGhostReportSeenAt(playerId: number, seenAt: string): void {
+    this.mutate((blob) => {
+      const r = blob.runs[String(playerId)];
+      if (r && (!r.ghostReportSeenAt || r.ghostReportSeenAt < seenAt)) r.ghostReportSeenAt = seenAt;
     });
   }
 

@@ -329,6 +329,29 @@ function spawnFloatIn(renderer: Renderer2, container: HTMLElement, text: string,
   setTimeout(() => { if (el.parentNode === container) renderer.removeChild(container, el); }, lifetimeMs + 50);
 }
 
+const SPEECH_BUBBLE_LIFETIME_MS = 2600; // must match speech-bubble-pop in styles.scss
+const liveBubbles = new WeakMap<HTMLElement, HTMLElement>();
+
+/** Speech bubble over a fighter's avatar — battle cries and live reactions (the `emote`
+ *  message). Anchored to the same `damage-numbers-{playerId}` overlay as floating combat text,
+ *  so it follows the panel wherever it's dragged. One bubble per fighter: a new line replaces
+ *  the one still showing instead of stacking. */
+export function triggerSpeechBubble(renderer: Renderer2, platformId: Object, playerId: number, text: string, opts: { reaction?: boolean } = {}): void {
+  if (!isPlatformBrowser(platformId) || !text) return;
+  const container = document.getElementById(`damage-numbers-${playerId}`);
+  if (!container) return;
+  const prev = liveBubbles.get(container);
+  if (prev?.parentNode === container) renderer.removeChild(container, prev);
+
+  const el = renderer.createElement('div');
+  renderer.addClass(el, 'speech-bubble');
+  if (opts.reaction) renderer.addClass(el, 'speech-bubble--reaction');
+  renderer.appendChild(el, renderer.createText(text));
+  renderer.appendChild(container, el);
+  liveBubbles.set(container, el);
+  setTimeout(() => { if (el.parentNode === container) renderer.removeChild(container, el); }, SPEECH_BUBBLE_LIFETIME_MS + 50);
+}
+
 /** Shared rarity → class-name-suffix lookup. Drives both the `.lucky-find-number--{suffix}`
  *  text color and the `.vfx-fireworks--{suffix}` burst tint, so the two always stay in sync. */
 const luckyFindRaritySuffix: Record<number, string> = {

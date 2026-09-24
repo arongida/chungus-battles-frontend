@@ -1,6 +1,7 @@
 <div class="fixed-button">
   <app-next-enemy-badge [enemy]="nextEnemy" [revealLevel]="nextEnemyRevealLevel"
-    [talentClasses]="nextEnemyTalentClasses" [itemClasses]="nextEnemyItemClasses"></app-next-enemy-badge>
+    [talentClasses]="nextEnemyTalentClasses" [itemClasses]="nextEnemyItemClasses"
+    [ownerProfile]="nextEnemyOwner"></app-next-enemy-badge>
   <button [disabled]="loading || availableTalents.length > 0" mat-raised-button class="chungus-modal-btn" (click)="startFight()"
     #avatarTooltip="matTooltip" matTooltip="You have unequipped items!" matTooltipPosition="above"
     [matTooltipDisabled]="!shouldShowEquipmentWarning()">

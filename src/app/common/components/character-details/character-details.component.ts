@@ -46,6 +46,7 @@ import {
  *  see FightRoomComponent.playerLowHp). */
 export const LOW_HP_PERCENT = 25;
 
+import { OwnerProfile, ownerStatusLine } from '../../social/owner-profile';
 @Component({
   selector: 'app-character-details',
   standalone: true,
@@ -99,6 +100,9 @@ export class CharacterDetailsComponent implements OnInit, OnDestroy {
    *  (via PanelLayoutService) so it survives across fights and reloads. */
   @Input() panelId?: string;
   playerBeingHit = input(false);
+  /** Enemy only: public profile of the character behind this ghost (status + badges). */
+  ownerProfile = input<OwnerProfile | null>(null);
+  ownerStatusLine = ownerStatusLine;
   enemyBeingHit = input(false);
 
   /** Collapse the panel when the user taps outside it on touch devices. */

@@ -100,6 +100,11 @@ export class Player extends Schema {
   // ShopUpgradeUtils.BASE_POTION_CAPACITY / Flash Sale). Declared here (end of the backend
   // @type block) so field indices stay stable, same reasoning as pendingPotionSummary above.
   @type('number') potionCapacity: number = 1;
+  // Battle cries — preset line ids (common/social/emote-catalog.ts) this character says in
+  // fights. Set in the draft via 'set_battle_cry'. Same order as the backend (skipHandshake).
+  @type('string') battleCryGreeting: string = '';
+  @type('string') battleCryVictory: string = '';
+  @type('string') battleCryDefeat: string = '';
   // Not synced — server-only computation, no @type
   private _poisonStack: number = 0;
   // Leaderboard-only display field: ISO timestamp of this character's last-saved snapshot,

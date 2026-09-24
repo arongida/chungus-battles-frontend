@@ -14,7 +14,9 @@ import {
   GameOverMessage,
   GameWinMessage,
   StatsSyncMessage,
+  EmoteMessage,
 } from '../../models/types/MessageTypes';
+import { emoteText } from '../../common/social/emote-catalog';
 import {
   hitSeverity,
   NumberTier,
@@ -40,6 +42,7 @@ import {
   triggerShowXpNumber,
   triggerSpriteVfx,
   triggerTalentActivation,
+  triggerSpeechBubble,
 } from '../../common/TriggerAnimations';
 import { SoundOptions, SoundsService } from '../../common/services/sounds.service';
 
@@ -60,6 +63,9 @@ export interface AnimationContext {
   /** `string` covers replays recorded before game_over carried an object payload. */
   onGameOver?: (msg: GameOverMessage | string) => void;
   onGameWin?: (msg: GameWinMessage) => void;
+  /** Called for every emote after its bubble is shown — the live fight room uses reaction
+   *  broadcasts to update the picker's remaining-count. */
+  onEmote?: (msg: EmoteMessage) => void;
   /** Replay-only: mutates the Player signal's HP directly, since there is no Colyseus schema sync. */
   applyHpDelta?: (playerId: number, damage: number, healing: number) => void;
   /** Replay-only: mutates the Player signal's invincible flag, since there is no Colyseus schema sync. */
@@ -251,6 +257,12 @@ export class FightAnimationService {
     }
   }
 
+  applyEmote(ctx: AnimationContext, msg: EmoteMessage): void {
+    if (!msg) return;
+    triggerSpeechBubble(ctx.renderer, ctx.platformId, msg.playerId, emoteText(msg.emoteId), { reaction: msg.kind === 'reaction' });
+    ctx.onEmote?.(msg);
+  }
+
   /** Routes a raw replay event to the correct apply method. `t` is the ReplayEvent's own
    *  fight-elapsed timestamp — only consumed by the combat_log case, as a fallback for replays
    *  recorded before the server stamped `t` on the payload itself (see applyCombatLog). */
@@ -267,6 +279,7 @@ export class FightAnimationService {
       case 'trigger_talent':  this.applyTriggerTalent(ctx, payload as TriggerTalentMessage); break;
       case 'trigger_item':    this.applyTriggerItem(ctx, payload as TriggerItemMessage); break;
       case 'stats_sync':      ctx.applyStatsSync?.(payload as StatsSyncMessage); break;
+      case 'emote':           this.applyEmote(ctx, payload as EmoteMessage); break;
       case 'end_battle':
         this.applyKnockOut(ctx, (payload as EndBattleMessage)?.result ?? 'win');
         ctx.onEndBattle?.(payload as EndBattleMessage);

@@ -8,6 +8,10 @@ import { RunSummariesService } from '../../common/services/run-summaries.service
 import { SeasonsService } from '../../common/services/seasons.service';
 import { ConfirmDialogComponent } from '../../common/components/confirm-dialog/confirm-dialog.component';
 import { RunRecord } from '../../common/models/run-record';
+import { GhostReportService } from '../../common/services/ghost-report.service';
+import { GhostReportDialogComponent } from '../../common/components/ghost-report-dialog/ghost-report-dialog.component';
+import { ownerStatusLine } from '../../common/social/owner-profile';
+import { WINS_TO_WIN } from '../../common/constants/game';
 
 /** "Continue a run" list on the home screen — see RunRegistryService. Renders nothing when the
  *  registry is empty, so a first-time player's join screen is unchanged. */
@@ -27,12 +31,21 @@ export class RunListComponent implements OnInit {
   visibleRuns = computed(() => this.runs().filter((run) => !this.isEnded(run)));
   refreshing = signal(false);
   currentSeason = signal(0);
+  /** Unseen ghost encounters per run (playerId → count), shared with the menu header badge. */
+  ghostUnseen = this.ghostReportService.unseenCounts;
+  /** Live status line of each ended run's nemesis (nemesis originalPlayerId → line). */
+  nemesisStatus = signal<Map<number, string>>(new Map());
+  /** Ended runs are hidden from "Continue a Run", but their ghosts keep fighting — surface the
+   *  ones with something new to report, or a nemesis to check up on. */
+  ghostRuns = computed(() => this.runs().filter((run) =>
+    this.isEnded(run) && ((this.ghostUnseen().get(run.playerId) ?? 0) > 0 || !!run.nemesis)));
 
   constructor(
     private runRegistry: RunRegistryService,
     private runSummariesService: RunSummariesService,
     private seasonsService: SeasonsService,
     private dialog: MatDialog,
+    private ghostReportService: GhostReportService,
     @Inject(PLATFORM_ID) private platformId: Object,
   ) {}
 
@@ -41,6 +54,35 @@ export class RunListComponent implements OnInit {
     this.seasonsService.getSeasons().then((data) => this.currentSeason.set(data.currentSeason));
     this.refreshing.set(true);
     this.runSummariesService.refreshAll().finally(() => this.refreshing.set(false));
+    // The menu header (same page) refreshes GhostReportService.unseenCounts on init.
+    this.loadNemesisStatus();
+  }
+
+  private async loadNemesisStatus(): Promise<void> {
+    const ids = [...new Set(this.runs().map((r) => r.nemesis?.originalPlayerId).filter((id): id is number => !!id))];
+    if (!ids.length) return;
+    const summaries = await this.runSummariesService.fetch(ids);
+    if (!summaries) return;
+    const lines = new Map<number, string>();
+    summaries.forEach((s, id) => lines.set(id, ownerStatusLine({
+      originalPlayerId: id,
+      status: s.wins >= WINS_TO_WIN ? 'champion' : s.lives <= 0 ? 'fallen' : 'fighting',
+      wins: s.wins, losses: s.losses, round: s.round, runsEnded: 0, badges: [],
+    })));
+    this.nemesisStatus.set(lines);
+  }
+
+  unseenCount(run: RunRecord): number {
+    return this.ghostUnseen().get(run.playerId) ?? 0;
+  }
+
+  openGhostReport(run: RunRecord, event: Event): void {
+    event.stopPropagation();
+    this.dialog.open(GhostReportDialogComponent, {
+      data: { playerId: run.playerId, name: run.name },
+      backdropClass: 'chungus-dialog-backdrop',
+      autoFocus: false,
+    });
   }
 
   isEnded(run: RunRecord): boolean {

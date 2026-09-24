@@ -5,6 +5,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { CharacterDetailsComponent } from '../character-details/character-details.component';
 import { SkillIconsComponent } from '../skill-icons/skill-icons.component';
+import { OwnerProfile } from '../../social/owner-profile';
 
 export interface CharacterDetailsDialogData {
   player: Player;
@@ -15,6 +16,8 @@ export interface CharacterDetailsDialogData {
   /** Talent/item classes of the redacted next opponent (duplicates kept, ×N chips in UI). */
   talentClasses?: string[];
   itemClasses?: string[];
+  /** Enemy only: the player behind this ghost (status + badges). */
+  ownerProfile?: OwnerProfile | null;
 }
 
 @Component({

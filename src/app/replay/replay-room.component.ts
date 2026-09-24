@@ -28,6 +28,7 @@ import { FightStatsMessage, StatsSyncSide } from '../models/types/MessageTypes';
 import { MatDialog } from '@angular/material/dialog';
 import { FightStatsDialogComponent } from '../common/components/fight-stats-dialog/fight-stats-dialog.component';
 import { clearKnockOut } from '../common/TriggerAnimations';
+import { OwnerProfile } from '../common/social/owner-profile';
 
 // Mirrors backend playerToPlainObject → rehydrates a plain snapshot into a typed Player.
 function rehydrateItem(raw: any): Item {
@@ -160,6 +161,8 @@ export class ReplayRoomComponent implements OnInit, AfterViewInit, OnDestroy {
   truncated = signal(false);
   versionMismatch = signal(false);
   battleStats = signal<FightStatsMessage | null>(null);
+  /** Enemy ghost owner's profile as it was at fight time (initialState.enemyOwner). */
+  enemyOwner = signal<OwnerProfile | null>(null);
 
   playing = signal(true);
   speed = signal(1);
@@ -325,6 +328,7 @@ export class ReplayRoomComponent implements OnInit, AfterViewInit, OnDestroy {
     const e = rehydratePlayer(this.initialState.enemy);
     this.player.set(p);
     this.enemy.set(e);
+    this.enemyOwner.set(this.initialState.enemyOwner ?? null);
   }
 
   private tick = (timestamp: number): void => {

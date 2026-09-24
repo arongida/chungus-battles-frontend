@@ -61,6 +61,7 @@ function coercePlayer(src: any): Player {
   return dest;
 }
 
+import { OwnerProfile, parseOwnerProfile } from '../../../common/social/owner-profile';
 @Component({
   selector: 'app-draft-room',
   standalone: true,
@@ -86,6 +87,9 @@ export class DraftRoomComponent implements OnInit {
   /** Talent/item classes of the next opponent (duplicates kept — ×N counts derived in UI). */
   nextEnemyTalentClasses = signal<string[]>([]);
   nextEnemyItemClasses = signal<string[]>([]);
+  /** Public profile of the player behind the next opponent's ghost (status + badges). */
+  nextEnemyOwner = signal<OwnerProfile | null>(null);
+  private nextEnemyOwnerJson = '';
 
   /** Queued `shop_floating` messages whose shop card wasn't in the DOM yet — retried on every
    *  subsequent state change (see comment at the `shop_floating` handler below). */
@@ -176,6 +180,10 @@ export class DraftRoomComponent implements OnInit {
     this.nextEnemyRevealLevel.set(state.nextEnemyRevealLevel ?? -1);
     this.nextEnemyTalentClasses.set([...(state.nextEnemyTalentClasses ?? [])]);
     this.nextEnemyItemClasses.set([...(state.nextEnemyItemClasses ?? [])]);
+    if ((state.nextEnemyOwnerJson ?? '') !== this.nextEnemyOwnerJson) {
+      this.nextEnemyOwnerJson = state.nextEnemyOwnerJson ?? '';
+      this.nextEnemyOwner.set(parseOwnerProfile(this.nextEnemyOwnerJson));
+    }
   }
 
   /** Gold/xp gains during the shop round (sells, buying xp/leveling, talent procs). Floats

@@ -9,6 +9,7 @@ import { CharacterDetailsDialogComponent, CharacterDetailsDialogData } from '../
 import { InfoBoxService } from '../../../common/services/info-box.service';
 import { FightService } from '../../../fight/services/fight.service';
 import { environment } from '../../../../environments/environment';
+import { OwnerProfile } from '../../../common/social/owner-profile';
 
 /**
  * "vs <enemy>" badge shown near the ready button during draft — previews the next fight
@@ -31,6 +32,8 @@ export class NextEnemyBadgeComponent implements OnDestroy {
   /** Talent/item classes of the next opponent (duplicates kept — the panel shows ×N chips). */
   @Input() talentClasses: string[] = [];
   @Input() itemClasses: string[] = [];
+  /** The player behind this ghost — status + badges (see common/social/owner-profile.ts). */
+  @Input() ownerProfile: OwnerProfile | null = null;
 
   /** Grace period before the hover panel closes. The panel is offset 8px off the badge, so
    *  without a delay the cursor crossing that gap would close it before it could arrive. */
@@ -124,6 +127,7 @@ export class NextEnemyBadgeComponent implements OnDestroy {
     componentRef.setInput('initialExpanded', true);
     componentRef.setInput('talentClasses', this.talentClasses);
     componentRef.setInput('itemClasses', this.itemClasses);
+    componentRef.setInput('ownerProfile', this.ownerProfile);
     componentRef.changeDetectorRef.detectChanges();
 
     // The overlay pane lives outside this component's DOM, so moving the cursor onto it fires
@@ -159,6 +163,7 @@ export class NextEnemyBadgeComponent implements OnDestroy {
         redacted: !this.isFullReveal,
         talentClasses: this.talentClasses,
         itemClasses: this.itemClasses,
+        ownerProfile: this.ownerProfile,
       },
       maxWidth: '95vw',
       autoFocus: false,

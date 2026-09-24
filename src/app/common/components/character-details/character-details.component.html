@@ -18,6 +18,12 @@
         <span class="cd-xp-text">{{ player.xp }}/{{ player.maxXp }}</span>
       </div>
     }
+    @if (enemy && ownerProfile(); as owner) {
+      <div class="cd-owner" title="The player behind this ghost">
+        <span class="cd-owner-status" [class]="'cd-owner-status--' + owner.status">{{ ownerStatusLine(owner) }}</span>
+        @for (b of owner.badges; track b.id) { <span class="cd-owner-badge">{{ b.label }}</span> }
+      </div>
+    }
   </div>
   <div class="cd-divider"></div>
 
@@ -273,6 +279,12 @@
     <span class="cd-name">{{ player.name }}</span>
     <span class="cd-level">Lv {{ player.level }}</span>
   </div>
+  @if (enemy && ownerProfile(); as owner) {
+    <div class="cd-owner cd-owner--compact" [title]="ownerStatusLine(owner)">
+      @for (b of owner.badges; track b.id) { <span class="cd-owner-badge">{{ b.label }}</span> }
+      @empty { <span class="cd-owner-status" [class]="'cd-owner-status--' + owner.status">{{ ownerStatusLine(owner) }}</span> }
+    </div>
+  }
 
   <!-- Portrait: transparent variant; enemy is horizontally mirrored to face the player.
        #avatar-{id} must be on the outer wrapper (for the hit knockback/flash animations).

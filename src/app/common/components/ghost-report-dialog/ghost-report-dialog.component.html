@@ -1,0 +1,62 @@
+<div class="ghost-modal">
+  <div class="ghost-modal-header">
+    <span>👻 While you were away@if (data.name) { <span class="ghost-modal-sub"> · {{ data.name }}</span> }</span>
+    <button class="ghost-close-btn" (click)="close()">×</button>
+  </div>
+
+  @if (loading()) {
+    <p class="ghost-empty">Loading...</p>
+  } @else if (failed()) {
+    <p class="ghost-empty">Couldn't load your ghost report. Try again later.</p>
+  } @else if (report(); as r) {
+    @if (r.summary.fights === 0) {
+      <p class="ghost-empty">
+        Nobody has fought your ghosts yet. Every round you finish leaves a copy of your character
+        for other players to face — check back later!
+      </p>
+    } @else {
+      <div class="ghost-summary">
+        <p class="ghost-summary-line">
+          Other players fought your ghosts <b>{{ r.summary.fights }}</b> {{ r.summary.fights === 1 ? 'time' : 'times' }}:
+          <span class="win">{{ r.summary.wins }}W</span>–<span class="lose">{{ r.summary.losses }}L</span>
+          @if (r.summary.draws) { –{{ r.summary.draws }}D }
+        </p>
+        @if (r.summary.runsEnded > 0) {
+          <p class="ghost-summary-line">💀 Your ghosts ended <b>{{ r.summary.runsEnded }}</b> {{ r.summary.runsEnded === 1 ? 'run' : 'runs' }}.</p>
+        }
+        @if (emoteTotals().length) {
+          <div class="ghost-emote-totals">
+            @for (t of emoteTotals(); track t.id) {
+              <span class="ghost-emote-chip" [title]="emotes[t.id]?.text ?? ''">{{ emoteIcon(t.id) }} ×{{ t.count }}</span>
+            }
+          </div>
+        }
+      </div>
+
+      <div class="ghost-list">
+        @for (e of r.encounters; track e.replayId) {
+          <a [routerLink]="['/replay', e.replayId]" target="_blank" class="ghost-row" [class.ghost-row--new]="isNew(e)"
+             title="Watch the fight">
+            <span class="ghost-avatar" [style.background-image]="'url(' + avatar(e.opponentAvatarUrl) + ')'"></span>
+            <span class="ghost-row-main">
+              <span class="ghost-row-name">{{ e.opponentName }}</span>
+              <span class="ghost-row-meta">
+                @if (inbox && e.ownerName) { vs your {{ e.ownerName }} · }
+                Round {{ e.ownerSnapshotRound }} · {{ e.createdAt | date:'MMM d, HH:mm' }}
+              </span>
+            </span>
+            @if (e.emotes.length) {
+              <span class="ghost-row-emotes">
+                @for (id of e.emotes; track $index) {
+                  <span class="ghost-row-emote" [title]="emotes[id]?.text ?? ''">{{ emoteIcon(id) }}</span>
+                }
+              </span>
+            }
+            <span class="ghost-row-result" [class.win]="e.result === 'win'" [class.lose]="e.result === 'lose'">{{ resultLabel(e) }}</span>
+            @if (isNew(e)) { <span class="ghost-row-new">NEW</span> }
+          </a>
+        }
+      </div>
+    }
+  }
+</div>

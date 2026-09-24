@@ -7,6 +7,7 @@ import { Talent } from '../../../models/colyseus-schema/TalentSchema';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Player } from '../../../models/colyseus-schema/PlayerSchema';
 import { NextEnemyBadgeComponent } from '../next-enemy-badge/next-enemy-badge.component';
+import { OwnerProfile } from '../../../common/social/owner-profile';
 @Component({
   selector: 'app-ready-button',
   standalone: true,
@@ -36,6 +37,8 @@ export class ReadyButtonComponent {
   nextEnemyTalentClasses: string[] = [];
   @Input({ required: false })
   nextEnemyItemClasses: string[] = [];
+  @Input({ required: false })
+  nextEnemyOwner: OwnerProfile | null = null;
 
   async startFight() {
     if (this.loading) return;

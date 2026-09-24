@@ -184,3 +184,18 @@
 @media (prefers-reduced-motion: reduce) {
   .level-up-toggle--pending { animation: none; outline: 2px solid #facc15; }
 }
+
+// Same 24×24 box as a <mat-icon>, so the emoji lines up with the icons beside it.
+.toolbar-emoji-icon {
+  display: block;
+  margin: 0 auto;
+  // Block-centered in the button (the toolbar's mat-icons are centered too). Not
+  // vertical-align: an emoji's baseline depends on the OS emoji font.
+  width: 24px;
+  height: 24px;
+  font-size: 20px;
+  line-height: 24px;
+  text-align: center;
+  text-shadow: none;
+  filter: grayscale(0.35);
+}

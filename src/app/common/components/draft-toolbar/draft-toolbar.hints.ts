@@ -109,6 +109,22 @@ export const matchHistoryHint: InfoContent = {
   ],
 };
 
+export const ghostReportHint: InfoContent = {
+  id: 'ghost-report',
+  title: 'While You Were Away',
+  entries: [
+    { icon: '👻', label: 'Your Ghosts', text: 'Every round you finish leaves a copy of your character that other players fight. See how your ghosts did and what the players who fought them said.' },
+  ],
+};
+
+export const battleCriesHint: InfoContent = {
+  id: 'battle-cries',
+  title: 'Battle Cries',
+  entries: [
+    { icon: '📣', label: 'Lines', text: 'Choose what your fighter says at the start of a battle, when it wins and when it loses. Your ghosts say the same lines to other players.' },
+  ],
+};
+
 export const abandonHint: InfoContent = {
   id: 'abandon',
   title: 'Abandon Run',

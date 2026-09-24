@@ -46,6 +46,8 @@ interface ClassOption {
   perLevel: string[];
 }
 
+import { MenuHeaderComponent } from '../common/components/menu-header/menu-header.component';
+
 @Component({
   selector: 'app-join-form',
   standalone: true,
@@ -62,6 +64,7 @@ interface ClassOption {
     RunListComponent,
     SupportLinkComponent,
     ArtCreditComponent,
+    MenuHeaderComponent,
   ],
   templateUrl: './join-form.component.html',
   styleUrl: './join-form.component.scss',
@@ -107,10 +110,6 @@ export class JoinFormComponent implements AfterViewInit, OnDestroy, OnInit {
   @ViewChild('fallingItemsContainer', { static: false })
   fallingItemsContainer!: ElementRef<HTMLDivElement>;
 
-  get volumeIcon(): string {
-    return this.soundsService.volumeIcon;
-  }
-
   constructor(
     public draftService: DraftService,
     private runResumeService: RunResumeService,
@@ -122,12 +121,6 @@ export class JoinFormComponent implements AfterViewInit, OnDestroy, OnInit {
     private dialog: MatDialog,
     @Inject(PLATFORM_ID) private platformId: Object,
   ) {}
-
-  /** On touch, hints stay enabled at all times (see toggleInfoBox), so the highlight would
-   *  always be on and falsely imply an active hover-hint mode that doesn't exist there. */
-  infoBoxHighlighted(): boolean {
-    return !this.infoBoxService.isTouch && this.infoBoxService.isVisible();
-  }
 
   ngOnInit() {
     this.seasonsService.getSeasons().then(data => {
@@ -167,17 +160,6 @@ export class JoinFormComponent implements AfterViewInit, OnDestroy, OnInit {
     }
     this.infoBoxService.clearPageDefault();
     this.infoBoxService.clearContent();
-  }
-
-  toggleInfoBox() {
-    // The hint side panel never renders on touch, so the question-mark button there
-    // instead opens the page's hint as a modal on demand.
-    if (this.infoBoxService.isTouch) {
-      const content = this.infoBoxService.pageDefault();
-      if (content) this.infoBoxService.showHintModal(content);
-      return;
-    }
-    this.infoBoxService.toggle();
   }
 
   onNextButton() {
@@ -239,10 +221,6 @@ export class JoinFormComponent implements AfterViewInit, OnDestroy, OnInit {
         this.renderer.removeChild(this.fallingItemsContainer.nativeElement, itemImg);
       }, 6000);
     }
-  }
-
-  cycleVolume() {
-    this.soundsService.cycleVolume();
   }
 
   // Lazy-loaded so the encyclopedia (+ item-card, hover-card) doesn't bloat the login

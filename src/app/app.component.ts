@@ -2,6 +2,7 @@ import { Component, HostListener, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { InfoBoxComponent } from './common/components/info-box/info-box.component';
 import { SoundOptions, SoundsService } from './common/services/sounds.service';
+import { AppUpdateService } from './common/services/app-update.service';
 
 @Component({
   selector: 'app-root',
@@ -13,6 +14,11 @@ import { SoundOptions, SoundsService } from './common/services/sounds.service';
 export class AppComponent {
   title = 'chungus-battles-frontend';
   private readonly sounds = inject(SoundsService);
+  readonly appUpdate = inject(AppUpdateService);
+
+  constructor() {
+    this.appUpdate.start();
+  }
 
   /** Plays the click sound for every "brown button" (`.chungus-modal-btn` — modals, restart
    *  prompts, buy/equip cards, etc.) without wiring it into each component individually.

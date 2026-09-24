@@ -1,2 +1,8 @@
 <router-outlet />
 <app-info-box></app-info-box>
+@if (appUpdate.updateAvailable()) {
+  <div class="update-banner" role="status">
+    <span>A new version of Chungus Battles is out.</span>
+    <button class="update-banner-btn" (click)="appUpdate.reload()">Refresh</button>
+  </div>
+}

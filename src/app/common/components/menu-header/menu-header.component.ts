@@ -34,7 +34,7 @@ export type MenuPage = 'home' | 'leaderboard' | 'admin';
           title="Your ghosts: how other players fared against them, and what they said"
           [matBadge]="ghostReportService.unseenTotal() || null" matBadgeSize="small" matBadgeColor="warn"
           [matBadgeHidden]="!ghostReportService.unseenTotal()">
-          <span class="text-lg leading-none">👻</span>
+          <span class="menu-emoji-icon">👻</span>
         </button>
       }
       <button mat-icon-button class="text-gray-400" (click)="openEncyclopedia()" aria-label="Encyclopedia" title="Encyclopedia">
@@ -65,6 +65,25 @@ export type MenuPage = 'home' | 'leaderboard' | 'admin';
       </button>
     </div>
   `,
+  // Emoji glyphs sit on the text baseline; give it the same 24×24 centered box a <mat-icon>
+  // has so it lines up with the neighbouring icons.
+  styles: [`
+    .menu-emoji-icon {
+      display: block;
+      margin: 0 auto;
+      /* Block-centered in the button, then nudged to where <mat-icon> glyphs actually sit
+         (their baseline puts them ~2px below center). Not vertical-align: an emoji's
+         baseline depends on the OS emoji font, so that offset differs per platform. */
+      position: relative;
+      top: 2px;
+      width: 24px;
+      height: 24px;
+      font-size: 20px;
+      line-height: 24px;
+      text-align: center;
+      text-shadow: none;
+    }
+  `],
 })
 export class MenuHeaderComponent implements OnInit {
   page = input.required<MenuPage>();

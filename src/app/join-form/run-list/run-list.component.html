@@ -43,7 +43,7 @@
             <mat-icon>delete_outline</mat-icon>
           </button>
         } @else {
-          <button mat-icon-button class="run-row-action" title="Resume" (click)="onResume(run)">
+          <button mat-icon-button class="run-row-action" title="Resume" (click)="$event.stopPropagation(); onResume(run)">
             <mat-icon>play_arrow</mat-icon>
           </button>
           <button mat-icon-button class="run-row-action run-row-action-delete" title="Remove" (click)="confirmDelete(run, $event)">

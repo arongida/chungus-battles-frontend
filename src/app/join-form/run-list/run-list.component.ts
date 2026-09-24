@@ -62,6 +62,7 @@ export class RunListComponent implements OnInit {
     const ids = [...new Set(this.runs().map((r) => r.nemesis?.originalPlayerId).filter((id): id is number => !!id))];
     if (!ids.length) return;
     const summaries = await this.runSummariesService.fetch(ids);
+    if (!summaries) return;
     const lines = new Map<number, string>();
     summaries.forEach((s, id) => lines.set(id, ownerStatusLine({
       originalPlayerId: id,

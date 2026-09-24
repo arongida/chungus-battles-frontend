@@ -23,7 +23,22 @@ export class RunResumeService {
     private router: Router,
   ) {}
 
-  async resume(playerId: number): Promise<void> {
+  /** Resumes in progress, by playerId. A second resume of the same run while one is in flight
+   *  shares the first instead of starting a parallel join: two concurrent joinRun calls race
+   *  for the backend's one-session-per-character claim, and the loser's "Player already
+   *  playing!" bounced the player back to the home screen even though the winner succeeded
+   *  (e.g. the run list's Resume button click also bubbling to its row's own click handler). */
+  private inFlight = new Map<number, Promise<void>>();
+
+  resume(playerId: number): Promise<void> {
+    const existing = this.inFlight.get(playerId);
+    if (existing) return existing;
+    const attempt = this.doResume(playerId).finally(() => this.inFlight.delete(playerId));
+    this.inFlight.set(playerId, attempt);
+    return attempt;
+  }
+
+  private async doResume(playerId: number): Promise<void> {
     const run = this.runRegistry.getRun(playerId);
 
     if (run?.reconnect?.phase === 'fight') {

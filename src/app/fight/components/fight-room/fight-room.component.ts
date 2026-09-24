@@ -386,7 +386,7 @@ export class FightRoomComponent implements OnInit {
     this.nemesisStatus.set(null);
     if (!killer || !killer.originalPlayerId) return;
     this.runSummariesService.fetch([killer.originalPlayerId]).then(map => {
-      const s = map.get(killer.originalPlayerId);
+      const s = map?.get(killer.originalPlayerId);
       if (!s || this.nemesis()?.originalPlayerId !== killer.originalPlayerId) return;
       this.nemesisStatus.set(ownerStatusLine({
         originalPlayerId: killer.originalPlayerId,

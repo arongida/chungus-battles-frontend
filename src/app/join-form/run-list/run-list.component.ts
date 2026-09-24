@@ -31,8 +31,8 @@ export class RunListComponent implements OnInit {
   visibleRuns = computed(() => this.runs().filter((run) => !this.isEnded(run)));
   refreshing = signal(false);
   currentSeason = signal(0);
-  /** Unseen ghost encounters per run (playerId → count) — see GhostReportService. */
-  ghostUnseen = signal<Map<number, number>>(new Map());
+  /** Unseen ghost encounters per run (playerId → count), shared with the menu header badge. */
+  ghostUnseen = this.ghostReportService.unseenCounts;
   /** Live status line of each ended run's nemesis (nemesis originalPlayerId → line). */
   nemesisStatus = signal<Map<number, string>>(new Map());
   /** Ended runs are hidden from "Continue a Run", but their ghosts keep fighting — surface the
@@ -54,7 +54,7 @@ export class RunListComponent implements OnInit {
     this.seasonsService.getSeasons().then((data) => this.currentSeason.set(data.currentSeason));
     this.refreshing.set(true);
     this.runSummariesService.refreshAll().finally(() => this.refreshing.set(false));
-    this.ghostReportService.fetchUnseenCounts().then((counts) => this.ghostUnseen.set(counts));
+    // The menu header (same page) refreshes GhostReportService.unseenCounts on init.
     this.loadNemesisStatus();
   }
 
@@ -77,7 +77,6 @@ export class RunListComponent implements OnInit {
 
   openGhostReport(run: RunRecord, event: Event): void {
     event.stopPropagation();
-    this.ghostUnseen.update((m) => new Map(m).set(run.playerId, 0));
     this.dialog.open(GhostReportDialogComponent, {
       data: { playerId: run.playerId, name: run.name },
       backdropClass: 'chungus-dialog-backdrop',

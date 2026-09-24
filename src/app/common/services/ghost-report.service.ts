@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { computed, Injectable, signal } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { RunRegistryService } from './run-registry.service';
 
@@ -32,6 +32,13 @@ export interface GhostReport {
   summary: GhostReportSummary;
 }
 
+/** An encounter tagged with which of this browser's characters the ghost belonged to — the
+ *  all-runs inbox (menu header) merges every run's report into one list. */
+export interface InboxEncounter extends GhostEncounter {
+  ownerPlayerId: number;
+  ownerName: string;
+}
+
 /**
  * "While you were away" — how a character's ghosts (its matchmaking snapshots) did in other
  * players' fights. There are no accounts: each run's playerToken (from RunRegistryService)
@@ -40,7 +47,39 @@ export interface GhostReport {
  */
 @Injectable({ providedIn: 'root' })
 export class GhostReportService {
+  /** Unseen-encounter counts per run (playerId → n), shared by every badge (menu header, run
+   *  list) so opening a report anywhere clears it everywhere. */
+  readonly unseenCounts = signal<Map<number, number>>(new Map());
+  readonly unseenTotal = computed(() => [...this.unseenCounts().values()].reduce((a, b) => a + b, 0));
+
   constructor(private runRegistry: RunRegistryService) {}
+
+  /** Refreshes unseenCounts for every stored run (one request). */
+  async refreshUnseenCounts(): Promise<void> {
+    this.unseenCounts.set(await this.fetchUnseenCounts());
+  }
+
+  /** Every stored run's recent report merged into one newest-first list, with the summaries
+   *  summed. Runs whose report can't be fetched are skipped. */
+  async fetchInbox(): Promise<{ encounters: InboxEncounter[]; summary: GhostReportSummary; reports: Map<number, GhostReport> } | null> {
+    const runs = this.runRegistry.runs().slice(0, 10);
+    const results = await Promise.all(runs.map(async r => ({ run: r, report: await this.fetchReport(r.playerId) })));
+    const ok = results.filter(x => !!x.report);
+    if (runs.length && !ok.length) return null;
+    const summary: GhostReportSummary = { fights: 0, wins: 0, losses: 0, draws: 0, runsEnded: 0, emotes: {} };
+    const encounters: InboxEncounter[] = [];
+    const reports = new Map<number, GhostReport>();
+    for (const { run, report } of ok) {
+      reports.set(run.playerId, report!);
+      const s = report!.summary;
+      summary.fights += s.fights; summary.wins += s.wins; summary.losses += s.losses;
+      summary.draws += s.draws; summary.runsEnded += s.runsEnded;
+      Object.entries(s.emotes).forEach(([id, n]) => { summary.emotes[id] = (summary.emotes[id] ?? 0) + n; });
+      report!.encounters.forEach(e => encounters.push({ ...e, ownerPlayerId: run.playerId, ownerName: run.name }));
+    }
+    encounters.sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
+    return { encounters, summary, reports };
+  }
 
   /** Full recent report (newest first). `since` narrows it to encounters after that time. */
   async fetchReport(playerId: number, since?: string): Promise<GhostReport | null> {
@@ -96,5 +135,8 @@ export class GhostReportService {
   markSeen(playerId: number, report: GhostReport): void {
     const newest = report.encounters[0]?.createdAt;
     if (newest) this.runRegistry.setGhostReportSeenAt(playerId, newest);
+    if (this.unseenCounts().get(playerId)) {
+      this.unseenCounts.update(m => new Map(m).set(playerId, 0));
+    }
   }
 }

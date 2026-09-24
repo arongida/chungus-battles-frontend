@@ -11,7 +11,7 @@
   } @else if (report(); as r) {
     @if (r.summary.fights === 0) {
       <p class="ghost-empty">
-        Nobody has fought your ghost yet. Every round you finish leaves a copy of your character
+        Nobody has fought your ghosts yet. Every round you finish leaves a copy of your character
         for other players to face — check back later!
       </p>
     } @else {
@@ -40,7 +40,10 @@
             <span class="ghost-avatar" [style.background-image]="'url(' + avatar(e.opponentAvatarUrl) + ')'"></span>
             <span class="ghost-row-main">
               <span class="ghost-row-name">{{ e.opponentName }}</span>
-              <span class="ghost-row-meta">Round {{ e.ownerSnapshotRound }} · {{ e.createdAt | date:'MMM d, HH:mm' }}</span>
+              <span class="ghost-row-meta">
+                @if (inbox && e.ownerName) { vs your {{ e.ownerName }} · }
+                Round {{ e.ownerSnapshotRound }} · {{ e.createdAt | date:'MMM d, HH:mm' }}
+              </span>
             </span>
             @if (e.emotes.length) {
               <span class="ghost-row-emotes">

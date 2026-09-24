@@ -72,6 +72,7 @@
 }
 
 .ghost-emote-chip {
+  text-shadow: none;
   padding: 2px 8px;
   border: 1px solid rgba(245, 158, 11, 0.4);
   border-radius: 999px;
@@ -136,6 +137,7 @@
 }
 
 .ghost-row-result {
+  text-shadow: none;
   flex-shrink: 0;
   font-size: 0.8rem;
   white-space: nowrap;
@@ -146,6 +148,7 @@
 }
 
 .ghost-row-new {
+  text-shadow: none;
   flex-shrink: 0;
   padding: 1px 5px;
   border-radius: 3px;

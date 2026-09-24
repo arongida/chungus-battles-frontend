@@ -329,36 +329,100 @@ function spawnFloatIn(renderer: Renderer2, container: HTMLElement, text: string,
   setTimeout(() => { if (el.parentNode === container) renderer.removeChild(container, el); }, lifetimeMs + 50);
 }
 
-const SPEECH_BUBBLE_LIFETIME_MS = 2600; // must match speech-bubble-pop in styles.scss
-const liveBubbles = new WeakMap<HTMLElement, HTMLElement>();
+const SPEECH_BUBBLE_LIFETIME_MS = 2200; // must match speech-bubble-pop in styles.scss
+const SPEECH_GAP_MS = 150;
+const SPEECH_QUEUE_MAX = 2;
+const SPEECH_EDGE_PX = 8;
+const SPEECH_TAIL_MARGIN_PX = 14;
 
-/** Speech bubble over a fighter's avatar — battle cries and live reactions (the `emote`
- *  message). Anchored to the same `damage-numbers-{playerId}` overlay as floating combat text,
- *  so it follows the panel wherever it's dragged. One bubble per fighter: a new line replaces
- *  the one still showing instead of stacking. */
+interface PendingSpeech {
+  renderer: Renderer2;
+  playerId: number;
+  text: string;
+  reaction: boolean;
+}
+
+/** One speaker at a time. On a small screen the two fighters' panels sit close together, so
+ *  simultaneous bubbles (greetings at the countdown, victory/defeat at the KO) overlapped; the
+ *  server always sends the local player's line first, so queueing makes "you, then them". */
+let activeBubble: { el: HTMLElement; container: HTMLElement; playerId: number; until: number; removeTimer: ReturnType<typeof setTimeout> } | null = null;
+const speechQueue: PendingSpeech[] = [];
+let drainTimer: ReturnType<typeof setTimeout> | null = null;
+
+/** Speech bubble over a fighter's avatar — battle cries, live reactions (the `emote` message)
+ *  and shop quips. Anchored to the same `damage-numbers-{playerId}` overlay as floating combat
+ *  text, so it follows the panel wherever it's dragged. While another fighter is speaking the
+ *  line waits its turn; a new line from the one currently speaking replaces theirs at once. */
 export function triggerSpeechBubble(renderer: Renderer2, platformId: Object, playerId: number, text: string, opts: { reaction?: boolean } = {}): void {
   if (!isPlatformBrowser(platformId) || !text) return;
+  const speech: PendingSpeech = { renderer, playerId, text, reaction: !!opts.reaction };
+  const busyWithOther = activeBubble && activeBubble.playerId !== playerId && performance.now() < activeBubble.until + SPEECH_GAP_MS;
+  if (!busyWithOther) {
+    showSpeech(speech);
+    return;
+  }
+  speechQueue.push(speech);
+  if (speechQueue.length > SPEECH_QUEUE_MAX) {
+    // Drop the oldest queued reaction; battle cries are never dropped.
+    const idx = speechQueue.findIndex(q => q.reaction);
+    if (idx >= 0) speechQueue.splice(idx, 1);
+  }
+}
+
+function showSpeech(speech: PendingSpeech): void {
+  const { renderer, playerId, text } = speech;
   const container = document.getElementById(`damage-numbers-${playerId}`);
-  if (!container) return;
-  const prev = liveBubbles.get(container);
-  if (prev?.parentNode === container) renderer.removeChild(container, prev);
+  if (!container) { scheduleSpeechDrain(0); return; }
+  if (activeBubble) {
+    clearTimeout(activeBubble.removeTimer);
+    if (activeBubble.el.parentNode) activeBubble.el.parentNode.removeChild(activeBubble.el);
+    activeBubble = null;
+  }
 
   const el = renderer.createElement('div');
   renderer.addClass(el, 'speech-bubble');
-  if (opts.reaction) renderer.addClass(el, 'speech-bubble--reaction');
+  if (speech.reaction) renderer.addClass(el, 'speech-bubble--reaction');
   renderer.appendChild(el, renderer.createText(text));
   renderer.appendChild(container, el);
-  liveBubbles.set(container, el);
-  // Keep the bubble on screen when its avatar sits near a viewport edge (e.g. the draft panel
-  // docked at the left): shift the bubble, and counter-shift its tail so it still points at the
-  // avatar. getBoundingClientRect ignores the transform-only pop animation's scale enough here.
-  const EDGE_PX = 8;
-  const rect = el.getBoundingClientRect();
+  keepBubbleOnScreen(renderer, container, el);
+
+  const removeTimer = setTimeout(() => {
+    if (el.parentNode === container) renderer.removeChild(container, el);
+    if (activeBubble?.el === el) activeBubble = null;
+  }, SPEECH_BUBBLE_LIFETIME_MS + 50);
+  activeBubble = { el, container, playerId, until: performance.now() + SPEECH_BUBBLE_LIFETIME_MS, removeTimer };
+  scheduleSpeechDrain(SPEECH_BUBBLE_LIFETIME_MS + SPEECH_GAP_MS);
+}
+
+function scheduleSpeechDrain(delayMs: number): void {
+  if (drainTimer) clearTimeout(drainTimer);
+  drainTimer = setTimeout(() => {
+    drainTimer = null;
+    const next = speechQueue.shift();
+    if (next) showSpeech(next);
+  }, delayMs);
+}
+
+/** Shift the bubble inside the viewport when its avatar sits near an edge — the draft character
+ *  panel is docked flush against the left border by default — and flip it below the avatar when
+ *  there's no room above. Computed from untransformed layout sizes (offsetWidth/offsetHeight and
+ *  the container's rect): the pop animation starts at scale(0.6), so the bubble's own
+ *  getBoundingClientRect right after insertion is narrower than its final size and under-shifts. */
+function keepBubbleOnScreen(renderer: Renderer2, container: HTMLElement, el: HTMLElement): void {
+  const anchor = container.getBoundingClientRect();
+  const width = el.offsetWidth;
+  const height = el.offsetHeight;
+  const centerX = anchor.left + anchor.width / 2;
+  const left = centerX - width / 2;
+  const right = centerX + width / 2;
   let shift = 0;
-  if (rect.left < EDGE_PX) shift = EDGE_PX - rect.left;
-  else if (rect.right > window.innerWidth - EDGE_PX) shift = window.innerWidth - EDGE_PX - rect.right;
+  if (left < SPEECH_EDGE_PX) shift = SPEECH_EDGE_PX - left;
+  else if (right > window.innerWidth - SPEECH_EDGE_PX) shift = window.innerWidth - SPEECH_EDGE_PX - right;
+  // Never shift so far that the tail (counter-shifted to stay over the avatar) leaves the bubble.
+  const maxShift = Math.max(0, width / 2 - SPEECH_TAIL_MARGIN_PX);
+  shift = Math.max(-maxShift, Math.min(maxShift, shift));
   if (shift) renderer.setStyle(el, '--bubble-shift', `${Math.round(shift)}px`, RendererStyleFlags2.DashCase);
-  setTimeout(() => { if (el.parentNode === container) renderer.removeChild(container, el); }, SPEECH_BUBBLE_LIFETIME_MS + 50);
+  if (anchor.top - 10 - height < SPEECH_EDGE_PX) renderer.addClass(el, 'speech-bubble--below');
 }
 
 /** Shared rarity → class-name-suffix lookup. Drives both the `.lucky-find-number--{suffix}`

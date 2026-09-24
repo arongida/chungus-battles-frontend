@@ -7,18 +7,22 @@
     Your fighter says these lines in battle. So does every ghost of you that other players face,
     even while you're offline.
   </p>
-  <div class="cries-body">
+  <div class="cries-tabs" role="tablist">
     @for (s of slots; track s.slot) {
-      <section class="cries-slot">
-        <h3 class="cries-slot-title">{{ s.label }} <span class="cries-slot-hint">{{ s.hint }}</span></h3>
-        <div class="cries-options">
-          @for (id of s.options; track id) {
-            <button class="cries-option" [class.selected]="data.cries()[s.slot] === id" (click)="pick(s.slot, id)">
-              “{{ emotes[id].text }}”
-            </button>
-          }
-        </div>
-      </section>
+      <button class="cries-tab" role="tab" [class.active]="activeSlot() === s.slot"
+              [attr.aria-selected]="activeSlot() === s.slot" (click)="activeSlot.set(s.slot)">
+        {{ s.label }}
+      </button>
     }
+  </div>
+  <div class="cries-body" role="tabpanel">
+    <p class="cries-slot-hint">{{ active().hint }}</p>
+    <div class="cries-options">
+      @for (id of active().options; track id) {
+        <button class="cries-option" [class.selected]="data.cries()[active().slot] === id" (click)="pick(active().slot, id)">
+          “{{ emotes[id].text }}”
+        </button>
+      }
+    </div>
   </div>
 </div>

@@ -1,4 +1,4 @@
-import { Component, Inject, Signal } from '@angular/core';
+import { Component, computed, Inject, Signal, signal } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { DraftService } from '../../services/draft.service';
 import { BATTLE_CRY_SLOTS, BattleCrySlot, EMOTES, emoteIdsForSlot } from '../../../common/social/emote-catalog';
@@ -23,6 +23,9 @@ export interface BattleCriesDialogData {
 export class BattleCriesDialogComponent {
   readonly slots = BATTLE_CRY_SLOTS.map(s => ({ ...s, options: emoteIdsForSlot(s.slot) }));
   readonly emotes = EMOTES;
+  /** One category at a time (tabs), so the dialog fits small screens without scrolling. */
+  activeSlot = signal<BattleCrySlot>('greeting');
+  active = computed(() => this.slots.find(s => s.slot === this.activeSlot())!);
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: BattleCriesDialogData,

@@ -13,11 +13,10 @@ import { EMOTES, emoteIdsForSlot } from '../../../common/social/emote-catalog';
 })
 export class EmotePickerComponent {
   /** 'popover': one 💬 toggle that opens the full list (fight HUD).
-   *  'inline': a short row of quick reactions (end-of-fight modals). */
+   *  'inline': every reaction as a wrapping row of buttons (end-of-fight modals, which cover
+   *  the HUD toggle). */
   mode = input<'popover' | 'inline'>('popover');
   remaining = input<number>(0);
-  /** Inline mode only: which reactions to show. */
-  quick = input<string[]>(['react_gg', 'react_wp']);
   send = output<string>();
 
   readonly reactions = emoteIdsForSlot('reaction');

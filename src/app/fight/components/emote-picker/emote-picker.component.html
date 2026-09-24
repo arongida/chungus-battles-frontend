@@ -19,7 +19,7 @@
   @if (remaining() > 0) {
     <div class="emote-quick">
       <span class="emote-quick-label">Tell them:</span>
-      @for (id of quick(); track id) {
+      @for (id of reactions; track id) {
         <button [disabled]="disabled()" (click)="pick(id)">
           {{ emotes[id].icon }} {{ emotes[id].text }}
         </button>

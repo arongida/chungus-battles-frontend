@@ -78,7 +78,8 @@ button {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  margin: 4px 0 12px;
+  max-width: 420px;
+  margin: 4px auto 12px;
 
   button {
     padding: 5px 10px;

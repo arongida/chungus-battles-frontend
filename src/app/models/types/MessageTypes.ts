@@ -78,6 +78,11 @@ export type GameOverMessage = {
   killer?: { name: string; avatarUrl: string; playerId: number; originalPlayerId: number };
 };
 
+/** Draft: something happened in the shop the player's own character can quip about — only the
+ *  trigger comes from the server; the lines are in common/social/quips.ts. */
+export type QuipTrigger = 'buy' | 'sell' | 'reroll' | 'level_up' | 'talent' | 'broke';
+export type QuipMessage = { trigger: QuipTrigger };
+
 /** A fighter says a preset line (common/social/emote-catalog.ts). kind 'cry' = that fighter's
  *  battle cry (greeting at battle start, victory/defeat at the end); 'reaction' = a live
  *  reaction the human player sent. `remaining` (reactions only) = reactions still allowed. */

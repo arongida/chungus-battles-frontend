@@ -516,14 +516,16 @@ body {
   text-align: center;
   white-space: normal;
   box-shadow: 0 4px 0 rgba(0, 0, 0, 0.5);
+  // Set by triggerSpeechBubble when the bubble would overflow the viewport edge.
+  margin-left: var(--bubble-shift, 0px);
   transform: translateX(-50%);
   transform-origin: 50% 100%;
-  animation: speech-bubble-pop 2600ms ease-out forwards;
+  animation: speech-bubble-pop 2200ms ease-out forwards;
 
   &::after {
     content: '';
     position: absolute;
-    left: 50%;
+    left: calc(50% - var(--bubble-shift, 0px));
     top: 100%;
     width: 14px;
     height: 14px;
@@ -531,6 +533,19 @@ body {
     border-right: 3px solid #3b2a1a;
     border-bottom: 3px solid #3b2a1a;
     transform: translate(-50%, -7px) rotate(45deg);
+  }
+}
+
+// No room above the avatar (panel at the top edge): hang the bubble below it, tail pointing up.
+.speech-bubble--below {
+  bottom: auto;
+  top: calc(100% + 10px);
+  transform-origin: 50% 0;
+
+  &::after {
+    top: auto;
+    bottom: 100%;
+    transform: translate(-50%, 7px) rotate(225deg);
   }
 }
 

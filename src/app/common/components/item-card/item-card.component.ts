@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import {
@@ -10,6 +10,7 @@ import {
 } from '@angular/common';
 import Item from '../../../models/colyseus-schema/ItemSchema';
 import { triggerGoldDeny } from '../../TriggerAnimations';
+import { QuipService } from '../../services/quip.service';
 import {
   Player,
 } from '../../../models/colyseus-schema/PlayerSchema';
@@ -43,6 +44,7 @@ export class ItemCardComponent {
    *  a caller sets isFreeLuckyFind without specifying a source) falls back to the clover. */
   @Input({ required: false }) freeClaimSource: FreeClaimSource = null;
   @Output() buyClicked = new EventEmitter<void>();
+  private readonly quipService = inject(QuipService);
 
   /** Unaffordable buys stay clickable so the click can explain itself: the button shakes and
    *  the toolbar gold counter flashes red, instead of a dead disabled button. */
@@ -54,6 +56,9 @@ export class ItemCardComponent {
       btn.classList.add('btn-deny');
       setTimeout(() => btn.classList.remove('btn-deny'), 360);
       triggerGoldDeny();
+      // Rejected here, before any message is sent — so the server's "broke" quip (which a
+      // drag-to-buy does get) never fires; say it from the client instead.
+      this.quipService.say('broke', this.player.playerId);
       return;
     }
     this.buyClicked.emit();

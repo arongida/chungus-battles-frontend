@@ -159,7 +159,7 @@
             </select>
           </label>
 
-          @if (botPolicyId() === 'heuristic-v2') {
+          @if (policySupportsArchetypes(botPolicyId())) {
             <label class="admin-field">
               <span class="admin-label">Archetype</span>
               <select class="admin-select" [value]="botArchetypeId()" (change)="botArchetypeId.set($any($event.target).value)">

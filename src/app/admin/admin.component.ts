@@ -269,12 +269,18 @@ export class AdminComponent implements OnInit, OnDestroy {
   setBotPolicy(policyId: string): void {
     this.botPolicyId.set(policyId);
     // V1 has no archetype support. Clear it so the request and UI cannot disagree.
-    if (policyId !== 'heuristic-v2') this.botArchetypeId.set('');
+    if (!this.policySupportsArchetypes(policyId)) this.botArchetypeId.set('');
+  }
+
+  /** heuristic-v2 rolls a class-locked archetype per run; learned-v1 is built on it, so it does too. */
+  policySupportsArchetypes(policyId: string): boolean {
+    return policyId === 'heuristic-v2' || policyId.startsWith('learned-');
   }
 
   botPolicyLabel(policyId: string): string {
     if (policyId === 'heuristic-v1') return 'Heuristic v1 (baseline)';
     if (policyId === 'heuristic-v2') return 'Heuristic v2';
+    if (policyId === 'learned-v1') return 'Learned v1 (fight model)';
     return policyId;
   }
 
